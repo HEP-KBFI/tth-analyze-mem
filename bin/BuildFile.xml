@@ -1,0 +1,4 @@
+<bin file="runMEM.cc" name="runMEM">
+  <use name="root" />
+  <use name="tthAnalysis/tthMEM" />
+</bin>

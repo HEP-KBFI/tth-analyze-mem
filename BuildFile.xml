@@ -1,0 +1,7 @@
+<use name="DataFormats/Math" />
+<use name="root" />
+<use name="lhapdf" />
+<use name="vamp" />
+<export>
+  <lib name="1" />
+</export>
