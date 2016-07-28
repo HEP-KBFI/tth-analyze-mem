@@ -4,10 +4,11 @@
 #include <string> // std::string
 #include <iostream> // std::ostream, std::cout
 #include <memory> // std::shared_ptr<>
+#include <sstream> // std::stringstream
 
-#define LOGERR  tthMEM::wrap(std::cout, "error")
-#define LOGWARN tthMEM::wrap(std::cout, "warning")
-#define LOGINFO tthMEM::wrap(std::cout, "info")
+#define LOGERR  tthMEM::wrap(std::cout, "error",   true)
+#define LOGWARN tthMEM::wrap(std::cout, "warning", true)
+#define LOGINFO tthMEM::wrap(std::cout, "info",    true)
 
 namespace tthMEM
 {
@@ -15,31 +16,37 @@ namespace tthMEM
   {
   public:
     Logger(std::ostream & os,
-           const std::string & level)
-      : holder_(new Holder(os, level))
+           const std::string & level,
+           bool enable)
+      : holder_(new Holder(os, level, enable))
     {}
     template <typename T>
     friend std::ostream & operator<<(const Logger & l,
                                      const T & t)
     {
-      return (l.holder_ -> os_) << t;
+      return (l.holder_ -> ss_) << t;
     }
   private:
     class Holder
     {
     public:
       Holder(std::ostream & os,
-             const std::string level)
+             const std::string level,
+             bool enable)
         : os_(os)
+        , enable_(enable)
       {
-        os_ << "[" << level << "] ";
+        ss_ << "[" << level << "] ";
       }
       ~Holder()
       {
-        os_ << "\n";
+        ss_ << "\n";
+        if(enable_) os_ << ss_.str();
       }
 
       std::ostream & os_;
+      std::stringstream ss_;
+      bool enable_;
     };
 
     mutable std::shared_ptr<Holder> holder_;
@@ -47,7 +54,8 @@ namespace tthMEM
 
   Logger
   wrap(std::ostream & os,
-       const std::string & level);
+       const std::string & level,
+       bool enable);
 }
 
 #endif // LOGGER_H

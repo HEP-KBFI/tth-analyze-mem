@@ -4,8 +4,9 @@ namespace tthMEM
 {
   Logger
   wrap(std::ostream & os,
-       const std::string & level)
+       const std::string & level,
+       bool enable)
   {
-    return Logger(os, level);
+    return Logger(os, level, enable);
   }
 }
