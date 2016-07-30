@@ -1,4 +1,7 @@
 <bin file="runMEM.cc" name="runMEM">
+  <use name="FWCore/ParameterSet" />
+  <use name="FWCore/PythonParameterSet" />
+  <use name="FWCore/Utilities" />
   <use name="root" />
   <use name="tthAnalysis/tthMEM" />
 </bin>

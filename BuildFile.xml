@@ -2,6 +2,7 @@
 <use name="root" />
 <use name="lhapdf" />
 <use name="vamp" />
+<use name="boost" />
 <export>
   <lib name="1" />
 </export>
