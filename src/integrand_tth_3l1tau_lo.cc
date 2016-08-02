@@ -37,7 +37,7 @@ integrand_tth_3l1tau_lo::integrand_tth_3l1tau_lo(double sqrtS,
 
 integrand_tth_3l1tau_lo::~integrand_tth_3l1tau_lo()
 {
-  LOGINFO << "Calling the dtor";
+  LOGDBG;
 
   delete pdf_;
   pdf_ = 0;
@@ -54,7 +54,7 @@ integrand_tth_3l1tau_lo::eval() const
 
   if(! me_madgraph_initialized_)
   {
-    LOGERR << "Madgraph's ME not initialized!" << "aa";
+    LOGERR << "Madgraph's ME not initialized!";
     std::exit(EXIT_FAILURE);
   }
 

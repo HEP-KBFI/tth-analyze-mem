@@ -38,3 +38,32 @@ MeasuredLepton::charge() const
 {
   return charge_;
 }
+
+void
+MeasuredLepton::setBranches(TChain * t,
+                            const std::string & branchName)
+{
+  MeasuredObject::setBranches(t, branchName);
+  t -> SetBranchAddress(Form("%s_charge",   branchName.c_str()), &charge_);
+}
+
+void
+MeasuredLepton::initNewBranches(TTree * t,
+                                const std::string & branchName)
+{
+  MeasuredObject::initNewBranches(t, branchName);
+  t -> Branch(Form("%s_charge", branchName.c_str()), &charge_,
+              Form("%s_charge/I", branchName.c_str()));
+}
+
+namespace tthMEM
+{
+  std::ostream &
+  operator<<(std::ostream & os,
+             const MeasuredLepton & o)
+  {
+    os << static_cast<const MeasuredObject &>(o)
+       << "; charge = " << o.charge_;
+    return os;
+  }
+}

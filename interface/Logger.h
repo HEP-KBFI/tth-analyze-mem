@@ -8,10 +8,10 @@
 #include <vector> // std::vector<>
 #include <iomanip> // std::setw(), std::left
 
-#define LOGERR  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)
-#define LOGWARN tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning)
-#define LOGINFO tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)
-#define LOGDBG  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)
+#define LOGERR  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define LOGWARN tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning)<<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define LOGINFO tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)   <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define LOGDBG  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
 
 namespace tthMEM
 {

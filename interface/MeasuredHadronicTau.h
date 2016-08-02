@@ -29,7 +29,8 @@ namespace tthMEM
 
     int decayMode() const;
 
-    virtual void initialize() override;
+    virtual void
+    initialize() override;
 
   protected:
     int decayMode_;         ///< decay mode of hadronic tau lepton

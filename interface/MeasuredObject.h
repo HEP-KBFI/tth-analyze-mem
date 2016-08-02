@@ -1,6 +1,13 @@
 #ifndef MEASUREDOBJECT_H
 #define MEASUREDOBJECT_H
 
+#include <string> // std::string
+#include <ostream> // std::ostream
+
+#include <TChain.h> // TChain
+#include <TTree.h> // TTree
+#include <TBranch.h> // TBranch
+
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // tthMEM::LorentzVector(), tthMEM::Vector()
 
 namespace tthMEM
@@ -63,6 +70,24 @@ namespace tthMEM
     const LorentzVector & p4() const;
     const Vector & p3() const;
 
+    virtual void
+    initialize(); ///< sets all momentum components but pt_, eta_, phi_, mass_
+
+    virtual void
+    setBranches(TChain * t,
+                const std::string & branchName);
+    ///< associates the pt, eta, phi and mass with an old input tree
+
+    virtual void
+    initNewBranches(TTree * t,
+                    const std::string & branchName);
+    ///< associates the pt, eta, phi and mass with a new output tree
+
+    friend std::ostream &
+    operator<<(std::ostream & os,
+               const MeasuredObject & o);
+    ///< prints the pt, eta, phi and mass to ostream
+
   protected:
     double pt_;     ///< pT of measured momentum in the lab frame
     double eta_;    ///< pseudo-rapidity of measured momentum in the lab frame
@@ -83,7 +108,10 @@ namespace tthMEM
     LorentzVector p4_; ///< measured 4-momentum in the lab frame
     Vector p3_;        ///< measured 3-momentum in the lab frame
 
-    virtual void initialize(); ///< sets all momentum components but pt_, eta_, phi_, mass_
+    TBranch * branch_pt   = 0; ///< output branch for pt
+    TBranch * branch_eta  = 0; ///< output branch for eta
+    TBranch * branch_phi  = 0; ///< output branch for phi
+    TBranch * branch_mass = 0; ///< output branch for mass
   };
 }
 

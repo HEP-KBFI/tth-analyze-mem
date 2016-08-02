@@ -51,6 +51,11 @@ MeasuredHadronicTau::decayMode() const
 void
 MeasuredHadronicTau::initialize()
 {
+  pt_   = roundToNdigits(pt_);
+  eta_  = roundToNdigits(mass_);
+  phi_  = roundToNdigits(phi_);
+  mass_ = roundToNdigits(mass_);
+
   preciseVisMass_ = mass_;
 
 //  double minVisMass = 0.3; // GeV
@@ -65,7 +70,7 @@ MeasuredHadronicTau::initialize()
 //  }
 
 //  if(preciseVisMass_ < 0.9 * minVisMass || preciseVisMass_ > 1.1 * maxVisMass)
-//    LOGINFO << "Hadronic tau ("
+//    LOGWARN << "Hadronic tau ("
 //      << "pt = " << pt_ << "; eta = " << eta_ << "; phi = " << phi_ << "; mass = " << mass_
 //      << ") expected in the mass range [" << minVisMass << "; " << maxVisMass << "]";
 
