@@ -1,15 +1,17 @@
 import FWCore.ParameterSet.Config as cms
+import os
 
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-  fileNames = cms.vstring("/home/karl/ttHAnalysis/2016Aug01_dR03mvaTight/output_root/3l_1tau/Tight/ttHJetToNonbb_M125/out_3l_1tau_ttHJetToNonbb_M125_Tight_central.root"),
+  fileNames = cms.vstring(os.path.join(os.getenv("CMSSW_BASE"), "src", "tthAnalysis", "tthMEM", \
+                                       "data", "out_3l_1tau_ttHJetToNonbb_M125_Tight_central.root")),
   maxEvents = cms.int32(-1),
   outputEvery = cms.uint32(10000)
 )
 
 process.fwliteOutput = cms.PSet(
-  fileName = cms.string("/home/karl/testMEM/tree_MEM.root")
+  fileName = cms.string(os.path.join("/scratch", os.getenv("USER"), "tree_MEM.root"))
 )
 
 process.logging = cms.PSet(

@@ -67,7 +67,7 @@ main(int argc,
   TFile * newFile = new TFile(outputFileName.c_str(), "recreate");
   TTree * newTree = new TTree("tree", Form("Tree created by %s", argv[0]));
 
-  tthMEM::MeasuredEvent measuredEvent;
+  tthMEM_3l_1tau::MeasuredEvent measuredEvent;
   measuredEvent.setBranches(inputTree);
   measuredEvent.initNewBranches(newTree);
 
@@ -92,10 +92,6 @@ main(int argc,
 
     inputTree -> GetEntry(i);
     measuredEvent.initialize();
-
-    LOGINFO << "MET (" << measuredEvent.met << "; "
-            << "px = " << measuredEvent.met.px() << "; "
-            << "py = " << measuredEvent.met.py() << ")";
 
     probSignal = -1;
     probBackground = -1;

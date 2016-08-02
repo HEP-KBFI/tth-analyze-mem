@@ -1,6 +1,6 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent.h"
 
-using namespace tthMEM;
+using namespace tthMEM_3l_1tau;
 
 void
 MeasuredEvent::initialize()

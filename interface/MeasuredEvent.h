@@ -12,7 +12,7 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredHadronicTau.h" // tthMEM::MeasuredHadronicTau
 #include "tthAnalysis/tthMEM/interface/MVAVariables.h" // tthMEM::MVAVariables
 
-namespace tthMEM
+namespace tthMEM_3l_1tau
 {
   class
   MeasuredEvent
@@ -26,12 +26,12 @@ namespace tthMEM
     TBranch * branch_lumi = 0;
     TBranch * branch_evt = 0;
 
-    MeasuredMET met;
-    MeasuredLepton lepton1, lepton2, lepton3;
-    MeasuredJet jet1, jet2;
-    MeasuredHadronicTau htau1;
+    tthMEM::MeasuredMET met;
+    tthMEM::MeasuredLepton lepton1, lepton2, lepton3;
+    tthMEM::MeasuredJet jet1, jet2;
+    tthMEM::MeasuredHadronicTau htau1;
 
-    MVAVariables mvaVariables;
+    tthMEM::MVAVariables mvaVariables;
 
     void
     initialize();

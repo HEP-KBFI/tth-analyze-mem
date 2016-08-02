@@ -4,6 +4,8 @@ Matrix element method for ttH, H->tautau channel
 
 ## Building instructions
 
+### Dependencies
+
 In order to build the whole project, you first need to install numerical integration library VAMP by following these steps:
 
 ```bash
@@ -37,9 +39,8 @@ where the full paths are
 <your include dir> = $CMSSW_BASE/VAMP/vamp-2.2.8/prefix/include/vamp
 ```
 
-Save it to `$CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected/vamp.xml`.
-Next up try to set up with `scram setup vamp` and verify the installation with `scram tool info vamp`.
-You should see output along the lines of
+Save it to `$CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected/vamp.xml`. Next up try to set up with `scram setup vamp` and verify the installation with `scram tool info vamp`. You should see output along the lines of
+
 ```bash
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -53,3 +54,18 @@ INCLUDE=.../VAMP/vamp-2.2.8/prefix/include/vamp
 USE=f77compiler
 ```
 
+### The library itself
+
+Clone the library into `$CMSSW_BASE/src/tthAnalysis/tthMEM`:
+
+```bash
+git clone git@github.com:HEP-KBFI/tth-analyze-mem.git $CMSSW_BASE/src/tthAnalysis/tthMEM
+```
+
+and build it with `scram b -j8` as usual.
+
+## Running an example
+
+At the time of writing, the project includes one executable, `runMEM`, which takes a Python configuration file, `runMEM_cfg.py`, as its argument. The program needs a `.root` containing selected events; an example is provided in `data/` subfolder. The output file is the original file + signal and background probabilities found with the MEM.
+
+The project also includes some unit tests, which can be run with `scram b -j8 runtests` after building the project.
