@@ -15,8 +15,6 @@ namespace tthMEM
    *
    * @todo
    *   - add methods for setting transfer functions
-   *   - add a method that sets the measured event information
-   *   - add measured event objects
    *   - implement the integrand
    */
   class integrand_tth_3l1tau_lo
@@ -32,8 +30,6 @@ namespace tthMEM
                             const std::string & pdfName,
                             const std::string & madgraphFileName);
     ~integrand_tth_3l1tau_lo();
-
-    /* enable-disable transfer functions */
 
     /**
      * @brief Set measured/reconstructed event as an input
