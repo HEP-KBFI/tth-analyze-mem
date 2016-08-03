@@ -22,10 +22,9 @@ namespace tthMEM
   class MEM_tth_3l1tau
   {
   public:
-    enum IntegrationMode { kVEGAS, kVAMP };
+    enum IntegrationMode { kUndefined, kVEGAS, kVAMP };
 
     MEM_tth_3l1tau(double sqrtS,
-                   int integrationMode,
                    const std::string & pdfName,
                    const std::string & madgraphFileName);
     ~MEM_tth_3l1tau();
@@ -34,7 +33,10 @@ namespace tthMEM
     setMaxObjFunctionCalls(unsigned maxObjFunctionCalls);
 
     void
-    setIntegrationMode(int integrationMode);
+    setIntegrationMode(IntegrationMode integrationMode);
+
+    void
+    setIntegrationMode(const std::string & integrationModeString);
 
     double
     getComputingTime_cpu() const;
@@ -46,11 +48,11 @@ namespace tthMEM
     integrate(const tthMEM_3l_1tau::MeasuredEvent & ev);
 
   private:
-    integrand_tth_3l1tau_lo * integrand_;
+    integrand_tth_3l1tau * integrand_;
     double sqrtS_;
     tthMEM_3l_1tau::MeasuredEvent ev_;
 
-    int integrationMode_;
+    IntegrationMode integrationMode_;
     tthMEM::MEMIntegratorBase * intAlgo_;
     unsigned maxObjFunctionCalls_;
     unsigned numDimensions_;

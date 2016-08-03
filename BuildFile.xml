@@ -1,4 +1,5 @@
 <use name="DataFormats/Math" />
+<use name="FWCore/ParameterSet" />
 <use name="root" />
 <use name="lhapdf" />
 <use name="vamp" />

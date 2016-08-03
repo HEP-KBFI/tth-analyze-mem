@@ -8,11 +8,11 @@
 
 using namespace tthMEM;
 
-const integrand_tth_3l1tau_lo * integrand_tth_3l1tau_lo::gIntegrand = 0;
+const integrand_tth_3l1tau * integrand_tth_3l1tau::gIntegrand = 0;
 
-integrand_tth_3l1tau_lo::integrand_tth_3l1tau_lo(double sqrtS,
-                                                 const std::string & pdfName,
-                                                 const std::string & madgraphFilename)
+integrand_tth_3l1tau::integrand_tth_3l1tau(double sqrtS,
+                                           const std::string & pdfName,
+                                           const std::string & madgraphFilename)
   : sqrtS_(sqrtS)
   , s_(std::pow(sqrtS_, 2))
   , pdf_(0)
@@ -41,7 +41,7 @@ integrand_tth_3l1tau_lo::integrand_tth_3l1tau_lo(double sqrtS,
   gIntegrand = this;
 }
 
-integrand_tth_3l1tau_lo::~integrand_tth_3l1tau_lo()
+integrand_tth_3l1tau::~integrand_tth_3l1tau()
 {
   LOGDBG;
 
@@ -56,7 +56,7 @@ setInputs(const tthMEM_3l_1tau::MeasuredEvent & measuredEvent)
 }
 
 double
-integrand_tth_3l1tau_lo::eval(const double * x) const
+integrand_tth_3l1tau::eval(const double * x) const
 {
   if(! pdf_)
   {

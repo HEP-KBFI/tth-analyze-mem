@@ -22,8 +22,17 @@ namespace tthMEM
    *
    * For examples, see "test/test_tthMEMauxFunctions.cc"
    */
-  double roundToNdigits(double x,
-                        int n = 3);
+  double
+  roundToNdigits(double x,
+                 int n = 3);
+
+  /**
+   * @brief Finds the full path of a file in CMSSW directories
+   * @param fileName A given file
+   * @return Full path of the given file
+   */
+  std::string
+  findFile(const std::string & fileName);
 }
 
 #endif // TTHMEMAUXFUNCTIONS_H

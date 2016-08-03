@@ -3,15 +3,16 @@
 
 #include <cmath> // std::round()
 
+#include <boost/algorithm/string/predicate.hpp> // boost::iequals()
+
 using namespace tthMEM;
 
 MEM_tth_3l1tau::MEM_tth_3l1tau(double sqrtS,
-                               int integrationMode,
                                const string & pdfName,
                                const string & madgraphFileName)
-  : integrand_(new integrand_tth_3l1tau_lo(sqrtS, pdfName, madgraphFileName))
+  : integrand_(new integrand_tth_3l1tau(sqrtS, pdfName, madgraphFileName))
   , sqrtS_(sqrtS)
-  , integrationMode_(integrationMode)
+  , integrationMode_(IntegrationMode::kUndefined)
   , intAlgo_(0)
   , maxObjFunctionCalls_(20000)
   , numDimensions_(0)
@@ -30,9 +31,20 @@ MEM_tth_3l1tau::~MEM_tth_3l1tau()
 }
 
 void
-MEM_tth_3l1tau::setIntegrationMode(int integrationMode)
+MEM_tth_3l1tau::setIntegrationMode(IntegrationMode integrationMode)
 {
   integrationMode_ = integrationMode;
+}
+
+void
+MEM_tth_3l1tau::setIntegrationMode(const string & integrationModeString)
+{
+  if(boost::iequals(integrationModeString, "vegas"))
+    integrationMode_ = IntegrationMode::kVEGAS;
+  else if(boost::iequals(integrationModeString, "vamp"))
+    integrationMode_ = IntegrationMode::kVAMP;
+  else
+    integrationMode_ = IntegrationMode::kUndefined;
 }
 
 void
@@ -59,6 +71,12 @@ MEM_tth_3l1tau::integrate(const tthMEM_3l_1tau::MeasuredEvent & ev)
   LOGDBG;
   clock_ -> Reset();
   clock_ -> Start(__PRETTY_FUNCTION__);
+
+  if(integrationMode_ == IntegrationMode::kUndefined)
+  {
+    LOGERR << "Integration mode not set";
+    assert(0);
+  }
 
   /* compute me */
 
