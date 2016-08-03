@@ -12,6 +12,8 @@ MEMIntegratorVEGAS::MEMIntegratorVEGAS(unsigned numCallsGridOpt,
   , maxIntEvalIter_(maxIntEvalIter)
   , maxChi2_(maxChi2)
   , precision_(1.e-5)
+  , xl_(0)
+  , xu_(0)
 {}
 
 MEMIntegratorVEGAS::~MEMIntegratorVEGAS()
@@ -87,10 +89,11 @@ MEMIntegratorVEGAS::integrate(MEMIntegratorBase::gPtr_C integrand,
   while((chi2 > maxChi2_ || integralErr > (integral * precision_)) &&
         iteration < maxIntEvalIter_);
 
-  delete [] xl_;
-  delete [] xu_;
-  delete [] static_cast<double *>(vegasIntegrand_ -> params);
-  delete vegasIntegrand_;
+  if(xl_) delete [] xl_;
+  if(xu_) delete [] xu_;
+  if(vegasIntegrand_ -> params)
+    delete [] static_cast<double *>(vegasIntegrand_ -> params);
+  if(vegasIntegrand_) delete vegasIntegrand_;
   gsl_monte_vegas_free(vegasWorkspace_);
   gsl_rng_free(vegasRnd_);
 }

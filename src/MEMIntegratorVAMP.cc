@@ -16,8 +16,12 @@ extern "C"
 
 MEMIntegratorVAMP::MEMIntegratorVAMP(unsigned numCallsGridOpt,
                                      unsigned numCallsIntEval)
-  : numCallsGridOpt_(numCallsGridOpt)
+  : integrand_(0)
+  , numCallsGridOpt_(numCallsGridOpt)
   , numCallsIntEval_(numCallsIntEval)
+  , numDimensions_(0)
+  , xl_(0)
+  , xu_(0)
 {}
 
 MEMIntegratorVAMP::~MEMIntegratorVAMP()
@@ -61,6 +65,6 @@ MEMIntegratorVAMP::integrate(MEMIntegratorBase::gPtr_Fortran integrand,
   vamp_integrate_(integrand_, xl, xu, &numDimensions, &numCallsGridOpt,
                   &numCallsIntEval, &integral, &integralErr);
 
-  delete [] xl_;
-  delete [] xu_;
+  if(xl_) delete [] xl_;
+  if(xu_) delete [] xu_;
 }

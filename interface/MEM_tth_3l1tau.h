@@ -4,6 +4,10 @@
 #include <string> // std::string
 
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent.h"
+#include "tthAnalysis/tthMEM/interface/integrand_tth_3l1tau.h"
+#include "tthAnalysis/tthMEM/interface/MEMIntegratorBase.h"
+
+#include <TBenchmark.h> // TBenchmark
 
 namespace tthMEM
 {
@@ -18,14 +22,46 @@ namespace tthMEM
   class MEM_tth_3l1tau
   {
   public:
+    enum IntegrationMode { kVEGAS, kVAMP };
+
     MEM_tth_3l1tau(double sqrtS,
                    int integrationMode,
                    const std::string & pdfName,
                    const std::string & madgraphFileName);
     ~MEM_tth_3l1tau();
 
+    void
+    setMaxObjFunctionCalls(unsigned maxObjFunctionCalls);
+
+    void
+    setIntegrationMode(int integrationMode);
+
+    double
+    getComputingTime_cpu() const;
+
+    double
+    getComputingTime_real() const;
+
+    double
+    integrate(const tthMEM_3l_1tau::MeasuredEvent & ev);
+
   private:
+    integrand_tth_3l1tau_lo * integrand_;
+    double sqrtS_;
+    tthMEM_3l_1tau::MeasuredEvent ev_;
+
     int integrationMode_;
+    tthMEM::MEMIntegratorBase * intAlgo_;
+    unsigned maxObjFunctionCalls_;
+    unsigned numDimensions_;
+    double precision_;
+
+    double * xl_;
+    double * xu_;
+
+    TBenchmark * clock_;
+    double numSeconds_cpu_;
+    double numSeconds_real_;
   };
 }
 
