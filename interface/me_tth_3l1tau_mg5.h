@@ -5,8 +5,8 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#ifndef me_tth_3l1tau_lo_mg5_h
-#define me_tth_3l1tau_lo_mg5_h
+#ifndef me_tth_3l1tau_mg5_h
+#define me_tth_3l1tau_mg5_h
 
 #include <complex> 
 #include <vector> 
@@ -35,11 +35,11 @@ using namespace std;
 // *   Decay: h > ta+ ta- WEIGHTED<=2
 //--------------------------------------------------------------------------
 
-class me_tth_3l1tau_lo_mg5 {
+class me_tth_3l1tau_mg5 {
   public:
 
     // Constructor.
-    me_tth_3l1tau_lo_mg5();
+    me_tth_3l1tau_mg5();
 
     // Initialize process.
     virtual void initProc(string param_card_name); 
@@ -101,4 +101,4 @@ class me_tth_3l1tau_lo_mg5 {
 }; 
 
 
-#endif  // me_tth_3l1tau_lo_mg5_h
+#endif  // me_tth_3l1tau_mg5_h

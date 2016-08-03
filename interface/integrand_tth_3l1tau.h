@@ -3,7 +3,8 @@
 
 #include <string> // std::string
 
-#include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_lo_mg5.h" // me_tth_3l1tau_lo_mg5
+#include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_mg5.h" // me_tth_3l1tau_lo_mg5
+#include "tthAnalysis/tthMEM/interface/MeasuredEvent.h" // tthMEM_3l_1tau::MeasuredEvent
 
 #include "LHAPDF/LHAPDF.h" // LHAPDF::PDF
 
@@ -32,12 +33,24 @@ namespace tthMEM
                             const std::string & madgraphFileName);
     ~integrand_tth_3l1tau_lo();
 
+    /* enable-disable transfer functions */
+
+    /**
+     * @brief Set measured/reconstructed event as an input
+     * @param measuredEvent The event
+     */
+    void
+    setInputs(const tthMEM_3l_1tau::MeasuredEvent & measuredEvent);
+
     /**
      * @brief Evaluates the integrand
      * @return Probability
      */
     double
-    eval() const;
+    eval(const double * x) const;
+
+    static const integrand_tth_3l1tau_lo * gIntegrand;
+    ///< static pointer to this instance
 
   protected:
     double sqrtS_;
@@ -45,7 +58,7 @@ namespace tthMEM
 
     LHAPDF::PDF * pdf_;
 
-    mutable me_tth_3l1tau_lo_mg5 me_madgraph_;
+    mutable me_tth_3l1tau_mg5 me_madgraph_;
     ///< @note mutable members can be modified by a const function (e.g. eval())
     bool me_madgraph_initialized_;
   };

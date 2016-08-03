@@ -5,7 +5,7 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_lo_mg5.h"
+#include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_mg5.h"
 #include "tthAnalysis/tthMEM/interface/HelAmps_sm.h"
 
 using namespace MG5_sm; 
@@ -29,13 +29,13 @@ using namespace MG5_sm;
 // *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
 // *   Decay: h > ta+ ta- WEIGHTED<=2
 
-me_tth_3l1tau_lo_mg5::me_tth_3l1tau_lo_mg5()
+me_tth_3l1tau_mg5::me_tth_3l1tau_mg5()
 {}
 
 //--------------------------------------------------------------------------
 // Initialize process.
 
-void me_tth_3l1tau_lo_mg5::initProc(string param_card_name) 
+void me_tth_3l1tau_mg5::initProc(string param_card_name)
 {
   // Instantiate the model class and set parameters that stay fixed during run
   pars = Parameters_sm::getInstance(); 
@@ -61,7 +61,7 @@ void me_tth_3l1tau_lo_mg5::initProc(string param_card_name)
 //--------------------------------------------------------------------------
 // Evaluate |M|^2, part independent of incoming flavour.
 
-void me_tth_3l1tau_lo_mg5::sigmaKin() 
+void me_tth_3l1tau_mg5::sigmaKin()
 {
   // Set the parameters which change event by event
   pars->setDependentParameters(); 
@@ -686,7 +686,7 @@ void me_tth_3l1tau_lo_mg5::sigmaKin()
 //--------------------------------------------------------------------------
 // Evaluate |M|^2, including incoming flavour dependence.
 
-double me_tth_3l1tau_lo_mg5::sigmaHat() 
+double me_tth_3l1tau_mg5::sigmaHat()
 {
   // Select between the different processes
   if(id1 == 21 && id2 == 21)
@@ -707,7 +707,7 @@ double me_tth_3l1tau_lo_mg5::sigmaHat()
 //--------------------------------------------------------------------------
 // Evaluate |M|^2 for each subprocess
 
-void me_tth_3l1tau_lo_mg5::calculate_wavefunctions(const int perm[], const int hel[])
+void me_tth_3l1tau_mg5::calculate_wavefunctions(const int perm[], const int hel[])
 {
   // Calculate wavefunctions for all processes
   // int i, j; 
@@ -748,7 +748,7 @@ void me_tth_3l1tau_lo_mg5::calculate_wavefunctions(const int perm[], const int h
   FFV1_0(w[19], w[16], w[0], pars->GC_11, amp[7]); 
 
 }
-double me_tth_3l1tau_lo_mg5::matrix_1_gg_ttxh_t_bepve_tx_bxemvex_h_taptam() 
+double me_tth_3l1tau_mg5::matrix_1_gg_ttxh_t_bepve_tx_bxemvex_h_taptam()
 {
   int i, j; 
   // Local variables

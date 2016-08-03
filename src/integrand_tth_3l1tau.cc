@@ -1,22 +1,26 @@
-#include "tthAnalysis/tthMEM/interface/integrand_tth_3l1tau_lo.h"
+#include "tthAnalysis/tthMEM/interface/integrand_tth_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 
 #include <iostream> // std::cerr, std::cout
-#include <cmath> // std::sqrt()
+#include <cmath> // std::pow()
 #include <cstdlib> // std::exit(), EXIT_FAILURE
 
 using namespace tthMEM;
+
+const integrand_tth_3l1tau_lo * integrand_tth_3l1tau_lo::gIntegrand = 0;
 
 integrand_tth_3l1tau_lo::integrand_tth_3l1tau_lo(double sqrtS,
                                                  const std::string & pdfName,
                                                  const std::string & madgraphFilename)
   : sqrtS_(sqrtS)
-  , s_(std::sqrt(sqrtS_))
+  , s_(std::pow(sqrtS_, 2))
   , pdf_(0)
   , me_madgraph_initialized_(false)
 {
-  if(! pdf_ && pdfName != "") pdf_ = LHAPDF::mkPDF(pdfName.data(), 0);
+  LOGDBG;
+
+  if(! pdf_ && pdfName != "") pdf_ = LHAPDF::mkPDF(pdfName.c_str(), 0);
   else
   {
     LOGERR << "PDF file name empty!";
@@ -33,6 +37,8 @@ integrand_tth_3l1tau_lo::integrand_tth_3l1tau_lo(double sqrtS,
     LOGERR << "Madgraph file name empty!";
     std::exit(EXIT_FAILURE);
   }
+
+  gIntegrand = this;
 }
 
 integrand_tth_3l1tau_lo::~integrand_tth_3l1tau_lo()
@@ -43,8 +49,14 @@ integrand_tth_3l1tau_lo::~integrand_tth_3l1tau_lo()
   pdf_ = 0;
 }
 
+void
+setInputs(const tthMEM_3l_1tau::MeasuredEvent & measuredEvent)
+{
+  //
+}
+
 double
-integrand_tth_3l1tau_lo::eval() const
+integrand_tth_3l1tau_lo::eval(const double * x) const
 {
   if(! pdf_)
   {
