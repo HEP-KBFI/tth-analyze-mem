@@ -66,7 +66,7 @@ MEM_tth_3l1tau::getComputingTime_real() const
 }
 
 double
-MEM_tth_3l1tau::integrate(const tthMEM_3l_1tau::MeasuredEvent & ev)
+MEM_tth_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
 {
   LOGDBG;
   clock_ -> Reset();

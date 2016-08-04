@@ -18,7 +18,7 @@
 #include <TString.h> // Form
 
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
-#include "tthAnalysis/tthMEM/interface/MeasuredEvent.h" // tthMEM::MeasuredEvent
+#include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // tthMEM::MeasuredEvent_3l1tau
 #include "tthAnalysis/tthMEM/interface/MEM_tth_3l1tau.h" // tthMEM::MEM_tth_3l1tau
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // tthMEM::findFile(), tthMEM::sqrtS
 
@@ -69,7 +69,7 @@ main(int argc,
   TFile * newFile = new TFile(outputFileName.c_str(), "recreate");
   TTree * newTree = new TTree("tree", Form("Tree created by %s", argv[0]));
 
-  tthMEM_3l_1tau::MeasuredEvent measuredEvent;
+  tthMEM::MeasuredEvent_3l1tau measuredEvent;
   measuredEvent.setBranches(inputTree);
   measuredEvent.initNewBranches(newTree);
 
@@ -83,7 +83,7 @@ main(int argc,
   (void) probSignalBranch;     // prevents compilation error
   (void) probBackgroundBranch; // prevents compilation error
 
-  LOGINFO << "Initializing the matrix element instance";
+  LOGINFO << "Initializing the signal MEM instance";
   tthMEM::MEM_tth_3l1tau mem_signal(tthMEM::sqrtS, pdfName, tthMEM::findFile(madgraphFileName));
   mem_signal.setIntegrationMode(integrationMode);
   mem_signal.setMaxObjFunctionCalls(maxObjFunctionCalls);

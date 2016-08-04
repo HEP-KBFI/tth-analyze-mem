@@ -1,9 +1,18 @@
-#include "tthAnalysis/tthMEM/interface/MeasuredEvent.h"
+#include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h"
 
-using namespace tthMEM_3l_1tau;
+using namespace tthMEM;
+
+MeasuredEvent_3l1tau::MeasuredEvent_3l1tau()
+  : covMET(TMatrixD(2, 2))
+{
+  covMET[0][0] = 100.0; // in GeV
+  covMET[1][0] =   0.0;
+  covMET[0][1] =   0.0;
+  covMET[1][1] = 100.0;
+}
 
 void
-MeasuredEvent::initialize()
+MeasuredEvent_3l1tau::initialize()
 {
   met.initialize();
 
@@ -18,7 +27,7 @@ MeasuredEvent::initialize()
 }
 
 void
-MeasuredEvent::setBranches(TChain * t)
+MeasuredEvent_3l1tau::setBranches(TChain * t)
 {
   t -> SetBranchAddress("run",  &run);
   t -> SetBranchAddress("lumi", &lumi);
@@ -39,7 +48,7 @@ MeasuredEvent::setBranches(TChain * t)
 }
 
 void
-MeasuredEvent::initNewBranches(TTree * t)
+MeasuredEvent_3l1tau::initNewBranches(TTree * t)
 {
   branch_run  = t -> Branch("run",  &run,  "run/i");
   branch_lumi = t -> Branch("lumi", &lumi, "lumi/i");

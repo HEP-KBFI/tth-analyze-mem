@@ -3,7 +3,7 @@
 
 #include <string> // std::string
 
-#include "tthAnalysis/tthMEM/interface/MeasuredEvent.h"
+#include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/integrand_tth_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorBase.h"
 
@@ -45,15 +45,15 @@ namespace tthMEM
     getComputingTime_real() const;
 
     double
-    integrate(const tthMEM_3l_1tau::MeasuredEvent & ev);
+    integrate(const MeasuredEvent_3l1tau & ev);
 
   private:
     integrand_tth_3l1tau * integrand_;
     double sqrtS_;
-    tthMEM_3l_1tau::MeasuredEvent ev_;
+    MeasuredEvent_3l1tau ev_;
 
     IntegrationMode integrationMode_;
-    tthMEM::MEMIntegratorBase * intAlgo_;
+    MEMIntegratorBase * intAlgo_;
     unsigned maxObjFunctionCalls_;
     unsigned numDimensions_;
     double precision_;

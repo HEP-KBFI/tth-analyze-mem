@@ -4,7 +4,7 @@
 #include <string> // std::string
 
 #include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_mg5.h" // me_tth_3l1tau_lo_mg5
-#include "tthAnalysis/tthMEM/interface/MeasuredEvent.h" // tthMEM_3l_1tau::MeasuredEvent
+#include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // tthMEM_3l_1tau::MeasuredEvent
 
 #include "LHAPDF/LHAPDF.h" // LHAPDF::PDF
 
@@ -36,7 +36,7 @@ namespace tthMEM
      * @param measuredEvent The event
      */
     void
-    setInputs(const tthMEM_3l_1tau::MeasuredEvent & measuredEvent);
+    setInputs(const tthMEM::MeasuredEvent_3l1tau & measuredEvent);
 
     /**
      * @brief Evaluates the integrand

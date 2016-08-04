@@ -5,6 +5,7 @@
 #include <TTree.h> // TTree
 #include <TChain.h> // TChain
 #include <TBranch.h> // TBranch
+#include <TMatrixD.h> // TMatrixD
 
 #include "tthAnalysis/tthMEM/interface/MeasuredMET.h" // tthMEM::MeasuredMET
 #include "tthAnalysis/tthMEM/interface/MeasuredLepton.h" // tthMEM::MeasuredLepton
@@ -12,12 +13,14 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredHadronicTau.h" // tthMEM::MeasuredHadronicTau
 #include "tthAnalysis/tthMEM/interface/MVAVariables.h" // tthMEM::MVAVariables
 
-namespace tthMEM_3l_1tau
+namespace tthMEM
 {
   class
-  MeasuredEvent
+  MeasuredEvent_3l1tau
   {
   public:
+    MeasuredEvent_3l1tau();
+
     UInt_t run;
     UInt_t lumi;
     ULong64_t evt;
@@ -26,12 +29,14 @@ namespace tthMEM_3l_1tau
     TBranch * branch_lumi = 0;
     TBranch * branch_evt = 0;
 
-    tthMEM::MeasuredMET met;
-    tthMEM::MeasuredLepton lepton1, lepton2, lepton3;
-    tthMEM::MeasuredJet jet1, jet2;
-    tthMEM::MeasuredHadronicTau htau1;
+    TMatrixD covMET; ///< soon we'll have a separate branch for it
+                     ///< in our Ntuples
+    MeasuredMET met;
+    MeasuredLepton lepton1, lepton2, lepton3;
+    MeasuredJet jet1, jet2;
+    MeasuredHadronicTau htau1;
 
-    tthMEM::MVAVariables mvaVariables;
+    MVAVariables mvaVariables;
 
     void
     initialize();

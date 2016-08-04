@@ -50,7 +50,7 @@ integrand_tth_3l1tau::~integrand_tth_3l1tau()
 }
 
 void
-setInputs(const tthMEM_3l_1tau::MeasuredEvent & measuredEvent)
+setInputs(const tthMEM::MeasuredEvent_3l1tau & measuredEvent)
 {
   //
 }
