@@ -5,19 +5,19 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#ifndef Parameters_sm_H
-#define Parameters_sm_H
+#ifndef Parameters_sm_tth_3l1tau_H
+#define Parameters_sm_tth_3l1tau_H
 
 #include <complex> 
 
 #include "read_slha.h"
 using namespace std; 
 
-class Parameters_sm
+class Parameters_sm_tth_3l1tau
 {
   public:
 
-    static Parameters_sm * getInstance(); 
+    static Parameters_sm_tth_3l1tau * getInstance();
 
     // Define "zero"
     double zero, ZERO; 
@@ -59,8 +59,8 @@ class Parameters_sm
 
 
   private:
-    static Parameters_sm * instance; 
+    static Parameters_sm_tth_3l1tau * instance;
 }; 
 
-#endif  // Parameters_sm_H
+#endif  // Parameters_sm_tth_3l1tau_H
 

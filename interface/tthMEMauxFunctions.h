@@ -12,6 +12,7 @@ namespace tthMEM
   typedef math::XYZTLorentzVector LorentzVector;
   typedef math::XYZVectorD Vector;
 
+  const double sqrtS = 13.e+3; // 13 TeV or 13,000 GeV
   const double chargedPionMass = 0.13957; // GeV
 
   /**

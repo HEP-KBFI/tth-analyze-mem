@@ -5,41 +5,42 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#ifndef me_tth_3l1tau_mg5_h
-#define me_tth_3l1tau_mg5_h
+#ifndef me_ttz_3l1tau_mg5_h
+#define me_ttz_3l1tau_mg5_h
 
 #include <complex> 
 #include <vector> 
 
-#include "Parameters_sm_tth_3l1tau.h"
+#include "Parameters_sm_ttz_3l1tau.h"
 
-using namespace std;
+using namespace std; 
 
 //==========================================================================
 // A class for calculating the matrix elements for
-// Process: g g > t t~ h WEIGHTED<=4 @1
+// Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > b e+ ve WEIGHTED<=4
 // *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
-// *   Decay: h > ta+ ta- WEIGHTED<=2
-// Process: g g > t t~ h WEIGHTED<=4 @1
+// *   Decay: z > ta+ ta- WEIGHTED<=2
+// Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > b mu+ vm WEIGHTED<=4
 // *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
-// *   Decay: h > ta+ ta- WEIGHTED<=2
-// Process: g g > t t~ h WEIGHTED<=4 @1
+// *   Decay: z > ta+ ta- WEIGHTED<=2
+// Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > b e+ ve WEIGHTED<=4
 // *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
-// *   Decay: h > ta+ ta- WEIGHTED<=2
-// Process: g g > t t~ h WEIGHTED<=4 @1
+// *   Decay: z > ta+ ta- WEIGHTED<=2
+// Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > b mu+ vm WEIGHTED<=4
 // *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
-// *   Decay: h > ta+ ta- WEIGHTED<=2
+// *   Decay: z > ta+ ta- WEIGHTED<=2
 //--------------------------------------------------------------------------
 
-class me_tth_3l1tau_mg5 {
+class me_ttz_3l1tau_mg5
+{
   public:
 
     // Constructor.
-    me_tth_3l1tau_mg5();
+    me_ttz_3l1tau_mg5() {}
 
     // Initialize process.
     virtual void initProc(string param_card_name); 
@@ -79,7 +80,7 @@ class me_tth_3l1tau_mg5 {
     std::complex<double> w[nwavefuncs][18]; 
     static const int namplitudes = 8; 
     std::complex<double> amp[namplitudes]; 
-    double matrix_1_gg_ttxh_t_bepve_tx_bxemvex_h_taptam(); 
+    double matrix_1_gg_ttxz_t_bepve_tx_bxemvex_z_taptam(); 
 
     // Store the matrix element value from sigmaKin
     double matrix_element[nprocesses]; 
@@ -88,7 +89,7 @@ class me_tth_3l1tau_mg5 {
     double * jamp2[nprocesses]; 
 
     // Pointer to the model parameters
-    Parameters_sm_tth_3l1tau * pars;
+    Parameters_sm_ttz_3l1tau * pars;
 
     // vector with external particle masses
     vector<double> mME; 
@@ -101,4 +102,4 @@ class me_tth_3l1tau_mg5 {
 }; 
 
 
-#endif  // me_tth_3l1tau_mg5_h
+#endif  // me_ttz_3l1tau_mg5_h

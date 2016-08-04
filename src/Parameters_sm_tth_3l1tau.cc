@@ -7,21 +7,21 @@
 
 #include <iostream> 
 #include <iomanip> 
-#include "tthAnalysis/tthMEM/interface/Parameters_sm.h"
+#include "tthAnalysis/tthMEM/interface/Parameters_sm_tth_3l1tau.h"
 
 // Initialize static instance
-Parameters_sm * Parameters_sm::instance = 0; 
+Parameters_sm_tth_3l1tau * Parameters_sm_tth_3l1tau::instance = 0;
 
 // Function to get static instance - only one instance per program
-Parameters_sm * Parameters_sm::getInstance()
+Parameters_sm_tth_3l1tau * Parameters_sm_tth_3l1tau::getInstance()
 {
   if (instance == 0)
-    instance = new Parameters_sm(); 
+    instance = new Parameters_sm_tth_3l1tau();
 
   return instance; 
 }
 
-void Parameters_sm::setIndependentParameters(SLHAReader& slha)
+void Parameters_sm_tth_3l1tau::setIndependentParameters(SLHAReader& slha)
 {
   // Define "zero"
   zero = 0; 
@@ -78,26 +78,26 @@ void Parameters_sm::setIndependentParameters(SLHAReader& slha)
   mdl_sw__exp__2 = pow(mdl_sw, 2.); 
   mdl_cw__exp__2 = pow(mdl_cw, 2.); 
 }
-void Parameters_sm::setIndependentCouplings()
+void Parameters_sm_tth_3l1tau::setIndependentCouplings()
 {
   GC_94 = -((mdl_complexi * mdl_yt)/mdl_sqrt__2); 
   GC_99 = -((mdl_complexi * mdl_ytau)/mdl_sqrt__2); 
   GC_100 = (mdl_ee * mdl_complexi * mdl_conjg__CKM1x1)/(mdl_sw * mdl_sqrt__2); 
 }
-void Parameters_sm::setDependentParameters()
+void Parameters_sm_tth_3l1tau::setDependentParameters()
 {
   mdl_sqrt__aS = sqrt(aS); 
   G = 2. * mdl_sqrt__aS * sqrt(M_PI); 
   mdl_G__exp__2 = pow(G, 2.); 
 }
-void Parameters_sm::setDependentCouplings()
+void Parameters_sm_tth_3l1tau::setDependentCouplings()
 {
   GC_11 = mdl_complexi * G; 
   GC_10 = -G; 
 }
 
 // Routines for printing out parameters
-void Parameters_sm::printIndependentParameters()
+void Parameters_sm_tth_3l1tau::printIndependentParameters()
 {
   cout <<  "sm model parameters independent of event kinematics:" << endl; 
   cout << setw(20) <<  "mdl_WH " <<  "= " << setiosflags(ios::scientific) <<
@@ -197,7 +197,7 @@ void Parameters_sm::printIndependentParameters()
   cout << setw(20) <<  "mdl_cw__exp__2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_cw__exp__2 << endl;
 }
-void Parameters_sm::printIndependentCouplings()
+void Parameters_sm_tth_3l1tau::printIndependentCouplings()
 {
   cout <<  "sm model couplings independent of event kinematics:" << endl; 
   cout << setw(20) <<  "GC_94 " <<  "= " << setiosflags(ios::scientific) <<
@@ -207,7 +207,7 @@ void Parameters_sm::printIndependentCouplings()
   cout << setw(20) <<  "GC_100 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << GC_100 << endl;
 }
-void Parameters_sm::printDependentParameters()
+void Parameters_sm_tth_3l1tau::printDependentParameters()
 {
   cout <<  "sm model parameters dependent on event kinematics:" << endl; 
   cout << setw(20) <<  "mdl_sqrt__aS " <<  "= " << setiosflags(ios::scientific)
@@ -217,7 +217,7 @@ void Parameters_sm::printDependentParameters()
   cout << setw(20) <<  "mdl_G__exp__2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_G__exp__2 << endl;
 }
-void Parameters_sm::printDependentCouplings()
+void Parameters_sm_tth_3l1tau::printDependentCouplings()
 {
   cout <<  "sm model couplings dependent on event kinematics:" << endl; 
   cout << setw(20) <<  "GC_11 " <<  "= " << setiosflags(ios::scientific) <<
