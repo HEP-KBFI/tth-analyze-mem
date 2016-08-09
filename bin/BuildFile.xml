@@ -1,4 +1,4 @@
-<bin file="runMEM.cc" name="runMEM">
+<bin file="runMEM_3l1tau.cc" name="runMEM_3l1tau">
   <use name="FWCore/ParameterSet" />
   <use name="FWCore/PythonParameterSet" />
   <use name="FWCore/Utilities" />
