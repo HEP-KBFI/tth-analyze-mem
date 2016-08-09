@@ -25,5 +25,6 @@ process.tthMEM = cms.PSet(
   pdfName = cms.string("MSTW2008lo68cl"),
   madgraphFileName = cms.string("tthAnalysis/tthMEM/data/param_card.dat"),
   integrationMode = cms.string("VEGAS"),
-  maxObjFunctionCalls = cms.uint32(20000)
+  maxObjFunctionCalls = cms.uint32(20000),
+  startingFromEntry = cms.int32(0)
 )

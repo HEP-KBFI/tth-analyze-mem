@@ -1,4 +1,3 @@
-#include <iostream> // std::cerr
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
 #include <string> // std::string
 #include <vector> // std::vector<>
@@ -15,20 +14,23 @@
 #include <TFile.h> // TFile
 #include <TChain.h> // TChain
 #include <TTree.h> // TTree
-#include <TString.h> // Form
+#include <TString.h> // Form()
 
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // tthMEM::MeasuredEvent_3l1tau
 #include "tthAnalysis/tthMEM/interface/MEM_tth_3l1tau.h" // tthMEM::MEM_tth_3l1tau
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // tthMEM::findFile(), tthMEM::sqrtS
 
+using namespace tthMEM;
+
 int
 main(int argc,
      char * argv[])
 {
+//--- parse the configuration file
   if(argc != 2)
   {
-    std::cerr << "Usage: " << argv[0] << " [parameters.py]\n";
+    LOGERR << "Usage: " << argv[0] << " [parameters.py]";
     return EXIT_FAILURE;
   }
 
@@ -43,9 +45,9 @@ main(int argc,
   const bool enableLogging = cfg_log.getParameter<bool>("enableLogging");
   const bool enableTimeStamp = cfg_log.getParameter<bool>("enableTimeStamp");
 
-  tthMEM::Logger::setLogLevel(logLevel);
-  tthMEM::Logger::enableLogging(enableLogging);
-  tthMEM::Logger::enableTimeStamp(enableTimeStamp);
+  Logger::setLogLevel(logLevel);
+  Logger::enableLogging(enableLogging);
+  Logger::enableTimeStamp(enableTimeStamp);
 
   const edm::ParameterSet cfg_tthMEM = cfg.getParameter<edm::ParameterSet>("tthMEM");
   const std::string treeName = cfg_tthMEM.getParameter<std::string>("treeName");
@@ -53,6 +55,7 @@ main(int argc,
   const std::string madgraphFileName = cfg_tthMEM.getParameter<std::string>("madgraphFileName");
   const std::string integrationMode = cfg_tthMEM.getParameter<std::string>("integrationMode");
   const unsigned maxObjFunctionCalls = cfg_tthMEM.getParameter<unsigned>("maxObjFunctionCalls");
+  const Long64_t startingFromEntry = cfg_tthMEM.getParameter<Long64_t>("startingFromEntry");
 
   const fwlite::InputSource inputFiles(cfg);
   const int maxEvents = inputFiles.maxEvents();
@@ -61,6 +64,7 @@ main(int argc,
   const fwlite::OutputFiles outputFile(cfg);
   const std::string outputFileName = outputFile.file();
 
+//--- create I/O TTrees
   TChain * inputTree = new TChain(treeName.c_str());
   for(const std::string & inputFile: inputFiles.files())
     inputTree -> AddFile(inputFile.c_str());
@@ -69,10 +73,11 @@ main(int argc,
   TFile * newFile = new TFile(outputFileName.c_str(), "recreate");
   TTree * newTree = new TTree("tree", Form("Tree created by %s", argv[0]));
 
-  tthMEM::MeasuredEvent_3l1tau measuredEvent;
+  MeasuredEvent_3l1tau measuredEvent;
   measuredEvent.setBranches(inputTree);
   measuredEvent.initNewBranches(newTree);
 
+//--- set up the probability variables
   double probSignal;
   double probBackground;
 
@@ -83,16 +88,27 @@ main(int argc,
   (void) probSignalBranch;     // prevents compilation error
   (void) probBackgroundBranch; // prevents compilation error
 
+//--- initialize the MEM instance and start looping over the events
   LOGINFO << "Initializing the signal MEM instance";
-  tthMEM::MEM_tth_3l1tau mem_signal(tthMEM::sqrtS, pdfName, tthMEM::findFile(madgraphFileName));
+  MEM_tth_3l1tau mem_signal(sqrtS, pdfName, findFile(madgraphFileName));
   mem_signal.setIntegrationMode(integrationMode);
   mem_signal.setMaxObjFunctionCalls(maxObjFunctionCalls);
 
   const Long64_t nof_tree_entries = inputTree -> GetEntries();
-  const Long64_t nof_entries = maxEvents < 0 ? nof_tree_entries : maxEvents;
-  LOGINFO << "Processing " << nof_entries << " entries (out of " << nof_tree_entries << ")";
+  const Long64_t nof_max_entries = maxEvents < 0 ? nof_tree_entries : maxEvents;
+  if((nof_max_entries + startingFromEntry) >= nof_tree_entries)
+  {
+    LOGERR << "The requested number of entries to be processed (= "
+           << nof_max_entries << ") starting from entry = "
+           << startingFromEntry << " is greater than the total number entries (= "
+           << nof_tree_entries << " in the input file(s)";
+    return EXIT_FAILURE;
+  }
+  LOGINFO << "Processing " << nof_max_entries << " entries "
+          << "(out of " << nof_tree_entries << "), starting from "
+          << startingFromEntry;
 
-  for(Long64_t i = 0; i < nof_entries; ++i)
+  for(Long64_t i = startingFromEntry; i < nof_max_entries; ++i)
   {
     if(i > 0 && ((i + 1) % reportEvery) == 0)
       LOGINFO << "Processing " << i << "th event";
@@ -100,10 +116,10 @@ main(int argc,
     inputTree -> GetEntry(i);
     measuredEvent.initialize();
 
-    //probSignal = mem_signal.integrate(measuredEvent);
-
     probSignal = -1;
     probBackground = -1;
+
+    //probSignal = mem_signal.integrate(measuredEvent);
 
     newTree -> Fill();
   }
