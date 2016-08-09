@@ -95,22 +95,23 @@ main(int argc,
   mem_signal.setMaxObjFunctionCalls(maxObjFunctionCalls);
 
   const Long64_t nof_tree_entries = inputTree -> GetEntries();
-  const Long64_t nof_max_entries = maxEvents < 0 ? nof_tree_entries : maxEvents;
-  if((nof_max_entries + startingFromEntry) >= nof_tree_entries)
+  const Long64_t nof_max_entries = maxEvents < 0 ? nof_tree_entries : (startingFromEntry + maxEvents);
+  if(nof_max_entries > nof_tree_entries)
   {
     LOGERR << "The requested number of entries to be processed (= "
-           << nof_max_entries << ") starting from entry = "
+           << maxEvents << ") starting from entry = "
            << startingFromEntry << " is greater than the total number entries (= "
-           << nof_tree_entries << " in the input file(s)";
+           << nof_tree_entries << " in the input file(s). Aborting";
     return EXIT_FAILURE;
   }
-  LOGINFO << "Processing " << nof_max_entries << " entries "
+  LOGINFO << "Processing " << (nof_max_entries - startingFromEntry) << " entries "
           << "(out of " << nof_tree_entries << "), starting from "
-          << startingFromEntry;
+          << startingFromEntry << " (event range: [" << startingFromEntry << "; "
+          << nof_max_entries << ") )";
 
   for(Long64_t i = startingFromEntry; i < nof_max_entries; ++i)
   {
-    if(i > 0 && ((i + 1) % reportEvery) == 0)
+    if(i > 0 && (i % reportEvery) == 0)
       LOGINFO << "Processing " << i << "th event";
 
     inputTree -> GetEntry(i);
