@@ -136,14 +136,16 @@ run:
 \t:
 {% endfor %}
 {{ outFileNameLocalResult }}: {{ outFileNameLocals|join(' ') }}
-\thadd {{ outFileNameLocalResult }} {{ outFileNameLocals|join(' ') }} {% endfor %}
+\thadd -f {{ outFileNameLocalResult }} {{ outFileNameLocals|join(' ') }} {% endfor %}
 
 all: {{ outFileNameLocalArray.keys()|join(' ') }}
 
 .PHONY: clean
 
-clean:{% for outFileNameLocal in outFileNameLocalArray %}
-\trm -f {{ outFileNameLocal }} {% endfor %}
+clean:{% for outFileNameLocalResult, outFileNameLocals in outFileNameLocalArray.iteritems() %}
+\trm -f {{ outFileNameLocalResult }} {% for outFileNameLocal in outFileNameLocals %}
+\trm -f {{ outFileNameLocal }} {% endfor %} {% endfor %}
+\trm -rf {{ scratchDir }}
 
 """
 
@@ -186,7 +188,8 @@ def createSbatch(bashScript, logFile):
   return jinja2.Template(sbatchTemplate).render(
     zippedScriptLog = zip(bashScript, logFile))
 
-def createMakefile(waitingScript, outFileNameLocalArray):
+def createMakefile(waitingScript, outFileNameLocalArray, scratchDir):
   return jinja2.Template(makefileTemplate).render(
     waitingScript = waitingScript,
-    outFileNameLocalArray = outFileNameLocalArray)
+    outFileNameLocalArray = outFileNameLocalArray,
+    scratchDir = scratchDir)

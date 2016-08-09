@@ -68,6 +68,8 @@ and build it with `scram b -j8` as usual.
 
 ## Running an example
 
-At the time of writing, the project includes one executable, `runMEM`, which takes a Python configuration file, `runMEM_cfg.py`, as its argument. The program needs a `.root` containing selected events; an example is provided in `data/` subfolder. The output file is the original file + signal and background probabilities found with the MEM.
+At the time of writing, the project includes one executable, `runMEM`, which takes a Python configuration file as its argument. The program needs `.root` file(s) containing selected events; an example configuration file is provided in `data/runMEM_3l1tau_cfg.py` and example data file in `data` subdirectory. The output file is the original file + signal and background probabilities found with the MEM.
+
+In order to run the MEM via SLURM, one has to call `python createJobs_3l1tau.py` in any directory and follow instructions on screen. Note that this assumes you have run the tth analysis: https://github.com/HEP-KBFI/tth-htt/ (with `select_root_output` set to `True`).
 
 The project also includes some unit tests, which can be run with `scram b -j8 runtests` after building the project.

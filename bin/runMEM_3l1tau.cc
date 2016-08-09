@@ -120,7 +120,7 @@ main(int argc,
     probSignal = -1;
     probBackground = -1;
 
-    //probSignal = mem_signal.integrate(measuredEvent);
+    probSignal = mem_signal.integrate(measuredEvent);
 
     newTree -> Fill();
   }

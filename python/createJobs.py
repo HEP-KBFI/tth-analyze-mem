@@ -42,7 +42,7 @@ def createJobs(samples, channel, version, lepton_selections, central_or_shifts, 
         outFileNameScratch = filePattern % (scratchDir, os.path.join("mem", "output"), "mem") + "_%d.root"
         jobCfgFile = filePattern % (baseDir, os.path.join("mem", "cfg"), "cfg") + "_%d.py"
         jobBashFile = filePattern % (baseDir, os.path.join("mem", "cfg"), "cfg") + "_%d.sh"
-        logFile = filePattern % (baseDir, os.path.join("mem", "log"), "log") + "_%d-%%A.txt"
+        logFile = filePattern % (baseDir, os.path.join("mem", "log"), "log") + "_%d.txt"
 
         outFileNameLocalResult = filePattern % (baseDir, os.path.join("mem", "output"), "mem") + ".root"
         outFileNameLocalArray[outFileNameLocalResult] = []
@@ -95,7 +95,7 @@ def createJobs(samples, channel, version, lepton_selections, central_or_shifts, 
   os.chmod(sbatchFile, st.st_mode | stat.S_IEXEC)
 
   makeFile = os.path.join(baseDir, "_".join(["Makefile", channel, "mem"]))
-  makeFileContents = createMakefile(sbatchFile, outFileNameLocalArray)
+  makeFileContents = createMakefile(sbatchFile, outFileNameLocalArray, scratchDir)
   with codecs.open(makeFile, 'w', 'utf-8') as f: f.write(str(makeFileContents))
 
   logging.info("Run:\tmake -f %s -j 4" % makeFile)
