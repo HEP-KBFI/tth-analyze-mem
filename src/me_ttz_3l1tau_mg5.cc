@@ -29,6 +29,15 @@ using namespace MG5_sm_ttz_3l1tau;
 // *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
 // *   Decay: z > ta+ ta- WEIGHTED<=2
 
+me_ttz_3l1tau_mg5::~me_ttz_3l1tau_mg5()
+{
+  if(jamp2[0])
+  {
+    delete jamp2[0];
+    jamp2[0] = 0;
+  }
+}
+
 //--------------------------------------------------------------------------
 // Initialize process.
 

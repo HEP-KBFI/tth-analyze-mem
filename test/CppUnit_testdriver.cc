@@ -3,7 +3,7 @@
 
 #include "cppunit/extensions/TestFactoryRegistry.h" // CppUnit::TestFactoryRegistry
 #include "cppunit/ui/text/TestRunner.h" // CppUnit::TextUi::TestRunner
-#include "cppunit/CompilerOutputter.h" // CppUnit::CompilerOutputter
+#include "cppunit/CompilerOutputter.h" // CppUnit::CompilerOutputter, CppUnit::Test
 
 /**
  * @brief The main cppunit test suite

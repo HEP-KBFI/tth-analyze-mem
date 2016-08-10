@@ -89,12 +89,26 @@ MEMIntegratorVEGAS::integrate(MEMIntegratorBase::gPtr_C integrand,
   while((chi2 > maxChi2_ || integralErr > (integral * precision_)) &&
         iteration < maxIntEvalIter_);
 
-  if(xl_) delete [] xl_;
-  if(xu_) delete [] xu_;
+  if(xl_)
+  {
+    delete [] xl_;
+    xl_ = 0;
+  }
+  if(xu_)
+  {
+    delete [] xu_;
+    xu_ = 0;
+  }
   if(vegasIntegrand_ -> params)
     delete [] static_cast<double *>(vegasIntegrand_ -> params);
-  if(vegasIntegrand_) delete vegasIntegrand_;
+  if(vegasIntegrand_)
+  {
+    delete vegasIntegrand_;
+    vegasIntegrand_ = 0;
+  }
   gsl_monte_vegas_free(vegasWorkspace_);
   gsl_rng_free(vegasRnd_);
+  vegasWorkspace_ = 0;
+  vegasRnd_ = 0;
 }
 

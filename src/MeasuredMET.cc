@@ -81,11 +81,13 @@ MeasuredMET::initNewBranches(TTree * t)
 void
 MeasuredMET::calculateEigenVectorsValues()
 {
+//--- the covariance matrix is symmetric and positive semi-definite by construction
   TMatrixDSym covMET_sym(2);
   covMET_sym.SetMatrixArray(covMET_.GetMatrixArray());
   const TMatrixDSymEigen covMET_eigen(covMET_sym);
   covMET_eigenVectors_.SetMatrixArray(covMET_eigen.GetEigenValues().GetMatrixArray());
   covMET_eigenValues_.SetElements(covMET_eigen.GetEigenValues().GetMatrixArray());
+//--- eigenvalues of a symmetric positive (semi-)definite matrix are always real and positive
   covMET_eigenValues_(0) = std::sqrt(covMET_eigenValues_(0));
   covMET_eigenValues_(1) = std::sqrt(covMET_eigenValues_(1));
 }

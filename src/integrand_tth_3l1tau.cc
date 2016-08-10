@@ -17,6 +17,16 @@ integrand_tth_3l1tau::integrand_tth_3l1tau(double sqrtS,
   , s_(std::pow(sqrtS_, 2))
   , pdf_(0)
   , me_madgraph_initialized_(false)
+  , measuredEvent_(0)
+  , idxCosTheta1_(-1)
+  , idxVarphi1_(-1)
+  , idxCosTheta2_(-1)
+  , idxVarphi2_(-1)
+  , idxZ1_(-1)
+  , idxTh_(-1)
+  , idxPhi1_(-1)
+  , idxPhiInv_(-1)
+  , idxMinvSquared_(-1)
 {
   LOGDBG;
 
@@ -50,9 +60,63 @@ integrand_tth_3l1tau::~integrand_tth_3l1tau()
 }
 
 void
-setInputs(const tthMEM::MeasuredEvent_3l1tau & measuredEvent)
+integrand_tth_3l1tau::setInputs(const MeasuredEvent_3l1tau & measuredEvent)
 {
-  //
+  measuredEvent_ = &measuredEvent;
+}
+
+void
+integrand_tth_3l1tau::setIdxCosTheta1(int idx)
+{
+  idxCosTheta1_ = idx;
+}
+
+void
+integrand_tth_3l1tau::setIdxVarphi1(int idx)
+{
+  idxVarphi1_ = idx;
+}
+
+void
+integrand_tth_3l1tau::setIdxCosTheta2(int idx)
+{
+  idxCosTheta2_ = idx;
+}
+
+void
+integrand_tth_3l1tau::setIdxVarphi2(int idx)
+{
+  idxVarphi2_ = idx;
+}
+
+void
+integrand_tth_3l1tau::setIdxZ1(int idx)
+{
+  idxZ1_ = idx;
+}
+
+void
+integrand_tth_3l1tau::setIdxTh(int idx)
+{
+  idxTh_ = idx;
+}
+
+void
+integrand_tth_3l1tau::setIdxPhi1(int idx)
+{
+  idxPhi1_ = idx;
+}
+
+void
+integrand_tth_3l1tau::setIdxPhiInv(int idx)
+{
+  idxPhiInv_ = idx;
+}
+
+void
+integrand_tth_3l1tau::setIdxMinvSquared(int idx)
+{
+  idxMinvSquared_ = idx;
 }
 
 double
@@ -67,6 +131,12 @@ integrand_tth_3l1tau::eval(const double * x) const
   if(! me_madgraph_initialized_)
   {
     LOGERR << "Madgraph's ME not initialized!";
+    std::exit(EXIT_FAILURE);
+  }
+
+  if(! measuredEvent_)
+  {
+    LOGERR << "Measured event not specified!";
     std::exit(EXIT_FAILURE);
   }
 

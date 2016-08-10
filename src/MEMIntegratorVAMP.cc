@@ -65,6 +65,14 @@ MEMIntegratorVAMP::integrate(MEMIntegratorBase::gPtr_Fortran integrand,
   vamp_integrate_(integrand_, xl, xu, &numDimensions, &numCallsGridOpt,
                   &numCallsIntEval, &integral, &integralErr);
 
-  if(xl_) delete [] xl_;
-  if(xu_) delete [] xu_;
+  if(xl_)
+  {
+    delete [] xl_;
+    xl_ = 0;
+  }
+  if(xu_)
+  {
+    delete [] xu_;
+    xu_ = 0;
+  }
 }

@@ -36,7 +36,18 @@ namespace tthMEM
      * @param measuredEvent The event
      */
     void
-    setInputs(const tthMEM::MeasuredEvent_3l1tau & measuredEvent);
+    setInputs(const MeasuredEvent_3l1tau & measuredEvent);
+
+    /* simple setters */
+    void setIdxCosTheta1   (int idx);
+    void setIdxVarphi1     (int idx);
+    void setIdxCosTheta2   (int idx);
+    void setIdxVarphi2     (int idx);
+    void setIdxZ1          (int idx);
+    void setIdxTh          (int idx);
+    void setIdxPhi1        (int idx);
+    void setIdxPhiInv      (int idx);
+    void setIdxMinvSquared (int idx);
 
     /**
      * @brief Evaluates the integrand
@@ -58,6 +69,18 @@ namespace tthMEM
     mutable me_tth_3l1tau_mg5 me_madgraph_;
     ///< @note mutable members can be modified by a const function (e.g. eval())
     bool me_madgraph_initialized_;
+
+    const MeasuredEvent_3l1tau * measuredEvent_;
+
+    int idxCosTheta1_;
+    int idxVarphi1_;
+    int idxCosTheta2_;
+    int idxVarphi2_;
+    int idxZ1_;
+    int idxTh_;
+    int idxPhi1_;
+    int idxPhiInv_;
+    int idxMinvSquared_;
   };
 }
 

@@ -40,7 +40,10 @@ class me_ttz_3l1tau_mg5
   public:
 
     // Constructor.
-    me_ttz_3l1tau_mg5() {}
+    me_ttz_3l1tau_mg5() = default;
+
+    // Destructor.
+    ~me_ttz_3l1tau_mg5();
 
     // Initialize process.
     virtual void initProc(string param_card_name); 

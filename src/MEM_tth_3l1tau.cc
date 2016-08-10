@@ -1,5 +1,9 @@
 #include "tthAnalysis/tthMEM/interface/MEM_tth_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGDBG
+#include "tthAnalysis/tthMEM/interface/MEMIntegratorVEGAS.h"
+#include "tthAnalysis/tthMEM/interface/MEMIntegratorVAMP.h"
+#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // ...
+  // ... roundToNearestUInt(), pi(), tauLeptonMassSquared
 
 #include <cmath> // std::round()
 
@@ -7,9 +11,27 @@
 
 using namespace tthMEM;
 
+double
+g_C(double * x,
+    std::size_t dimension,
+    void * additionalParameters)
+{
+  const double returnValue = integrand_tth_3l1tau::gIntegrand -> eval(x);
+  return returnValue;
+}
+
+double
+g_Fortran(double ** x,
+          std::size_t dimension,
+          void ** additionalParameters)
+{
+  const double returnValue = integrand_tth_3l1tau::gIntegrand -> eval(*x);
+  return returnValue;
+}
+
 MEM_tth_3l1tau::MEM_tth_3l1tau(double sqrtS,
-                               const string & pdfName,
-                               const string & madgraphFileName)
+                               const std::string & pdfName,
+                               const std::string & madgraphFileName)
   : integrand_(new integrand_tth_3l1tau(sqrtS, pdfName, madgraphFileName))
   , sqrtS_(sqrtS)
   , integrationMode_(IntegrationMode::kUndefined)
@@ -26,8 +48,16 @@ MEM_tth_3l1tau::MEM_tth_3l1tau(double sqrtS,
 
 MEM_tth_3l1tau::~MEM_tth_3l1tau()
 {
-  if(integrand_) delete integrand_;
-  if(clock_)     delete clock_;
+  if(integrand_)
+  {
+    delete integrand_;
+    integrand_ = 0;
+  }
+  if(clock_)
+  {
+    delete clock_;
+    clock_ = 0;
+  }
 }
 
 void
@@ -37,7 +67,7 @@ MEM_tth_3l1tau::setIntegrationMode(IntegrationMode integrationMode)
 }
 
 void
-MEM_tth_3l1tau::setIntegrationMode(const string & integrationModeString)
+MEM_tth_3l1tau::setIntegrationMode(const std::string & integrationModeString)
 {
   if(boost::iequals(integrationModeString, "vegas"))
     integrationMode_ = IntegrationMode::kVEGAS;
@@ -68,25 +98,85 @@ MEM_tth_3l1tau::getComputingTime_real() const
 double
 MEM_tth_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
 {
-  LOGDBG;
-  clock_ -> Reset();
-  clock_ -> Start(__PRETTY_FUNCTION__);
-
   if(integrationMode_ == IntegrationMode::kUndefined)
   {
     LOGERR << "Integration mode not set";
     assert(0);
   }
+
+  LOGDBG;
+  clock_ -> Reset();
+  clock_ -> Start(__PRETTY_FUNCTION__);
   LOGDBG << ev;
 
 //---  it is (rightly) assumed that leptons and jets
 //---  have already been sorted by their pt in decreasing order
 
-  /* compute me */
+//--- there are nine variables we have to sample over:
+  numDimensions_ = 9;
+  const int idxCosTheta1 = 0;   // cosine of polar angle of the 1st neutrino
+  const int idxVarphi1 = 1;     // azimuthal angle of the 1st neutrino
+  const int idxCosTheta2 = 2;   // cosine of polar angle of the 2nd neutrino
+  const int idxVarphi2 = 3;     // azimuthal angle of the 2nd neutrino
+  const int idxZ1 = 4;          // energy fraction of hadronic tau system
+  const int idxTh = 5;          // aux variable derived from z2
+  const int idxPhi1 = 6;        // rotation angle of hadronic tau neutrino
+  const int idxPhiInv = 7;      // (invisible) rotation angle of leptonic tau nu
+  const int idxMinvSquared = 8; // (invisible) mass of leptonic neutrino pair
 
-  if(xl_) delete [] xl_;
-  if(xu_) delete [] xu_;
-  if(intAlgo_) delete intAlgo_;
+  integrand_ -> setInputs(ev);
+  integrand_ -> setIdxCosTheta1  (idxCosTheta1);
+  integrand_ -> setIdxVarphi1    (idxVarphi1);
+  integrand_ -> setIdxCosTheta2  (idxCosTheta2);
+  integrand_ -> setIdxVarphi2    (idxVarphi2);
+  integrand_ -> setIdxZ1         (idxZ1);
+  integrand_ -> setIdxTh         (idxTh);
+  integrand_ -> setIdxPhi1       (idxPhi1);
+  integrand_ -> setIdxPhiInv     (idxPhiInv);
+  integrand_ -> setIdxMinvSquared(idxMinvSquared);
+  integrand_tth_3l1tau::gIntegrand = integrand_;
+
+//--- set integration boundaries
+  double xl[9] = { -1., -pi(), -1., -pi(),  0., -pi() / 2, -pi(), -pi(), 0. };
+  double xu[9] = { +1., +pi(), +1., +pi(), +1., +pi() / 2, +pi(), +pi(), tauLeptonMassSquared };
+  xl_ = new double[numDimensions_];
+  xu_ = new double[numDimensions_];
+  std::copy(xl, xl + (sizeof xl / sizeof *xl), xl_);
+  std::copy(xu, xu + (sizeof xu / sizeof *xu), xu_);
+
+//--- create probability and corresponding error (uncertainty) variable
+  double p = 0.;
+  double pErr = 0;
+
+//--- set integration settings
+  const unsigned numCallsGridOpt = roundToNearestUInt(0.20 * maxObjFunctionCalls_);
+  const unsigned numCallsIntEval = roundToNearestUInt(0.80 * maxObjFunctionCalls_);
+  if(integrationMode_ == IntegrationMode::kVEGAS)
+  {
+    intAlgo_ = new MEMIntegratorVEGAS(numCallsGridOpt, numCallsIntEval, 1, 2.);
+    intAlgo_ -> integrate(&g_C, xl_, xu_, numDimensions_, p, pErr);
+    delete intAlgo_;
+    intAlgo_ = 0;
+  }
+  else if(integrationMode_ == IntegrationMode::kVAMP)
+  {
+    intAlgo_ = new MEMIntegratorVAMP(numCallsGridOpt, numCallsIntEval);
+    intAlgo_ -> integrate(&g_Fortran, xl_, xu_, numDimensions_, p, pErr);
+    delete intAlgo_;
+    intAlgo_ = 0;
+  }
+  // add division by cross section
+
+  if(xl_)
+  {
+    delete [] xl_;
+    xl_ = 0;
+  }
+  if(xu_)
+  {
+    delete [] xu_;
+    xu_ = 0;
+  }
 
   clock_ -> Stop(__PRETTY_FUNCTION__);
   numSeconds_cpu_ = clock_ -> GetCpuTime(__PRETTY_FUNCTION__);
@@ -94,6 +184,6 @@ MEM_tth_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
   LOGINFO << "Real time:\t" << std::round(numSeconds_real_ * 100) / 100 << " s;\t"
           << "CPU time:\t" << std::round(numSeconds_cpu_ * 100) / 100 << " s";
 
-  return 0.;
+  return p;
 }
 
