@@ -8,8 +8,6 @@
 #include "DataFormats/FWLite/interface/InputSource.h" // fwlite::InputSource
 #include "DataFormats/FWLite/interface/OutputFiles.h" // fwlite::OutputFiles
 
-#include "boost/algorithm/string/predicate.hpp" // boost::iequals()
-
 #include <Rtypes.h> // Long64_t
 #include <TFile.h> // TFile
 #include <TChain.h> // TChain

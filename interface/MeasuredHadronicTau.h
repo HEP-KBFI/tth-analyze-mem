@@ -32,6 +32,19 @@ namespace tthMEM
     virtual void
     initialize() override;
 
+    virtual void
+    setBranches(TChain * t,
+                const std::string & branchName) override;
+
+    virtual void
+    initNewBranches(TTree * t,
+                    const std::string & branchName) override;
+
+    friend std::ostream &
+    operator<<(std::ostream & os,
+               const MeasuredHadronicTau & o);
+    ///< prints the pt, eta, phi, mass and decayMode to ostream
+
   protected:
     int decayMode_;         ///< decay mode of hadronic tau lepton
     double preciseVisMass_; ///< precise visible mass of tau decay products in the lab frame

@@ -1,7 +1,6 @@
-#include "tthAnalysis/tthMEM/interface/MeasuredHadronicTau.h" // MeasuredHadronicTau, chargedPionMass
-                                                              // std::sqrt(), LorentzVector
-
-//#include "tthAnalysis/tthMEM/interface/Logger.h"
+#include "tthAnalysis/tthMEM/interface/MeasuredHadronicTau.h" // MeasuredHadronicTau, ...
+  // ..., chargedPionMass, std::sqrt(), LorentzVector, minVisTauMass, maxVisTauMass
+#include "tthAnalysis/tthMEM/interface/Logger.h"
 
 using namespace tthMEM;
 
@@ -58,27 +57,54 @@ MeasuredHadronicTau::initialize()
 
   preciseVisMass_ = mass_;
 
-//  double minVisMass = 0.3; // GeV
-//  double maxVisMass = 1.5; // GeV
+  double minVisMass = minVisTauMass;
+  double maxVisMass = maxVisTauMass;
 
-//  if(decayMode_ == -1)
-//    minVisMass = chargedPionMass;
-//  else if(decayMode_ == 0)
-//  {
-//    minVisMass = chargedPionMass;
-//    maxVisMass = chargedPionMass;
-//  }
+  if(decayMode_ == -1)
+    minVisMass = chargedPionMass;
+  else if(decayMode_ == 0)
+  {
+    minVisMass = chargedPionMass;
+    maxVisMass = chargedPionMass;
+  }
 
-//  if(preciseVisMass_ < 0.9 * minVisMass || preciseVisMass_ > 1.1 * maxVisMass)
-//    LOGWARN << "Hadronic tau ("
-//      << "pt = " << pt_ << "; eta = " << eta_ << "; phi = " << phi_ << "; mass = " << mass_
-//      << ") expected in the mass range [" << minVisMass << "; " << maxVisMass << "]";
+  if(preciseVisMass_ < 0.9 * minVisMass || preciseVisMass_ > 1.1 * maxVisMass)
+    LOGWARN << "Hadronic tau (" << *this << ") expected in the mass range "
+            << "[" << minVisMass << "; " << maxVisMass << "]";
 
-//  if(preciseVisMass_ < minVisMass) preciseVisMass_ = minVisMass;
-//  if(preciseVisMass_ > maxVisMass) preciseVisMass_ = maxVisMass;
+  if(preciseVisMass_ < minVisMass) preciseVisMass_ = minVisMass;
+  if(preciseVisMass_ > maxVisMass) preciseVisMass_ = maxVisMass;
 
   energy_ = std::sqrt(p_ * p_ + preciseVisMass_ * preciseVisMass_);
   p4_ = LorentzVector(px_, py_, pz_, energy_);
+}
 
+void
+MeasuredHadronicTau::setBranches(TChain * t,
+                                 const std::string & branchName)
+{
+  MeasuredObject::setBranches(t, branchName);
+  t -> SetBranchAddress(Form("%s_decayMode", branchName.c_str()), &decayMode_);
+}
+
+void
+MeasuredHadronicTau::initNewBranches(TTree * t,
+                                     const std::string & branchName)
+{
+  MeasuredObject::initNewBranches(t, branchName);
+  t -> Branch(Form("%s_decayMode", branchName.c_str()), &decayMode_,
+              Form("%s_decayMode/I", branchName.c_str()));
+}
+
+namespace tthMEM
+{
+  std::ostream &
+  operator<<(std::ostream & os,
+             const MeasuredHadronicTau & o)
+  {
+    os << static_cast<const MeasuredObject &>(o)
+       << "; decayMode = " << o.decayMode_;
+    return os;
+  }
 }
 

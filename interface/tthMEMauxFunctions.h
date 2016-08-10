@@ -13,11 +13,18 @@ namespace tthMEM
   typedef math::XYZTLorentzVector LorentzVector;
   typedef math::XYZVectorD Vector;
 
-  // all masses and energies are given in GeV
+  // if not specified all masses and energies are given in GeV
   const double sqrtS = 13.e+3;
+
+  const double minVisTauMass = 0.3;
+  const double maxVisTauMass = 1.5;
   const double chargedPionMass = 0.13957;
   const double tauLeptonMass = 1.77685;
   const double tauLeptonMassSquared = tauLeptonMass * tauLeptonMass;
+  const double cTimesHbar = 0.1973; // GeV x fm
+  const double xSectionTTH = 0.5085; // pb
+  ///< taken from: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt1314TeV2014#ttH_Process
+  const double xSectionTTHinGeV2 = xSectionTTH * 1.e-10 / (cTimesHbar * cTimesHbar); // 1 / GeV^2
 
   /**
    * @brief Rounds double floating point number to N significant digits
@@ -40,7 +47,7 @@ namespace tthMEM
 
   /**
    * @brief Calculates pi from relation acos(-1)
-   * @return
+   * @return PI
    */
   constexpr double
   pi()

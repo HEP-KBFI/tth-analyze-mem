@@ -1,9 +1,9 @@
 #include "tthAnalysis/tthMEM/interface/MEM_tth_3l1tau.h"
-#include "tthAnalysis/tthMEM/interface/Logger.h" // LOGDBG
+#include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorVEGAS.h"
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorVAMP.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // ...
-  // ... roundToNearestUInt(), pi(), tauLeptonMassSquared
+  // ... roundToNearestUInt(), pi(), tauLeptonMassSquared, xSectionTTHinGeV2
 
 #include <cmath> // std::round()
 
@@ -165,8 +165,14 @@ MEM_tth_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
     delete intAlgo_;
     intAlgo_ = 0;
   }
-  // add division by cross section
 
+//--- divide by the process cross section (in GeV, i.e. natural units)
+//--- and adjust the uncertainty accordingly
+  p /= xSectionTTHinGeV2;
+  pErr /= xSectionTTHinGeV2;
+  LOGDBG << "p = " << p << "; pErr = " << pErr;
+
+//--- cleanup
   if(xl_)
   {
     delete [] xl_;

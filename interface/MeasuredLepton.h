@@ -40,7 +40,7 @@ namespace tthMEM
     friend std::ostream &
     operator<<(std::ostream & os,
                const MeasuredLepton & o);
-    ///< prints the pt, eta, phi and mass to ostream
+    ///< prints the pt, eta, phi, mass and charge to ostream
 
   private:
     int charge_; ///< charge of electron or muon

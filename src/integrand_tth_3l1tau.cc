@@ -55,8 +55,13 @@ integrand_tth_3l1tau::~integrand_tth_3l1tau()
 {
   LOGDBG;
 
-  delete pdf_;
-  pdf_ = 0;
+  if(pdf_)
+  {
+    delete pdf_;
+    pdf_ = 0;
+  }
+  measuredEvent_ = 0; // no allocation, just the address
+  me_madgraph_initialized_ = false;
 }
 
 void
@@ -122,23 +127,23 @@ integrand_tth_3l1tau::setIdxMinvSquared(int idx)
 double
 integrand_tth_3l1tau::eval(const double * x) const
 {
-  if(! pdf_)
-  {
-    LOGERR << "PDF not initialized!";
+  if(! pdf_)                     LOGERR << "PDF not initialized!";
+  if(! me_madgraph_initialized_) LOGERR << "Madgraph's ME not initialized!";
+  if(! measuredEvent_)           LOGERR << "Measured event not specified!";
+  if(idxCosTheta1_ < 0)          LOGERR << "Index idxCosTheta1 not set";
+  if(idxVarphi1_ < 0)            LOGERR << "Index idxVarphi1 not set";
+  if(idxCosTheta2_ < 0)          LOGERR << "Index idxCosTheta2 not set";
+  if(idxVarphi2_ < 0)            LOGERR << "Index idxVarphi2 not set";
+  if(idxZ1_ < 0)                 LOGERR << "Index idxZ1 not set";
+  if(idxTh_ < 0)                 LOGERR << "Index idxTh not set";
+  if(idxPhi1_ < 0)               LOGERR << "Index idxPhi1 not set";
+  if(idxPhiInv_ < 0)             LOGERR << "Index idxPhiInv not set";
+  if(idxMinvSquared_ < 0)        LOGERR << "Index idxMinvSquared not set";
+  if(! pdf_ || ! me_madgraph_initialized_ || ! measuredEvent_ ||
+     idxCosTheta1_ < 0 || idxVarphi1_ < 0 || idxCosTheta2_ < 0 ||
+     idxVarphi2_ < 0 || idxZ1_ < 0 || idxTh_ < 0 || idxPhi1_ < 0 ||
+     idxPhiInv_ < 0 || idxMinvSquared_ < 0)
     std::exit(EXIT_FAILURE);
-  }
-
-  if(! me_madgraph_initialized_)
-  {
-    LOGERR << "Madgraph's ME not initialized!";
-    std::exit(EXIT_FAILURE);
-  }
-
-  if(! measuredEvent_)
-  {
-    LOGERR << "Measured event not specified!";
-    std::exit(EXIT_FAILURE);
-  }
 
   return 0.;
 }

@@ -44,7 +44,7 @@ MeasuredLepton::setBranches(TChain * t,
                             const std::string & branchName)
 {
   MeasuredObject::setBranches(t, branchName);
-  t -> SetBranchAddress(Form("%s_charge",   branchName.c_str()), &charge_);
+  t -> SetBranchAddress(Form("%s_charge", branchName.c_str()), &charge_);
 }
 
 void
