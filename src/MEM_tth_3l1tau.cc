@@ -77,6 +77,10 @@ MEM_tth_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
     LOGERR << "Integration mode not set";
     assert(0);
   }
+  LOGDBG << ev;
+
+//---  it is (rightly) assumed that leptons and jets
+//---  have already been sorted by their pt in decreasing order
 
   /* compute me */
 

@@ -2,15 +2,6 @@
 
 using namespace tthMEM;
 
-MeasuredEvent_3l1tau::MeasuredEvent_3l1tau()
-  : covMET(TMatrixD(2, 2))
-{
-  covMET[0][0] = 100.0; // in GeV
-  covMET[1][0] =   0.0;
-  covMET[0][1] =   0.0;
-  covMET[1][1] = 100.0;
-}
-
 void
 MeasuredEvent_3l1tau::initialize()
 {
@@ -24,6 +15,14 @@ MeasuredEvent_3l1tau::initialize()
   jet2.initialize();
 
   htau1.initialize();
+
+  leptons_.clear();
+  leptons_.reserve(3);
+  leptons_ = { lepton1, lepton2, lepton3 };
+
+  jets_.clear();
+  jets_.reserve(2);
+  jets_ = { jet1, jet2 };
 }
 
 void
@@ -66,4 +65,34 @@ MeasuredEvent_3l1tau::initNewBranches(TTree * t)
   htau1.initNewBranches(t, "htau1");
 
   mvaVariables.initNewBranches(t);
+}
+
+const std::vector<MeasuredLepton> &
+MeasuredEvent_3l1tau::leptons() const
+{
+  return leptons_;
+}
+
+const std::vector<MeasuredJet> &
+MeasuredEvent_3l1tau::jets() const
+{
+  return jets_;
+}
+
+namespace tthMEM
+{
+  std::ostream &
+  operator<<(std::ostream & os,
+             const MeasuredEvent_3l1tau & event)
+  {
+    os << "The event "
+       << "(" << event.run << ":" << event.lumi << ":" << event.evt << "):\n";
+    for(std::size_t i = 0; i < 3; ++i)
+      os << "\tLepton " << (i + 1) << event.leptons_[i] << "\n";
+    for(std::size_t i = 0; i < 2; ++i)
+      os << "\tJet "    << (i + 1) << event.jets_[i]    << "\n";
+    os << "\tTau: " << event.htau1 << "\n";
+    os << "\tMET: " << event.met   << "\n";
+    return os;
+  }
 }

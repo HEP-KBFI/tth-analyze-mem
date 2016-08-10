@@ -5,7 +5,6 @@
 #include <TTree.h> // TTree
 #include <TChain.h> // TChain
 #include <TBranch.h> // TBranch
-#include <TMatrixD.h> // TMatrixD
 
 #include "tthAnalysis/tthMEM/interface/MeasuredMET.h" // tthMEM::MeasuredMET
 #include "tthAnalysis/tthMEM/interface/MeasuredLepton.h" // tthMEM::MeasuredLepton
@@ -13,13 +12,16 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredHadronicTau.h" // tthMEM::MeasuredHadronicTau
 #include "tthAnalysis/tthMEM/interface/MVAVariables.h" // tthMEM::MVAVariables
 
+#include <vector> // std::vector<>
+#include <ostream> // std::ostream
+
 namespace tthMEM
 {
   class
   MeasuredEvent_3l1tau
   {
   public:
-    MeasuredEvent_3l1tau();
+    MeasuredEvent_3l1tau() = default;
 
     UInt_t run;
     UInt_t lumi;
@@ -29,14 +31,15 @@ namespace tthMEM
     TBranch * branch_lumi = 0;
     TBranch * branch_evt = 0;
 
-    TMatrixD covMET; ///< soon we'll have a separate branch for it
-                     ///< in our Ntuples
     MeasuredMET met;
     MeasuredLepton lepton1, lepton2, lepton3;
     MeasuredJet jet1, jet2;
     MeasuredHadronicTau htau1;
 
     MVAVariables mvaVariables;
+
+    std::vector<MeasuredLepton> leptons_;
+    std::vector<MeasuredJet>    jets_;
 
     void
     initialize();
@@ -46,6 +49,16 @@ namespace tthMEM
 
     void
     initNewBranches(TTree * t);
+
+    const std::vector<MeasuredLepton> &
+    leptons() const;
+
+    const std::vector<MeasuredJet> &
+    jets() const;
+
+    friend std::ostream &
+    operator<<(std::ostream & os,
+               const MeasuredEvent_3l1tau & event);
   };
 }
 
