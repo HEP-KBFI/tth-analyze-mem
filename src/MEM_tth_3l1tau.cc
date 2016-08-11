@@ -124,6 +124,7 @@ MEM_tth_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
   const int idxPhiInv = 7;      // (invisible) rotation angle of leptonic tau nu
   const int idxMinvSquared = 8; // (invisible) mass of leptonic neutrino pair
 
+  integrand_ -> setNumDimensions(numDimensions_);
   integrand_ -> setInputs(ev);
   integrand_ -> setIdxCosTheta1  (idxCosTheta1);
   integrand_ -> setIdxVarphi1    (idxVarphi1);

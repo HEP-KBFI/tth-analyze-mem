@@ -48,6 +48,12 @@ MeasuredMET::py() const
   return py_;
 }
 
+const TMatrixD &
+MeasuredMET::covMET() const
+{
+  return covMET_;
+}
+
 void
 MeasuredMET::initialize()
 {

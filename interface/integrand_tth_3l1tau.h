@@ -39,6 +39,7 @@ namespace tthMEM
     setInputs(const MeasuredEvent_3l1tau & measuredEvent);
 
     /* simple setters */
+    void setNumDimensions(unsigned numDimensions);
     void setIdxCosTheta1   (int idx);
     void setIdxVarphi1     (int idx);
     void setIdxCosTheta2   (int idx);
@@ -61,8 +62,9 @@ namespace tthMEM
     ///< static pointer to this instance
 
   protected:
-    double sqrtS_;
-    double s_;
+    const double sqrtS_;
+    const double s_;
+    const Vector beamAxis_;
 
     LHAPDF::PDF * pdf_;
 
@@ -70,7 +72,23 @@ namespace tthMEM
     ///< @note mutable members can be modified by a const function (e.g. eval())
     bool me_madgraph_initialized_;
 
+    unsigned numDimensions_;
+
     const MeasuredEvent_3l1tau * measuredEvent_;
+    // for the hadronic tau only:
+    double hTauMassSquared_;
+    double eX_x_;
+    double eX_y_;
+    double eX_z_;
+    double eY_x_;
+    double eY_y_;
+    double eY_z_;
+    double eZ_x_;
+    double eZ_y_;
+    double eZ_z_;
+
+    TMatrixD invCovMET_;
+    double MET_TF_denom;
 
     int idxCosTheta1_;
     int idxVarphi1_;
