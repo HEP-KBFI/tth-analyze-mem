@@ -5,6 +5,10 @@
 #include <iostream> // std::cerr, std::cout
 #include <cmath> // std::pow()
 #include <cstdlib> // std::exit(), EXIT_FAILURE
+#include <cstring> // std::memset()
+#include <algorithm> // std::for_each()
+
+#include "TMath.h" // TMath::IsNaN() (http://stackoverflow.com/a/570694)
 
 using namespace tthMEM;
 
@@ -48,6 +52,31 @@ integrand_tth_3l1tau::integrand_tth_3l1tau(double sqrtS,
     std::exit(EXIT_FAILURE);
   }
 
+  mgGluon1p4_            = new double[4];
+  mgGluon2p4_            = new double[4];
+  mgBjet1p4_             = new double[4];
+  mgLeptonFromBjet1p4_   = new double[4];
+  mgNeutrinoFromBjet1p4_ = new double[4];
+  mgBjet2p4_             = new double[4];
+  mgLeptonFromBjet2p4_   = new double[4];
+  mgNeutrinoFromBjet2p4_ = new double[4];
+  mgTau1p4_              = new double[4];
+  mgTau2p4_              = new double[4];
+
+  mgMomenta_.push_back(mgGluon1p4_);
+  mgMomenta_.push_back(mgGluon2p4_);
+  mgMomenta_.push_back(mgBjet1p4_);
+  mgMomenta_.push_back(mgLeptonFromBjet1p4_);
+  mgMomenta_.push_back(mgNeutrinoFromBjet1p4_);
+  mgMomenta_.push_back(mgLeptonFromBjet2p4_);
+  mgMomenta_.push_back(mgNeutrinoFromBjet2p4_);
+  mgMomenta_.push_back(mgTau1p4_);
+  mgMomenta_.push_back(mgTau2p4_);
+
+  std::for_each(mgMomenta_.begin(), mgMomenta_.end(),
+    [](double * & d) { std::memset(d, 0., 4 * sizeof(double)); }
+  );
+
   gIntegrand = this;
 }
 
@@ -61,13 +90,10 @@ integrand_tth_3l1tau::~integrand_tth_3l1tau()
     pdf_ = 0;
   }
   measuredEvent_ = 0; // no allocation, just the address
-  me_madgraph_initialized_ = false;
-}
+  std::for_each(mgMomenta_.begin(), mgMomenta_.end(),
+    [](double * & d) { delete d; d = 0; }
+  );
 
-void
-integrand_tth_3l1tau::setInputs(const MeasuredEvent_3l1tau & measuredEvent)
-{
-  measuredEvent_ = &measuredEvent;
 }
 
 void
@@ -124,9 +150,16 @@ integrand_tth_3l1tau::setIdxMinvSquared(int idx)
   idxMinvSquared_ = idx;
 }
 
+void
+integrand_tth_3l1tau::setInputs(const MeasuredEvent_3l1tau & measuredEvent)
+{
+  measuredEvent_ = &measuredEvent;
+}
+
 double
 integrand_tth_3l1tau::eval(const double * x) const
 {
+  LOGDBG;
   if(! pdf_)                     LOGERR << "PDF not initialized!";
   if(! me_madgraph_initialized_) LOGERR << "Madgraph's ME not initialized!";
   if(! measuredEvent_)           LOGERR << "Measured event not specified!";
@@ -144,6 +177,20 @@ integrand_tth_3l1tau::eval(const double * x) const
      idxVarphi2_ < 0 || idxZ1_ < 0 || idxTh_ < 0 || idxPhi1_ < 0 ||
      idxPhiInv_ < 0 || idxMinvSquared_ < 0)
     std::exit(EXIT_FAILURE);
+
+//--- steps:
+//--- 1) reconstruct missing momenta for MG
+//--- 2) assemble the integrand and evaluate it
+//--- 3) later: permutations over leptons and bjets
+
+  me_madgraph_.setMomenta(mgMomenta_);
+  me_madgraph_.sigmaKin();
+  const double prob_ME_mg = me_madgraph_.getMatrixElements()[0];
+  if(TMath::IsNaN(prob_ME_mg))
+  {
+    LOGERR << "Warning: MadGraph5 returned NaN => skipping event";
+    return 0.;
+  }
 
   return 0.;
 }

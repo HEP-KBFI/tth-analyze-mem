@@ -141,8 +141,8 @@ MEM_tth_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
   double xu[9] = { +1., +pi(), +1., +pi(), +1., +pi() / 2, +pi(), +pi(), tauLeptonMassSquared };
   xl_ = new double[numDimensions_];
   xu_ = new double[numDimensions_];
-  std::copy(xl, xl + (sizeof xl / sizeof *xl), xl_);
-  std::copy(xu, xu + (sizeof xu / sizeof *xu), xu_);
+  std::copy(xl, xl + 9 * sizeof(double), xl_);
+  std::copy(xu, xu + 9 * sizeof(double), xu_);
 
 //--- create probability and corresponding error (uncertainty) variable
   double p = 0.;

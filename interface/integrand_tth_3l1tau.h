@@ -81,6 +81,18 @@ namespace tthMEM
     int idxPhi1_;
     int idxPhiInv_;
     int idxMinvSquared_;
+
+    double * mgGluon1p4_;
+    double * mgGluon2p4_;
+    double * mgBjet1p4_;
+    double * mgLeptonFromBjet1p4_;
+    double * mgNeutrinoFromBjet1p4_;
+    double * mgBjet2p4_;
+    double * mgLeptonFromBjet2p4_;
+    double * mgNeutrinoFromBjet2p4_;
+    double * mgTau1p4_;
+    double * mgTau2p4_;
+    mutable std::vector<double *> mgMomenta_;
   };
 }
 
