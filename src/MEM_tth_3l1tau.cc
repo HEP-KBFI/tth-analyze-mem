@@ -44,6 +44,9 @@ MEM_tth_3l1tau::MEM_tth_3l1tau(double sqrtS,
   , clock_(new TBenchmark())
   , numSeconds_cpu_(0)
   , numSeconds_real_(0)
+  , numSecondsAccumul_cpu_(0)
+  , numSecondsAccumul_real_(0)
+  , nof_calls_(0)
 {}
 
 MEM_tth_3l1tau::~MEM_tth_3l1tau()
@@ -96,6 +99,18 @@ MEM_tth_3l1tau::getComputingTime_real() const
 }
 
 double
+MEM_tth_3l1tau::getAverageComputingTime_cpu() const
+{
+  return nof_calls_ != 0 ? numSecondsAccumul_cpu_ / nof_calls_ : 0.;
+}
+
+double
+MEM_tth_3l1tau::getAverageComputingTime_real() const
+{
+  return nof_calls_ != 0 ? numSecondsAccumul_real_ / nof_calls_ : 0.;
+}
+
+double
 MEM_tth_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
 {
   if(integrationMode_ == IntegrationMode::kUndefined)
@@ -104,7 +119,7 @@ MEM_tth_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
     assert(0);
   }
 
-  LOGDBG;
+  LOGVRB;
   clock_ -> Reset();
   clock_ -> Start(__PRETTY_FUNCTION__);
   LOGDBG << ev;
@@ -142,8 +157,8 @@ MEM_tth_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
   double xu[9] = { +1., +pi(), +1., +pi(), +1., +pi() / 2, +pi(), +pi(), tauLeptonMassSquared };
   xl_ = new double[numDimensions_];
   xu_ = new double[numDimensions_];
-  std::copy(xl, xl + 9 * sizeof(double), xl_);
-  std::copy(xu, xu + 9 * sizeof(double), xu_);
+  std::copy(xl, xl + numDimensions_, xl_);
+  std::copy(xu, xu + numDimensions_, xu_);
 
 //--- create probability and corresponding error (uncertainty) variable
   double p = 0.;
@@ -190,6 +205,10 @@ MEM_tth_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
   numSeconds_real_ = clock_ -> GetRealTime(__PRETTY_FUNCTION__);
   LOGINFO << "Real time:\t" << std::round(numSeconds_real_ * 100) / 100 << " s;\t"
           << "CPU time:\t" << std::round(numSeconds_cpu_ * 100) / 100 << " s";
+
+  numSecondsAccumul_cpu_ += numSeconds_cpu_;
+  numSecondsAccumul_real_ += numSecondsAccumul_real_;
+  ++nof_calls_;
 
   return p;
 }

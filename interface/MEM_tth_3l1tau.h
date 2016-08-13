@@ -45,6 +45,12 @@ namespace tthMEM
     getComputingTime_real() const;
 
     double
+    getAverageComputingTime_cpu() const;
+
+    double
+    getAverageComputingTime_real() const;
+
+    double
     integrate(const MeasuredEvent_3l1tau & ev);
 
   private:
@@ -64,6 +70,9 @@ namespace tthMEM
     TBenchmark * clock_;
     double numSeconds_cpu_;
     double numSeconds_real_;
+    double numSecondsAccumul_cpu_;
+    double numSecondsAccumul_real_;
+    unsigned nof_calls_;
   };
 }
 
