@@ -19,15 +19,15 @@ namespace tthMEM
    * @todo
    *   - add TF options
    */
-  class MEM_tth_3l1tau
+  class MEM_ttHorZ_3l1tau
   {
   public:
     enum IntegrationMode { kUndefined, kVEGAS, kVAMP };
 
-    MEM_tth_3l1tau(double sqrtS,
+    MEM_ttHorZ_3l1tau(double sqrtS,
                    const std::string & pdfName,
                    const std::string & madgraphFileName);
-    ~MEM_tth_3l1tau();
+    ~MEM_ttHorZ_3l1tau();
 
     void
     setMaxObjFunctionCalls(unsigned maxObjFunctionCalls);

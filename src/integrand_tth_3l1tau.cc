@@ -169,7 +169,7 @@ integrand_tth_3l1tau::setInputs(const MeasuredEvent_3l1tau & measuredEvent)
   hTauMassSquared_ = std::pow(measuredEvent_ -> htau1.mass(), 2);
   const Vector eZ = measuredEvent_ -> htau1.p3().Unit();
   const Vector eY = eZ.Cross(beamAxis_).Unit();
-  const Vector eX = eY.Cross(eZ).Unit();
+  const Vector eX = eY.Cross(eZ).Unit(); // should already be unit vector by construction
   LOGDBG << "htau p3 = (" << measuredEvent_ -> htau1.p3().x() << ", "
                           << measuredEvent_ -> htau1.p3().y() << ", "
                           << measuredEvent_ -> htau1.p3().z() << ")";

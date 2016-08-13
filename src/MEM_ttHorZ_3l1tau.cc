@@ -1,4 +1,4 @@
-#include "tthAnalysis/tthMEM/interface/MEM_tth_3l1tau.h"
+#include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorVEGAS.h"
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorVAMP.h"
@@ -29,9 +29,9 @@ g_Fortran(double ** x,
   return returnValue;
 }
 
-MEM_tth_3l1tau::MEM_tth_3l1tau(double sqrtS,
-                               const std::string & pdfName,
-                               const std::string & madgraphFileName)
+MEM_ttHorZ_3l1tau::MEM_ttHorZ_3l1tau(double sqrtS,
+                                     const std::string & pdfName,
+                                     const std::string & madgraphFileName)
   : integrand_(new integrand_tth_3l1tau(sqrtS, pdfName, madgraphFileName))
   , sqrtS_(sqrtS)
   , integrationMode_(IntegrationMode::kUndefined)
@@ -49,7 +49,7 @@ MEM_tth_3l1tau::MEM_tth_3l1tau(double sqrtS,
   , nof_calls_(0)
 {}
 
-MEM_tth_3l1tau::~MEM_tth_3l1tau()
+MEM_ttHorZ_3l1tau::~MEM_ttHorZ_3l1tau()
 {
   if(integrand_)
   {
@@ -64,13 +64,13 @@ MEM_tth_3l1tau::~MEM_tth_3l1tau()
 }
 
 void
-MEM_tth_3l1tau::setIntegrationMode(IntegrationMode integrationMode)
+MEM_ttHorZ_3l1tau::setIntegrationMode(IntegrationMode integrationMode)
 {
   integrationMode_ = integrationMode;
 }
 
 void
-MEM_tth_3l1tau::setIntegrationMode(const std::string & integrationModeString)
+MEM_ttHorZ_3l1tau::setIntegrationMode(const std::string & integrationModeString)
 {
   if(boost::iequals(integrationModeString, "vegas"))
     integrationMode_ = IntegrationMode::kVEGAS;
@@ -81,37 +81,37 @@ MEM_tth_3l1tau::setIntegrationMode(const std::string & integrationModeString)
 }
 
 void
-MEM_tth_3l1tau::setMaxObjFunctionCalls(unsigned maxObjFunctionCalls)
+MEM_ttHorZ_3l1tau::setMaxObjFunctionCalls(unsigned maxObjFunctionCalls)
 {
   maxObjFunctionCalls_ = maxObjFunctionCalls;
 }
 
 double
-MEM_tth_3l1tau::getComputingTime_cpu() const
+MEM_ttHorZ_3l1tau::getComputingTime_cpu() const
 {
   return numSeconds_cpu_;
 }
 
 double
-MEM_tth_3l1tau::getComputingTime_real() const
+MEM_ttHorZ_3l1tau::getComputingTime_real() const
 {
   return numSeconds_real_;
 }
 
 double
-MEM_tth_3l1tau::getAverageComputingTime_cpu() const
+MEM_ttHorZ_3l1tau::getAverageComputingTime_cpu() const
 {
   return nof_calls_ != 0 ? numSecondsAccumul_cpu_ / nof_calls_ : 0.;
 }
 
 double
-MEM_tth_3l1tau::getAverageComputingTime_real() const
+MEM_ttHorZ_3l1tau::getAverageComputingTime_real() const
 {
   return nof_calls_ != 0 ? numSecondsAccumul_real_ / nof_calls_ : 0.;
 }
 
 double
-MEM_tth_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
+MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
 {
   if(integrationMode_ == IntegrationMode::kUndefined)
   {
