@@ -7,7 +7,6 @@
 #include <TBranch.h> // TBranch
 #include <TMatrixD.h> // TMatrixD
 #include <TMatrixDSym.h> // TMatrixDSym
-#include <TMatrixDSymEigen.h> // TMatrixDSymEigen
 #include <TVectorD.h> // TVectorD
 
 namespace tthMEM
@@ -39,7 +38,7 @@ namespace tthMEM
     double px() const;
     double py() const;
 
-    const TMatrixD & covMET() const;
+    const TMatrixDSym & covMET() const;
 
     void
     initialize(); ///< truncates trailing numbers; sets px_ and py_
@@ -64,9 +63,10 @@ namespace tthMEM
     double px_; ///< x-component of measured momentum in the lab frame
     double py_; ///< y-component of measured momentum in the lab frame
 
-    TMatrixD covMET_; ///< soon we'll have a separate branch for it in our Ntuples
-    TMatrixD covMET_eigenVectors_; ///< eigenvectors of covMET_
-    TVectorD covMET_eigenValues_;  ///< eigenvalues of covMET_
+    TMatrixDSym covMET_; ///< soon we'll have a separate branch for it in our Ntuples
+                         ///< the covariance matrix is symmetric by construction
+    TMatrixD    covMET_eigenVectors_; ///< eigenvectors of covMET_
+    TVectorD    covMET_eigenValues_;  ///< eigenvalues of covMET_
 
     TBranch * branch_pt = 0;  ///< output branch for pt
     TBranch * branch_phi = 0; ///< output branch for phi

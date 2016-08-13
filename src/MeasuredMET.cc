@@ -1,14 +1,20 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredMET.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // roundToNdigits()
+#include "tthAnalysis/tthMEM/interface/Logger.h" // Logger::getFloatPrecision()
 
 #include <cmath> // std::cos(), std::sin()
+#include <sstream> // std::stringstream
+#include <string> // std::string
+#include <iomanip> // std::setw(), std::setprecision()
+
+#include <TMatrixDSymEigen.h> // TMatrixDSymEigen
 
 using namespace tthMEM;
 
 MeasuredMET::MeasuredMET()
   : pt_(0)
   , phi_(0)
-  , covMET_(TMatrixD(2, 2))
+  , covMET_(TMatrixDSym(2))
   , covMET_eigenVectors_(TMatrixD(2, 2))
   , covMET_eigenValues_(TVectorD(2))
 {
@@ -19,7 +25,7 @@ MeasuredMET::MeasuredMET(double pt,
                          double phi)
   : pt_(pt)
   , phi_(phi)
-  , covMET_(TMatrixD(2, 2))
+  , covMET_(TMatrixDSym(2, 2))
 {
   initialize();
 }
@@ -48,7 +54,7 @@ MeasuredMET::py() const
   return py_;
 }
 
-const TMatrixD &
+const TMatrixDSym &
 MeasuredMET::covMET() const
 {
   return covMET_;
@@ -87,10 +93,7 @@ MeasuredMET::initNewBranches(TTree * t)
 void
 MeasuredMET::calculateEigenVectorsValues()
 {
-//--- the covariance matrix is symmetric and positive semi-definite by construction
-  TMatrixDSym covMET_sym(2);
-  covMET_sym.SetMatrixArray(covMET_.GetMatrixArray());
-  const TMatrixDSymEigen covMET_eigen(covMET_sym);
+  const TMatrixDSymEigen covMET_eigen(covMET_);
   covMET_eigenVectors_.SetMatrixArray(covMET_eigen.GetEigenValues().GetMatrixArray());
   covMET_eigenValues_.SetElements(covMET_eigen.GetEigenValues().GetMatrixArray());
 //--- eigenvalues of a symmetric positive (semi-)definite matrix are always real and positive
@@ -104,15 +107,33 @@ namespace tthMEM
   operator<<(std::ostream & os,
              const MeasuredMET & o)
   {
-    os << "pt = " << o.pt_ << "; phi = " << o.phi_ << "; "
-       << "covMET = {[[" << o.covMET_(0, 0) << "][" << o.covMET_(0, 1) << "]]"
-                 << "[[" << o.covMET_(1, 0) << "][" << o.covMET_(1, 1) << "]]};"
-       << "covMET eigenVector 1 = { " << o.covMET_eigenVectors_(0, 0) << ", "
-                                      << o.covMET_eigenVectors_(1, 0) << " }; "
-       << "covMET eigenVector 2 = { " << o.covMET_eigenVectors_(1, 0) << ", "
-                                      << o.covMET_eigenVectors_(1, 1) << " }; "
-       << "covMET eigenvalues = { " << o.covMET_eigenValues_(0) << ", "
-                                    << o.covMET_eigenValues_(0) << " }";
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(Logger::getFloatPrecision());
+    ss << "pt = " << o.pt_ << "; phi = " << o.phi_ << "; ";
+    for(unsigned i = 0; i < 2; ++i)
+      ss << "covMET eigenVector " << (i + 1) << " = { "
+         << o.covMET_eigenVectors_(0, i) << ", "
+         << o.covMET_eigenVectors_(1, i) << " }; ";
+
+//--- print the covariance matrix
+    const unsigned minIndent = 27;
+    const unsigned actualIndent = std::max(minIndent, 16u);
+    const unsigned nameIndent = actualIndent - 7;
+    const unsigned numberFieldWidth = 12;
+    ss << "\n" << std::string(actualIndent, ' ') << "|";
+    for(unsigned i = 0; i < 2; ++i)
+      ss << std::setw(numberFieldWidth) << i << " |";
+    ss << "\n" << std::setw(nameIndent) << "covMET =    "
+       << std::string(2 * (numberFieldWidth + 2) + 10, '-') << "\n";
+    for(unsigned i = 0; i < 2; ++i)
+    {
+      ss << std::setw(actualIndent - 1) << i << " |";
+      for(unsigned j = 0; j < 2; ++j)
+        ss << std::setw(numberFieldWidth) << o.covMET_(i, j) << " |";
+      ss << "\n";
+    }
+
+    os << ss.str();
     return os;
   }
 }

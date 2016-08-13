@@ -87,7 +87,7 @@ namespace tthMEM
     double eZ_y_;
     double eZ_z_;
 
-    TMatrixD invCovMET_;
+    TMatrixDSym invCovMET_;
     double MET_TF_denom;
 
     int idxCosTheta1_;
