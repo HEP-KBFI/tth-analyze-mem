@@ -55,6 +55,11 @@ main(int argc,
   const unsigned maxObjFunctionCalls = cfg_tthMEM.getParameter<unsigned>("maxObjFunctionCalls");
   const Long64_t startingFromEntry = cfg_tthMEM.getParameter<Long64_t>("startingFromEntry");
 
+  LOGINFO << "PDF name: " << pdfName;
+  LOGINFO << "MadGraph file name:" << madgraphFileName;
+  LOGINFO << "Integation mode: " << integrationMode;
+  LOGINFO << "Maximum number of calls per event: " << maxObjFunctionCalls;
+
   const fwlite::InputSource inputFiles(cfg);
   const int maxEvents = inputFiles.maxEvents();
   const unsigned reportEvery = inputFiles.reportAfter();
@@ -65,8 +70,12 @@ main(int argc,
 //--- create I/O TTrees
   TChain * inputTree = new TChain(treeName.c_str());
   for(const std::string & inputFile: inputFiles.files())
+  {
     inputTree -> AddFile(inputFile.c_str());
+    LOGINFO << "Chained file = " << inputFile;
+  }
   inputTree -> LoadTree(0);
+  LOGINFO << "Loaded tree '" << treeName << "'";
 
   TFile * newFile = new TFile(outputFileName.c_str(), "recreate");
   TTree * newTree = new TTree("tree", Form("Tree created by %s", argv[0]));
@@ -122,9 +131,13 @@ main(int argc,
 
     newTree -> Fill();
   }
+  LOGINFO << "Average time spent on signal ME per event: "
+          << "Real time: " << mem_signal.getAverageComputingTime_real() << " s;  "
+          << "CPU time: " << mem_signal.getAverageComputingTime_cpu() << " s";
 
   newFile -> Write();
 
+  LOGINFO << "Wrote results to file = " << outputFileName;
   LOGINFO << "Done";
 
   return EXIT_SUCCESS;

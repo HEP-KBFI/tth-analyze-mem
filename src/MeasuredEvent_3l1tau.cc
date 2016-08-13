@@ -88,9 +88,9 @@ namespace tthMEM
     os << "The event "
        << "(" << event.run << ":" << event.lumi << ":" << event.evt << "):\n";
     for(std::size_t i = 0; i < 3; ++i)
-      os << "\tLepton " << (i + 1) << event.leptons_[i] << "\n";
+      os << "\tLepton " << (i + 1) << ": " << event.leptons_[i] << "\n";
     for(std::size_t i = 0; i < 2; ++i)
-      os << "\tJet "    << (i + 1) << event.jets_[i]    << "\n";
+      os << "\tJet "    << (i + 1) << ": " << event.jets_[i]    << "\n";
     os << "\tTau: " << event.htau1 << "\n";
     os << "\tMET: " << event.met   << "\n";
     return os;
