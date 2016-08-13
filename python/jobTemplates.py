@@ -42,7 +42,7 @@ date
 echo -n "Hostname: "
 hostname
 
-echo "Initializing CMSSW run-time environment"
+echo "\n\nInitializing CMSSW run-time environment"
 
 echo "shopt -s expand_aliases"
 shopt -s expand_aliases
@@ -50,35 +50,38 @@ shopt -s expand_aliases
 echo "source /cvmfs/cms.cern.ch/cmsset_default.sh"
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 
-echo "Going to directory {{ cmsswSrcDir }} and calling cmsenv there"
+echo "\n\nGoing to directory {{ cmsswSrcDir }} and calling cmsenv there"
 echo "cd {{ cmsswSrcDir }}"
 cd {{ cmsswSrcDir }}
 cmsenv
 
-echo "Creating folder $(dirname {{ inFileNameScratch }})"
+echo "\n\nCreating folder $(dirname {{ inFileNameScratch }})"
 echo "mkdir -p $(dirname {{ inFileNameScratch }})"
 mkdir -p $(dirname {{ inFileNameScratch }})
 
-echo "Creating folder $(dirname {{ outFileNameScratch }})"
+echo "\n\nCreating folder $(dirname {{ outFileNameScratch }})"
 echo "mkdir -p $(dirname {{ outFileNameScratch }})"
 mkdir -p $(dirname {{ outFileNameScratch }})
 
-echo "Copying {{ inFileNameLocal }} to {{ inFileNameScratch }}"
+echo "\n\nCopying {{ inFileNameLocal }} to {{ inFileNameScratch }}"
 echo "cp {{ inFileNameLocal }} {{ inFileNameScratch }}"
 cp {{ inFileNameLocal }} {{ inFileNameScratch }}
 
-echo "Running {{ execName }}"
+echo "\n\nRunning {{ execName }}"
 echo "{{ execName }} {{ pythonCfg }}"
+LINE=$(seq -s= 30|tr -d '[:digit:]')
+echo "${LINE} BEGIN ${LINE}"
 {{ execName }} {{ pythonCfg }}
+echo "${LINE}= END =${LINE}"
 
-echo -n "Finished at "
+echo -n "\n\nFinished at "
 date
 
-echo "Creating directory $(dirname {{ outFileNameLocal }})"
+echo "\n\nCreating directory $(dirname {{ outFileNameLocal }})"
 echo "mkdir -p $(dirname {{ outFileNameLocal }})"
 mkdir -p $(dirname {{ outFileNameLocal }})
 
-echo "Moving {{ outFileNameScratch }} to {{ outFileNameLocal }}"
+echo "\n\nMoving {{ outFileNameScratch }} to {{ outFileNameLocal }}"
 
 echo "mkdir -p $(dirname {{ outFileNameLocal }})"
 mkdir -p $(dirname {{ outFileNameLocal }})
@@ -86,11 +89,11 @@ mkdir -p $(dirname {{ outFileNameLocal }})
 echo "mv {{ outFileNameScratch }} {{ outFileNameLocal }}"
 mv {{ outFileNameScratch }} {{ outFileNameLocal }}
 
-echo "Cleaning up"
+echo "\n\nCleaning up"
 echo "rm {{ inFileNameScratch }}"
 rm {{ inFileNameScratch }}
 
-echo "Done"
+echo "\n\nDone"
 
 """
 
