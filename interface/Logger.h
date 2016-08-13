@@ -6,12 +6,12 @@
 #include <memory> // std::shared_ptr<>
 #include <sstream> // std::stringstream
 #include <vector> // std::vector<>
-#include <iomanip> // std::setw(), std::left
 
-#define LOGERR  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
-#define LOGWARN tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning)<<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
-#define LOGINFO tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)   <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
-#define LOGDBG  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define LOGERR  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define LOGWARN tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define LOGINFO tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)     <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define LOGDBG  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define LOGVRB  tthMEM::wrap(tthMEM::Logger::LogLevel::kVerbose)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
 
 namespace tthMEM
 {
@@ -26,7 +26,8 @@ namespace tthMEM
       kError   = 0,
       kWarning = 1,
       kInfo    = 2,
-      kDebug   = 3
+      kDebug   = 3,
+      kVerbose = 4
     };
 
     Logger(Logger::LogLevel logLevel);
@@ -57,6 +58,12 @@ namespace tthMEM
     static void
     enableTimeStamp(bool enableTimeStamp);
 
+    static void
+    setFloatPrecision(unsigned floatPrecision);
+
+    static unsigned
+    getFloatPrecision();
+
   private:
     class Holder
     {
@@ -76,6 +83,7 @@ namespace tthMEM
     static bool enableLogging_;
     static bool enableTimeStamp_;
     static std::ostream * os_;
+    static unsigned floatPrecision_;
     static std::vector<std::string> logLevelStrings_;
   };
 

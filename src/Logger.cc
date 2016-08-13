@@ -2,6 +2,7 @@
 
 #include <chrono> // std::chrono::
 #include <ctime> // std::time_t, std::tm
+#include <iomanip> // std::setprecision(), std::setw()
 #include "boost/format.hpp" // boost::format()
 #include "boost/algorithm/string/predicate.hpp" // boost::iequals()
 
@@ -39,6 +40,7 @@ namespace tthMEM
     else if(boost::iequals(logLevelString, "warning")) logLevel_ = Logger::LogLevel::kWarning;
     else if(boost::iequals(logLevelString, "info"))    logLevel_ = Logger::LogLevel::kInfo;
     else if(boost::iequals(logLevelString, "debug"))   logLevel_ = Logger::LogLevel::kDebug;
+    else if(boost::iequals(logLevelString, "verbose")) logLevel_ = Logger::LogLevel::kVerbose;
   }
 
   void
@@ -65,6 +67,18 @@ namespace tthMEM
     enableTimeStamp_ = enableTimeStamp;
   }
 
+  void
+  Logger::setFloatPrecision(unsigned floatPrecision)
+  {
+    floatPrecision_ = floatPrecision;
+  }
+
+  unsigned
+  Logger::getFloatPrecision()
+  {
+    return floatPrecision_;
+  }
+
   Logger::Holder::Holder(Logger::LogLevel logLevel,
                          Logger & logger)
     : logger_(logger)
@@ -72,7 +86,8 @@ namespace tthMEM
   {
     if(enableLogging_)
     {
-      ss_ << std::setw(10) << std::left << logger_.logLevelStrings_[logLevel];
+      ss_ << std::fixed << std::setprecision(logger_.floatPrecision_)
+          << std::setw(10) << std::left << logger_.logLevelStrings_[logLevel];
       if(logger_.enableTimeStamp_) ss_ << tthMEM::getTimeStamp() << " ";
     }
   }
@@ -87,13 +102,14 @@ namespace tthMEM
 
   std::vector<std::string> Logger::logLevelStrings_ =
   {
-    "[error]", "[warning]", "[info]", "[debug]"
+    "[error]", "[warning]", "[info]", "[debug]", "[verbose]"
   };
 
-  Logger::LogLevel Logger::logLevel_ = Logger::LogLevel::kDebug;
+  Logger::LogLevel Logger::logLevel_ = Logger::LogLevel::kVerbose;
   bool Logger::enableLogging_ = true;
   bool Logger::enableTimeStamp_ = true;
   std::ostream * Logger::os_ = &std::cout;
+  unsigned Logger::floatPrecision_ = 3;
 
   Logger
   wrap(Logger::LogLevel logLevel)
