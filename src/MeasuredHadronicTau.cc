@@ -50,10 +50,7 @@ MeasuredHadronicTau::decayMode() const
 void
 MeasuredHadronicTau::initialize()
 {
-  pt_   = roundToNdigits(pt_);
-  eta_  = roundToNdigits(mass_);
-  phi_  = roundToNdigits(phi_);
-  mass_ = roundToNdigits(mass_);
+  MeasuredObject::initialize();
 
   preciseVisMass_ = mass_;
 
