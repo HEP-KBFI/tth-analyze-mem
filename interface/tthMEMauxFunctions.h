@@ -13,6 +13,12 @@ namespace tthMEM
   typedef math::XYZTLorentzVector LorentzVector;
   typedef math::XYZVectorD Vector;
 
+  enum ME_mg5_3l1tau
+  {
+    kTTH = 0,
+    kTTZ = 1
+  };
+
   // if not specified all masses and energies are given in GeV
   const double sqrtS = 13.e+3;
 

@@ -3,7 +3,7 @@
 
 #include <string> // std::string
 
-#include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_mg5.h" // me_tth_3l1tau_lo_mg5
+#include "tthAnalysis/tthMEM/interface/me_ttHorZ_3l1tau_mg5.h" // me_ttHorZ_3l1tau_mg5
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // tthMEM_3l_1tau::MeasuredEvent
 
 #include "LHAPDF/LHAPDF.h" // LHAPDF::PDF
@@ -49,6 +49,7 @@ namespace tthMEM
     void setIdxPhi1        (int idx);
     void setIdxPhiInv      (int idx);
     void setIdxMinvSquared (int idx);
+    void setCurrentME(ME_mg5_3l1tau currentME);
 
     /**
      * @brief Evaluates the integrand
@@ -68,9 +69,10 @@ namespace tthMEM
 
     LHAPDF::PDF * pdf_;
 
-    mutable me_tth_3l1tau_mg5 me_madgraph_;
+    ME_mg5_3l1tau currentME_;
+    mutable me_ttHorZ_3l1tau_mg5 * me_madgraph_[2];
     ///< @note mutable members can be modified by a const function (e.g. eval())
-    bool me_madgraph_initialized_;
+    ///< @note dynamic dispatch is tad bit slower because of additional vlookup
 
     unsigned numDimensions_;
 

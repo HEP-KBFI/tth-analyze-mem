@@ -51,7 +51,8 @@ namespace tthMEM
     getAverageComputingTime_real() const;
 
     double
-    integrate(const MeasuredEvent_3l1tau & ev);
+    integrate(const MeasuredEvent_3l1tau & ev,
+              ME_mg5_3l1tau currentME);
 
   private:
     integrand_tth_3l1tau * integrand_;

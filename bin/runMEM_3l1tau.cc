@@ -56,7 +56,7 @@ main(int argc,
   const Long64_t startingFromEntry = cfg_tthMEM.getParameter<Long64_t>("startingFromEntry");
 
   LOGINFO << "PDF name: " << pdfName;
-  LOGINFO << "MadGraph file name:" << madgraphFileName;
+  LOGINFO << "MadGraph file name: " << madgraphFileName;
   LOGINFO << "Integation mode: " << integrationMode;
   LOGINFO << "Maximum number of calls per event: " << maxObjFunctionCalls;
 
@@ -86,20 +86,20 @@ main(int argc,
 
 //--- set up the probability variables
   double probSignal;
-  double probBackground;
+  double probBackground_ttz;
 
   TBranch * probSignalBranch     = newTree -> Branch(
         "probSignal",     &probSignal,     "probSignal/D");
-  TBranch * probBackgroundBranch = newTree -> Branch(
-        "probBackground", &probBackground, "probBackground/D");
+  TBranch * probBackgroundBranch_ttz = newTree -> Branch(
+        "probBackground_ttz", &probBackground_ttz, "probBackground_ttz/D");
   (void) probSignalBranch;     // prevents compilation error
-  (void) probBackgroundBranch; // prevents compilation error
+  (void) probBackgroundBranch_ttz; // prevents compilation error
 
 //--- initialize the MEM instance and start looping over the events
-  LOGINFO << "Initializing the signal MEM instance";
-  MEM_ttHorZ_3l1tau mem_signal(sqrtS, pdfName, findFile(madgraphFileName));
-  mem_signal.setIntegrationMode(integrationMode);
-  mem_signal.setMaxObjFunctionCalls(maxObjFunctionCalls);
+  LOGINFO << "Initializing the tth&z MEM instance";
+  MEM_ttHorZ_3l1tau mem_tt_HandZ(sqrtS, pdfName, findFile(madgraphFileName));
+  mem_tt_HandZ.setIntegrationMode(integrationMode);
+  mem_tt_HandZ.setMaxObjFunctionCalls(maxObjFunctionCalls);
 
   const Long64_t nof_tree_entries = inputTree -> GetEntries();
   const Long64_t nof_max_entries = maxEvents < 0 ? nof_tree_entries : (startingFromEntry + maxEvents);
@@ -125,15 +125,16 @@ main(int argc,
     measuredEvent.initialize();
 
     probSignal = -1;
-    probBackground = -1;
+    probBackground_ttz = -1;
 
-    probSignal = mem_signal.integrate(measuredEvent);
+    probSignal = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTH);
+    probBackground_ttz = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTZ);
 
     newTree -> Fill();
   }
   LOGINFO << "Average time spent on signal ME per event: "
-          << "Real time: " << mem_signal.getAverageComputingTime_real() << " s;  "
-          << "CPU time: " << mem_signal.getAverageComputingTime_cpu() << " s";
+          << "Real time: " << mem_tt_HandZ.getAverageComputingTime_real() << " s;  "
+          << "CPU time: " << mem_tt_HandZ.getAverageComputingTime_cpu() << " s";
 
   newFile -> Write();
 

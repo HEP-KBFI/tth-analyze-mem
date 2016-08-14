@@ -1,4 +1,6 @@
 #include "tthAnalysis/tthMEM/interface/integrand_tth_3l1tau.h"
+#include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_mg5.h" // me_tth_3l1tau_lo_mg5
+#include "tthAnalysis/tthMEM/interface/me_ttz_3l1tau_mg5.h" // me_ttz_3l1tau_lo_mg5
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 
@@ -22,7 +24,8 @@ integrand_tth_3l1tau::integrand_tth_3l1tau(double sqrtS,
   , s_(std::pow(sqrtS_, 2))
   , beamAxis_(0., 0., 1.)
   , pdf_(0)
-  , me_madgraph_initialized_(false)
+  , currentME_(ME_mg5_3l1tau::kTTH) // default to tth
+  , me_madgraph_{0, 0}
   , numDimensions_(0)
   , measuredEvent_(0)
   , invCovMET_(TMatrixDSym(2))
@@ -45,10 +48,13 @@ integrand_tth_3l1tau::integrand_tth_3l1tau(double sqrtS,
     std::exit(EXIT_FAILURE);
   }
 
+  me_madgraph_[ME_mg5_3l1tau::kTTH] = new me_tth_3l1tau_mg5();
+  me_madgraph_[ME_mg5_3l1tau::kTTZ] = new me_ttz_3l1tau_mg5();
+
   if(madgraphFilename != "")
   {
-    me_madgraph_.initProc(madgraphFilename);
-    me_madgraph_initialized_ = true;
+    for(unsigned i = 0; i < 2; ++i)
+      me_madgraph_[i] -> initProc(madgraphFilename);
   }
   else
   {
@@ -161,6 +167,12 @@ integrand_tth_3l1tau::setIdxMinvSquared(int idx)
 }
 
 void
+integrand_tth_3l1tau::setCurrentME(ME_mg5_3l1tau currentME)
+{
+  currentME_ = currentME;
+}
+
+void
 integrand_tth_3l1tau::setInputs(const MeasuredEvent_3l1tau & measuredEvent)
 {
   measuredEvent_ = &measuredEvent; // todo: implement copy constructor?
@@ -206,7 +218,7 @@ integrand_tth_3l1tau::eval(const double * x) const
 {
   LOGVRB;
   if(! pdf_)                     LOGERR << "PDF not initialized!";
-  if(! me_madgraph_initialized_) LOGERR << "Madgraph's ME not initialized!";
+  if(! me_madgraph_[currentME_]) LOGERR << "Madgraph's ME not initialized!";
   if(! measuredEvent_)           LOGERR << "Measured event not specified!";
   if(! numDimensions_)           LOGERR << "Number of dimensions unspecified!";
   if(idxCosTheta1_ < 0)          LOGERR << "Index idxCosTheta1 not set";
@@ -218,11 +230,12 @@ integrand_tth_3l1tau::eval(const double * x) const
   if(idxPhi1_ < 0)               LOGERR << "Index idxPhi1 not set";
   if(idxPhiInv_ < 0)             LOGERR << "Index idxPhiInv not set";
   if(idxMinvSquared_ < 0)        LOGERR << "Index idxMinvSquared not set";
-  if(! pdf_ || ! me_madgraph_initialized_ || ! measuredEvent_ ||
+  if(! pdf_ || ! me_madgraph_[currentME_] || ! measuredEvent_ ||
      idxCosTheta1_ < 0 || idxVarphi1_ < 0 || idxCosTheta2_ < 0 ||
      idxVarphi2_ < 0 || idxZ1_ < 0 || idxTh_ < 0 || idxPhi1_ < 0 ||
      idxPhiInv_ < 0 || idxMinvSquared_ < 0)
     std::exit(EXIT_FAILURE);
+  LOGDBG << "Current MG5 ME: " << me_madgraph_[currentME_] -> name();
 
 //--- read the sampled values
   std::ostringstream ss;
@@ -246,9 +259,9 @@ integrand_tth_3l1tau::eval(const double * x) const
 //--- 2) assemble the integrand and evaluate it
 //--- 3) later: permutations over leptons and bjets
 
-//  me_madgraph_.setMomenta(mgMomenta_);
-//  me_madgraph_.sigmaKin();
-//  const double prob_ME_mg = me_madgraph_.getMatrixElements()[0];
+//  me_madgraph_[currentME_] -> setMomenta(mgMomenta_);
+//  me_madgraph_[currentME_] -> sigmaKin();
+//  const double prob_ME_mg = me_madgraph_[currentME_] -> getMatrixElements()[0];
 //  if(TMath::IsNaN(prob_ME_mg) || prob_ME_mg < 0.)
 //  {
 //    LOGERR << "Warning: MadGraph5 returned NaN or is zero: "

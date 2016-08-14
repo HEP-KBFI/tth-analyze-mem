@@ -111,7 +111,8 @@ MEM_ttHorZ_3l1tau::getAverageComputingTime_real() const
 }
 
 double
-MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
+MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
+                             ME_mg5_3l1tau currentME)
 {
   if(integrationMode_ == IntegrationMode::kUndefined)
   {
@@ -150,6 +151,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev)
   integrand_ -> setIdxPhi1       (idxPhi1);
   integrand_ -> setIdxPhiInv     (idxPhiInv);
   integrand_ -> setIdxMinvSquared(idxMinvSquared);
+  integrand_ -> setCurrentME(currentME);
   integrand_tth_3l1tau::gIntegrand = integrand_;
 
 //--- set integration boundaries
