@@ -40,7 +40,7 @@ class me_ttz_3l1tau_mg5
     me_ttz_3l1tau_mg5() = default;
 
     // Destructor.
-    ~me_ttz_3l1tau_mg5() {}
+    virtual ~me_ttz_3l1tau_mg5() override {}
 
     // Initialize process.
     virtual void

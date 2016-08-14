@@ -10,7 +10,7 @@ class me_ttHorZ_3l1tau_mg5
 public:
   me_ttHorZ_3l1tau_mg5() = default;
 
-  ~me_ttHorZ_3l1tau_mg5()
+  virtual ~me_ttHorZ_3l1tau_mg5()
   {
     if(jamp2[0])
     {

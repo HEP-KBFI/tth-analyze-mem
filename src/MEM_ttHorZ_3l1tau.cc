@@ -42,10 +42,10 @@ MEM_ttHorZ_3l1tau::MEM_ttHorZ_3l1tau(double sqrtS,
   , xl_(0)
   , xu_(0)
   , clock_(new TBenchmark())
-  , numSeconds_cpu_(0)
-  , numSeconds_real_(0)
-  , numSecondsAccumul_cpu_(0)
-  , numSecondsAccumul_real_(0)
+  , numSeconds_cpu_(0.)
+  , numSeconds_real_(0.)
+  , numSecondsAccumul_cpu_(0.)
+  , numSecondsAccumul_real_(0.)
   , nof_calls_(0)
 {}
 

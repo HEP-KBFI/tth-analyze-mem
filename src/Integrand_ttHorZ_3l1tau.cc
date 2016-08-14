@@ -95,12 +95,13 @@ Integrand_ttHorZ_3l1tau::~Integrand_ttHorZ_3l1tau()
 {
   LOGDBG;
 
-  if(pdf_)
-  {
-    delete pdf_;
-    pdf_ = 0;
-  }
+  if(pdf_) delete pdf_;
+
+  for(unsigned i = 0; i < 2; ++i)
+    if(me_madgraph_[i]) delete me_madgraph_[i];
+
   measuredEvent_ = 0; // no allocation, just the address
+
   std::for_each(mgMomenta_.begin(), mgMomenta_.end(),
     [](double * & d) { delete d; d = 0; }
   );

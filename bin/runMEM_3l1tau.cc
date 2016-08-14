@@ -132,7 +132,7 @@ main(int argc,
 
     newTree -> Fill();
   }
-  LOGINFO << "Average time spent on signal ME per event: "
+  LOGINFO << "Average time spent on tth & ttz MEM per event: "
           << "Real time: " << mem_tt_HandZ.getAverageComputingTime_real() << " s;  "
           << "CPU time: " << mem_tt_HandZ.getAverageComputingTime_cpu() << " s";
 
