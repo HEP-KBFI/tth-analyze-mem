@@ -1,5 +1,5 @@
-#ifndef INTEGRAND_TTH_3L1TAU_LO_H
-#define INTEGRAND_TTH_3L1TAU_LO_H
+#ifndef INTEGRAND_TTHORZ_3L1TAU_LO_H
+#define INTEGRAND_TTHORZ_3L1TAU_LO_H
 
 #include <string> // std::string
 
@@ -17,7 +17,7 @@ namespace tthMEM
    *   - add methods for setting transfer functions
    *   - implement the integrand
    */
-  class integrand_tth_3l1tau
+  class Integrand_ttHorZ_3l1tau
   {
   public:
     /**
@@ -26,10 +26,10 @@ namespace tthMEM
      * @param pdfName          Name of parton distribution function (pdf)
      * @param madgraphFileName Full path to madgraph5 file (param_card.dat)
      */
-    integrand_tth_3l1tau(double sqrtS,
-                         const std::string & pdfName,
-                         const std::string & madgraphFileName);
-    ~integrand_tth_3l1tau();
+    Integrand_ttHorZ_3l1tau(double sqrtS,
+                            const std::string & pdfName,
+                            const std::string & madgraphFileName);
+    ~Integrand_ttHorZ_3l1tau();
 
     /**
      * @brief Set measured/reconstructed event as an input
@@ -59,7 +59,7 @@ namespace tthMEM
     double
     eval(const double * x) const;
 
-    static const integrand_tth_3l1tau * gIntegrand;
+    static const Integrand_ttHorZ_3l1tau * gIntegrand;
     ///< static pointer to this instance
 
   protected:
@@ -116,4 +116,4 @@ namespace tthMEM
   };
 }
 
-#endif // INTEGRAND_TTH_3L1TAU_LO_H
+#endif // INTEGRAND_TTHORZ_3L1TAU_LO_H

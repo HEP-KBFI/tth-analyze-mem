@@ -16,7 +16,7 @@ g_C(double * x,
     std::size_t dimension,
     void * additionalParameters)
 {
-  const double returnValue = integrand_tth_3l1tau::gIntegrand -> eval(x);
+  const double returnValue = Integrand_ttHorZ_3l1tau::gIntegrand -> eval(x);
   return returnValue;
 }
 
@@ -25,14 +25,14 @@ g_Fortran(double ** x,
           std::size_t dimension,
           void ** additionalParameters)
 {
-  const double returnValue = integrand_tth_3l1tau::gIntegrand -> eval(*x);
+  const double returnValue = Integrand_ttHorZ_3l1tau::gIntegrand -> eval(*x);
   return returnValue;
 }
 
 MEM_ttHorZ_3l1tau::MEM_ttHorZ_3l1tau(double sqrtS,
                                      const std::string & pdfName,
                                      const std::string & madgraphFileName)
-  : integrand_(new integrand_tth_3l1tau(sqrtS, pdfName, madgraphFileName))
+  : integrand_(new Integrand_ttHorZ_3l1tau(sqrtS, pdfName, madgraphFileName))
   , sqrtS_(sqrtS)
   , integrationMode_(IntegrationMode::kUndefined)
   , intAlgo_(0)
@@ -152,7 +152,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   integrand_ -> setIdxPhiInv     (idxPhiInv);
   integrand_ -> setIdxMinvSquared(idxMinvSquared);
   integrand_ -> setCurrentME(currentME);
-  integrand_tth_3l1tau::gIntegrand = integrand_;
+  Integrand_ttHorZ_3l1tau::gIntegrand = integrand_;
 
 //--- set integration boundaries
   double xl[9] = { -1., -pi(), -1., -pi(),  0., -pi() / 2, -pi(), -pi(), 0. };

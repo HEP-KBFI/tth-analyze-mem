@@ -1,4 +1,4 @@
-#include "tthAnalysis/tthMEM/interface/integrand_tth_3l1tau.h"
+#include "tthAnalysis/tthMEM/interface/Integrand_ttHorZ_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_mg5.h" // me_tth_3l1tau_lo_mg5
 #include "tthAnalysis/tthMEM/interface/me_ttz_3l1tau_mg5.h" // me_ttz_3l1tau_lo_mg5
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h"
@@ -15,11 +15,11 @@
 
 using namespace tthMEM;
 
-const integrand_tth_3l1tau * integrand_tth_3l1tau::gIntegrand = 0;
+const Integrand_ttHorZ_3l1tau * Integrand_ttHorZ_3l1tau::gIntegrand = 0;
 
-integrand_tth_3l1tau::integrand_tth_3l1tau(double sqrtS,
-                                           const std::string & pdfName,
-                                           const std::string & madgraphFilename)
+Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(double sqrtS,
+                                                 const std::string & pdfName,
+                                                 const std::string & madgraphFilename)
   : sqrtS_(sqrtS)
   , s_(std::pow(sqrtS_, 2))
   , beamAxis_(0., 0., 1.)
@@ -91,7 +91,7 @@ integrand_tth_3l1tau::integrand_tth_3l1tau(double sqrtS,
   gIntegrand = this;
 }
 
-integrand_tth_3l1tau::~integrand_tth_3l1tau()
+Integrand_ttHorZ_3l1tau::~Integrand_ttHorZ_3l1tau()
 {
   LOGDBG;
 
@@ -107,73 +107,73 @@ integrand_tth_3l1tau::~integrand_tth_3l1tau()
 }
 
 void
-integrand_tth_3l1tau::setNumDimensions(unsigned numDimensions)
+Integrand_ttHorZ_3l1tau::setNumDimensions(unsigned numDimensions)
 {
   numDimensions_ = numDimensions;
 }
 
 void
-integrand_tth_3l1tau::setIdxCosTheta1(int idx)
+Integrand_ttHorZ_3l1tau::setIdxCosTheta1(int idx)
 {
   idxCosTheta1_ = idx;
 }
 
 void
-integrand_tth_3l1tau::setIdxVarphi1(int idx)
+Integrand_ttHorZ_3l1tau::setIdxVarphi1(int idx)
 {
   idxVarphi1_ = idx;
 }
 
 void
-integrand_tth_3l1tau::setIdxCosTheta2(int idx)
+Integrand_ttHorZ_3l1tau::setIdxCosTheta2(int idx)
 {
   idxCosTheta2_ = idx;
 }
 
 void
-integrand_tth_3l1tau::setIdxVarphi2(int idx)
+Integrand_ttHorZ_3l1tau::setIdxVarphi2(int idx)
 {
   idxVarphi2_ = idx;
 }
 
 void
-integrand_tth_3l1tau::setIdxZ1(int idx)
+Integrand_ttHorZ_3l1tau::setIdxZ1(int idx)
 {
   idxZ1_ = idx;
 }
 
 void
-integrand_tth_3l1tau::setIdxTh(int idx)
+Integrand_ttHorZ_3l1tau::setIdxTh(int idx)
 {
   idxTh_ = idx;
 }
 
 void
-integrand_tth_3l1tau::setIdxPhi1(int idx)
+Integrand_ttHorZ_3l1tau::setIdxPhi1(int idx)
 {
   idxPhi1_ = idx;
 }
 
 void
-integrand_tth_3l1tau::setIdxPhiInv(int idx)
+Integrand_ttHorZ_3l1tau::setIdxPhiInv(int idx)
 {
   idxPhiInv_ = idx;
 }
 
 void
-integrand_tth_3l1tau::setIdxMinvSquared(int idx)
+Integrand_ttHorZ_3l1tau::setIdxMinvSquared(int idx)
 {
   idxMinvSquared_ = idx;
 }
 
 void
-integrand_tth_3l1tau::setCurrentME(ME_mg5_3l1tau currentME)
+Integrand_ttHorZ_3l1tau::setCurrentME(ME_mg5_3l1tau currentME)
 {
   currentME_ = currentME;
 }
 
 void
-integrand_tth_3l1tau::setInputs(const MeasuredEvent_3l1tau & measuredEvent)
+Integrand_ttHorZ_3l1tau::setInputs(const MeasuredEvent_3l1tau & measuredEvent)
 {
   measuredEvent_ = &measuredEvent; // todo: implement copy constructor?
 
@@ -214,7 +214,7 @@ integrand_tth_3l1tau::setInputs(const MeasuredEvent_3l1tau & measuredEvent)
 }
 
 double
-integrand_tth_3l1tau::eval(const double * x) const
+Integrand_ttHorZ_3l1tau::eval(const double * x) const
 {
   LOGVRB;
   if(! pdf_)                     LOGERR << "PDF not initialized!";

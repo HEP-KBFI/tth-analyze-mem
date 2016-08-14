@@ -4,7 +4,7 @@
 #include <string> // std::string
 
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h"
-#include "tthAnalysis/tthMEM/interface/integrand_tth_3l1tau.h"
+#include "tthAnalysis/tthMEM/interface/Integrand_ttHorZ_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorBase.h"
 
 #include <TBenchmark.h> // TBenchmark
@@ -55,7 +55,7 @@ namespace tthMEM
               ME_mg5_3l1tau currentME);
 
   private:
-    integrand_tth_3l1tau * integrand_;
+    Integrand_ttHorZ_3l1tau * integrand_;
     double sqrtS_;
     MeasuredEvent_3l1tau ev_;
 
