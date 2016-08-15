@@ -5,7 +5,7 @@
 using namespace tthMEM;
 
 MeasuredHadronicTau::MeasuredHadronicTau()
-  : MeasuredObject()
+  : MeasuredLepton()
   , decayMode_(-1)
 {}
 
@@ -13,15 +13,16 @@ MeasuredHadronicTau::MeasuredHadronicTau(double pt,
                                          double eta,
                                          double phi,
                                          double mass,
+                                         int charge,
                                          int decayMode)
-  : MeasuredObject(pt, eta, phi, mass)
+  : MeasuredLepton(pt, eta, phi, mass, charge)
   , decayMode_(decayMode)
 {
   initialize();
 }
 
 MeasuredHadronicTau::MeasuredHadronicTau(const MeasuredHadronicTau & other)
-  : MeasuredObject(other)
+  : MeasuredLepton(other)
   , decayMode_(other.decayMode_)
 {
   initialize();
@@ -30,7 +31,7 @@ MeasuredHadronicTau::MeasuredHadronicTau(const MeasuredHadronicTau & other)
 MeasuredHadronicTau &
 MeasuredHadronicTau::operator=(const MeasuredHadronicTau & other)
 {
-  MeasuredObject::operator=(other);
+  MeasuredLepton::operator=(other);
   decayMode_ = other.decayMode_;
 
   initialize();
@@ -50,7 +51,7 @@ MeasuredHadronicTau::decayMode() const
 void
 MeasuredHadronicTau::initialize()
 {
-  MeasuredObject::initialize();
+  MeasuredLepton::initialize();
 
   preciseVisMass_ = mass_;
 
@@ -80,7 +81,7 @@ void
 MeasuredHadronicTau::setBranches(TChain * t,
                                  const std::string & branchName)
 {
-  MeasuredObject::setBranches(t, branchName);
+  MeasuredLepton::setBranches(t, branchName);
   t -> SetBranchAddress(Form("%s_decayMode", branchName.c_str()), &decayMode_);
 }
 
@@ -88,7 +89,7 @@ void
 MeasuredHadronicTau::initNewBranches(TTree * t,
                                      const std::string & branchName)
 {
-  MeasuredObject::initNewBranches(t, branchName);
+  MeasuredLepton::initNewBranches(t, branchName);
   t -> Branch(Form("%s_decayMode", branchName.c_str()), &decayMode_,
               Form("%s_decayMode/I", branchName.c_str()));
 }
@@ -99,7 +100,7 @@ namespace tthMEM
   operator<<(std::ostream & os,
              const MeasuredHadronicTau & o)
   {
-    os << static_cast<const MeasuredObject &>(o)
+    os << static_cast<const MeasuredLepton &>(o)
        << "; decayMode = " << o.decayMode_;
     return os;
   }

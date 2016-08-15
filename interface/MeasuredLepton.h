@@ -32,7 +32,6 @@ namespace tthMEM
     setBranches(TChain * t,
                 const std::string & branchName) override;
 
-
     virtual void
     initNewBranches(TTree * t,
                     const std::string & branchName) override;
@@ -42,7 +41,7 @@ namespace tthMEM
                const MeasuredLepton & o);
     ///< prints the pt, eta, phi, mass and charge to ostream
 
-  private:
+  protected:
     int charge_; ///< charge of electron or muon
   };
 }

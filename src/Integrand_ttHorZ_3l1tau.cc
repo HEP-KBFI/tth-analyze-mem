@@ -174,33 +174,78 @@ Integrand_ttHorZ_3l1tau::setCurrentME(ME_mg5_3l1tau currentME)
 }
 
 void
-Integrand_ttHorZ_3l1tau::setInputs(const MeasuredEvent_3l1tau & measuredEvent)
+Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
 {
-  measuredEvent_ = &measuredEvent; // todo: implement copy constructor?
+  measuredEvent_ = &measuredEvent;
+}
 
+void
+Integrand_ttHorZ_3l1tau::renewInputs()
+{
 //--- set the variables related to the hadronic tau
-  hTauMassSquared_ = std::pow(measuredEvent_ -> htau1.mass(), 2);
-  const Vector eZ = measuredEvent_ -> htau1.p3().Unit();
-  const Vector eY = eZ.Cross(beamAxis_).Unit();
-  const Vector eX = eY.Cross(eZ).Unit(); // should already be unit vector by construction
+  hTauMass_ = measuredEvent_ -> htau1.mass();
+  hTauMassSquared_ = std::pow(hTauMass_, 2);
+  const Vector eZ_htau = measuredEvent_ -> htau1.p3().Unit();
+  const Vector eY_htau = eZ_htau.Cross(beamAxis_).Unit();
+  const Vector eX_htau = eY_htau.Cross(eZ_htau).Unit();
+  // eX should already be unit vector by construction
   LOGDBG << "htau p3 = (" << measuredEvent_ -> htau1.p3().x() << ", "
                           << measuredEvent_ -> htau1.p3().y() << ", "
                           << measuredEvent_ -> htau1.p3().z() << ")";
-  LOGDBG << "eX: theta = " << eX.theta() << ", phi = " << eX.phi() << ", norm = " << eX.R();
-  LOGDBG << "eY: theta = " << eY.theta() << ", phi = " << eY.phi() << ", norm = " << eY.R();
-  LOGDBG << "eZ: theta = " << eZ.theta() << ", phi = " << eZ.phi() << ", norm = " << eZ.R();
-  LOGDBG << "eX x eY = " << eX.Cross(eY).R() << " ; "
-         << "eX x eZ = " << eX.Cross(eZ).R() << " ; "
-         << "eY x eZ = " << eY.Cross(eZ).R();
-  eX_x_ = eX.x();
-  eX_y_ = eX.y();
-  eX_z_ = eX.z();
-  eY_x_ = eY.x();
-  eY_y_ = eY.y();
-  eY_z_ = eY.z();
-  eZ_x_ = eZ.x();
-  eZ_y_ = eZ.y();
-  eZ_z_ = eZ.z();
+  LOGDBG << "htau eX: " << "theta = " << eX_htau.theta() << ", "
+                        << "phi = "   << eX_htau.phi() << ", "
+                        << "norm = "  << eX_htau.R();
+  LOGDBG << "htau eY: " << "theta = " << eY_htau.theta() << ", "
+                        << "phi = "   << eY_htau.phi() << ", "
+                        << "norm = "  << eY_htau.R();
+  LOGDBG << "htau eZ: " << "theta = " << eZ_htau.theta() << ", "
+                        << "phi = "   << eZ_htau.phi() << ", "
+                        << "norm = "  << eZ_htau.R();
+  LOGDBG << "htau " << "eX x eY = " << eX_htau.Cross(eY_htau).R() << " ; "
+                    << "eX x eZ = " << eX_htau.Cross(eZ_htau).R() << " ; "
+                    << "eY x eZ = " << eY_htau.Cross(eZ_htau).R();
+  eX_x_htau_ = eX_htau.x();
+  eX_y_htau_ = eX_htau.y();
+  eX_z_htau_ = eX_htau.z();
+  eY_x_htau_ = eY_htau.x();
+  eY_y_htau_ = eY_htau.y();
+  eY_z_htau_ = eY_htau.z();
+  eZ_x_htau_ = eZ_htau.x();
+  eZ_y_htau_ = eZ_htau.y();
+  eZ_z_htau_ = eZ_htau.z();
+
+  complLeptIdx_ = measuredEvent_ -> complLeptonIdx;
+  const MeasuredLepton & complLepton = measuredEvent_-> leptons[complLeptIdx_];
+  complLeptMass_ = complLepton.mass();
+  complLeptMassSquared_ = std::pow(complLeptMass_, 2);
+  const Vector eZ_lept = complLepton.p3().Unit();
+  const Vector eY_lept = eZ_lept.Cross(beamAxis_).Unit();
+  const Vector eX_lept = eY_lept.Cross(eZ_lept).Unit();
+  // eX should already be unit vector by construction
+  LOGDBG << "lept p3 = (" << complLepton.p3().x() << ", "
+                          << complLepton.p3().y() << ", "
+                          << complLepton.p3().z() << ")";
+  LOGDBG << "lept eX: " << "theta = " << eX_lept.theta() << ", "
+                        << "phi = "   << eX_lept.phi() << ", "
+                        << "norm = "  << eX_lept.R();
+  LOGDBG << "lept eY: " << "theta = " << eY_lept.theta() << ", "
+                        << "phi = "   << eY_lept.phi() << ", "
+                        << "norm = "  << eY_lept.R();
+  LOGDBG << "lept eZ: " << "theta = " << eZ_lept.theta() << ", "
+                        << "phi = "   << eZ_lept.phi() << ", "
+                        << "norm = "  << eZ_lept.R();
+  LOGDBG << "lept " << "eX x eY = " << eX_lept.Cross(eY_lept).R() << " ; "
+                    << "eX x eZ = " << eX_lept.Cross(eZ_lept).R() << " ; "
+                    << "eY x eZ = " << eY_lept.Cross(eZ_lept).R();
+  eX_x_lept_ = eX_lept.x();
+  eX_y_lept_ = eX_lept.y();
+  eX_z_lept_ = eX_lept.z();
+  eY_x_lept_ = eY_lept.x();
+  eY_y_lept_ = eY_lept.y();
+  eY_z_lept_ = eY_lept.z();
+  eZ_x_lept_ = eZ_lept.x();
+  eZ_y_lept_ = eZ_lept.y();
+  eZ_z_lept_ = eZ_lept.z();
 
 //--- set the variables related to the MET TF
   invCovMET_ = measuredEvent_ -> met.covMET();
@@ -236,7 +281,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
      idxVarphi2_ < 0 || idxZ1_ < 0 || idxTh_ < 0 || idxPhi1_ < 0 ||
      idxPhiInv_ < 0 || idxMinvSquared_ < 0)
     std::exit(EXIT_FAILURE);
-  LOGDBG << "Current MG5 ME: " << me_madgraph_[currentME_] -> name();
+  LOGVRB << "Current MG5 ME: " << me_madgraph_[currentME_] -> name();
 
 //--- read the sampled values
   std::ostringstream ss;

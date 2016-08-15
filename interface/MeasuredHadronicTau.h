@@ -1,7 +1,7 @@
 #ifndef MEASUREDHADRONICTAU_H
 #define MEASUREDHADRONICTAU_H
 
-#include "tthAnalysis/tthMEM/interface/MeasuredObject.h"
+#include "tthAnalysis/tthMEM/interface/MeasuredLepton.h"
 
 namespace tthMEM
 {
@@ -14,7 +14,7 @@ namespace tthMEM
    * @see MeasuredObject
    */
   class MeasuredHadronicTau
-    : public MeasuredObject
+    : public MeasuredLepton
   {
   public:
     MeasuredHadronicTau();
@@ -22,6 +22,7 @@ namespace tthMEM
                         double eta,
                         double phi,
                         double mass,
+                        int charge,
                         int decayMode);
     MeasuredHadronicTau(const MeasuredHadronicTau & other);
     MeasuredHadronicTau & operator=(const MeasuredHadronicTau & other);

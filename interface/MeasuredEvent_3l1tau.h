@@ -39,6 +39,8 @@ namespace tthMEM
 
     MVAVariables mvaVariables;
 
+    unsigned complLeptonIdx;
+
     void
     initialize();
 

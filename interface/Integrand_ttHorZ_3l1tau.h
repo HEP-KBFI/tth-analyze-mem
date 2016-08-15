@@ -36,7 +36,13 @@ namespace tthMEM
      * @param measuredEvent The event
      */
     void
-    setInputs(const MeasuredEvent_3l1tau & measuredEvent);
+    setEvent(const MeasuredEvent_3l1tau & measuredEvent);
+
+    /**
+     * @brief Updates input parameters changed in the event
+     */
+    void
+    renewInputs();
 
     /* simple setters */
     void setNumDimensions(unsigned numDimensions);
@@ -77,17 +83,31 @@ namespace tthMEM
     unsigned numDimensions_;
 
     const MeasuredEvent_3l1tau * measuredEvent_;
-    // for the hadronic tau only:
+    // for the hadronic tau:
+    double hTauMass_;
     double hTauMassSquared_;
-    double eX_x_;
-    double eX_y_;
-    double eX_z_;
-    double eY_x_;
-    double eY_y_;
-    double eY_z_;
-    double eZ_x_;
-    double eZ_y_;
-    double eZ_z_;
+    double eX_x_htau_;
+    double eX_y_htau_;
+    double eX_z_htau_;
+    double eY_x_htau_;
+    double eY_y_htau_;
+    double eY_z_htau_;
+    double eZ_x_htau_;
+    double eZ_y_htau_;
+    double eZ_z_htau_;
+    // for the lepton coming from tau:
+    unsigned complLeptIdx_; ///< index of lepton coming from tau
+    double complLeptMass_;
+    double complLeptMassSquared_;
+    double eX_x_lept_;
+    double eX_y_lept_;
+    double eX_z_lept_;
+    double eY_x_lept_;
+    double eY_y_lept_;
+    double eY_z_lept_;
+    double eZ_x_lept_;
+    double eZ_y_lept_;
+    double eZ_z_lept_;
 
     TMatrixDSym invCovMET_;
     double MET_TF_denom;

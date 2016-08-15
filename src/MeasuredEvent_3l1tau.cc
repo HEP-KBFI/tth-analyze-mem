@@ -23,14 +23,14 @@ MeasuredEvent_3l1tau::initialize()
   htau1.initialize();
 
 //--- check whether the sum of lepton charges is +-1
-  const int chargeSum = std::accumulate(
+  const int leptonChargeSum = std::accumulate(
     leptons.begin(), leptons.end(), 0,
     [](int sum, const MeasuredLepton & lepton) -> int
     {
       return sum + lepton.charge();
     }
   );
-  if(std::abs(chargeSum) != 1)
+  if(std::abs(leptonChargeSum) != 1)
   {
     LOGERR << "Something's off: the abs of sum of lepton charges is not 1";
     std::exit(EXIT_FAILURE);
@@ -62,6 +62,15 @@ MeasuredEvent_3l1tau::initialize()
 //--- set the permutations and their pointers
   leptons.setPermutationPtrs(leptonPermIdxs, &currentPermutation_, 4);
   jets.setPermutationPtrs(jetPermIdxs, &currentPermutation_, 4);
+
+//--- use the first lepton index in the default representation that
+//--- has opposite sign w.r.t the tau lepton
+  if((leptonChargeSum + htau1.charge()) != 0)
+  {
+    LOGERR << "The sum of charges of leptonic products is not zero";
+    std::exit(EXIT_FAILURE);
+  }
+  complLeptonIdx = leptonIdx1;
 }
 
 void

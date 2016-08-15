@@ -120,7 +120,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
     assert(0);
   }
 
-  LOGVRB;
+  LOGDBG << (currentME == ME_mg5_3l1tau::kTTH ? "[TTH]" : "[TTZ]");
   clock_ -> Reset();
   clock_ -> Start(__PRETTY_FUNCTION__);
 
@@ -139,7 +139,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   const int idxPhiInv = 7;      // (invisible) rotation angle of leptonic tau nu
   const int idxMinvSquared = 8; // (invisible) mass of leptonic neutrino pair
 
-  integrand_ -> setInputs(ev);
+  integrand_ -> setEvent(ev);
   integrand_ -> setNumDimensions(numDimensions_);
   integrand_ -> setIdxCosTheta1  (idxCosTheta1);
   integrand_ -> setIdxVarphi1    (idxVarphi1);
@@ -178,6 +178,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   do
   {
     LOGDBG << ev;
+    integrand_ -> renewInputs();
 
     double p = 0.;
     double pErr = 0.;
