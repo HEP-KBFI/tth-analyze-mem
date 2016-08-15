@@ -123,7 +123,6 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   LOGVRB;
   clock_ -> Reset();
   clock_ -> Start(__PRETTY_FUNCTION__);
-  LOGDBG << ev;
 
 //---  it is (rightly) assumed that leptons and jets
 //---  have already been sorted by their pt in decreasing order
@@ -140,8 +139,8 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   const int idxPhiInv = 7;      // (invisible) rotation angle of leptonic tau nu
   const int idxMinvSquared = 8; // (invisible) mass of leptonic neutrino pair
 
-  integrand_ -> setNumDimensions(numDimensions_);
   integrand_ -> setInputs(ev);
+  integrand_ -> setNumDimensions(numDimensions_);
   integrand_ -> setIdxCosTheta1  (idxCosTheta1);
   integrand_ -> setIdxVarphi1    (idxVarphi1);
   integrand_ -> setIdxCosTheta2  (idxCosTheta2);
@@ -163,32 +162,45 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   std::copy(xu, xu + numDimensions_, xu_);
 
 //--- create probability and corresponding error (uncertainty) variable
-  double p = 0.;
-  double pErr = 0;
+  double pSum = 0.;
+  double pSumErr = 0;
 
 //--- set integration settings
   const unsigned numCallsGridOpt = roundToNearestUInt(0.20 * maxObjFunctionCalls_);
   const unsigned numCallsIntEval = roundToNearestUInt(0.80 * maxObjFunctionCalls_);
   if(integrationMode_ == IntegrationMode::kVEGAS)
-  {
     intAlgo_ = new MEMIntegratorVEGAS(numCallsGridOpt, numCallsIntEval, 1, 2.);
-    intAlgo_ -> integrate(&g_C, xl_, xu_, numDimensions_, p, pErr);
-    delete intAlgo_;
-    intAlgo_ = 0;
-  }
   else if(integrationMode_ == IntegrationMode::kVAMP)
-  {
     intAlgo_ = new MEMIntegratorVAMP(numCallsGridOpt, numCallsIntEval);
-    intAlgo_ -> integrate(&g_Fortran, xl_, xu_, numDimensions_, p, pErr);
-    delete intAlgo_;
-    intAlgo_ = 0;
+
+//--- loop over different permutations of same-sign leptons and b-jets
+/// @note consider moving the permutation part inside integrate()
+  do
+  {
+    LOGDBG << ev;
+
+    double p = 0.;
+    double pErr = 0.;
+
+    if(integrationMode_ == IntegrationMode::kVEGAS)
+      intAlgo_ -> integrate(&g_C, xl_, xu_, numDimensions_, p, pErr);
+    else if(integrationMode_ == IntegrationMode::kVAMP)
+      intAlgo_ -> integrate(&g_Fortran, xl_, xu_, numDimensions_, p, pErr);
+
+    LOGINFO << "p = " << p << "; pErr = " << pErr;
+    pSum += p;
+    pSumErr += pErr;
+
+    ev.nextPermutation();
   }
+  while(ev.hasNextPermutation());
+  ev.resetPermutation();
 
 //--- divide by the process cross section (in GeV, i.e. natural units)
 //--- and adjust the uncertainty accordingly
-  p /= xSectionTTHinGeV2;
-  pErr /= xSectionTTHinGeV2;
-  LOGDBG << "p = " << p << "; pErr = " << pErr;
+  pSum /= xSectionTTHinGeV2;
+  pSumErr /= xSectionTTHinGeV2;
+  LOGDBG << "Summed over permutations: p = " << pSum << "; pErr = " << pSumErr;
 
 //--- cleanup
   if(xl_)
@@ -201,6 +213,11 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
     delete [] xu_;
     xu_ = 0;
   }
+  if(intAlgo_)
+  {
+    delete intAlgo_;
+    intAlgo_ = 0;
+  }
 
   clock_ -> Stop(__PRETTY_FUNCTION__);
   numSeconds_cpu_ = clock_ -> GetCpuTime(__PRETTY_FUNCTION__);
@@ -212,6 +229,6 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   numSecondsAccumul_real_ += numSecondsAccumul_real_;
   ++nof_calls_;
 
-  return p;
+  return pSum;
 }
 

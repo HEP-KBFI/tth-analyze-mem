@@ -88,11 +88,11 @@ main(int argc,
   double probSignal;
   double probBackground_ttz;
 
-  TBranch * probSignalBranch     = newTree -> Branch(
-        "probSignal",     &probSignal,     "probSignal/D");
+  TBranch * probSignalBranch         = newTree -> Branch(
+        "probSignal",         &probSignal,         "probSignal/D");
   TBranch * probBackgroundBranch_ttz = newTree -> Branch(
         "probBackground_ttz", &probBackground_ttz, "probBackground_ttz/D");
-  (void) probSignalBranch;     // prevents compilation error
+  (void) probSignalBranch;         // prevents compilation error
   (void) probBackgroundBranch_ttz; // prevents compilation error
 
 //--- initialize the MEM instance and start looping over the events

@@ -11,9 +11,10 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredJet.h" // tthMEM::MeasuredJet
 #include "tthAnalysis/tthMEM/interface/MeasuredHadronicTau.h" // tthMEM::MeasuredHadronicTau
 #include "tthAnalysis/tthMEM/interface/MVAVariables.h" // tthMEM::MVAVariables
+#include "tthAnalysis/tthMEM/interface/IndexWrapper.h" // tthMEM::IndexWrapper<,>
 
-#include <vector> // std::vector<>
 #include <ostream> // std::ostream
+#include <vector> // std::vector<>
 
 namespace tthMEM
 {
@@ -32,14 +33,11 @@ namespace tthMEM
     TBranch * branch_evt = 0;
 
     MeasuredMET met;
-    MeasuredLepton lepton1, lepton2, lepton3;
-    MeasuredJet jet1, jet2;
+    IndexWrapper<MeasuredLepton, 3> leptons;
+    IndexWrapper<MeasuredJet, 2> jets;
     MeasuredHadronicTau htau1;
 
     MVAVariables mvaVariables;
-
-    std::vector<MeasuredLepton> leptons_;
-    std::vector<MeasuredJet>    jets_;
 
     void
     initialize();
@@ -50,15 +48,23 @@ namespace tthMEM
     void
     initNewBranches(TTree * t);
 
-    const std::vector<MeasuredLepton> &
-    leptons() const;
+    bool
+    hasNextPermutation() const;
 
-    const std::vector<MeasuredJet> &
-    jets() const;
+    void
+    nextPermutation() const;
+
+    void
+    resetPermutation() const;
 
     friend std::ostream &
     operator<<(std::ostream & os,
                const MeasuredEvent_3l1tau & event);
+
+  private:
+    mutable unsigned currentPermutation_;
+    std::vector<std::vector<unsigned>> leptonPermIdxs;
+    std::vector<std::vector<unsigned>> jetPermIdxs;
   };
 }
 
