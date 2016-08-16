@@ -204,8 +204,8 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
 
 //--- divide by the process cross section (in GeV, i.e. natural units)
 //--- and adjust the uncertainty accordingly
-  pSum /= xSectionTTHinGeV2;
-  pSumErr /= xSectionTTHinGeV2;
+  pSum /= (currentME == ME_mg5_3l1tau::kTTH) ? xSectionTTHinGeV2 : xSectionTTZinGeV2;
+  pSumErr /= (currentME == ME_mg5_3l1tau::kTTH) ? xSectionTTHinGeV2 : xSectionTTZinGeV2;
   LOGDBG << "Summed over permutations: p = " << pSum << "; pErr = " << pSumErr;
 
 //--- cleanup

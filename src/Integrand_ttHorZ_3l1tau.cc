@@ -173,82 +173,32 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
 {
   LOGTRC;
   measuredEvent_ = &measuredEvent;
-}
-
-void
-Integrand_ttHorZ_3l1tau::renewInputs()
-{
-  LOGTRC;
 //--- set the variables related to the hadronic tau
   const MeasuredHadronicTau & htau = measuredEvent_ -> htau1;
+  hTauEnergy_ = htau.energy();
+  hTauMomentum_ = htau.p();
   hTauMass_ = htau.mass();
   hTauMassSquared_ = std::pow(hTauMass_, 2);
-  const Vector eZ_htau = htau.p3().Unit();
-  const Vector eY_htau = eZ_htau.Cross(beamAxis_).Unit();
-  const Vector eX_htau = eY_htau.Cross(eZ_htau).Unit();
+  hTauP4_ = htau.p4();
+  eZ_htau_ = htau.p3().Unit();
+  eY_htau_ = eZ_htau_.Cross(beamAxis_).Unit();
+  eX_htau_ = eY_htau_.Cross(eZ_htau_).Unit();
   // eX should already be unit vector by construction
   LOGVRB << "htau p3 = (" << measuredEvent_ -> htau1.p3().x() << ", "
                           << measuredEvent_ -> htau1.p3().y() << ", "
                           << measuredEvent_ -> htau1.p3().z() << ")";
-  LOGVRB << "htau eX: " << "theta = " << eX_htau.theta() << ", "
-                        << "phi = "   << eX_htau.phi() << ", "
-                        << "norm = "  << eX_htau.R();
-  LOGVRB << "htau eY: " << "theta = " << eY_htau.theta() << ", "
-                        << "phi = "   << eY_htau.phi() << ", "
-                        << "norm = "  << eY_htau.R();
-  LOGVRB << "htau eZ: " << "theta = " << eZ_htau.theta() << ", "
-                        << "phi = "   << eZ_htau.phi() << ", "
-                        << "norm = "  << eZ_htau.R();
-  LOGVRB << "htau " << "eX x eY = " << eX_htau.Cross(eY_htau).R() << " ; "
-                    << "eX x eZ = " << eX_htau.Cross(eZ_htau).R() << " ; "
-                    << "eY x eZ = " << eY_htau.Cross(eZ_htau).R();
-  eX_x_htau_ = eX_htau.x();
-  eX_y_htau_ = eX_htau.y();
-  eX_z_htau_ = eX_htau.z();
-  eY_x_htau_ = eY_htau.x();
-  eY_y_htau_ = eY_htau.y();
-  eY_z_htau_ = eY_htau.z();
-  eZ_x_htau_ = eZ_htau.x();
-  eZ_y_htau_ = eZ_htau.y();
-  eZ_z_htau_ = eZ_htau.z();
-
-  complLeptIdx_ = measuredEvent_ -> complLeptonIdx;
-  const MeasuredLepton & complLepton = measuredEvent_-> leptons[complLeptIdx_];
-  complLeptMass_ = complLepton.mass();
-  complLeptMassSquared_ = std::pow(complLeptMass_, 2);
-  const Vector eZ_lept = complLepton.p3().Unit();
-  const Vector eY_lept = eZ_lept.Cross(beamAxis_).Unit();
-  const Vector eX_lept = eY_lept.Cross(eZ_lept).Unit();
-  // eX should already be unit vector by construction
-  LOGVRB << "lept p3 = (" << complLepton.p3().x() << ", "
-                          << complLepton.p3().y() << ", "
-                          << complLepton.p3().z() << ")";
-  LOGVRB << "lept eX: " << "theta = " << eX_lept.theta() << ", "
-                        << "phi = "   << eX_lept.phi() << ", "
-                        << "norm = "  << eX_lept.R();
-  LOGVRB << "lept eY: " << "theta = " << eY_lept.theta() << ", "
-                        << "phi = "   << eY_lept.phi() << ", "
-                        << "norm = "  << eY_lept.R();
-  LOGVRB << "lept eZ: " << "theta = " << eZ_lept.theta() << ", "
-                        << "phi = "   << eZ_lept.phi() << ", "
-                        << "norm = "  << eZ_lept.R();
-  LOGVRB << "lept " << "eX x eY = " << eX_lept.Cross(eY_lept).R() << " ; "
-                    << "eX x eZ = " << eX_lept.Cross(eZ_lept).R() << " ; "
-                    << "eY x eZ = " << eY_lept.Cross(eZ_lept).R();
-  eX_x_lept_ = eX_lept.x();
-  eX_y_lept_ = eX_lept.y();
-  eX_z_lept_ = eX_lept.z();
-  eY_x_lept_ = eY_lept.x();
-  eY_y_lept_ = eY_lept.y();
-  eY_z_lept_ = eY_lept.z();
-  eZ_x_lept_ = eZ_lept.x();
-  eZ_y_lept_ = eZ_lept.y();
-  eZ_z_lept_ = eZ_lept.z();
-
-//--- find the meaasured mass of both visible tau decay products
-  measuredVisMassSquared_ = (htau.p4() + complLepton.p4()).mass2();
-  LOGVRB << "measured mass of visible tau decay products: "
-         << std::sqrt(measuredVisMassSquared_);
+  LOGVRB << "htau eX: " << "theta = " << eX_htau_.theta() << ", "
+                        << "phi = "   << eX_htau_.phi() << ", "
+                        << "norm = "  << eX_htau_.R();
+  LOGVRB << "htau eY: " << "theta = " << eY_htau_.theta() << ", "
+                        << "phi = "   << eY_htau_.phi() << ", "
+                        << "norm = "  << eY_htau_.R();
+  LOGVRB << "htau eZ: " << "theta = " << eZ_htau_.theta() << ", "
+                        << "phi = "   << eZ_htau_.phi() << ", "
+                        << "norm = "  << eZ_htau_.R();
+  LOGVRB << "htau " << "eX x eY = " << eX_htau_.Cross(eY_htau_).R() << " ; "
+                    << "eX x eZ = " << eX_htau_.Cross(eZ_htau_).R() << " ; "
+                    << "eY x eZ = " << eY_htau_.Cross(eZ_htau_).R();
 
 //--- set the variables related to the MET TF
   invCovMET_ = measuredEvent_ -> met.covMET();
@@ -260,6 +210,62 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   }
   else
     LOGERR << "Cannot invert MET covariance matrix b/c det = 0";
+}
+
+void
+Integrand_ttHorZ_3l1tau::renewInputs()
+{
+  LOGTRC;
+//--- set the variables related to the leptonic tau
+  complLeptIdx_ = measuredEvent_ -> complLeptonIdx;
+  const MeasuredLepton & complLepton = measuredEvent_-> leptons[complLeptIdx_];
+  complLeptEnergy_ = complLepton.energy();
+  complLeptMomentum_ = complLepton.p();
+  complLeptMass_ = complLepton.mass();
+  complLeptMassSquared_ = std::pow(complLeptMass_, 2);
+  complLeptP4_ = complLepton.p4();
+  eZ_lept_ = complLepton.p3().Unit();
+  eY_lept_ = eZ_lept_.Cross(beamAxis_).Unit();
+  eX_lept_ = eY_lept_.Cross(eZ_lept_).Unit();
+  // eX should already be unit vector by construction
+  LOGVRB << "lept p3 = (" << complLepton.p3().x() << ", "
+                          << complLepton.p3().y() << ", "
+                          << complLepton.p3().z() << ")";
+  LOGVRB << "lept eX: " << "theta = " << eX_lept_.theta() << ", "
+                        << "phi = "   << eX_lept_.phi() << ", "
+                        << "norm = "  << eX_lept_.R();
+  LOGVRB << "lept eY: " << "theta = " << eY_lept_.theta() << ", "
+                        << "phi = "   << eY_lept_.phi() << ", "
+                        << "norm = "  << eY_lept_.R();
+  LOGVRB << "lept eZ: " << "theta = " << eZ_lept_.theta() << ", "
+                        << "phi = "   << eZ_lept_.phi() << ", "
+                        << "norm = "  << eZ_lept_.R();
+  LOGVRB << "lept " << "eX x eY = " << eX_lept_.Cross(eY_lept_).R() << " ; "
+                    << "eX x eZ = " << eX_lept_.Cross(eZ_lept_).R() << " ; "
+                    << "eY x eZ = " << eY_lept_.Cross(eZ_lept_).R();
+
+//--- find the meaasured mass of both visible tau decay products
+  measuredVisMassSquared_ = (hTauP4_ + complLeptP4_).mass2();
+  LOGVRB << "measured mass of visible tau decay products: "
+         << std::sqrt(measuredVisMassSquared_);
+}
+
+double
+Integrand_ttHorZ_3l1tau::nuHtauCosTheta(double nuHtau_en) const
+{
+  return (nuHtau_en * hTauEnergy_ -
+             (tauLeptonMassSquared - hTauMassSquared_) / 2.)
+           / (hTauMomentum_ * nuHtau_en);
+}
+
+double
+Integrand_ttHorZ_3l1tau::nuLeptTauCosTheta(double nuLeptTau_en,
+                                           double mInvSquared,
+                                           double nuLeptTau_p) const
+{
+  return (nuLeptTau_en * complLeptEnergy_ -
+             (tauLeptonMassSquared - (complLeptMassSquared_ + mInvSquared)) / 2.)
+           / (complLeptMomentum_ * nuLeptTau_p);
 }
 
 double
@@ -292,28 +298,73 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   ss << x[numDimensions_ - 1];
   LOGVRB << "x = { " << ss.str() << " }";
 
-//  const double cosTheta1      = x[idxCosTheta1_];
-//  const double varphi1     = x[idxVarphi1_];
-//  const double cosTheta2   = x[idxCosTheta2_];
-//  const double varphi2     = x[idxVarphi2_];
-  const double z1          = x[idxZ1_];
-//  const double phi1        = x[idxPhi1_];
-//  const double phiInv      = x[idxPhiInv_];
-//  const double mInvSquared = x[idxMinvSquared_];
+//  const double cosTheta1     = x[idxCosTheta1_];
+//  const double varphi1       = x[idxVarphi1_];
+//  const double cosTheta2     = x[idxCosTheta2_];
+//  const double varphi2       = x[idxVarphi2_];
+  const double z1            = x[idxZ1_];
+  const double nuHtau_phi    = x[idxPhi1_];
+  const double nuLeptTau_phi = x[idxPhiInv_];
+  const double mInvSquared   = x[idxMinvSquared_];
 
 //--- confirm that the energy fraction carried by the tau is indeed in (0,1)
-  const double z2 = measuredVisMassSquared_ / (massHiggsSquared * z1);
+  const double z2 = measuredVisMassSquared_ /
+      (z1 * (currentME_ == ME_mg5_3l1tau::kTTH ? massHiggsSquared : massZSquared));
   if(! (z2 >= 1.e-5 && z2 <= 1.))
   {
-    LOGDBG << "z2 = " << z2 << " is not in (0, 1) => p = 0";
+    LOGDBG << "z2 = " << z2 << " not in (0, 1) => p = 0";
     return 0.;
   }
   else LOGTRC << "z2 = " << z2;
 
+//--- compute the neutrino and tau lepton 4-vector from hadronic tau
+  const double nuHtau_en = hTauEnergy_ * (1. - z1) / z1;
+  const double nuHtau_cosTheta = nuHtauCosTheta(nuHtau_en);
+  if(! (nuHtau_cosTheta >= -1. && nuHtau_cosTheta <= +1.))
+  {
+    LOGDBG << "nuHtau_cosTheta = " << nuHtau_cosTheta << " not in (-1, 1) => p = 0";
+    return 0.;
+  }
+  else LOGTRC << "nuHtau_cosTheta = " << nuHtau_cosTheta;
+  const double nuHtau_theta = std::acos(nuHtau_cosTheta);
+
+  const VectorSpherical nuHtau_loc(nuHtau_en, nuHtau_theta, nuHtau_phi);
+  const double nuHtau_px = nuHtau_loc.Dot(eX_htau_);
+  const double nuHtau_py = nuHtau_loc.Dot(eY_htau_);
+  const double nuHtau_pz = nuHtau_loc.Dot(eZ_htau_);
+  const LorentzVector nuHtau(nuHtau_px, nuHtau_py, nuHtau_pz, nuHtau_en);
+  LOGTRC << "htau nu: En = " << nuHtau_en << "; pT = " << nuHtau.pt();
+
+  const LorentzVector hTau = hTauP4_ + nuHtau;
+  LOGTRC << "hadronic tau: En = " << hTau.energy() << "; pT = " << hTau.pt();
+
+//--- compute the neutrino and tau lepton 4-vector from leptonic tau
+  const double nuLeptTau_en = complLeptEnergy_ * (1. - z2) / z2;
+  const double nuLeptTau_mass = std::sqrt(mInvSquared);
+  const double nuLeptTau_p = std::sqrt(std::max(0., std::pow(nuLeptTau_en, 2) -
+                                                    std::pow(nuLeptTau_mass, 2)));
+  const double nuLeptTau_cosTheta = nuLeptTauCosTheta(nuLeptTau_en, mInvSquared,
+                                                      nuLeptTau_p);
+  if(! (nuLeptTau_cosTheta >= -1. && nuLeptTau_cosTheta <= +1.))
+  {
+    LOGDBG << "nuLeptTau_cosTheta = " << nuLeptTau_cosTheta << " not in (-1, 1) "
+           << "=> p = 0";
+    return 0.;
+  }
+  const double nuLeptTau_theta = std::acos(nuLeptTau_cosTheta);
+  const VectorSpherical nuLeptTau_loc(nuLeptTau_en, nuLeptTau_theta, nuLeptTau_phi);
+  const double nuLeptTau_px = nuLeptTau_loc.Dot(eX_lept_);
+  const double nuLeptTau_py = nuLeptTau_loc.Dot(eY_lept_);
+  const double nuLeptTau_pz = nuLeptTau_loc.Dot(eZ_lept_);
+  const LorentzVector nuLeptTau(nuLeptTau_px, nuLeptTau_py, nuLeptTau_pz, nuLeptTau_en);
+  LOGTRC << "lept tau nu: En = " << nuLeptTau_en << "; pT = " << nuLeptTau.pt();
+
+  const LorentzVector leptTau = complLeptP4_ + nuLeptTau;
+  LOGTRC << "leptonic tau: En = " << leptTau.energy() << "; pT = " << leptTau.pt();
+
 //--- steps:
 //--- 1) reconstruct missing momenta for MG
 //--- 2) assemble the integrand and evaluate it
-//--- 3) later: permutations over leptons and bjets
 
 //
 

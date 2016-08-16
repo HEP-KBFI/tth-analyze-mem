@@ -2,7 +2,7 @@
 #define TTHMEMAUXFUNCTIONS_H
 
 #include "DataFormats/Math/interface/LorentzVector.h" // math::XYZTLorentzVector
-#include "DataFormats/Math/interface/Vector3D.h" // math::XYZVectorD
+#include "DataFormats/Math/interface/Vector3D.h" // math::XYZVectorD, math::RThetaPhiVector
 
 #include <string> // std::string
 #include <iostream> // std::cout
@@ -11,7 +11,8 @@
 namespace tthMEM
 {
   typedef math::XYZTLorentzVector LorentzVector;
-  typedef math::XYZVectorD Vector;
+  typedef math::XYZVectorD        Vector;
+  typedef math::RThetaPhiVector   VectorSpherical;
 
   enum ME_mg5_3l1tau
   {
@@ -32,8 +33,13 @@ namespace tthMEM
   const double xSectionTTH = 0.5085; // pb
   ///< taken from: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt1314TeV2014#ttH_Process
   const double xSectionTTHinGeV2 = xSectionTTH * conversionFactor; // 1 / GeV^2
+  const double xSectionTTZ = 1.e-3 * 839.3; // second factor given in fb = 10^-3 pb
+  ///< taken from: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWGTTH#Plans_for_YR4
+  const double xSectionTTZinGeV2 = xSectionTTZ * conversionFactor;
   const double massHiggs = 125.7; ///< taken from PDG booklet (2014, p 11)
   const double massHiggsSquared = std::pow(massHiggs, 2);
+  const double massZ = 91.1876; ///< taken from PDG booklet (2014, p 9)
+  const double massZSquared = std::pow(massZ, 2);
 
   /**
    * @brief Rounds double floating point number to N significant digits
