@@ -41,6 +41,7 @@ namespace tthMEM
     else if(boost::iequals(logLevelString, "info"))    logLevel_ = Logger::LogLevel::kInfo;
     else if(boost::iequals(logLevelString, "debug"))   logLevel_ = Logger::LogLevel::kDebug;
     else if(boost::iequals(logLevelString, "verbose")) logLevel_ = Logger::LogLevel::kVerbose;
+    else if(boost::iequals(logLevelString, "trace"))   logLevel_ = Logger::LogLevel::kTrace;
   }
 
   void
@@ -102,7 +103,7 @@ namespace tthMEM
 
   std::vector<std::string> Logger::logLevelStrings_ =
   {
-    "[error]", "[warning]", "[info]", "[debug]", "[verbose]"
+    "[error]", "[warning]", "[info]", "[debug]", "[verbose]", "[trace]"
   };
 
   Logger::LogLevel Logger::logLevel_ = Logger::LogLevel::kVerbose;

@@ -12,6 +12,7 @@
 #define LOGINFO tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)     <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
 #define LOGDBG  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
 #define LOGVRB  tthMEM::wrap(tthMEM::Logger::LogLevel::kVerbose)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define LOGTRC  tthMEM::wrap(tthMEM::Logger::LogLevel::kTrace)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
 
 namespace tthMEM
 {
@@ -27,7 +28,8 @@ namespace tthMEM
       kWarning = 1,
       kInfo    = 2,
       kDebug   = 3,
-      kVerbose = 4
+      kVerbose = 4,
+      kTrace   = 5
     };
 
     Logger(Logger::LogLevel logLevel);

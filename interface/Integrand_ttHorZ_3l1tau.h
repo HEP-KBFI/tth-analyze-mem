@@ -51,7 +51,6 @@ namespace tthMEM
     void setIdxCosTheta2   (int idx);
     void setIdxVarphi2     (int idx);
     void setIdxZ1          (int idx);
-    void setIdxTh          (int idx);
     void setIdxPhi1        (int idx);
     void setIdxPhiInv      (int idx);
     void setIdxMinvSquared (int idx);
@@ -83,6 +82,7 @@ namespace tthMEM
     unsigned numDimensions_;
 
     const MeasuredEvent_3l1tau * measuredEvent_;
+    double measuredVisMassSquared_; ///< mass of visible tau decay products
     // for the hadronic tau:
     double hTauMass_;
     double hTauMassSquared_;
@@ -117,7 +117,6 @@ namespace tthMEM
     int idxCosTheta2_;
     int idxVarphi2_;
     int idxZ1_;
-    int idxTh_;
     int idxPhi1_;
     int idxPhiInv_;
     int idxMinvSquared_;

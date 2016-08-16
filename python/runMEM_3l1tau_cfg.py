@@ -15,7 +15,7 @@ process.fwliteOutput = cms.PSet(
 )
 
 process.logging = cms.PSet(
-  logLevel = cms.string("verbose"),
+  logLevel = cms.string("trace"),
   enableTimeStamp = cms.bool(True),
   enableLogging = cms.bool(True)
 )

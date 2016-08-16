@@ -47,10 +47,13 @@ MEM_ttHorZ_3l1tau::MEM_ttHorZ_3l1tau(double sqrtS,
   , numSecondsAccumul_cpu_(0.)
   , numSecondsAccumul_real_(0.)
   , nof_calls_(0)
-{}
+{
+  LOGTRC;
+}
 
 MEM_ttHorZ_3l1tau::~MEM_ttHorZ_3l1tau()
 {
+  LOGTRC;
   if(integrand_)
   {
     delete integrand_;
@@ -66,12 +69,14 @@ MEM_ttHorZ_3l1tau::~MEM_ttHorZ_3l1tau()
 void
 MEM_ttHorZ_3l1tau::setIntegrationMode(IntegrationMode integrationMode)
 {
+  LOGTRC;
   integrationMode_ = integrationMode;
 }
 
 void
 MEM_ttHorZ_3l1tau::setIntegrationMode(const std::string & integrationModeString)
 {
+  LOGTRC;
   if(boost::iequals(integrationModeString, "vegas"))
     integrationMode_ = IntegrationMode::kVEGAS;
   else if(boost::iequals(integrationModeString, "vamp"))
@@ -83,6 +88,7 @@ MEM_ttHorZ_3l1tau::setIntegrationMode(const std::string & integrationModeString)
 void
 MEM_ttHorZ_3l1tau::setMaxObjFunctionCalls(unsigned maxObjFunctionCalls)
 {
+  LOGTRC;
   maxObjFunctionCalls_ = maxObjFunctionCalls;
 }
 
@@ -114,6 +120,7 @@ double
 MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
                              ME_mg5_3l1tau currentME)
 {
+  LOGTRC;
   if(integrationMode_ == IntegrationMode::kUndefined)
   {
     LOGERR << "Integration mode not set";
@@ -128,16 +135,15 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
 //---  have already been sorted by their pt in decreasing order
 
 //--- there are nine variables we have to sample over:
-  numDimensions_ = 9;
+  numDimensions_ = 8;
   const int idxCosTheta1 = 0;   // cosine of polar angle of the 1st neutrino
   const int idxVarphi1 = 1;     // azimuthal angle of the 1st neutrino
   const int idxCosTheta2 = 2;   // cosine of polar angle of the 2nd neutrino
   const int idxVarphi2 = 3;     // azimuthal angle of the 2nd neutrino
   const int idxZ1 = 4;          // energy fraction of hadronic tau system
-  const int idxTh = 5;          // aux variable derived from z2
-  const int idxPhi1 = 6;        // rotation angle of hadronic tau neutrino
-  const int idxPhiInv = 7;      // (invisible) rotation angle of leptonic tau nu
-  const int idxMinvSquared = 8; // (invisible) mass of leptonic neutrino pair
+  const int idxPhi1 = 5;        // rotation angle of hadronic tau neutrino
+  const int idxPhiInv = 6;      // (invisible) rotation angle of leptonic tau nu
+  const int idxMinvSquared = 7; // (invisible) mass of leptonic neutrino pair
 
   integrand_ -> setEvent(ev);
   integrand_ -> setNumDimensions(numDimensions_);
@@ -146,7 +152,6 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   integrand_ -> setIdxCosTheta2  (idxCosTheta2);
   integrand_ -> setIdxVarphi2    (idxVarphi2);
   integrand_ -> setIdxZ1         (idxZ1);
-  integrand_ -> setIdxTh         (idxTh);
   integrand_ -> setIdxPhi1       (idxPhi1);
   integrand_ -> setIdxPhiInv     (idxPhiInv);
   integrand_ -> setIdxMinvSquared(idxMinvSquared);
@@ -154,8 +159,8 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   Integrand_ttHorZ_3l1tau::gIntegrand = integrand_;
 
 //--- set integration boundaries
-  double xl[9] = { -1., -pi(), -1., -pi(),  0., -pi() / 2, -pi(), -pi(), 0. };
-  double xu[9] = { +1., +pi(), +1., +pi(), +1., +pi() / 2, +pi(), +pi(), tauLeptonMassSquared };
+  double xl[8] = { -1., -pi(), -1., -pi(),  0., -pi(), -pi(), 0. };
+  double xu[8] = { +1., +pi(), +1., +pi(), +1., +pi(), +pi(), tauLeptonMassSquared };
   xl_ = new double[numDimensions_];
   xu_ = new double[numDimensions_];
   std::copy(xl, xl + numDimensions_, xl_);
@@ -174,7 +179,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
     intAlgo_ = new MEMIntegratorVAMP(numCallsGridOpt, numCallsIntEval);
 
 //--- loop over different permutations of same-sign leptons and b-jets
-/// @note consider moving the permutation part inside integrate()
+///< @note consider moving the permutation part inside integrate()
   do
   {
     LOGDBG << ev;
@@ -188,7 +193,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
     else if(integrationMode_ == IntegrationMode::kVAMP)
       intAlgo_ -> integrate(&g_Fortran, xl_, xu_, numDimensions_, p, pErr);
 
-    LOGINFO << "p = " << p << "; pErr = " << pErr;
+    LOGDBG << "p = " << p << "; pErr = " << pErr;
     pSum += p;
     pSumErr += pErr;
 
