@@ -10,6 +10,48 @@
 
 namespace tthMEM
 {
+  LorentzVectorWrap::LorentzVectorWrap(const LorentzVector & v)
+    : v_(v)
+  {}
+
+  std::ostream &
+  operator<<(std::ostream & os,
+             const LorentzVectorWrap & v)
+  {
+    os << "En = "   << v.v_.energy() << "; "
+       << "pT = "   << v.v_.pt()     << "; "
+       << "mass = " << v.v_.mass();
+    return os;
+  }
+
+  VectorCartesianWrap::VectorCartesianWrap(const Vector & v)
+    : v_(v)
+  {}
+
+  std::ostream &
+  operator<<(std::ostream & os,
+             const VectorCartesianWrap & v)
+  {
+    os << "x = " << v.v_.x() << "; "
+       << "y = " << v.v_.y() << "; "
+       << "z = " << v.v_.z();
+    return os;
+  }
+
+  VectorSphericalWrap::VectorSphericalWrap(const Vector & v)
+    : v_(v)
+  {}
+
+  std::ostream &
+  operator<<(std::ostream & os,
+             const VectorSphericalWrap & v)
+  {
+    os << "norm = "  << v.v_.r()     << "; "
+       << "theta = " << v.v_.theta() << "; "
+       << "phi = "   << v.v_.phi();
+    return os;
+  }
+
   double
   roundToNdigits(double x,
                  int n)

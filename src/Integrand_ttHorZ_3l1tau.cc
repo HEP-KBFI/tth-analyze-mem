@@ -173,6 +173,7 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
 {
   LOGTRC;
   measuredEvent_ = &measuredEvent;
+
 //--- set the variables related to the hadronic tau
   const MeasuredHadronicTau & htau = measuredEvent_ -> htau1;
   hTauEnergy_ = htau.energy();
@@ -184,18 +185,10 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
   eY_htau_ = eZ_htau_.Cross(beamAxis_).Unit();
   eX_htau_ = eY_htau_.Cross(eZ_htau_).Unit();
   // eX should already be unit vector by construction
-  LOGVRB << "htau p3 = (" << measuredEvent_ -> htau1.p3().x() << ", "
-                          << measuredEvent_ -> htau1.p3().y() << ", "
-                          << measuredEvent_ -> htau1.p3().z() << ")";
-  LOGVRB << "htau eX: " << "theta = " << eX_htau_.theta() << ", "
-                        << "phi = "   << eX_htau_.phi() << ", "
-                        << "norm = "  << eX_htau_.R();
-  LOGVRB << "htau eY: " << "theta = " << eY_htau_.theta() << ", "
-                        << "phi = "   << eY_htau_.phi() << ", "
-                        << "norm = "  << eY_htau_.R();
-  LOGVRB << "htau eZ: " << "theta = " << eZ_htau_.theta() << ", "
-                        << "phi = "   << eZ_htau_.phi() << ", "
-                        << "norm = "  << eZ_htau_.R();
+  LOGVRB << "htau p3 = (" << cvrap(htau.p3()) << ")";
+  LOGVRB << "htau eX = (" << svrap(eX_htau_)  << ")";
+  LOGVRB << "htau eY = (" << svrap(eY_htau_)  << ")";
+  LOGVRB << "htau eZ = (" << svrap(eZ_htau_)  << ")";
   LOGVRB << "htau " << "eX x eY = " << eX_htau_.Cross(eY_htau_).R() << " ; "
                     << "eX x eZ = " << eX_htau_.Cross(eZ_htau_).R() << " ; "
                     << "eY x eZ = " << eY_htau_.Cross(eZ_htau_).R();
@@ -228,18 +221,10 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   eY_lept_ = eZ_lept_.Cross(beamAxis_).Unit();
   eX_lept_ = eY_lept_.Cross(eZ_lept_).Unit();
   // eX should already be unit vector by construction
-  LOGVRB << "lept p3 = (" << complLepton.p3().x() << ", "
-                          << complLepton.p3().y() << ", "
-                          << complLepton.p3().z() << ")";
-  LOGVRB << "lept eX: " << "theta = " << eX_lept_.theta() << ", "
-                        << "phi = "   << eX_lept_.phi() << ", "
-                        << "norm = "  << eX_lept_.R();
-  LOGVRB << "lept eY: " << "theta = " << eY_lept_.theta() << ", "
-                        << "phi = "   << eY_lept_.phi() << ", "
-                        << "norm = "  << eY_lept_.R();
-  LOGVRB << "lept eZ: " << "theta = " << eZ_lept_.theta() << ", "
-                        << "phi = "   << eZ_lept_.phi() << ", "
-                        << "norm = "  << eZ_lept_.R();
+  LOGVRB << "lept p3 = (" << cvrap(complLepton.p3()) << ")";
+  LOGVRB << "lept eX = (" << svrap(eX_lept_)         << ")";
+  LOGVRB << "lept eY = (" << svrap(eY_lept_)         << ")";
+  LOGVRB << "lept eZ = (" << svrap(eZ_lept_)         << ")";
   LOGVRB << "lept " << "eX x eY = " << eX_lept_.Cross(eY_lept_).R() << " ; "
                     << "eX x eZ = " << eX_lept_.Cross(eZ_lept_).R() << " ; "
                     << "eY x eZ = " << eY_lept_.Cross(eZ_lept_).R();
@@ -333,10 +318,10 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double nuHtau_py = nuHtau_loc.Dot(eY_htau_);
   const double nuHtau_pz = nuHtau_loc.Dot(eZ_htau_);
   const LorentzVector nuHtau(nuHtau_px, nuHtau_py, nuHtau_pz, nuHtau_en);
-  LOGTRC << "htau nu: En = " << nuHtau_en << "; pT = " << nuHtau.pt();
+  LOGTRC << "htau nu: " << lvrap(nuHtau);
 
   const LorentzVector hTau = hTauP4_ + nuHtau;
-  LOGTRC << "hadronic tau: En = " << hTau.energy() << "; pT = " << hTau.pt();
+  LOGTRC << "hadronic tau: " << lvrap(hTau);
 
 //--- compute the neutrino and tau lepton 4-vector from leptonic tau
   const double nuLeptTau_en = complLeptEnergy_ * (1. - z2) / z2;
@@ -357,10 +342,13 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double nuLeptTau_py = nuLeptTau_loc.Dot(eY_lept_);
   const double nuLeptTau_pz = nuLeptTau_loc.Dot(eZ_lept_);
   const LorentzVector nuLeptTau(nuLeptTau_px, nuLeptTau_py, nuLeptTau_pz, nuLeptTau_en);
-  LOGTRC << "lept tau nu: En = " << nuLeptTau_en << "; pT = " << nuLeptTau.pt();
+  LOGTRC << "lept tau nu: " << lvrap(nuLeptTau);
 
   const LorentzVector leptTau = complLeptP4_ + nuLeptTau;
-  LOGTRC << "leptonic tau: En = " << leptTau.energy() << "; pT = " << leptTau.pt();
+  LOGTRC << "leptonic tau: " << lvrap(leptTau);
+
+  const LorentzVector higgs = hTau + leptTau;
+  LOGTRC << "higgs: " << lvrap(higgs);
 
 //--- steps:
 //--- 1) reconstruct missing momenta for MG

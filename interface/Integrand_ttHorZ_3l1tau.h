@@ -60,6 +60,9 @@ namespace tthMEM
      * @brief Calculates cos theta of the neutrino coming from the hadronic tau
      * @param nuHtau_en Energy of the neutrino coming from hadronic tau decay
      * @return Cosine of the opening angle
+     *
+     * @todo consider moving the function to a separate class, static it and
+     *       bind it with missing arguments inside this class
      */
     double
     nuHtauCosTheta(double nuHtau_en) const;
@@ -68,6 +71,9 @@ namespace tthMEM
      * @brief Calculates cos theta of the neutrino pair coming from the leptonic tau
      * @param nuLeptTau_en Energy of the neutrino pair coming from leptonic tau decay
      * @return Cosine of the opening angle
+     *
+     * @todo consider moving the function to a separate class, static it and
+     *       bind it with missing arguments inside this class
      */
     double
     nuLeptTauCosTheta(double nuLeptTau_en,

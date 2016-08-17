@@ -14,6 +14,36 @@ namespace tthMEM
   typedef math::XYZVectorD        Vector;
   typedef math::RThetaPhiVector   VectorSpherical;
 
+  typedef struct LorentzVectorWrap
+  {
+    LorentzVectorWrap(const LorentzVector & v);
+    const LorentzVector & v_;
+
+    friend std::ostream &
+    operator<<(std::ostream & os,
+               const LorentzVectorWrap & v);
+  } lvrap;
+
+  typedef struct VectorCartesianWrap
+  {
+    VectorCartesianWrap(const Vector & v);
+    const Vector & v_;
+
+    friend std::ostream &
+    operator<<(std::ostream & os,
+               const VectorCartesianWrap & v);
+  } cvrap;
+
+  typedef struct VectorSphericalWrap
+  {
+    VectorSphericalWrap(const Vector & v);
+    const Vector & v_;
+
+    friend std::ostream &
+    operator<<(std::ostream & os,
+               const VectorSphericalWrap & v);
+  } svrap;
+
   enum ME_mg5_3l1tau
   {
     kTTH = 0,
