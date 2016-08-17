@@ -71,6 +71,9 @@ MeasuredEvent_3l1tau::initialize()
     std::exit(EXIT_FAILURE);
   }
   complLeptonIdx = leptonIdx1;
+  bjetLeptonIdxs = (complLeptonIdx == 0) ? std::vector<unsigned>{{1, 2}} : (
+                   (complLeptonIdx == 1) ? std::vector<unsigned>{{0, 2}} :
+                                           std::vector<unsigned>{{1, 2}});
 }
 
 void

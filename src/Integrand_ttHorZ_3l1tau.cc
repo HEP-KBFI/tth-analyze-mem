@@ -12,7 +12,7 @@
 #include <iomanip> // std::setprecision()
 
 #include "TMath.h" // TMath::IsNaN() ...
- // ... (why not use std: http://stackoverflow.com/a/570694)
+ // ... (why not use std here: http://stackoverflow.com/a/570694)
 
 using namespace tthMEM;
 
@@ -181,17 +181,17 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
   hTauMass_ = htau.mass();
   hTauMassSquared_ = std::pow(hTauMass_, 2);
   hTauP4_ = htau.p4();
-  eZ_htau_ = htau.p3().Unit();
-  eY_htau_ = eZ_htau_.Cross(beamAxis_).Unit();
-  eX_htau_ = eY_htau_.Cross(eZ_htau_).Unit();
+  eZ_htau_ = htau.p3().unit();
+  eY_htau_ = eZ_htau_.Cross(beamAxis_).unit();
+  eX_htau_ = eY_htau_.Cross(eZ_htau_).unit();
   // eX should already be unit vector by construction
-  LOGVRB << "htau p3 = (" << cvrap(htau.p3()) << ")";
-  LOGVRB << "htau eX = (" << svrap(eX_htau_)  << ")";
-  LOGVRB << "htau eY = (" << svrap(eY_htau_)  << ")";
-  LOGVRB << "htau eZ = (" << svrap(eZ_htau_)  << ")";
-  LOGVRB << "htau " << "eX x eY = " << eX_htau_.Cross(eY_htau_).R() << " ; "
-                    << "eX x eZ = " << eX_htau_.Cross(eZ_htau_).R() << " ; "
-                    << "eY x eZ = " << eY_htau_.Cross(eZ_htau_).R();
+  LOGVRB << "htau p4: " << lvrap(hTauP4_);
+  LOGVRB << "htau eX: " << svrap(eX_htau_);
+  LOGVRB << "htau eY: " << svrap(eY_htau_);
+  LOGVRB << "htau eZ: " << svrap(eZ_htau_);
+  LOGVRB << "htau: " << "eX x eY = " << eX_htau_.Cross(eY_htau_).r() << " ; "
+                     << "eX x eZ = " << eX_htau_.Cross(eZ_htau_).r() << " ; "
+                     << "eY x eZ = " << eY_htau_.Cross(eZ_htau_).r();
 
 //--- set the variables related to the MET TF
   invCovMET_ = measuredEvent_ -> met.covMET();
@@ -200,6 +200,7 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
   {
     invCovMET_.Invert();
     MET_TF_denom = 1. / (2. * pi() * std::sqrt(invCovMET_.Determinant()));
+    LOGVRB << "MET TF denominator = " << MET_TF_denom;
   }
   else
     LOGERR << "Cannot invert MET covariance matrix b/c det = 0";
@@ -217,22 +218,47 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   complLeptMass_ = complLepton.mass();
   complLeptMassSquared_ = std::pow(complLeptMass_, 2);
   complLeptP4_ = complLepton.p4();
-  eZ_lept_ = complLepton.p3().Unit();
-  eY_lept_ = eZ_lept_.Cross(beamAxis_).Unit();
-  eX_lept_ = eY_lept_.Cross(eZ_lept_).Unit();
+  eZ_lept_ = complLepton.p3().unit();
+  eY_lept_ = eZ_lept_.Cross(beamAxis_).unit();
+  eX_lept_ = eY_lept_.Cross(eZ_lept_).unit();
   // eX should already be unit vector by construction
-  LOGVRB << "lept p3 = (" << cvrap(complLepton.p3()) << ")";
-  LOGVRB << "lept eX = (" << svrap(eX_lept_)         << ")";
-  LOGVRB << "lept eY = (" << svrap(eY_lept_)         << ")";
-  LOGVRB << "lept eZ = (" << svrap(eZ_lept_)         << ")";
-  LOGVRB << "lept " << "eX x eY = " << eX_lept_.Cross(eY_lept_).R() << " ; "
-                    << "eX x eZ = " << eX_lept_.Cross(eZ_lept_).R() << " ; "
-                    << "eY x eZ = " << eY_lept_.Cross(eZ_lept_).R();
+  LOGVRB << "lept p4: " << lvrap(complLeptP4_);
+  LOGVRB << "lept p3: " << cvrap(complLepton.p3());
+  LOGVRB << "lept eX: " << svrap(eX_lept_);
+  LOGVRB << "lept eY: " << svrap(eY_lept_);
+  LOGVRB << "lept eZ: " << svrap(eZ_lept_);
+  LOGVRB << "lept: " << "eX x eY = " << eX_lept_.Cross(eY_lept_).R() << " ; "
+                     << "eX x eZ = " << eX_lept_.Cross(eZ_lept_).R() << " ; "
+                     << "eY x eZ = " << eY_lept_.Cross(eZ_lept_).R();
 
-//--- find the meaasured mass of both visible tau decay products
+//--- find the measured mass of both visible tau decay products
   measuredVisMassSquared_ = (hTauP4_ + complLeptP4_).mass2();
   LOGVRB << "measured mass of visible tau decay products: "
          << std::sqrt(measuredVisMassSquared_);
+
+//--- find the kinematic variables of the rest of the leptons (from t decay)
+  lept1Idx_ = measuredEvent_ -> bjetLeptonIdxs[0];
+  lept2Idx_ = measuredEvent_ -> bjetLeptonIdxs[1];
+  const MeasuredLepton & lept1 = measuredEvent_ -> leptons[lept1Idx_];
+  const MeasuredLepton & lept2 = measuredEvent_ -> leptons[lept2Idx_];
+  lept1p3_ = lept1.p3();
+  lept2p3_ = lept2.p3();
+  lept1Energy_ = lept1.p();
+  lept2Energy_ = lept2.p();
+  lept1p3Unit_ = lept1p3_.unit();
+  lept2p3Unit_ = lept2p3_.unit();
+  lept1p4_ = LorentzVector(lept1p3_.x(), lept1p3_.y(), lept1p3_.z(), lept1Energy_);
+  lept2p4_ = LorentzVector(lept2p3_.x(), lept2p3_.y(), lept2p3_.z(), lept2Energy_);
+  LOGVRB << "t lept 1 p4: " << lvrap(lept1p4_);
+  LOGVRB << "t lept 2 p4: " << lvrap(lept2p4_);
+
+//--- find the kinematic variables of the b quarks
+  for(unsigned i = 0; i < 2; ++i)
+  {
+    const MeasuredJet & bjet_i = measuredEvent_ -> jets[i];
+    bJetRecoEnergy_[i] = bjet_i.energy();
+    bJetp3Unit_[i] = bjet_i.p3().unit();
+  }
 }
 
 double
@@ -251,6 +277,56 @@ Integrand_ttHorZ_3l1tau::nuLeptTauCosTheta(double nuLeptTau_en,
   return (nuLeptTau_en * complLeptEnergy_ -
              (tauLeptonMassSquared - (complLeptMassSquared_ + mInvSquared)) / 2.)
            / (complLeptMomentum_ * nuLeptTau_p);
+}
+
+double
+Integrand_ttHorZ_3l1tau::bJetEnergy(const LorentzVector & W,
+                                    unsigned bIdx) const
+{
+  const Vector Wp(W.x(), W.y(), W.z());
+  const double a_ = DeltaFactor / W.energy() / massB;
+  const double b_ = W.Beta() * bJetp3Unit_[bIdx].Dot(Wp.unit());
+  const double a_2 = std::pow(a_, 2);
+  const double b_2 = std::pow(b_, 2);
+  const double b_abs = std::fabs(b_);
+  const double a_2b_2_1 = a_2 + b_2 - 1.;
+
+  if((b_2 - 1.) >= 1.e-5)
+  {
+    LOGWARN << "(b_)^2 = " << b_2 << " >= 1 => Eb[" << bIdx << "] = 0";
+    return 0.;
+  }
+  if(a_2b_2_1 < 0.)
+  {
+    LOGWARN << "(a_)^2 + (b_)^2 - 1 = " << a_2b_2_1 << " < 1 => Eb[" << bIdx << "] = 0";
+    return 0.;
+  }
+
+  const double Eb[2] = { massB * (a_ + b_abs * std::sqrt(a_2b_2_1)) / (1 - b_2),
+                         massB * (a_ - b_abs * std::sqrt(a_2b_2_1)) / (1 - b_2) };
+  if(Eb[0] <= 0. && Eb[1] <= 0.)
+  {
+    LOGWARN << "Eb+[" << bIdx << "] = " << Eb[0] << " <= 0 and "
+            << "Eb-[" << bIdx << "] = " << Eb[1] << " <= 0 "
+            << "=> Eb[" << bIdx << "] = 0";
+    return 0.;
+  }
+
+  const double Eb_a_[2] = { Eb[0] - a_, Eb[1] - a_ };
+  std::vector<unsigned> validSolIdx;
+  for(unsigned i = 0; i < 2; ++i)
+    if(b_ * Eb_a_[i] > 0. && Eb[i] > 0.) validSolIdx.push_back(i);
+  if(! validSolIdx.size())
+  {
+    LOGWARN << "Neither of Eb[" << bIdx << "] values satisfied the solution conditions";
+    LOGWARN << "(a' = " << a_ << "; b' = " << b_ << "; "
+            << "Eb+ = " << Eb[0] << "; Eb- = " << Eb[1] << ")";
+    return 0.;
+  }
+  else if(validSolIdx.size() == 2)
+    return std::max(Eb[0], Eb[1]);
+
+  return Eb[validSolIdx[0]];
 }
 
 double
@@ -283,10 +359,10 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   ss << x[numDimensions_ - 1];
   LOGVRB << "x = { " << ss.str() << " }";
 
-//  const double cosTheta1     = x[idxCosTheta1_];
-//  const double varphi1       = x[idxVarphi1_];
-//  const double cosTheta2     = x[idxCosTheta2_];
-//  const double varphi2       = x[idxVarphi2_];
+  const double cosTheta1     = x[idxCosTheta1_];
+  const double varphi1       = x[idxVarphi1_];
+  const double cosTheta2     = x[idxCosTheta2_];
+  const double varphi2       = x[idxVarphi2_];
   const double z1            = x[idxZ1_];
   const double nuHtau_phi    = x[idxPhi1_];
   const double nuLeptTau_phi = x[idxPhiInv_];
@@ -350,11 +426,42 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const LorentzVector higgs = hTau + leptTau;
   LOGTRC << "higgs: " << lvrap(higgs);
 
-//--- steps:
-//--- 1) reconstruct missing momenta for MG
-//--- 2) assemble the integrand and evaluate it
+//--- get W boson and associated neutrino 4-vectors
+  const VectorSpherical nuT1_p3unit(1., std::acos(cosTheta1), varphi1);
+  const VectorSpherical nuT2_p3unit(1., std::acos(cosTheta2), varphi2);
+  const double nuT1_en = massWSquared / ((1 - lept1p3Unit_.Dot(nuT1_p3unit))
+                                         * lept1Energy_ * 2.);
+  const double nuT2_en = massWSquared / ((1 - lept2p3Unit_.Dot(nuT2_p3unit))
+                                         * lept2Energy_ * 2.);
+  const Vector nuT1_p3(nuT1_en * nuT1_p3unit);
+  const Vector nuT2_p3(nuT2_en * nuT2_p3unit);
+  const LorentzVector nuT1(nuT1_p3.x(), nuT1_p3.y(), nuT1_p3.z(), nuT1_en);
+  const LorentzVector nuT2(nuT2_p3.x(), nuT2_p3.y(), nuT2_p3.z(), nuT2_en);
+  const LorentzVector W1 = nuT1 + lept1p4_;
+  const LorentzVector W2 = nuT2 + lept2p4_;
+  LOGTRC << "t nu 1: " << lvrap(nuT1);
+  LOGTRC << "t nu 2: " << lvrap(nuT2);
+  LOGTRC << "W 1: " << lvrap(W1);
+  LOGTRC << "W 2: " << lvrap(W2);
 
-//
+  const double b1_en = bJetEnergy(W1, 0);
+  const double b2_en = bJetEnergy(W2, 1);
+  if(b1_en == 0. || b2_en == 0.) return 0.;
+  LOGTRC << "b1_en = " << b1_en << " (reco = " << bJetRecoEnergy_[0] << "); "
+         << "b2_en = " << b2_en << " (reco = " << bJetRecoEnergy_[1] << ")";
+  const Vector b1_p3 = std::sqrt(std::pow(b1_en, 2) - massBSquared) * bJetp3Unit_[0];
+  const Vector b2_p3 = std::sqrt(std::pow(b2_en, 2) - massBSquared) * bJetp3Unit_[1];
+  const LorentzVector b1 = LorentzVector(b1_p3.x(), b1_p3.y(), b1_p3.z(), b1_en);
+  const LorentzVector b2 = LorentzVector(b2_p3.x(), b2_p3.y(), b2_p3.z(), b2_en);
+  LOGTRC << "b 1: " << lvrap(b1);
+  LOGTRC << "b 2: " << lvrap(b2);
+
+  const LorentzVector t1 = b1 + W1;
+  const LorentzVector t2 = b2 + W2;
+  LOGTRC << "t 1: " << lvrap(t1);
+  LOGTRC << "t 2: " << lvrap(t2);
+
+//--- get b-quark 4-vectors
 
 //  me_madgraph_[currentME_] -> setMomenta(mgMomenta_);
 //  me_madgraph_[currentME_] -> sigmaKin();

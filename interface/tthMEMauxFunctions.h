@@ -1,8 +1,8 @@
 #ifndef TTHMEMAUXFUNCTIONS_H
 #define TTHMEMAUXFUNCTIONS_H
 
-#include "DataFormats/Math/interface/LorentzVector.h" // math::XYZTLorentzVector
-#include "DataFormats/Math/interface/Vector3D.h" // math::XYZVectorD, math::RThetaPhiVector
+#include "DataFormats/Math/interface/LorentzVector.h" // math::XYZTLorentzVectorD
+#include "DataFormats/Math/interface/Vector3D.h" // math::XYZVectorD, math::RThetaPhiVectorD
 
 #include <string> // std::string
 #include <iostream> // std::cout
@@ -10,9 +10,9 @@
 
 namespace tthMEM
 {
-  typedef math::XYZTLorentzVector LorentzVector;
-  typedef math::XYZVectorD        Vector;
-  typedef math::RThetaPhiVector   VectorSpherical;
+  typedef math::XYZTLorentzVectorD LorentzVector;
+  typedef math::XYZVectorD         Vector;
+  typedef math::RThetaPhiVectorD   VectorSpherical;
 
   typedef struct LorentzVectorWrap
   {
@@ -70,6 +70,13 @@ namespace tthMEM
   const double massHiggsSquared = std::pow(massHiggs, 2);
   const double massZ = 91.1876; ///< taken from PDG booklet (2014, p 9)
   const double massZSquared = std::pow(massZ, 2);
+  const double massW = 80.385; ///< taken from PDG booklet (2014, p 8)
+  const double massWSquared = std::pow(massW, 2);
+  const double massB = 4.18; ///< MS scheme; taken from PDG booklet (2014, p 23)
+  const double massBSquared = std::pow(massB, 2);
+  const double massT = 173.21; ///< taken from PDG booklet (2014, p 23)
+  const double massTSquared = std::pow(massT, 2);
+  const double DeltaFactor = (massTSquared - massWSquared - massBSquared) / 2.;
 
   /**
    * @brief Rounds double floating point number to N significant digits

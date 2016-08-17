@@ -40,6 +40,7 @@ namespace tthMEM
     MVAVariables mvaVariables;
 
     unsigned complLeptonIdx;
+    std::vector<unsigned> bjetLeptonIdxs;
 
     void
     initialize();
