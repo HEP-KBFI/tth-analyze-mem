@@ -77,6 +77,8 @@ namespace tthMEM
   const double massT = 173.21; ///< taken from PDG booklet (2014, p 23)
   const double massTSquared = std::pow(massT, 2);
   const double DeltaFactor = (massTSquared - massWSquared - massBSquared) / 2.;
+  const double resolutionScaleTTH = massT + massHiggs / 2.;
+  const double resolutionScaleTTZ = massT + massZ / 2.;
 
   /**
    * @brief Rounds double floating point number to N significant digits
@@ -106,6 +108,10 @@ namespace tthMEM
   {
     return std::acos(-1.L);
   }
+
+  void
+  setMGmomentum(const LorentzVector & lv,
+                double * mg);
 
   /**
    * @brief Finds the full path of a file in CMSSW directories

@@ -68,6 +68,16 @@ namespace tthMEM
     return static_cast<unsigned>(std::rint(x));
   }
 
+  void
+  setMGmomentum(const LorentzVector & lv,
+                double * mg)
+  {
+    mg[0] = lv.e();
+    mg[1] = lv.px();
+    mg[2] = lv.py();
+    mg[3] = lv.pz();
+  }
+
   std::string
   findFile(const std::string & fileName)
   {

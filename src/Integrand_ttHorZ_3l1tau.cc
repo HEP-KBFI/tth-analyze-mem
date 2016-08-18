@@ -13,6 +13,7 @@
 
 #include "TMath.h" // TMath::IsNaN() ...
  // ... (why not use std here: http://stackoverflow.com/a/570694)
+#include "Math/VectorUtil.h" // ROOT::Math::VectorUtil::boost()
 
 using namespace tthMEM;
 
@@ -23,6 +24,7 @@ Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(double sqrtS,
                                                  const std::string & madgraphFilename)
   : sqrtS_(sqrtS)
   , s_(std::pow(sqrtS_, 2))
+  , invSqrtS_(1. / sqrtS_)
   , beamAxis_(0., 0., 1.)
   , pdf_(0)
   , currentME_(ME_mg5_3l1tau::kTTH) // default to tth
@@ -193,10 +195,13 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
                      << "eX x eZ = " << eX_htau_.Cross(eZ_htau_).r() << " ; "
                      << "eY x eZ = " << eY_htau_.Cross(eZ_htau_).r();
 
-//--- set the variables related to the MET TF
-  invCovMET_ = measuredEvent_ -> met.covMET();
-  const double covDet = invCovMET_.Determinant();
-  if(covDet != 0)
+//--- set the variables related to the MET/hadronic recoil TF
+  const MeasuredMET & met = measuredEvent_ -> met;
+  MET_x_ = met.px();
+  MET_y_ = met.py();
+  invCovMET_ = met.covMET();
+  covDet_ = invCovMET_.Determinant();
+  if(covDet_ != 0.)
   {
     invCovMET_.Invert();
     MET_TF_denom = 1. / (2. * pi() * std::sqrt(invCovMET_.Determinant()));
@@ -351,6 +356,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
      idxMinvSquared_ < 0)
     std::exit(EXIT_FAILURE);
   LOGVRB << "Current MG5 ME: " << me_madgraph_[currentME_] -> name();
+  if(covDet_ == 0.) return 0.;
 
 //--- read the sampled values
   std::ostringstream ss;
@@ -365,7 +371,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double varphi2       = x[idxVarphi2_];
   const double z1            = x[idxZ1_];
   const double nuHtau_phi    = x[idxPhi1_];
-  const double nuLeptTau_phi = x[idxPhiInv_];
+  const double nuLTau_phi    = x[idxPhiInv_];
   const double mInvSquared   = x[idxMinvSquared_];
 
 //--- confirm that the energy fraction carried by the tau is indeed in (0,1)
@@ -400,30 +406,30 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   LOGTRC << "hadronic tau: " << lvrap(hTau);
 
 //--- compute the neutrino and tau lepton 4-vector from leptonic tau
-  const double nuLeptTau_en = complLeptEnergy_ * (1. - z2) / z2;
-  const double nuLeptTau_mass = std::sqrt(mInvSquared);
-  const double nuLeptTau_p = std::sqrt(std::max(0., std::pow(nuLeptTau_en, 2) -
-                                                    std::pow(nuLeptTau_mass, 2)));
-  const double nuLeptTau_cosTheta = nuLeptTauCosTheta(nuLeptTau_en, mInvSquared,
-                                                      nuLeptTau_p);
-  if(! (nuLeptTau_cosTheta >= -1. && nuLeptTau_cosTheta <= +1.))
+  const double nuLTau_en = complLeptEnergy_ * (1. - z2) / z2;
+  const double nuLTau_mass = std::sqrt(mInvSquared);
+  const double nuLTau_p = std::sqrt(std::max(0., std::pow(nuLTau_en, 2) -
+                                                 std::pow(nuLTau_mass, 2)));
+  const double nuLTau_cosTheta = nuLeptTauCosTheta(nuLTau_en, mInvSquared,
+                                                   nuLTau_p);
+  if(! (nuLTau_cosTheta >= -1. && nuLTau_cosTheta <= +1.))
   {
-    LOGDBG << "nuLeptTau_cosTheta = " << nuLeptTau_cosTheta << " not in (-1, 1) "
+    LOGDBG << "nuLTau_cosTheta = " << nuLTau_cosTheta << " not in (-1, 1) "
            << "=> p = 0";
     return 0.;
   }
-  const double nuLeptTau_theta = std::acos(nuLeptTau_cosTheta);
-  const VectorSpherical nuLeptTau_loc(nuLeptTau_en, nuLeptTau_theta, nuLeptTau_phi);
-  const double nuLeptTau_px = nuLeptTau_loc.Dot(eX_lept_);
-  const double nuLeptTau_py = nuLeptTau_loc.Dot(eY_lept_);
-  const double nuLeptTau_pz = nuLeptTau_loc.Dot(eZ_lept_);
-  const LorentzVector nuLeptTau(nuLeptTau_px, nuLeptTau_py, nuLeptTau_pz, nuLeptTau_en);
-  LOGTRC << "lept tau nu: " << lvrap(nuLeptTau);
+  const double nuLTau_theta = std::acos(nuLTau_cosTheta);
+  const VectorSpherical nuLTau_loc(nuLTau_en, nuLTau_theta, nuLTau_phi);
+  const double nuLTau_px = nuLTau_loc.Dot(eX_lept_);
+  const double nuLTau_py = nuLTau_loc.Dot(eY_lept_);
+  const double nuLTau_pz = nuLTau_loc.Dot(eZ_lept_);
+  const LorentzVector nuLTau(nuLTau_px, nuLTau_py, nuLTau_pz, nuLTau_en);
+  LOGTRC << "lept tau nu: " << lvrap(nuLTau);
 
-  const LorentzVector leptTau = complLeptP4_ + nuLeptTau;
-  LOGTRC << "leptonic tau: " << lvrap(leptTau);
+  const LorentzVector lTau = complLeptP4_ + nuLTau;
+  LOGTRC << "leptonic tau: " << lvrap(lTau);
 
-  const LorentzVector higgs = hTau + leptTau;
+  const LorentzVector higgs = hTau + lTau;
   LOGTRC << "higgs: " << lvrap(higgs);
 
 //--- get W boson and associated neutrino 4-vectors
@@ -461,18 +467,87 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   LOGTRC << "t 1: " << lvrap(t1);
   LOGTRC << "t 2: " << lvrap(t2);
 
-//--- get b-quark 4-vectors
+//--- hadronic recoil transfer function; simplification: use only neutrinos
+//--- in the difference of ,,measured'' and ,,true'' hadronic recoil, because
+//--- leptons are assumed to be measured perfectly whereas the pT of jets/quarks
+//--- introduces uncertainties difficult to handle here
+  const LorentzVector nuSum = nuHtau + nuLTau + nuT1 + nuT2;
+  TVectorD hadRecDiff(2);
+  hadRecDiff(0) = MET_x_ - nuSum.x();
+  hadRecDiff(1) = MET_y_ - nuSum.y();
+  const TVectorD hadRecDiff_ = hadRecDiff;
+  hadRecDiff *= invCovMET_;
+  const double MET_pull = hadRecDiff_ * hadRecDiff;
+  const double MET_TF = MET_TF_denom * std::exp(-MET_pull / 2.);
+  LOGTRC << "MET_x = " << MET_x_ << "; MET_y = " << MET_y_ << "; "
+         << "nuSum_x = " << nuSum.x() << "; nuSum_y = " << nuSum.y();
+  LOGTRC << "=> MET_pull = " << MET_pull << " => MET_TF = " << MET_TF;
 
-//  me_madgraph_[currentME_] -> setMomenta(mgMomenta_);
-//  me_madgraph_[currentME_] -> sigmaKin();
-//  const double prob_ME_mg = me_madgraph_[currentME_] -> getMatrixElements()[0];
-//  if(TMath::IsNaN(prob_ME_mg) || prob_ME_mg < 0.)
-//  {
-//    LOGERR << "Warning: MadGraph5 returned NaN or is zero: "
-//           << "|M|^2 = " << prob_ME_mg << " => skipping event";
-//    return 0.;
-//  }
+  //if(MET_TF == 0.) return 0.;
 
-  return 0.;
+//--- compute Bjorken x variables
+//--- assume that hadronic recoil has only transverse component
+  const double hadRecE = 0.;
+  const double hadRecPz = 0.;
+  const LorentzVector tth = higgs + t1 + t2;
+  const double xa = invSqrtS_ * (hadRecE + tth.e() + hadRecPz + tth.pz());
+  const double xb = invSqrtS_ * (hadRecE + tth.e() - hadRecPz - tth.pz());
+  LOGTRC << "xa = " << xa << "; xb = " << xb;
+
+  const double Q = currentME_ == ME_mg5_3l1tau::kTTH ? resolutionScaleTTH :
+                                                       resolutionScaleTTZ;
+  const double fa = pdf_ -> xfxQ(21, xa, Q) / xa;
+  const double fb = pdf_ -> xfxQ(21, xb, Q) / xb;
+  const double probPDF = fa * fb;
+  const double flux = 1. / (s_ * xa * xb);
+
+//--- boost all MG momenta into frame where pT(tth) = 0
+  const Vector boost(-tth.px() / tth.e(), -tth.py() / tth.e(), 0.);
+  LOGTRC << "boost vector: " << cvrap(boost);
+  const LorentzVector gluon1(0., 0., +0.5 * xa * sqrtS_, 0.5 * xa * sqrtS_);
+  const LorentzVector gluon2(0., 0., -0.5 * xb * sqrtS_, 0.5 * xb * sqrtS_);
+  const LorentzVector b1_mem = ROOT::Math::VectorUtil::boost(b1, boost);
+  const LorentzVector b2_mem = ROOT::Math::VectorUtil::boost(b2, boost);
+  const LorentzVector hTau_mem = ROOT::Math::VectorUtil::boost(hTau, boost);
+  const LorentzVector lTau_mem = ROOT::Math::VectorUtil::boost(lTau, boost);
+  const LorentzVector nuT1_mem = ROOT::Math::VectorUtil::boost(nuT1, boost);
+  const LorentzVector nuT2_mem = ROOT::Math::VectorUtil::boost(nuT2, boost);
+  const LorentzVector lept1_mem = ROOT::Math::VectorUtil::boost(lept1p4_, boost);
+  const LorentzVector lept2_mem = ROOT::Math::VectorUtil::boost(lept2p4_, boost);
+
+//--- set MG momenta (follow signs in the diagram?)
+  setMGmomentum(gluon1, mgGluon1p4_);
+  setMGmomentum(gluon2, mgGluon2p4_);
+  setMGmomentum(b1_mem, mgBjet1p4_);
+  setMGmomentum(lept1_mem, mgLeptonFromBjet1p4_);
+  setMGmomentum(nuT1_mem, mgNeutrinoFromBjet1p4_);
+  setMGmomentum(b2_mem, mgBjet2p4_);
+  setMGmomentum(lept2_mem, mgLeptonFromBjet2p4_);
+  setMGmomentum(nuT2_mem, mgNeutrinoFromBjet2p4_);
+  setMGmomentum(hTau_mem, mgTau1p4_);
+  setMGmomentum(lTau_mem, mgTau2p4_);
+  me_madgraph_[currentME_] -> setMomenta(mgMomenta_);
+
+  const double loggerFP = Logger::getFloatPrecision();
+  Logger::setFloatPrecision(6);
+  LOGTRC << "prob(PDF) = " << probPDF << "; flux factor = " << flux;
+
+//--- calculate the matrix element
+  me_madgraph_[currentME_] -> sigmaKin();
+  const double prob_ME_mg = me_madgraph_[currentME_] -> getMatrixElements()[0];
+  if(TMath::IsNaN(prob_ME_mg) || prob_ME_mg < 0.)
+  {
+    LOGERR << "Warning: MadGraph5 returned NaN or is zero: "
+           << "|M|^2 = " << prob_ME_mg << " => skipping event";
+    return 0.;
+  }
+  LOGTRC << "|M|^2 = " << prob_ME_mg;
+
+//--- assemble the integrand
+  const double p = prob_ME_mg * probPDF * flux * MET_TF;
+  LOGTRC << "p = " << p;
+  Logger::setFloatPrecision(loggerFP);
+
+  return p;
 }
 

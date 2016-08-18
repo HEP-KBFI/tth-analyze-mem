@@ -107,6 +107,7 @@ namespace tthMEM
   protected:
     const double sqrtS_;
     const double s_;
+    const double invSqrtS_;
     const Vector beamAxis_;
 
     LHAPDF::PDF * pdf_;
@@ -146,6 +147,8 @@ namespace tthMEM
     double bJetRecoEnergy_[2];
     Vector bJetp3Unit_[2];
 
+    double MET_x_, MET_y_;
+    double covDet_;
     TMatrixDSym invCovMET_;
     double MET_TF_denom;
 
