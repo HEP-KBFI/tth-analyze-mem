@@ -16,6 +16,7 @@
 #include "Math/VectorUtil.h" // ROOT::Math::VectorUtil::boost()
 
 using namespace tthMEM;
+namespace VectorUtil = ROOT::Math::VectorUtil;
 
 const Integrand_ttHorZ_3l1tau * Integrand_ttHorZ_3l1tau::gIntegrand = 0;
 
@@ -187,10 +188,10 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
   eY_htau_ = eZ_htau_.Cross(beamAxis_).unit();
   eX_htau_ = eY_htau_.Cross(eZ_htau_).unit();
   // eX should already be unit vector by construction
-  LOGVRB << "htau p4: " << lvrap(hTauP4_);
-  LOGVRB << "htau eX: " << svrap(eX_htau_);
-  LOGVRB << "htau eY: " << svrap(eY_htau_);
-  LOGVRB << "htau eZ: " << svrap(eZ_htau_);
+  LOGVRB << lvrap("htau p4", hTauP4_);
+  LOGVRB << svrap("htau eX", eX_htau_);
+  LOGVRB << svrap("htau eY", eY_htau_);
+  LOGVRB << svrap("htau eZ", eZ_htau_);
   LOGVRB << "htau: " << "eX x eY = " << eX_htau_.Cross(eY_htau_).r() << " ; "
                      << "eX x eZ = " << eX_htau_.Cross(eZ_htau_).r() << " ; "
                      << "eY x eZ = " << eY_htau_.Cross(eZ_htau_).r();
@@ -227,11 +228,11 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   eY_lept_ = eZ_lept_.Cross(beamAxis_).unit();
   eX_lept_ = eY_lept_.Cross(eZ_lept_).unit();
   // eX should already be unit vector by construction
-  LOGVRB << "lept p4: " << lvrap(complLeptP4_);
-  LOGVRB << "lept p3: " << cvrap(complLepton.p3());
-  LOGVRB << "lept eX: " << svrap(eX_lept_);
-  LOGVRB << "lept eY: " << svrap(eY_lept_);
-  LOGVRB << "lept eZ: " << svrap(eZ_lept_);
+  LOGVRB << lvrap("lept p4", complLeptP4_);
+  LOGVRB << cvrap("lept p3", complLepton.p3());
+  LOGVRB << svrap("lept eX", eX_lept_);
+  LOGVRB << svrap("lept eY", eY_lept_);
+  LOGVRB << svrap("lept eZ", eZ_lept_);
   LOGVRB << "lept: " << "eX x eY = " << eX_lept_.Cross(eY_lept_).R() << " ; "
                      << "eX x eZ = " << eX_lept_.Cross(eZ_lept_).R() << " ; "
                      << "eY x eZ = " << eY_lept_.Cross(eZ_lept_).R();
@@ -254,8 +255,8 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   lept2p3Unit_ = lept2p3_.unit();
   lept1p4_ = LorentzVector(lept1p3_.x(), lept1p3_.y(), lept1p3_.z(), lept1Energy_);
   lept2p4_ = LorentzVector(lept2p3_.x(), lept2p3_.y(), lept2p3_.z(), lept2Energy_);
-  LOGVRB << "t lept 1 p4: " << lvrap(lept1p4_);
-  LOGVRB << "t lept 2 p4: " << lvrap(lept2p4_);
+  LOGVRB << lvrap("t lept 1 p4", lept1p4_);
+  LOGVRB << lvrap("t lept 2 p4", lept2p4_);
 
 //--- find the kinematic variables of the b quarks
   for(unsigned i = 0; i < 2; ++i)
@@ -298,12 +299,12 @@ Integrand_ttHorZ_3l1tau::bJetEnergy(const LorentzVector & W,
 
   if((b_2 - 1.) >= 1.e-5)
   {
-    LOGWARN << "(b_)^2 = " << b_2 << " >= 1 => Eb[" << bIdx << "] = 0";
+    LOGVRB << "(b_)^2 = " << b_2 << " >= 1 => Eb[" << bIdx << "] = 0";
     return 0.;
   }
   if(a_2b_2_1 < 0.)
   {
-    LOGWARN << "(a_)^2 + (b_)^2 - 1 = " << a_2b_2_1 << " < 1 => Eb[" << bIdx << "] = 0";
+    LOGVRB << "(a_)^2 + (b_)^2 - 1 = " << a_2b_2_1 << " < 1 => Eb[" << bIdx << "] = 0";
     return 0.;
   }
 
@@ -311,9 +312,9 @@ Integrand_ttHorZ_3l1tau::bJetEnergy(const LorentzVector & W,
                          massB * (a_ - b_abs * std::sqrt(a_2b_2_1)) / (1 - b_2) };
   if(Eb[0] <= 0. && Eb[1] <= 0.)
   {
-    LOGWARN << "Eb+[" << bIdx << "] = " << Eb[0] << " <= 0 and "
-            << "Eb-[" << bIdx << "] = " << Eb[1] << " <= 0 "
-            << "=> Eb[" << bIdx << "] = 0";
+    LOGVRB << "Eb+[" << bIdx << "] = " << Eb[0] << " <= 0 and "
+           << "Eb-[" << bIdx << "] = " << Eb[1] << " <= 0 "
+           << "=> Eb[" << bIdx << "] = 0";
     return 0.;
   }
 
@@ -323,9 +324,9 @@ Integrand_ttHorZ_3l1tau::bJetEnergy(const LorentzVector & W,
     if(b_ * Eb_a_[i] > 0. && Eb[i] > 0.) validSolIdx.push_back(i);
   if(! validSolIdx.size())
   {
-    LOGWARN << "Neither of Eb[" << bIdx << "] values satisfied the solution conditions";
-    LOGWARN << "(a' = " << a_ << "; b' = " << b_ << "; "
-            << "Eb+ = " << Eb[0] << "; Eb- = " << Eb[1] << ")";
+    LOGVRB << "Neither of Eb[" << bIdx << "] values satisfied the solution conditions";
+    LOGVRB << "(a' = " << a_ << "; b' = " << b_ << "; "
+           << "Eb+ = " << Eb[0] << "; Eb- = " << Eb[1] << ")";
     return 0.;
   }
   else if(validSolIdx.size() == 2)
@@ -379,7 +380,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
       (z1 * (currentME_ == ME_mg5_3l1tau::kTTH ? massHiggsSquared : massZSquared));
   if(! (z2 >= 1.e-5 && z2 <= 1.))
   {
-    LOGDBG << "z2 = " << z2 << " not in (0, 1) => p = 0";
+    LOGVRB << "z2 = " << z2 << " not in (0, 1) => p = 0";
     return 0.;
   }
   else LOGTRC << "z2 = " << z2;
@@ -389,7 +390,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double nuHtau_cosTheta = nuHtauCosTheta(nuHtau_en);
   if(! (nuHtau_cosTheta >= -1. && nuHtau_cosTheta <= +1.))
   {
-    LOGDBG << "nuHtau_cosTheta = " << nuHtau_cosTheta << " not in (-1, 1) => p = 0";
+    LOGVRB << "nuHtau_cosTheta = " << nuHtau_cosTheta << " not in (-1, 1) => p = 0";
     return 0.;
   }
   else LOGTRC << "nuHtau_cosTheta = " << nuHtau_cosTheta;
@@ -400,10 +401,10 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double nuHtau_py = nuHtau_loc.Dot(eY_htau_);
   const double nuHtau_pz = nuHtau_loc.Dot(eZ_htau_);
   const LorentzVector nuHtau(nuHtau_px, nuHtau_py, nuHtau_pz, nuHtau_en);
-  LOGTRC << "htau nu: " << lvrap(nuHtau);
+  LOGTRC << lvrap("htau nu", nuHtau);
 
   const LorentzVector hTau = hTauP4_ + nuHtau;
-  LOGTRC << "hadronic tau: " << lvrap(hTau);
+  LOGTRC << lvrap("hadronic tau", hTau);
 
 //--- compute the neutrino and tau lepton 4-vector from leptonic tau
   const double nuLTau_en = complLeptEnergy_ * (1. - z2) / z2;
@@ -414,7 +415,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
                                                    nuLTau_p);
   if(! (nuLTau_cosTheta >= -1. && nuLTau_cosTheta <= +1.))
   {
-    LOGDBG << "nuLTau_cosTheta = " << nuLTau_cosTheta << " not in (-1, 1) "
+    LOGVRB << "nuLTau_cosTheta = " << nuLTau_cosTheta << " not in (-1, 1) "
            << "=> p = 0";
     return 0.;
   }
@@ -424,13 +425,13 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double nuLTau_py = nuLTau_loc.Dot(eY_lept_);
   const double nuLTau_pz = nuLTau_loc.Dot(eZ_lept_);
   const LorentzVector nuLTau(nuLTau_px, nuLTau_py, nuLTau_pz, nuLTau_en);
-  LOGTRC << "lept tau nu: " << lvrap(nuLTau);
+  LOGTRC << lvrap("lept tau nu", nuLTau);
 
   const LorentzVector lTau = complLeptP4_ + nuLTau;
-  LOGTRC << "leptonic tau: " << lvrap(lTau);
+  LOGTRC << lvrap("leptonic tau", lTau);
 
   const LorentzVector higgs = hTau + lTau;
-  LOGTRC << "higgs: " << lvrap(higgs);
+  LOGTRC << lvrap("higgs", higgs);
 
 //--- get W boson and associated neutrino 4-vectors
   const VectorSpherical nuT1_p3unit(1., std::acos(cosTheta1), varphi1);
@@ -445,27 +446,28 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const LorentzVector nuT2(nuT2_p3.x(), nuT2_p3.y(), nuT2_p3.z(), nuT2_en);
   const LorentzVector W1 = nuT1 + lept1p4_;
   const LorentzVector W2 = nuT2 + lept2p4_;
-  LOGTRC << "t nu 1: " << lvrap(nuT1);
-  LOGTRC << "t nu 2: " << lvrap(nuT2);
-  LOGTRC << "W 1: " << lvrap(W1);
-  LOGTRC << "W 2: " << lvrap(W2);
+  LOGTRC << lvrap("t nu 1", nuT1);
+  LOGTRC << lvrap("t nu 2", nuT2);
+  LOGTRC << lvrap("W 1", W1);
+  LOGTRC << lvrap("W 2", W2);
 
   const double b1_en = bJetEnergy(W1, 0);
   const double b2_en = bJetEnergy(W2, 1);
   if(b1_en == 0. || b2_en == 0.) return 0.;
-  LOGTRC << "b1_en = " << b1_en << " (reco = " << bJetRecoEnergy_[0] << "); "
-         << "b2_en = " << b2_en << " (reco = " << bJetRecoEnergy_[1] << ")";
   const Vector b1_p3 = std::sqrt(std::pow(b1_en, 2) - massBSquared) * bJetp3Unit_[0];
   const Vector b2_p3 = std::sqrt(std::pow(b2_en, 2) - massBSquared) * bJetp3Unit_[1];
   const LorentzVector b1 = LorentzVector(b1_p3.x(), b1_p3.y(), b1_p3.z(), b1_en);
   const LorentzVector b2 = LorentzVector(b2_p3.x(), b2_p3.y(), b2_p3.z(), b2_en);
-  LOGTRC << "b 1: " << lvrap(b1);
-  LOGTRC << "b 2: " << lvrap(b2);
+  LOGTRC << lvrap("b 1", b1);
+  LOGTRC << lvrap("b 2", b2);
 
   const LorentzVector t1 = b1 + W1;
   const LorentzVector t2 = b2 + W2;
-  LOGTRC << "t 1: " << lvrap(t1);
-  LOGTRC << "t 2: " << lvrap(t2);
+  LOGTRC << lvrap("t 1", t1);
+  LOGTRC << lvrap("t 2", t2);
+
+  LOGTRC << "b1_en = " << b1_en << " (reco = " << bJetRecoEnergy_[0] << "); "
+         << "b2_en = " << b2_en << " (reco = " << bJetRecoEnergy_[1] << ")";
 
 //--- hadronic recoil transfer function; simplification: use only neutrinos
 //--- in the difference of ,,measured'' and ,,true'' hadronic recoil, because
@@ -481,9 +483,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double MET_TF = MET_TF_denom * std::exp(-MET_pull / 2.);
   LOGTRC << "MET_x = " << MET_x_ << "; MET_y = " << MET_y_ << "; "
          << "nuSum_x = " << nuSum.x() << "; nuSum_y = " << nuSum.y();
-  LOGTRC << "=> MET_pull = " << MET_pull << " => MET_TF = " << MET_TF;
-
-  //if(MET_TF == 0.) return 0.;
+  LOGTRC_S << "=> MET_pull = " << MET_pull << " => MET_TF = " << MET_TF;
 
 //--- compute Bjorken x variables
 //--- assume that hadronic recoil has only transverse component
@@ -503,17 +503,23 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 
 //--- boost all MG momenta into frame where pT(tth) = 0
   const Vector boost(-tth.px() / tth.e(), -tth.py() / tth.e(), 0.);
-  LOGTRC << "boost vector: " << cvrap(boost);
+  LOGTRC << cvrap("boost vector", boost);
   const LorentzVector gluon1(0., 0., +0.5 * xa * sqrtS_, 0.5 * xa * sqrtS_);
   const LorentzVector gluon2(0., 0., -0.5 * xb * sqrtS_, 0.5 * xb * sqrtS_);
-  const LorentzVector b1_mem = ROOT::Math::VectorUtil::boost(b1, boost);
-  const LorentzVector b2_mem = ROOT::Math::VectorUtil::boost(b2, boost);
-  const LorentzVector hTau_mem = ROOT::Math::VectorUtil::boost(hTau, boost);
-  const LorentzVector lTau_mem = ROOT::Math::VectorUtil::boost(lTau, boost);
-  const LorentzVector nuT1_mem = ROOT::Math::VectorUtil::boost(nuT1, boost);
-  const LorentzVector nuT2_mem = ROOT::Math::VectorUtil::boost(nuT2, boost);
-  const LorentzVector lept1_mem = ROOT::Math::VectorUtil::boost(lept1p4_, boost);
-  const LorentzVector lept2_mem = ROOT::Math::VectorUtil::boost(lept2p4_, boost);
+  const LorentzVector b1_mem = VectorUtil::boost(b1, boost);
+  const LorentzVector b2_mem = VectorUtil::boost(b2, boost);
+  const LorentzVector hTau_mem = VectorUtil::boost(hTau, boost);
+  const LorentzVector lTau_mem = VectorUtil::boost(lTau, boost);
+  const LorentzVector nuT1_mem = VectorUtil::boost(nuT1, boost);
+  const LorentzVector nuT2_mem = VectorUtil::boost(nuT2, boost);
+  const LorentzVector lept1_mem = VectorUtil::boost(lept1p4_, boost);
+  const LorentzVector lept2_mem = VectorUtil::boost(lept2p4_, boost);
+
+  const LorentzVector t1_mem = VectorUtil::boost(t1, boost);
+  const LorentzVector t2_mem = VectorUtil::boost(t2, boost);
+  const LorentzVector higgs_mem = VectorUtil::boost(higgs, boost);
+  const LorentzVector tth_mem = t1_mem + t2_mem + higgs_mem;
+  LOGTRC << lvrap("tth mem", tth_mem);
 
 //--- set MG momenta (follow signs in the diagram?)
   setMGmomentum(gluon1, mgGluon1p4_);
@@ -528,25 +534,22 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   setMGmomentum(lTau_mem, mgTau2p4_);
   me_madgraph_[currentME_] -> setMomenta(mgMomenta_);
 
-  const double loggerFP = Logger::getFloatPrecision();
-  Logger::setFloatPrecision(6);
-  LOGTRC << "prob(PDF) = " << probPDF << "; flux factor = " << flux;
+  LOGTRC_S << "prob(PDF) = " << probPDF << "; flux factor = " << flux;
 
 //--- calculate the matrix element
   me_madgraph_[currentME_] -> sigmaKin();
   const double prob_ME_mg = me_madgraph_[currentME_] -> getMatrixElements()[0];
   if(TMath::IsNaN(prob_ME_mg) || prob_ME_mg < 0.)
   {
-    LOGERR << "Warning: MadGraph5 returned NaN or is zero: "
-           << "|M|^2 = " << prob_ME_mg << " => skipping event";
+    LOGERR_S << "Warning: MadGraph5 returned NaN or is zero: "
+             << "|M|^2 = " << prob_ME_mg << " => skipping event";
     return 0.;
   }
-  LOGTRC << "|M|^2 = " << prob_ME_mg;
+  LOGVRB_S << "|M|^2 = " << prob_ME_mg;
 
 //--- assemble the integrand
   const double p = prob_ME_mg * probPDF * flux * MET_TF;
-  LOGTRC << "p = " << p;
-  Logger::setFloatPrecision(loggerFP);
+  LOGVRB_S << "p = " << p;
 
   return p;
 }

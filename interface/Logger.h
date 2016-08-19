@@ -2,17 +2,28 @@
 #define LOGGER_H
 
 #include <string> // std::string
-#include <iostream> // std::ostream, std::cout
+#include <iostream> // std::ostream
 #include <memory> // std::shared_ptr<>
 #include <sstream> // std::stringstream
 #include <vector> // std::vector<>
 
 #define LOGERR  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
 #define LOGWARN tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define LOGFIX  tthMEM::wrap(tthMEM::Logger::LogLevel::kFixme)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
 #define LOGINFO tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)     <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
 #define LOGDBG  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
 #define LOGVRB  tthMEM::wrap(tthMEM::Logger::LogLevel::kVerbose)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
 #define LOGTRC  tthMEM::wrap(tthMEM::Logger::LogLevel::kTrace)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define LOGALL  tthMEM::wrap(tthMEM::Logger::LogLevel::kAll)      <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+
+#define LOGERR_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
+#define LOGWARN_S tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
+#define LOGFIX_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kFixme)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
+#define LOGINFO_S tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)     <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
+#define LOGDBG_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
+#define LOGVRB_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kVerbose)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
+#define LOGTRC_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kTrace)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
+#define LOGALL_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kAll)      <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
 
 namespace tthMEM
 {
@@ -26,10 +37,12 @@ namespace tthMEM
     {
       kError   = 0,
       kWarning = 1,
-      kInfo    = 2,
-      kDebug   = 3,
-      kVerbose = 4,
-      kTrace   = 5
+      kFixme   = 2,
+      kInfo    = 3,
+      kDebug   = 4,
+      kVerbose = 5,
+      kTrace   = 6,
+      kAll     = 7
     };
 
     Logger(Logger::LogLevel logLevel);

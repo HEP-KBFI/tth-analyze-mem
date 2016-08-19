@@ -5,7 +5,6 @@
 #include "DataFormats/Math/interface/Vector3D.h" // math::XYZVectorD, math::RThetaPhiVectorD
 
 #include <string> // std::string
-#include <iostream> // std::cout
 #include <cmath> // std::acos()
 
 namespace tthMEM
@@ -17,7 +16,11 @@ namespace tthMEM
   typedef struct LorentzVectorWrap
   {
     LorentzVectorWrap(const LorentzVector & v);
+    LorentzVectorWrap(const std::string & name,
+                      const LorentzVector & v);
+    const std::string name_;
     const LorentzVector & v_;
+    std::size_t textFieldWidth_ = 15;
 
     friend std::ostream &
     operator<<(std::ostream & os,
@@ -27,7 +30,11 @@ namespace tthMEM
   typedef struct VectorCartesianWrap
   {
     VectorCartesianWrap(const Vector & v);
+    VectorCartesianWrap(const std::string & name,
+                        const Vector & v);
+    const std::string name_;
     const Vector & v_;
+    std::size_t textFieldWidth_ = 15;
 
     friend std::ostream &
     operator<<(std::ostream & os,
@@ -36,8 +43,12 @@ namespace tthMEM
 
   typedef struct VectorSphericalWrap
   {
+    VectorSphericalWrap(const std::string & name,
+                        const Vector & v);
     VectorSphericalWrap(const Vector & v);
+    const std::string name_;
     const Vector & v_;
+    std::size_t textFieldWidth_ = 15;
 
     friend std::ostream &
     operator<<(std::ostream & os,

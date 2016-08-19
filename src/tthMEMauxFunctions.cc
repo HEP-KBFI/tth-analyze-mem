@@ -11,44 +11,80 @@
 namespace tthMEM
 {
   LorentzVectorWrap::LorentzVectorWrap(const LorentzVector & v)
-    : v_(v)
+    : LorentzVectorWrap("", v)
   {}
+
+  LorentzVectorWrap::LorentzVectorWrap(const std::string & name,
+                                       const LorentzVector & v)
+    : name_(name)
+    , v_(v)
+  {
+    textFieldWidth_ = std::max(textFieldWidth_, name_.size()) + 2;
+  }
 
   std::ostream &
   operator<<(std::ostream & os,
              const LorentzVectorWrap & v)
   {
-    os << "En = "   << v.v_.energy() << "; "
-       << "pT = "   << v.v_.pt()     << "; "
-       << "mass = " << v.v_.mass();
+    if(v.name_.size() != 0)
+      os << std::setw(v.textFieldWidth_) << std::left << v.name_ + ":";
+    os << "En ="   << std::setw(10) << std::right << v.v_.energy()
+       << ";" << std::string(5, ' ')
+       << "pT ="   << std::setw(10) << std::right << v.v_.pt()
+       << ";" << std::string(5, ' ')
+       << "mass =" << std::setw(10) << std::right << v.v_.mass();
     return os;
   }
 
   VectorCartesianWrap::VectorCartesianWrap(const Vector & v)
-    : v_(v)
+    : VectorCartesianWrap("", v)
   {}
+
+  VectorCartesianWrap::VectorCartesianWrap(const std::string & name,
+                                           const Vector & v)
+    : name_(name)
+    , v_(v)
+  {
+    textFieldWidth_ = std::max(textFieldWidth_, name_.size()) + 2;
+  }
 
   std::ostream &
   operator<<(std::ostream & os,
              const VectorCartesianWrap & v)
   {
-    os << "x = " << v.v_.x() << "; "
-       << "y = " << v.v_.y() << "; "
-       << "z = " << v.v_.z();
+    if(v.name_.size() != 0)
+      os << std::setw(v.textFieldWidth_) << std::left << v.name_ + ":";
+    os << "x =" << std::setw(10) << std::right << v.v_.x()
+       << ";" << std::string(5, ' ')
+       << "y =" << std::setw(10) << std::right << v.v_.y()
+       << ";" << std::string(5, ' ')
+       << "z =" << std::setw(10) << std::right << v.v_.z();
     return os;
   }
 
   VectorSphericalWrap::VectorSphericalWrap(const Vector & v)
-    : v_(v)
+    : VectorSphericalWrap("", v)
   {}
+
+  VectorSphericalWrap::VectorSphericalWrap(const std::string & name,
+                                           const Vector & v)
+    : name_(name)
+    , v_(v)
+  {
+    textFieldWidth_ = std::max(textFieldWidth_, name_.size()) + 2;
+  }
 
   std::ostream &
   operator<<(std::ostream & os,
              const VectorSphericalWrap & v)
   {
-    os << "norm = "  << v.v_.r()     << "; "
-       << "theta = " << v.v_.theta() << "; "
-       << "phi = "   << v.v_.phi();
+    if(v.name_.size() != 0)
+      os << std::setw(v.textFieldWidth_) << std::left << v.name_ + ":";
+    os << "norm ="  << std::setw(10) << std::right << v.v_.r()
+       << ";" << std::string(5, ' ')
+       << "theta =" << std::setw(10) << std::right << v.v_.theta()
+       << ";" << std::string(5, ' ')
+       << "phi ="   << std::setw(10) << std::right << v.v_.phi();
     return os;
   }
 

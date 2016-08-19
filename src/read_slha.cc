@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "tthAnalysis/tthMEM/interface/read_slha.h"
+#include "tthAnalysis/tthMEM/interface/Logger.h"
 
 using namespace std;
 
@@ -18,8 +19,8 @@ void SLHABlock::set_entry(vector<int> indices, double value)
 double SLHABlock::get_entry(vector<int> indices, double def_val)
 {
   if (_entries.find(indices) == _entries.end()){
-    cout << "Warning: No such entry in " << _name << ", using default value " 
-	 << def_val << endl;
+    LOGWARN << "Warning: No such entry in " << _name << ", using default value "
+         << def_val << "\n";
     return def_val;
   }
   return _entries[indices];
@@ -31,7 +32,7 @@ void SLHAReader::read_slha_file(string file_name)
   param_card.open(file_name.c_str(), ifstream::in);
   if(!param_card.good())
     throw "Error while opening param card";
-  cout << "Opened slha file " << file_name << " for reading" << endl;
+  LOGINFO << "Opened slha file " << file_name << " for reading" << "\n";
   char buf[200];
   string line;
   string block("");
@@ -91,7 +92,7 @@ void SLHAReader::read_slha_file(string file_name)
 	if(linestr >> pdg_code >> value)
 	  set_block_entry("decay", pdg_code, value);
 	else
-	  cout << "Warning: Wrong format for decay block " << line << endl;
+	  cout << "Warning: Wrong format for decay block " << line << "\n";
 	continue;
       }
     }
@@ -107,8 +108,8 @@ double SLHAReader::get_block_entry(string block_name, vector<int> indices,
 				   double def_val)
 {
   if (_blocks.find(block_name) == _blocks.end()){
-    cout << "No such block " << block_name << ", using default value " 
-	 << def_val << endl;
+    LOGWARN << "No such block " << block_name << ", using default value "
+         << def_val << "\n";
     return def_val;
   }
   return _blocks[block_name].get_entry(indices);  
@@ -134,7 +135,7 @@ void SLHAReader::set_block_entry(string block_name, vector<int> indices,
   /* cout << "Set block " << block_name << " entry ";
      for (int i=0;i < indices.size();i++) 
      cout << indices[i] << " ";
-     cout << "to " << _blocks[block_name].get_entry(indices) << endl;*/
+     cout << "to " << _blocks[block_name].get_entry(indices) << "\n";*/
 }
 
 void SLHAReader::set_block_entry(string block_name, int index, 
