@@ -232,7 +232,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
          << "CPU time:\t" << std::round(numSeconds_cpu_ * 100) / 100 << " s";
 
   numSecondsAccumul_cpu_ += numSeconds_cpu_;
-  numSecondsAccumul_real_ += numSecondsAccumul_real_;
+  numSecondsAccumul_real_ += numSeconds_real_;
   ++nof_calls_;
 
   return pSum;
