@@ -25,6 +25,13 @@ int
 main(int argc,
      char * argv[])
 {
+// optimization procedures
+//--- needed by std::chrono::
+  setenv("TZ", "/etc/localtime", 1);
+//--- untie std::cout from std::cin
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+
 //--- parse the configuration file
   if(argc != 2)
   {
