@@ -20,7 +20,7 @@ double SLHABlock::get_entry(vector<int> indices, double def_val)
 {
   if (_entries.find(indices) == _entries.end()){
     LOGWARN << "Warning: No such entry in " << _name << ", using default value "
-         << def_val << "\n";
+         << def_val;
     return def_val;
   }
   return _entries[indices];
@@ -32,7 +32,7 @@ void SLHAReader::read_slha_file(string file_name)
   param_card.open(file_name.c_str(), ifstream::in);
   if(!param_card.good())
     throw "Error while opening param card";
-  LOGINFO << "Opened slha file " << file_name << " for reading" << "\n";
+  LOGINFO << "Opened slha file " << file_name << " for reading";
   char buf[200];
   string line;
   string block("");
@@ -92,7 +92,7 @@ void SLHAReader::read_slha_file(string file_name)
 	if(linestr >> pdg_code >> value)
 	  set_block_entry("decay", pdg_code, value);
 	else
-	  cout << "Warning: Wrong format for decay block " << line << "\n";
+	  LOGWARN << "Warning: Wrong format for decay block " << line;
 	continue;
       }
     }
@@ -109,7 +109,7 @@ double SLHAReader::get_block_entry(string block_name, vector<int> indices,
 {
   if (_blocks.find(block_name) == _blocks.end()){
     LOGWARN << "No such block " << block_name << ", using default value "
-         << def_val << "\n";
+         << def_val;
     return def_val;
   }
   return _blocks[block_name].get_entry(indices);  
