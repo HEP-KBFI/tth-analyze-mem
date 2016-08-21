@@ -24,9 +24,8 @@ namespace tthMEM
   public:
     enum IntegrationMode { kUndefined, kVEGAS, kVAMP };
 
-    MEM_ttHorZ_3l1tau(double sqrtS,
-                   const std::string & pdfName,
-                   const std::string & madgraphFileName);
+    MEM_ttHorZ_3l1tau(const std::string & pdfName,
+                      const std::string & madgraphFileName);
     ~MEM_ttHorZ_3l1tau();
 
     void
@@ -56,7 +55,6 @@ namespace tthMEM
 
   private:
     Integrand_ttHorZ_3l1tau * integrand_;
-    double sqrtS_;
     MeasuredEvent_3l1tau ev_;
 
     IntegrationMode integrationMode_;

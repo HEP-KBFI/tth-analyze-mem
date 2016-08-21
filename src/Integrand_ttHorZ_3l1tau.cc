@@ -20,13 +20,9 @@ namespace VectorUtil = ROOT::Math::VectorUtil;
 
 const Integrand_ttHorZ_3l1tau * Integrand_ttHorZ_3l1tau::gIntegrand = 0;
 
-Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(double sqrtS,
-                                                 const std::string & pdfName,
+Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(const std::string & pdfName,
                                                  const std::string & madgraphFilename)
-  : sqrtS_(sqrtS)
-  , s_(std::pow(sqrtS_, 2))
-  , invSqrtS_(1. / sqrtS_)
-  , beamAxis_(0., 0., 1.)
+  : beamAxis_(0., 0., 1.)
   , pdf_(0)
   , currentME_(ME_mg5_3l1tau::kTTH) // default to tth
   , me_madgraph_{0, 0}
@@ -227,28 +223,28 @@ Integrand_ttHorZ_3l1tau::renewInputs()
          << std::sqrt(measuredVisMassSquared_);
 
 //--- find the kinematic variables of the rest of the leptons (from t decay)
-  const unsigned lept1Idx = measuredEvent_ -> bjetLeptonIdxs[0];
-  const unsigned lept2Idx = measuredEvent_ -> bjetLeptonIdxs[1];
-  const MeasuredLepton & lept1 = measuredEvent_ -> leptons[lept1Idx];
-  const MeasuredLepton & lept2 = measuredEvent_ -> leptons[lept2Idx];
-  lept1p3_ = lept1.p3();
-  lept2p3_ = lept2.p3();
-  lept1Energy_ = lept1.p();
-  lept2Energy_ = lept2.p();
-  lept1p3Unit_ = lept1p3_.unit();
-  lept2p3Unit_ = lept2p3_.unit();
-  lept1p4_ = LorentzVector(lept1p3_.x(), lept1p3_.y(), lept1p3_.z(), lept1Energy_);
-  lept2p4_ = LorentzVector(lept2p3_.x(), lept2p3_.y(), lept2p3_.z(), lept2Energy_);
-  const int lept1Charge = lept1.charge();
-  LOGVRB << lvrap("t lept 1 p4", lept1p4_);
-  LOGVRB << lvrap("t lept 2 p4", lept2p4_);
+  int lept1Charge = 0;
+  for(unsigned i = 0; i < 2; ++i)
+  {
+    const unsigned leptIdx_i = measuredEvent_ -> bjetLeptonIdxs[i];
+    const MeasuredLepton & lept_i = measuredEvent_ -> leptons[leptIdx_i];
+    leptP3_[i] = lept_i.p3();
+    leptEnergy_[i] = lept_i.p();
+    leptP3Unit_[i] = leptP3_[i].unit();
+    leptP4_[i] = LorentzVector(
+      leptP3_[i].x(), leptP3_[i].y(), leptP3_[i].z(), leptEnergy_[i]
+    );
+    if(i == 0) lept1Charge = lept_i.charge();
+    LOGVRB << lvrap("t lept " + std::to_string(i + 1) + " p4", leptP4_[i]);
+  }
 
 //--- find the kinematic variables of the b quarks
   for(unsigned i = 0; i < 2; ++i)
   {
     const MeasuredJet & bjet_i = measuredEvent_ -> jets[i];
     bJetRecoEnergy_[i] = bjet_i.energy();
-    bJetp3Unit_[i] = bjet_i.p3().unit();
+    bJetP_[i] = bjet_i.p3().R();
+    bJetP3Unit_[i] = bjet_i.p3().unit();
   }
 
 //--- MadGraph momenta legend:
@@ -287,7 +283,7 @@ double
 Integrand_ttHorZ_3l1tau::nuHtauCosTheta(double nuHtau_en) const
 {
   return (nuHtau_en * hTauEnergy_ -
-             (tauLeptonMassSquared - hTauMassSquared_) / 2.)
+             (massTauSquared - hTauMassSquared_) / 2.)
            / (hTauMomentum_ * nuHtau_en);
 }
 
@@ -297,7 +293,7 @@ Integrand_ttHorZ_3l1tau::nuLeptTauCosTheta(double nuLeptTau_en,
                                            double nuLeptTau_p) const
 {
   return (nuLeptTau_en * complLeptEnergy_ -
-             (tauLeptonMassSquared - (complLeptMassSquared_ + mInvSquared)) / 2.)
+             (massTauSquared - (complLeptMassSquared_ + mInvSquared)) / 2.)
            / (complLeptMomentum_ * nuLeptTau_p);
 }
 
@@ -307,7 +303,7 @@ Integrand_ttHorZ_3l1tau::bJetEnergy(const LorentzVector & W,
 {
   const Vector Wp(W.x(), W.y(), W.z());
   const double a_ = DeltaFactor / W.energy() / massB;
-  const double b_ = W.Beta() * bJetp3Unit_[bIdx].Dot(Wp.unit());
+  const double b_ = W.Beta() * bJetP3Unit_[bIdx].Dot(Wp.unit());
   const double a_2 = std::pow(a_, 2);
   const double b_2 = std::pow(b_, 2);
   const double b_abs = std::fabs(b_);
@@ -349,6 +345,45 @@ Integrand_ttHorZ_3l1tau::bJetEnergy(const LorentzVector & W,
     return std::max(Eb[0], Eb[1]);
 
   return Eb[validSolIdx[0]];
+}
+
+double
+Integrand_ttHorZ_3l1tau::tDecayJacobiFactor(const LorentzVector & W,
+                                            double b_en,
+                                            double nuT_en,
+                                            unsigned blIdx) const
+{
+  const Vector Wp(W.x(), W.y(), W.z());
+  const double bBeta = bJetP_[blIdx] / b_en;
+  const double invAbsFactor = std::fabs(
+    bJetP3Unit_[blIdx].Dot(Wp.unit()) * W.Beta() / bBeta - 1.);
+  if(invAbsFactor == 0.)
+  {
+    LOGWARN << "Encountered singularities in the calculation of the"
+            << "#" << (blIdx + 1) << "th Jacobi factor of the top decay";
+    return 0.;
+  }
+  return b_en * std::pow(nuT_en, 2) /
+    (leptEnergy_[blIdx] * W.e() * massWSquared * invAbsFactor);
+}
+
+double
+Integrand_ttHorZ_3l1tau::MeffSquaredTau2hadrons() const
+{
+  const double denom = massTauSquared - hTauMassSquared_;
+  if(denom == 0.)
+  {
+    LOGWARN << "Something's off: hadronic tau and tau lepton have the same mass";
+    return 0.;
+  }
+  return 16. * pi() * hTauMass_ * gammaTau2hadrons * hTauMassSquared_ / denom;
+}
+
+double
+Integrand_ttHorZ_3l1tau::hadTauPSJacobiFactor(const double z) const
+{
+  return MeffSquaredTau2hadrons() * hTauEnergy_ /
+    (4 * std::pow(2 * pi(), 6) * hTauMomentum_ * std::pow(z, 2));
 }
 
 double
@@ -453,16 +488,16 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 //--- get W boson and associated neutrino 4-vectors
   const VectorSpherical nuT1_p3unit(1., std::acos(cosTheta1), varphi1);
   const VectorSpherical nuT2_p3unit(1., std::acos(cosTheta2), varphi2);
-  const double nuT1_en = massWSquared / ((1 - lept1p3Unit_.Dot(nuT1_p3unit))
-                                         * lept1Energy_ * 2.);
-  const double nuT2_en = massWSquared / ((1 - lept2p3Unit_.Dot(nuT2_p3unit))
-                                         * lept2Energy_ * 2.);
+  const double nuT1_en = massWSquared / ((1 - leptP3Unit_[0].Dot(nuT1_p3unit))
+                                         * leptEnergy_[0] * 2.);
+  const double nuT2_en = massWSquared / ((1 - leptP3Unit_[1].Dot(nuT2_p3unit))
+                                         * leptEnergy_[1] * 2.);
   const Vector nuT1_p3(nuT1_en * nuT1_p3unit);
   const Vector nuT2_p3(nuT2_en * nuT2_p3unit);
   const LorentzVector nuT1(nuT1_p3.x(), nuT1_p3.y(), nuT1_p3.z(), nuT1_en);
   const LorentzVector nuT2(nuT2_p3.x(), nuT2_p3.y(), nuT2_p3.z(), nuT2_en);
-  const LorentzVector W1 = nuT1 + lept1p4_;
-  const LorentzVector W2 = nuT2 + lept2p4_;
+  const LorentzVector W1 = nuT1 + leptP4_[0];
+  const LorentzVector W2 = nuT2 + leptP4_[1];
   LOGTRC << lvrap("t nu 1", nuT1);
   LOGTRC << lvrap("t nu 2", nuT2);
   LOGTRC << lvrap("W 1", W1);
@@ -471,8 +506,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double b1_en = bJetEnergy(W1, 0);
   const double b2_en = bJetEnergy(W2, 1);
   if(b1_en == 0. || b2_en == 0.) return 0.;
-  const Vector b1_p3 = std::sqrt(std::pow(b1_en, 2) - massBSquared) * bJetp3Unit_[0];
-  const Vector b2_p3 = std::sqrt(std::pow(b2_en, 2) - massBSquared) * bJetp3Unit_[1];
+  const Vector b1_p3 = std::sqrt(std::pow(b1_en, 2) - massBSquared) * bJetP3Unit_[0];
+  const Vector b2_p3 = std::sqrt(std::pow(b2_en, 2) - massBSquared) * bJetP3Unit_[1];
   const LorentzVector b1 = LorentzVector(b1_p3.x(), b1_p3.y(), b1_p3.z(), b1_en);
   const LorentzVector b2 = LorentzVector(b2_p3.x(), b2_p3.y(), b2_p3.z(), b2_en);
   LOGTRC << lvrap("b 1", b1);
@@ -505,28 +540,30 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double hadRecE = 0.;
   const double hadRecPz = 0.;
   const LorentzVector tth = higgs + t1 + t2;
-  const double xa = invSqrtS_ * (hadRecE + tth.e() + hadRecPz + tth.pz());
-  const double xb = invSqrtS_ * (hadRecE + tth.e() - hadRecPz - tth.pz());
+  const double xa = invSqrtS * (hadRecE + tth.e() + hadRecPz + tth.pz());
+  const double xb = invSqrtS * (hadRecE + tth.e() - hadRecPz - tth.pz());
   LOGTRC << "xa = " << xa << "; xb = " << xb;
 
   const double fa = pdf_ -> xfxQ(21, xa, Q_) / xa;
   const double fb = pdf_ -> xfxQ(21, xb, Q_) / xb;
   const double probPDF = fa * fb;
-  const double flux = 1. / (s_ * xa * xb);
+  const double flux = 1. / (s * xa * xb);
 
 //--- boost all MG momenta into frame where pT(tth) = 0
+//--- note: the boost vector must be a 3-vector of velocities, hence
+//---       the division by energy
   const Vector boost(-tth.px() / tth.e(), -tth.py() / tth.e(), 0.);
   LOGTRC << cvrap("boost vector", boost);
-  const LorentzVector gluon1(0., 0., +0.5 * xa * sqrtS_, 0.5 * xa * sqrtS_);
-  const LorentzVector gluon2(0., 0., -0.5 * xb * sqrtS_, 0.5 * xb * sqrtS_);
+  const LorentzVector gluon1(0., 0., +0.5 * xa * sqrtS, 0.5 * xa * sqrtS);
+  const LorentzVector gluon2(0., 0., -0.5 * xb * sqrtS, 0.5 * xb * sqrtS);
   const LorentzVector b1_mem    = VectorUtil::boost(b1, boost);
   const LorentzVector b2_mem    = VectorUtil::boost(b2, boost);
   const LorentzVector hTau_mem  = VectorUtil::boost(hTau, boost);
   const LorentzVector lTau_mem  = VectorUtil::boost(lTau, boost);
   const LorentzVector nuT1_mem  = VectorUtil::boost(nuT1, boost);
   const LorentzVector nuT2_mem  = VectorUtil::boost(nuT2, boost);
-  const LorentzVector lept1_mem = VectorUtil::boost(lept1p4_, boost);
-  const LorentzVector lept2_mem = VectorUtil::boost(lept2p4_, boost);
+  const LorentzVector lept1_mem = VectorUtil::boost(leptP4_[0], boost);
+  const LorentzVector lept2_mem = VectorUtil::boost(leptP4_[1], boost);
 
   const LorentzVector t1_mem    = VectorUtil::boost(t1, boost);
   const LorentzVector t2_mem    = VectorUtil::boost(t2, boost);
@@ -549,14 +586,30 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double prob_ME_mg = me_madgraph_[currentME_] -> getMatrixElements()[0];
   if(TMath::IsNaN(prob_ME_mg) || prob_ME_mg < 0.)
   {
-    LOGERR_S << "Warning: MadGraph5 returned NaN or is zero: "
-             << "|M|^2 = " << prob_ME_mg << " => skipping event";
+    LOGWARN_S << "MadGraph5 returned NaN or is zero: "
+              << "|M|^2 = " << prob_ME_mg << " => skipping event";
     return 0.;
   }
   LOGVRB_S << "|M|^2 = " << prob_ME_mg;
 
+//--- jacobi factors
+  const double t1DecayJacobiFactor = tDecayJacobiFactor(W1, b1_en, nuT1_en, 0);
+  const double t2DecayJacobiFactor = tDecayJacobiFactor(W2, b2_en, nuT2_en, 1);
+  LOGTRC_S << "Jacobi factors arising from the top decay: "
+           << "#1 = " << t1DecayJacobiFactor << "; "
+           << "#2 = " << t2DecayJacobiFactor;
+  if(t1DecayJacobiFactor == 0. || t2DecayJacobiFactor == 0.) return 0.;
+
+  const double hTauPSJacobiFactor = hadTauPSJacobiFactor(z1);
+  LOGTRC_S << "PS x Jacobi factor for hadronic tau decay = "
+           << hTauPSJacobiFactor;
+
+  const double jacobiFactor = t1DecayJacobiFactor * t2DecayJacobiFactor *
+    hTauPSJacobiFactor * ttHorZfactor;
+  LOGTRC_S << "Product of all Jacobi factors = " << jacobiFactor;
+
 //--- assemble the integrand
-  const double p = prob_ME_mg * probPDF * flux * MET_TF;
+  const double p = prob_ME_mg * probPDF * flux * MET_TF * jacobiFactor;
   LOGVRB_S << "p = " << p;
 
   return p;

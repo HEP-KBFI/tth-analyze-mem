@@ -1,5 +1,5 @@
-#ifndef INTEGRAND_TTHORZ_3L1TAU_LO_H
-#define INTEGRAND_TTHORZ_3L1TAU_LO_H
+#ifndef INTEGRAND_TTHORZ_3L1TAU_H
+#define INTEGRAND_TTHORZ_3L1TAU_H
 
 #include <string> // std::string
 
@@ -26,8 +26,7 @@ namespace tthMEM
      * @param pdfName          Name of parton distribution function (pdf)
      * @param madgraphFileName Full path to madgraph5 file (param_card.dat)
      */
-    Integrand_ttHorZ_3l1tau(double sqrtS,
-                            const std::string & pdfName,
+    Integrand_ttHorZ_3l1tau(const std::string & pdfName,
                             const std::string & madgraphFileName);
     ~Integrand_ttHorZ_3l1tau();
 
@@ -68,9 +67,6 @@ namespace tthMEM
     ///< static pointer to this instance
 
   protected:
-    const double sqrtS_;
-    const double s_;
-    const double invSqrtS_;
     const Vector beamAxis_;
 
     LHAPDF::PDF * pdf_;
@@ -99,14 +95,14 @@ namespace tthMEM
     LorentzVector complLeptP4_;
     Vector eX_lept_, eY_lept_, eZ_lept_;
     // for the leptons coming from t decay:
-    double lept1Energy_;
-    double lept2Energy_;
-    LorentzVector lept1p4_,     lept2p4_;
-    Vector        lept1p3_,     lept2p3_;
-    Vector        lept1p3Unit_, lept2p3Unit_;
+    double leptEnergy_[2];
+    LorentzVector leptP4_[2];
+    Vector        leptP3_[2];
+    Vector        leptP3Unit_[2];
     // for the b quarks coming from t decay:
     double bJetRecoEnergy_[2];
-    Vector bJetp3Unit_[2];
+    double bJetP_[2];
+    Vector bJetP3Unit_[2];
 
     double MET_x_, MET_y_;
     double covDet_;
@@ -141,7 +137,7 @@ namespace tthMEM
      * @todo consider moving the function to a separate class, static it and
      *       bind it with missing arguments inside this class
      */
-    double
+    inline double
     nuHtauCosTheta(double nuHtau_en) const;
 
     /**
@@ -152,7 +148,7 @@ namespace tthMEM
      * @todo consider moving the function to a separate class, static it and
      *       bind it with missing arguments inside this class
      */
-    double
+    inline double
     nuLeptTauCosTheta(double nuLeptTau_en,
                       double mInvSquared,
                       double nuLeptTau_p) const;
@@ -166,10 +162,47 @@ namespace tthMEM
      * @todo consider moving the function to a separate class, static it and
      *       bind it with missing arguments inside this class
      */
-    double
+    inline double
     bJetEnergy(const LorentzVector & W,
                unsigned bIdx) const;
+
+    /**
+     * @brief Calculates Jacobi factor arising from variable change in the delta-function
+     *        associated with top decay
+     * @param W      the W-boson 4-vector
+     * @param b_en   energy of the b-quark
+     * @param nuT_en energy of the neutrino
+     * @param blIdx  index of the lepton and b-jet (valid values: 0, 1)
+     * @return the Jacobi factor
+     *
+     * @todo consider moving the function to a separate class, static it and
+     *       bind it with missing arguments inside this class
+     */
+    inline double
+    tDecayJacobiFactor(const LorentzVector & W,
+                       double b_en,
+                       double nuT_en,
+                       unsigned blIdx) const;
+
+    /**
+     * @brief Calculates effective matrix element squared for the process
+     *            tau -> hadronic tau + tau neutrino
+     *        which is derived such that the BR of the process is reproduced
+     * @return
+     */
+    inline double
+    MeffSquaredTau2hadrons() const;
+
+    /**
+     * @brief Calculates the Jacobi and phase space factor which arises from
+     *        the variable changes in the delta function associated with
+     *        hadronic tau decays
+     * @param z Energy fraction carried by hadronic tau decay product (in (0, 1))
+     * @return The phase space x jacobi factor
+     */
+    inline double
+    hadTauPSJacobiFactor(const double z) const;
   };
 }
 
-#endif // INTEGRAND_TTHORZ_3L1TAU_LO_H
+#endif // INTEGRAND_TTHORZ_3L1TAU_H

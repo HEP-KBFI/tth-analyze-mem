@@ -55,15 +55,15 @@ MeasuredHadronicTau::initialize()
 
   preciseVisMass_ = mass_;
 
-  double minVisMass = minVisTauMass;
-  double maxVisMass = maxVisTauMass;
+  double minVisMass = massVisTauMin;
+  double maxVisMass = massVisTauMax;
 
   if(decayMode_ == -1)
-    minVisMass = chargedPionMass;
+    minVisMass = massChargedPion;
   else if(decayMode_ == 0)
   {
-    minVisMass = chargedPionMass;
-    maxVisMass = chargedPionMass;
+    minVisMass = massChargedPion;
+    maxVisMass = massChargedPion;
   }
 
   if(preciseVisMass_ < 0.9 * minVisMass || preciseVisMass_ > 1.1 * maxVisMass)

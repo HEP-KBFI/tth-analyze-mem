@@ -113,7 +113,7 @@ main(int argc,
 
 //--- initialize the MEM instance and start looping over the events
   LOGINFO << "Initializing the tth&z MEM instance";
-  MEM_ttHorZ_3l1tau mem_tt_HandZ(sqrtS, pdfName, findFile(madgraphFileName));
+  MEM_ttHorZ_3l1tau mem_tt_HandZ(pdfName, findFile(madgraphFileName));
   mem_tt_HandZ.setIntegrationMode(integrationMode);
   mem_tt_HandZ.setMaxObjFunctionCalls(maxObjFunctionCalls);
   const double bkgWeightDenom = 1. / (xSectionTTZ + xSectionTTH2diW);

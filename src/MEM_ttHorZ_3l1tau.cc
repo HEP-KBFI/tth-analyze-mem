@@ -3,7 +3,7 @@
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorVEGAS.h"
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorVAMP.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // ...
-  // ... roundToNearestUInt(), pi(), tauLeptonMassSquared, xSectionTTHinGeV2
+  // ... roundToNearestUInt(), pi(), massTauSquared, xSectionTTHinGeV2
 
 #include <cmath> // std::round()
 
@@ -29,11 +29,9 @@ g_Fortran(double ** x,
   return returnValue;
 }
 
-MEM_ttHorZ_3l1tau::MEM_ttHorZ_3l1tau(double sqrtS,
-                                     const std::string & pdfName,
+MEM_ttHorZ_3l1tau::MEM_ttHorZ_3l1tau(const std::string & pdfName,
                                      const std::string & madgraphFileName)
-  : integrand_(new Integrand_ttHorZ_3l1tau(sqrtS, pdfName, madgraphFileName))
-  , sqrtS_(sqrtS)
+  : integrand_(new Integrand_ttHorZ_3l1tau(pdfName, madgraphFileName))
   , integrationMode_(IntegrationMode::kUndefined)
   , intAlgo_(0)
   , maxObjFunctionCalls_(20000)
@@ -160,7 +158,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
 
 //--- set integration boundaries
   double xl[8] = { -1., -pi(), -1., -pi(),  0., -pi(), -pi(), 0. };
-  double xu[8] = { +1., +pi(), +1., +pi(), +1., +pi(), +pi(), tauLeptonMassSquared };
+  double xu[8] = { +1., +pi(), +1., +pi(), +1., +pi(), +pi(), massTauSquared };
   xl_ = new double[numDimensions_];
   xu_ = new double[numDimensions_];
   std::copy(xl, xl + numDimensions_, xl_);
