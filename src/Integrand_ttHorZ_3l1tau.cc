@@ -65,28 +65,8 @@ Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(double sqrtS,
     std::exit(EXIT_FAILURE);
   }
 
-  mgGluon1p4_            = new double[4];
-  mgGluon2p4_            = new double[4];
-  mgBjet1p4_             = new double[4];
-  mgLeptonFromBjet1p4_   = new double[4];
-  mgNeutrinoFromBjet1p4_ = new double[4];
-  mgBjet2p4_             = new double[4];
-  mgLeptonFromBjet2p4_   = new double[4];
-  mgNeutrinoFromBjet2p4_ = new double[4];
-  mgTau1p4_              = new double[4];
-  mgTau2p4_              = new double[4];
-
-  mgMomenta_.push_back(mgGluon1p4_);
-  mgMomenta_.push_back(mgGluon2p4_);
-  mgMomenta_.push_back(mgBjet1p4_);
-  mgMomenta_.push_back(mgLeptonFromBjet1p4_);
-  mgMomenta_.push_back(mgNeutrinoFromBjet1p4_);
-  mgMomenta_.push_back(mgBjet2p4_);
-  mgMomenta_.push_back(mgLeptonFromBjet2p4_);
-  mgMomenta_.push_back(mgNeutrinoFromBjet2p4_);
-  mgMomenta_.push_back(mgTau1p4_);
-  mgMomenta_.push_back(mgTau2p4_);
-
+  for(unsigned i = 0; i < 10; ++i)
+    mgMomenta_.push_back(new double[4]);
   std::for_each(mgMomenta_.begin(), mgMomenta_.end(),
     [](double * & d) { std::memset(d, 0., 4 * sizeof(double)); }
   );
@@ -169,6 +149,8 @@ Integrand_ttHorZ_3l1tau::setCurrentME(ME_mg5_3l1tau currentME)
 {
   LOGTRC;
   currentME_ = currentME;
+  Q_ = currentME_ == ME_mg5_3l1tau::kTTH ? resolutionScaleTTH :
+                                           resolutionScaleTTZ;
 }
 
 void
@@ -176,6 +158,7 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
 {
   LOGTRC;
   measuredEvent_ = &measuredEvent;
+  mgMomentaIdxs_.clear();
 
 //--- set the variables related to the hadronic tau
   const MeasuredHadronicTau & htau = measuredEvent_ -> htau1;
@@ -217,13 +200,14 @@ Integrand_ttHorZ_3l1tau::renewInputs()
 {
   LOGTRC;
 //--- set the variables related to the leptonic tau
-  complLeptIdx_ = measuredEvent_ -> complLeptonIdx;
-  const MeasuredLepton & complLepton = measuredEvent_-> leptons[complLeptIdx_];
+  const unsigned complLeptIdx = measuredEvent_ -> complLeptonIdx;
+  const MeasuredLepton & complLepton = measuredEvent_-> leptons[complLeptIdx];
   complLeptEnergy_ = complLepton.energy();
   complLeptMomentum_ = complLepton.p();
   complLeptMass_ = complLepton.mass();
   complLeptMassSquared_ = std::pow(complLeptMass_, 2);
   complLeptP4_ = complLepton.p4();
+  const int complLeptCharge = complLepton.charge();
   eZ_lept_ = complLepton.p3().unit();
   eY_lept_ = eZ_lept_.Cross(beamAxis_).unit();
   eX_lept_ = eY_lept_.Cross(eZ_lept_).unit();
@@ -243,10 +227,10 @@ Integrand_ttHorZ_3l1tau::renewInputs()
          << std::sqrt(measuredVisMassSquared_);
 
 //--- find the kinematic variables of the rest of the leptons (from t decay)
-  lept1Idx_ = measuredEvent_ -> bjetLeptonIdxs[0];
-  lept2Idx_ = measuredEvent_ -> bjetLeptonIdxs[1];
-  const MeasuredLepton & lept1 = measuredEvent_ -> leptons[lept1Idx_];
-  const MeasuredLepton & lept2 = measuredEvent_ -> leptons[lept2Idx_];
+  const unsigned lept1Idx = measuredEvent_ -> bjetLeptonIdxs[0];
+  const unsigned lept2Idx = measuredEvent_ -> bjetLeptonIdxs[1];
+  const MeasuredLepton & lept1 = measuredEvent_ -> leptons[lept1Idx];
+  const MeasuredLepton & lept2 = measuredEvent_ -> leptons[lept2Idx];
   lept1p3_ = lept1.p3();
   lept2p3_ = lept2.p3();
   lept1Energy_ = lept1.p();
@@ -255,6 +239,7 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   lept2p3Unit_ = lept2p3_.unit();
   lept1p4_ = LorentzVector(lept1p3_.x(), lept1p3_.y(), lept1p3_.z(), lept1Energy_);
   lept2p4_ = LorentzVector(lept2p3_.x(), lept2p3_.y(), lept2p3_.z(), lept2Energy_);
+  const int lept1Charge = lept1.charge();
   LOGVRB << lvrap("t lept 1 p4", lept1p4_);
   LOGVRB << lvrap("t lept 2 p4", lept2p4_);
 
@@ -265,6 +250,37 @@ Integrand_ttHorZ_3l1tau::renewInputs()
     bJetRecoEnergy_[i] = bjet_i.energy();
     bJetp3Unit_[i] = bjet_i.p3().unit();
   }
+
+//--- MadGraph momenta legend:
+// 0, g
+// 1, g
+// 2, b, associated W+ => associated lepton +
+// 3, e+, associated W+ => associated lepton +
+// 4, ve, associated W+ => associated lepton +
+// 5, b~, associated W- => associated lepton -
+// 6, e-, associated W- => associated lepton -
+// 7, ve~, associated W- => associated lepton -
+// 8, ta+ => associated lepton +
+// 9, ta- => associated lepton -
+  mgMomentaIdxs_.clear();
+  if(lept1Charge == +1 && complLeptCharge == +1)
+    mgMomentaIdxs_ = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+  else
+  if(lept1Charge == +1 && complLeptCharge == -1)
+    mgMomentaIdxs_ = { 0, 1, 2, 3, 4, 5, 6, 7, 9, 8 };
+  else
+  if(lept1Charge == -1 && complLeptCharge == +1)
+    mgMomentaIdxs_ = { 0, 1, 5, 6, 7, 2, 3, 4, 8, 9 };
+  else
+  if(lept1Charge == -1 && complLeptCharge == -1)
+    mgMomentaIdxs_ = { 0, 1, 5, 6, 7, 2, 3, 4, 9, 8 };
+}
+
+void
+Integrand_ttHorZ_3l1tau::setMGmomenta(const std::vector<LorentzVector> & memVector_p4) const
+{
+  for(unsigned i = 0; i < mgMomentaIdxs_.size(); ++i)
+    setMGmomentum(memVector_p4[i], mgMomenta_[mgMomentaIdxs_[i]]);
 }
 
 double
@@ -339,22 +355,23 @@ double
 Integrand_ttHorZ_3l1tau::eval(const double * x) const
 {
   LOGTRC;
-  if(! pdf_)                     LOGERR << "PDF not initialized!";
-  if(! me_madgraph_[currentME_]) LOGERR << "Madgraph's ME not initialized!";
-  if(! measuredEvent_)           LOGERR << "Measured event not specified!";
-  if(! numDimensions_)           LOGERR << "Number of dimensions unspecified!";
-  if(idxCosTheta1_ < 0)          LOGERR << "Index idxCosTheta1 not set";
-  if(idxVarphi1_ < 0)            LOGERR << "Index idxVarphi1 not set";
-  if(idxCosTheta2_ < 0)          LOGERR << "Index idxCosTheta2 not set";
-  if(idxVarphi2_ < 0)            LOGERR << "Index idxVarphi2 not set";
-  if(idxZ1_ < 0)                 LOGERR << "Index idxZ1 not set";
-  if(idxPhi1_ < 0)               LOGERR << "Index idxPhi1 not set";
-  if(idxPhiInv_ < 0)             LOGERR << "Index idxPhiInv not set";
-  if(idxMinvSquared_ < 0)        LOGERR << "Index idxMinvSquared not set";
+  if(! pdf_)                      LOGERR << "PDF not initialized!";
+  if(! me_madgraph_[currentME_])  LOGERR << "Madgraph's ME not initialized!";
+  if(! measuredEvent_)            LOGERR << "Measured event not specified!";
+  if(! numDimensions_)            LOGERR << "Number of dimensions unspecified!";
+  if(mgMomentaIdxs_.size() != 10) LOGERR << "Number of MG momenta indexes not equal to 10";
+  if(idxCosTheta1_ < 0)           LOGERR << "Index idxCosTheta1 not set";
+  if(idxVarphi1_ < 0)             LOGERR << "Index idxVarphi1 not set";
+  if(idxCosTheta2_ < 0)           LOGERR << "Index idxCosTheta2 not set";
+  if(idxVarphi2_ < 0)             LOGERR << "Index idxVarphi2 not set";
+  if(idxZ1_ < 0)                  LOGERR << "Index idxZ1 not set";
+  if(idxPhi1_ < 0)                LOGERR << "Index idxPhi1 not set";
+  if(idxPhiInv_ < 0)              LOGERR << "Index idxPhiInv not set";
+  if(idxMinvSquared_ < 0)         LOGERR << "Index idxMinvSquared not set";
   if(! pdf_ || ! me_madgraph_[currentME_] || ! measuredEvent_ ||
      idxCosTheta1_ < 0 || idxVarphi1_ < 0 || idxCosTheta2_ < 0 ||
      idxVarphi2_ < 0 || idxZ1_ < 0 || idxPhi1_ < 0 || idxPhiInv_ < 0 ||
-     idxMinvSquared_ < 0)
+     idxMinvSquared_ < 0 || mgMomentaIdxs_.size() != 10)
     std::exit(EXIT_FAILURE);
   LOGVRB << "Current MG5 ME: " << me_madgraph_[currentME_] -> name();
   if(covDet_ == 0.) return 0.;
@@ -479,7 +496,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   hadRecDiff(1) = MET_y_ - nuSum.y();
   const double MET_pull = (invCovMET_ * hadRecDiff) * hadRecDiff;
   const double MET_TF = MET_TF_denom * std::exp(-MET_pull / 2.);
-  LOGTRC << "MET_x = " << MET_x_ << "; MET_y = " << MET_y_ << "; "
+  LOGTRC << "MET_x = "   << MET_x_    << "; MET_y = "   << MET_y_ << "; "
          << "nuSum_x = " << nuSum.x() << "; nuSum_y = " << nuSum.y();
   LOGTRC_S << "=> MET_pull = " << MET_pull << " => MET_TF = " << MET_TF;
 
@@ -492,10 +509,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double xb = invSqrtS_ * (hadRecE + tth.e() - hadRecPz - tth.pz());
   LOGTRC << "xa = " << xa << "; xb = " << xb;
 
-  const double Q = currentME_ == ME_mg5_3l1tau::kTTH ? resolutionScaleTTH :
-                                                       resolutionScaleTTZ;
-  const double fa = pdf_ -> xfxQ(21, xa, Q) / xa;
-  const double fb = pdf_ -> xfxQ(21, xb, Q) / xb;
+  const double fa = pdf_ -> xfxQ(21, xa, Q_) / xa;
+  const double fb = pdf_ -> xfxQ(21, xb, Q_) / xb;
   const double probPDF = fa * fb;
   const double flux = 1. / (s_ * xa * xb);
 
@@ -504,32 +519,27 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   LOGTRC << cvrap("boost vector", boost);
   const LorentzVector gluon1(0., 0., +0.5 * xa * sqrtS_, 0.5 * xa * sqrtS_);
   const LorentzVector gluon2(0., 0., -0.5 * xb * sqrtS_, 0.5 * xb * sqrtS_);
-  const LorentzVector b1_mem = VectorUtil::boost(b1, boost);
-  const LorentzVector b2_mem = VectorUtil::boost(b2, boost);
-  const LorentzVector hTau_mem = VectorUtil::boost(hTau, boost);
-  const LorentzVector lTau_mem = VectorUtil::boost(lTau, boost);
-  const LorentzVector nuT1_mem = VectorUtil::boost(nuT1, boost);
-  const LorentzVector nuT2_mem = VectorUtil::boost(nuT2, boost);
+  const LorentzVector b1_mem    = VectorUtil::boost(b1, boost);
+  const LorentzVector b2_mem    = VectorUtil::boost(b2, boost);
+  const LorentzVector hTau_mem  = VectorUtil::boost(hTau, boost);
+  const LorentzVector lTau_mem  = VectorUtil::boost(lTau, boost);
+  const LorentzVector nuT1_mem  = VectorUtil::boost(nuT1, boost);
+  const LorentzVector nuT2_mem  = VectorUtil::boost(nuT2, boost);
   const LorentzVector lept1_mem = VectorUtil::boost(lept1p4_, boost);
   const LorentzVector lept2_mem = VectorUtil::boost(lept2p4_, boost);
 
-  const LorentzVector t1_mem = VectorUtil::boost(t1, boost);
-  const LorentzVector t2_mem = VectorUtil::boost(t2, boost);
+  const LorentzVector t1_mem    = VectorUtil::boost(t1, boost);
+  const LorentzVector t2_mem    = VectorUtil::boost(t2, boost);
   const LorentzVector higgs_mem = VectorUtil::boost(higgs, boost);
   const LorentzVector tth_mem = t1_mem + t2_mem + higgs_mem;
   LOGTRC << lvrap("tth mem", tth_mem);
 
-//--- set MG momenta (follow signs in the diagram?)
-  setMGmomentum(gluon1, mgGluon1p4_);
-  setMGmomentum(gluon2, mgGluon2p4_);
-  setMGmomentum(b1_mem, mgBjet1p4_);
-  setMGmomentum(lept1_mem, mgLeptonFromBjet1p4_);
-  setMGmomentum(nuT1_mem, mgNeutrinoFromBjet1p4_);
-  setMGmomentum(b2_mem, mgBjet2p4_);
-  setMGmomentum(lept2_mem, mgLeptonFromBjet2p4_);
-  setMGmomentum(nuT2_mem, mgNeutrinoFromBjet2p4_);
-  setMGmomentum(hTau_mem, mgTau1p4_);
-  setMGmomentum(lTau_mem, mgTau2p4_);
+//--- set MG momenta
+  const std::vector<LorentzVector> memVector_p4 = {
+    gluon1, gluon2, b1_mem, lept1_mem, nuT1_mem,
+                    b2_mem, lept2_mem, nuT2_mem,
+    lTau_mem, hTau_mem};
+  setMGmomenta(memVector_p4);
   me_madgraph_[currentME_] -> setMomenta(mgMomenta_);
 
   LOGTRC_S << "prob(PDF) = " << probPDF << "; flux factor = " << flux;
