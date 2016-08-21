@@ -387,6 +387,40 @@ Integrand_ttHorZ_3l1tau::hadTauPSJacobiFactor(const double z) const
 }
 
 double
+Integrand_ttHorZ_3l1tau::leptTauPSJacobiFactor(double mInvSquared,
+                                               double z) const
+{
+  if(z >= complLeptMassSquared_ / massTauSquared &&
+     z < 1. - mInvSquared / massTauSquared)
+  {
+    const double mInv = std::sqrt(mInvSquared);
+    const double tau_en = massTauSquared + mInvSquared - complLeptMassSquared_ /
+                          (2 * mInv);
+    const double vis_en = tau_en - mInv;
+    if(! (tau_en >= massTau && vis_en >= complLeptMass_))
+    {
+      LOGVRB << "tau energy not greater than or equal to the tau mass "
+             << "(" << tau_en << " < " << massTau << "); or "
+             << "visible energy not greater than or equal to the associated "
+             << "lepton mass (" << vis_en << " < " << complLeptMass_ << ")";
+      return 0.;
+    }
+    const double Iinv = GFSquared / std::pow(pi(), 2) * mInvSquared *
+      (2 * tau_en * vis_en -
+       2. / 3. * std::sqrt((std::pow(tau_en, 2) - massTauSquared) *
+                           (std::pow(vis_en, 2) - complLeptMassSquared_)));
+    return Iinv / (8 * std::pow(2 * pi() * z, 6) * complLeptMomentum_);
+  }
+  else
+  {
+    LOGVRB << "z = " << z << " not in the physical region "
+           << "[" << complLeptMassSquared_ / massTauSquared << ", "
+                  << 1. - mInvSquared / massTauSquared << ")";
+    return 0.;
+  }
+}
+
+double
 Integrand_ttHorZ_3l1tau::eval(const double * x) const
 {
   LOGTRC;
@@ -460,9 +494,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 
 //--- compute the neutrino and tau lepton 4-vector from leptonic tau
   const double nuLTau_en = complLeptEnergy_ * (1. - z2) / z2;
-  const double nuLTau_mass = std::sqrt(mInvSquared);
   const double nuLTau_p = std::sqrt(std::max(0., std::pow(nuLTau_en, 2) -
-                                                 std::pow(nuLTau_mass, 2)));
+                                                 mInvSquared));
   const double nuLTau_cosTheta = nuLeptTauCosTheta(nuLTau_en, mInvSquared,
                                                    nuLTau_p);
   if(! (nuLTau_cosTheta >= -1. && nuLTau_cosTheta <= +1.))
@@ -603,9 +636,14 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double hTauPSJacobiFactor = hadTauPSJacobiFactor(z1);
   LOGTRC_S << "PS x Jacobi factor for hadronic tau decay = "
            << hTauPSJacobiFactor;
+  const double lTauPSJacobiFactor = leptTauPSJacobiFactor(mInvSquared, z2);
+  if(lTauPSJacobiFactor == 0.) return 0.;
+  LOGTRC_S << "PS x Jacobi factor for leptonic tau decay = "
+           << lTauPSJacobiFactor;
 
   const double jacobiFactor = t1DecayJacobiFactor * t2DecayJacobiFactor *
-    hTauPSJacobiFactor * ttHorZfactor;
+    hTauPSJacobiFactor * lTauPSJacobiFactor * z2 *
+    (currentME_ == ME_mg5_3l1tau::kTTH ? ttHfactor : ttZfactor);
   LOGTRC_S << "Product of all Jacobi factors = " << jacobiFactor;
 
 //--- assemble the integrand

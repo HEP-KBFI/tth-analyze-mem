@@ -78,13 +78,6 @@ namespace tthMEM
   const double brH2diW = 2.26e-1;
   ///< taken from: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR2014
 
-  const double cTau = 87.03e+9; // in originally in um (10^-6), converted to fm (10^-15)
-  ///< mean life, taken from PDG booklet (2014, p 15)
-  const double gammaTau = cTimesHbar / cTau;
-  const double gammaTau2hadrons = gammaTau * brTau2hadrons;
-  const double gammaT = 2.0; ///< taken from PDG booklet (2014, p 23)
-  const double gammaW = 2.085; ///< taken from PDG booklet (2014, p 8)
-
   const double xSectionTTH = 0.5085; // pb
   ///< taken from: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt1314TeV2014#ttH_Process
   const double xSectionTTH2diTau = xSectionTTH * brH2diTau;
@@ -111,12 +104,22 @@ namespace tthMEM
   const double massT = 173.21; ///< taken from PDG booklet (2014, p 23)
   const double massTSquared = std::pow(massT, 2);
 
+  const double cTau = 87.03e+9; // in originally in um (10^-6), converted to fm (10^-15)
+  ///< mean life, taken from PDG booklet (2014, p 15)
+  const double gammaTau = cTimesHbar / cTau;
+  const double gammaTau2hadrons = gammaTau * brTau2hadrons;
+  const double gammaT = 2.0; ///< taken from PDG booklet (2014, p 23)
+  const double gammaW = 2.085; ///< taken from PDG booklet (2014, p 8)
+  const double gammaZ = 2.4952; ///< taken from PDG booklet (2014, p 9)
+  const double gammaHiggs = 1.e-3 * massHiggs; ///< taken from thin air
+
   const double DeltaFactor = (massTSquared - massWSquared - massBSquared) / 2.;
   const double resolutionScaleTTH = massT + massHiggs / 2.;
   const double resolutionScaleTTZ = massT + massZ / 2.;
-  const double ttHorZfactor = std::pow(
-    massT * gammaT * std::pow(massW, 3) * gammaW * massTau * gammaTau * s, -2
-  );
+  const double ttHfactor = std::pow(massT * gammaT * gammaW * massHiggs * gammaHiggs /
+                                    massW * massTau * gammaTau * s, 2);
+  const double ttZfactor = std::pow(massT * gammaT * gammaW * massZ * gammaZ /
+                                    massW * massTau * gammaTau * s, 2);
 
   /**
    * @brief Rounds double floating point number to N significant digits

@@ -202,6 +202,10 @@ namespace tthMEM
      */
     inline double
     hadTauPSJacobiFactor(const double z) const;
+
+    inline double
+    leptTauPSJacobiFactor(double mInvSquared,
+                          double z) const;
   };
 }
 
