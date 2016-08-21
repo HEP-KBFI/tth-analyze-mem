@@ -1,6 +1,7 @@
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
 #include <string> // std::string
 #include <vector> // std::vector<>
+#include <algorithm> // std::inner_product()
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
@@ -94,19 +95,31 @@ main(int argc,
 //--- set up the probability variables
   double probSignal;
   double probBackground_ttz;
+  double probBackground_th2ww;
+  double lhRatioNP;
 
-  TBranch * probSignalBranch         = newTree -> Branch(
-        "probSignal",         &probSignal,         "probSignal/D");
-  TBranch * probBackgroundBranch_ttz = newTree -> Branch(
-        "probBackground_ttz", &probBackground_ttz, "probBackground_ttz/D");
-  (void) probSignalBranch;         // prevents compilation error
-  (void) probBackgroundBranch_ttz; // prevents compilation error
+  TBranch * probSignalBranch           = newTree -> Branch(
+        "probSignal",            &probSignal,           "probSignal/D");
+  TBranch * probBackgroundBranch_ttz   = newTree -> Branch(
+        "probBackground_ttz",    &probBackground_ttz,   "probBackground_ttz/D");
+  TBranch * probBackgroundBranch_th2ww = newTree -> Branch(
+        "probBackground_tth2ww", &probBackground_th2ww, "probBackground_tth2ww/D");
+  TBranch * lhRatioNPBranch            = newTree -> Branch(
+        "lhRatioNP",             &lhRatioNP,             "lhRatioNP/D");
+  (void) probSignalBranch;           // prevents compilation error
+  (void) probBackgroundBranch_ttz;   // prevents compilation error
+  (void) probBackgroundBranch_th2ww; // prevents compilation error
+  (void) lhRatioNPBranch;            // prevents compilation error
 
 //--- initialize the MEM instance and start looping over the events
   LOGINFO << "Initializing the tth&z MEM instance";
   MEM_ttHorZ_3l1tau mem_tt_HandZ(sqrtS, pdfName, findFile(madgraphFileName));
   mem_tt_HandZ.setIntegrationMode(integrationMode);
   mem_tt_HandZ.setMaxObjFunctionCalls(maxObjFunctionCalls);
+  const double bkgWeightDenom = 1. / (xSectionTTZ + xSectionTTH2diW);
+  const std::vector<double> denomWeights = {
+    1., xSectionTTZ * bkgWeightDenom, xSectionTTH2diW * bkgWeightDenom
+  };
 
   const Long64_t nof_tree_entries = inputTree -> GetEntries();
   const Long64_t nof_max_entries = maxEvents < 0 ? nof_tree_entries : (startingFromEntry + maxEvents);
@@ -131,11 +144,20 @@ main(int argc,
     inputTree -> GetEntry(i);
     measuredEvent.initialize();
 
-    probSignal = -1;
-    probBackground_ttz = -1;
+    probSignal = 0.;
+    probBackground_ttz = 0.;
+    probBackground_th2ww = 0.;
 
     probSignal = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTH);
     probBackground_ttz = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTZ);
+
+    const std::vector<double> probs = {
+      probSignal, probBackground_ttz, probBackground_th2ww
+    };
+    const double denom = std::inner_product(
+          probs.begin(), probs.end(), denomWeights.begin(), 0.
+    );
+    lhRatioNP = denom != 0. ? probSignal / denom : 0.;
 
     newTree -> Fill();
   }

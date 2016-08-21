@@ -100,130 +100,130 @@ void Parameters_sm_tth_3l1tau::setDependentCouplings()
 // Routines for printing out parameters
 void Parameters_sm_tth_3l1tau::printIndependentParameters()
 {
-  LOGDBG <<  "sm model parameters independent of event kinematics:";
-  LOGDBG << setw(20) <<  "mdl_WH " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB <<  "sm model parameters independent of event kinematics:";
+  LOGVRB << setw(20) <<  "mdl_WH " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_WH;
-  LOGDBG << setw(20) <<  "mdl_WW " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_WW " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_WW;
-  LOGDBG << setw(20) <<  "mdl_WZ " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_WZ " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_WZ;
-  LOGDBG << setw(20) <<  "mdl_WT " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_WT " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_WT;
-  LOGDBG << setw(20) <<  "mdl_ymtau " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_ymtau " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_ymtau;
-  LOGDBG << setw(20) <<  "mdl_ymt " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_ymt " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_ymt;
-  LOGDBG << setw(20) <<  "mdl_ymb " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_ymb " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_ymb;
-  LOGDBG << setw(20) <<  "aS " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "aS " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << aS;
-  LOGDBG << setw(20) <<  "mdl_Gf " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_Gf " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_Gf;
-  LOGDBG << setw(20) <<  "aEWM1 " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "aEWM1 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << aEWM1;
-  LOGDBG << setw(20) <<  "mdl_MH " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_MH " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_MH;
-  LOGDBG << setw(20) <<  "mdl_MZ " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_MZ " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_MZ;
-  LOGDBG << setw(20) <<  "mdl_MTA " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_MTA " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_MTA;
-  LOGDBG << setw(20) <<  "mdl_MT " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_MT " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_MT;
-  LOGDBG << setw(20) <<  "mdl_MB " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_MB " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_MB;
-  LOGDBG << setw(20) <<  "mdl_conjg__CKM3x3 " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_conjg__CKM3x3 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_conjg__CKM3x3;
-  LOGDBG << setw(20) <<  "mdl_CKM3x3 " <<  "= " << setiosflags(ios::scientific)
+  LOGVRB << setw(20) <<  "mdl_CKM3x3 " <<  "= " << setiosflags(ios::scientific)
       << setw(10) << mdl_CKM3x3;
-  LOGDBG << setw(20) <<  "mdl_conjg__CKM1x1 " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_conjg__CKM1x1 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_conjg__CKM1x1;
-  LOGDBG << setw(20) <<  "mdl_complexi " <<  "= " << setiosflags(ios::scientific)
+  LOGVRB << setw(20) <<  "mdl_complexi " <<  "= " << setiosflags(ios::scientific)
       << setw(10) << mdl_complexi;
-  LOGDBG << setw(20) <<  "mdl_MZ__exp__2 " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_MZ__exp__2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_MZ__exp__2;
-  LOGDBG << setw(20) <<  "mdl_MZ__exp__4 " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_MZ__exp__4 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_MZ__exp__4;
-  LOGDBG << setw(20) <<  "mdl_sqrt__2 " <<  "= " << setiosflags(ios::scientific)
+  LOGVRB << setw(20) <<  "mdl_sqrt__2 " <<  "= " << setiosflags(ios::scientific)
       << setw(10) << mdl_sqrt__2;
-  LOGDBG << setw(20) <<  "mdl_MH__exp__2 " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_MH__exp__2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_MH__exp__2;
-  LOGDBG << setw(20) <<  "mdl_aEW " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_aEW " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_aEW;
-  LOGDBG << setw(20) <<  "mdl_MW " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_MW " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_MW;
-  LOGDBG << setw(20) <<  "mdl_sqrt__aEW " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_sqrt__aEW " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_sqrt__aEW;
-  LOGDBG << setw(20) <<  "mdl_ee " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_ee " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_ee;
-  LOGDBG << setw(20) <<  "mdl_MW__exp__2 " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_MW__exp__2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_MW__exp__2;
-  LOGDBG << setw(20) <<  "mdl_sw2 " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_sw2 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_sw2;
-  LOGDBG << setw(20) <<  "mdl_cw " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_cw " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_cw;
-  LOGDBG << setw(20) <<  "mdl_sqrt__sw2 " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_sqrt__sw2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_sqrt__sw2;
-  LOGDBG << setw(20) <<  "mdl_sw " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_sw " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_sw;
-  LOGDBG << setw(20) <<  "mdl_g1 " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_g1 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_g1;
-  LOGDBG << setw(20) <<  "mdl_gw " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_gw " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_gw;
-  LOGDBG << setw(20) <<  "mdl_vev " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_vev " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_vev;
-  LOGDBG << setw(20) <<  "mdl_vev__exp__2 " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_vev__exp__2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_vev__exp__2;
-  LOGDBG << setw(20) <<  "mdl_lam " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_lam " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_lam;
-  LOGDBG << setw(20) <<  "mdl_yb " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_yb " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_yb;
-  LOGDBG << setw(20) <<  "mdl_yt " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_yt " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_yt;
-  LOGDBG << setw(20) <<  "mdl_ytau " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_ytau " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_ytau;
-  LOGDBG << setw(20) <<  "mdl_muH " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_muH " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_muH;
-  LOGDBG << setw(20) <<  "mdl_I1x33 " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_I1x33 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_I1x33;
-  LOGDBG << setw(20) <<  "mdl_I2x33 " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_I2x33 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_I2x33;
-  LOGDBG << setw(20) <<  "mdl_I3x33 " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_I3x33 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_I3x33;
-  LOGDBG << setw(20) <<  "mdl_I4x33 " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "mdl_I4x33 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << mdl_I4x33;
-  LOGDBG << setw(20) <<  "mdl_ee__exp__2 " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_ee__exp__2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_ee__exp__2;
-  LOGDBG << setw(20) <<  "mdl_sw__exp__2 " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_sw__exp__2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_sw__exp__2;
-  LOGDBG << setw(20) <<  "mdl_cw__exp__2 " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_cw__exp__2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_cw__exp__2;
 }
 void Parameters_sm_tth_3l1tau::printIndependentCouplings()
 {
-  LOGDBG <<  "sm model couplings independent of event kinematics:";
-  LOGDBG << setw(20) <<  "GC_94 " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB <<  "sm model couplings independent of event kinematics:";
+  LOGVRB << setw(20) <<  "GC_94 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << GC_94;
-  LOGDBG << setw(20) <<  "GC_99 " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "GC_99 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << GC_99;
-  LOGDBG << setw(20) <<  "GC_100 " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "GC_100 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << GC_100;
 }
 void Parameters_sm_tth_3l1tau::printDependentParameters()
 {
-  LOGDBG <<  "sm model parameters dependent on event kinematics:";
-  LOGDBG << setw(20) <<  "mdl_sqrt__aS " <<  "= " << setiosflags(ios::scientific)
+  LOGVRB <<  "sm model parameters dependent on event kinematics:";
+  LOGVRB << setw(20) <<  "mdl_sqrt__aS " <<  "= " << setiosflags(ios::scientific)
       << setw(10) << mdl_sqrt__aS;
-  LOGDBG << setw(20) <<  "G " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "G " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << G;
-  LOGDBG << setw(20) <<  "mdl_G__exp__2 " <<  "= " <<
+  LOGVRB << setw(20) <<  "mdl_G__exp__2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_G__exp__2;
 }
 void Parameters_sm_tth_3l1tau::printDependentCouplings()
 {
-  LOGDBG <<  "sm model couplings dependent on event kinematics:";
-  LOGDBG << setw(20) <<  "GC_11 " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB <<  "sm model couplings dependent on event kinematics:";
+  LOGVRB << setw(20) <<  "GC_11 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << GC_11;
-  LOGDBG << setw(20) <<  "GC_10 " <<  "= " << setiosflags(ios::scientific) <<
+  LOGVRB << setw(20) <<  "GC_10 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << GC_10;
 }
 

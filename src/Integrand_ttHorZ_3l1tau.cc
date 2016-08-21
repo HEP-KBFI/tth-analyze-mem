@@ -477,9 +477,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   TVectorD hadRecDiff(2);
   hadRecDiff(0) = MET_x_ - nuSum.x();
   hadRecDiff(1) = MET_y_ - nuSum.y();
-  const TVectorD hadRecDiff_ = hadRecDiff;
-  hadRecDiff *= invCovMET_;
-  const double MET_pull = hadRecDiff_ * hadRecDiff;
+  const double MET_pull = (invCovMET_ * hadRecDiff) * hadRecDiff;
   const double MET_TF = MET_TF_denom * std::exp(-MET_pull / 2.);
   LOGTRC << "MET_x = " << MET_x_ << "; MET_y = " << MET_y_ << "; "
          << "nuSum_x = " << nuSum.x() << "; nuSum_y = " << nuSum.y();

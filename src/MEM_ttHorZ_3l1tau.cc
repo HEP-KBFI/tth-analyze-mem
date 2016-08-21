@@ -127,7 +127,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
     assert(0);
   }
 
-  LOGDBG << (currentME == ME_mg5_3l1tau::kTTH ? "[TTH]" : "[TTZ]");
+  LOGINFO << (currentME == ME_mg5_3l1tau::kTTH ? "[TTH]" : "[TTZ]");
   clock_ -> Reset();
   clock_ -> Start(__PRETTY_FUNCTION__);
 
@@ -193,7 +193,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
     else if(integrationMode_ == IntegrationMode::kVAMP)
       intAlgo_ -> integrate(&g_Fortran, xl_, xu_, numDimensions_, p, pErr);
 
-    LOGDBG_S << "p = " << p << "; pErr = " << pErr;
+    LOGINFO_S << "p = " << p << "; pErr = " << pErr;
     pSum += p;
     pSumErr += pErr;
 
@@ -204,9 +204,11 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
 
 //--- divide by the process cross section (in GeV, i.e. natural units)
 //--- and adjust the uncertainty accordingly
-  pSum /= (currentME == ME_mg5_3l1tau::kTTH) ? xSectionTTHinGeV2 : xSectionTTZinGeV2;
-  pSumErr /= (currentME == ME_mg5_3l1tau::kTTH) ? xSectionTTHinGeV2 : xSectionTTZinGeV2;
-  LOGDBG_S << "Summed over permutations: p = " << pSum << "; pErr = " << pSumErr;
+  pSum /= (currentME == ME_mg5_3l1tau::kTTH) ? xSectionTTH2diTauInGeV2 :
+                                               xSectionTTZinGeV2;
+  pSumErr /= (currentME == ME_mg5_3l1tau::kTTH) ? xSectionTTH2diTauInGeV2 :
+                                                  xSectionTTZinGeV2;
+  LOGINFO_S << "Summed over permutations: p = " << pSum << "; pErr = " << pSumErr;
 
 //--- cleanup
   if(xl_)
@@ -228,8 +230,8 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   clock_ -> Stop(__PRETTY_FUNCTION__);
   numSeconds_cpu_ = clock_ -> GetCpuTime(__PRETTY_FUNCTION__);
   numSeconds_real_ = clock_ -> GetRealTime(__PRETTY_FUNCTION__);
-  LOGDBG << "Real time:\t" << std::round(numSeconds_real_ * 100) / 100 << " s;\t"
-         << "CPU time:\t" << std::round(numSeconds_cpu_ * 100) / 100 << " s";
+  LOGINFO << "Real time:\t" << std::round(numSeconds_real_ * 100) / 100 << " s;\t"
+          << "CPU time:\t" << std::round(numSeconds_cpu_ * 100) / 100 << " s";
 
   numSecondsAccumul_cpu_ += numSeconds_cpu_;
   numSecondsAccumul_real_ += numSeconds_real_;

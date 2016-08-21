@@ -71,9 +71,15 @@ namespace tthMEM
   const double tauLeptonMassSquared = std::pow(tauLeptonMass, 2);
   const double cTimesHbar = 0.1973; // GeV x fm
   const double conversionFactor = std::pow(cTimesHbar, 2) * 1.e+10; ///< 1 pb = 10^-40 m^2 = 10^10 fm^2
+  const double brH2diTau = 6.21e-2;
+  const double brH2diW = 2.26e-1;
+  ///< taken from: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR2014#Higgs_2_fermions
   const double xSectionTTH = 0.5085; // pb
   ///< taken from: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt1314TeV2014#ttH_Process
-  const double xSectionTTHinGeV2 = xSectionTTH * conversionFactor; // 1 / GeV^2
+  const double xSectionTTH2diTau = xSectionTTH * brH2diTau;
+  const double xSectionTTH2diTauInGeV2 = xSectionTTH2diTau * conversionFactor; // 1 / GeV^2
+  const double xSectionTTH2diW = xSectionTTH * brH2diW;
+  const double xSectionTTH2diWinGeV2 = xSectionTTH2diW * conversionFactor;
   const double xSectionTTZ = 1.e-3 * 839.3; // second factor given in fb = 10^-3 pb
   ///< taken from: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWGTTH#Plans_for_YR4
   const double xSectionTTZinGeV2 = xSectionTTZ * conversionFactor;

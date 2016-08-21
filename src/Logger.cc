@@ -108,7 +108,7 @@ namespace tthMEM
     "[error]", "[warning]", "[fixme]", "[info]", "[debug]", "[verbose]", "[trace]", "[all]"
   };
 
-  Logger::LogLevel Logger::logLevel_ = Logger::LogLevel::kVerbose;
+  Logger::LogLevel Logger::logLevel_ = Logger::LogLevel::kAll;
   bool Logger::enableLogging_ = true;
   bool Logger::enableTimeStamp_ = true;
   std::ostream * Logger::os_ = &std::cout;
