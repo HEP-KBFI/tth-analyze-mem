@@ -103,7 +103,7 @@ import subprocess, sys, getpass, time
 if __name__ == '__main__':
   commands, sbatchIDs = [], []
   {% for bashScript, logFile in zippedScriptLog %}
-  commands.append('sbatch --partition=short --output={{ logFile }} {{ bashScript }}') {% endfor %}
+  commands.append('sbatch --output={{ logFile }} {{ bashScript }}') {% endfor %}
   for command in commands:
     submitJobProcess = subprocess.Popen(command,
                                         stdout = subprocess.PIPE,

@@ -37,6 +37,9 @@ namespace tthMEM
     void
     setIntegrationMode(const std::string & integrationModeString);
 
+    void
+    setBJetTransferFunction(bool setTF);
+
     double
     getComputingTime_cpu() const;
 
@@ -65,6 +68,7 @@ namespace tthMEM
 
     double * xl_;
     double * xu_;
+    bool setTF_;
 
     TBenchmark * clock_;
     double numSeconds_cpu_;

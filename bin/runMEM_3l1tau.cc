@@ -97,28 +97,25 @@ main(int argc,
 //  double probBackground_th2ww;
   double lhRatioNP;
 
-  TBranch * probSignalBranch           = newTree -> Branch(
-        "probSignal",            &probSignal,           "probSignal/D");
-  TBranch * probBackgroundBranch_ttz   = newTree -> Branch(
-        "probBackground_ttz",    &probBackground_ttz,   "probBackground_ttz/D");
-//  TBranch * probBackgroundBranch_th2ww = newTree -> Branch(
-//        "probBackground_tth2ww", &probBackground_th2ww, "probBackground_tth2ww/D");
-  TBranch * lhRatioNPBranch            = newTree -> Branch(
-        "lhRatioNP",             &lhRatioNP,             "lhRatioNP/D");
-  (void) probSignalBranch;           // prevents compilation error
-  (void) probBackgroundBranch_ttz;   // prevents compilation error
-//  (void) probBackgroundBranch_th2ww; // prevents compilation error
-  (void) lhRatioNPBranch;            // prevents compilation error
+  TBranch * probSignalBranch           __attribute__((unused)) =
+    newTree -> Branch("probSignal",            &probSignal,           "probSignal/D");
+  TBranch * probBackgroundBranch_ttz   __attribute__((unused)) =
+    newTree -> Branch("probBackground_ttz",    &probBackground_ttz,   "probBackground_ttz/D");
+//  TBranch * probBackgroundBranch_th2ww __attribute__((unused)) =
+//    newTree -> Branch("probBackground_tth2ww", &probBackground_th2ww, "probBackground_tth2ww/D");
+  TBranch * lhRatioNPBranch            __attribute__((unused)) =
+    newTree -> Branch("lhRatioNP",             &lhRatioNP,            "lhRatioNP/D");
 
 //--- initialize the MEM instance and start looping over the events
   LOGINFO << "Initializing the tth&z MEM instance";
   MEM_ttHorZ_3l1tau mem_tt_HandZ(pdfName, findFile(madgraphFileName));
   mem_tt_HandZ.setIntegrationMode(integrationMode);
   mem_tt_HandZ.setMaxObjFunctionCalls(maxObjFunctionCalls);
-//  const double bkgWeightDenom = 1. / (xSectionTTZ + xSectionTTH2diW);
-  const double bkgWeightDenom = 1. / xSectionTTZ;
+  mem_tt_HandZ.setBJetTransferFunction(true);
+//  const double bkgWeightDenom = 1. / (constants::xSectionTTZ + constants::xSectionTTH2diW);
+  const double bkgWeightDenom = 1. / constants::xSectionTTZ;
   const std::vector<double> denomWeights = {
-    1., xSectionTTZ * bkgWeightDenom//, xSectionTTH2diW * bkgWeightDenom
+    1., constants::xSectionTTZ * bkgWeightDenom//, constants::xSectionTTH2diW * bkgWeightDenom
   };
 
   const Long64_t nof_tree_entries = inputTree -> GetEntries();

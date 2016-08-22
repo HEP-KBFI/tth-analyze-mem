@@ -5,6 +5,7 @@
 
 #include "tthAnalysis/tthMEM/interface/me_ttHorZ_3l1tau_mg5.h" // me_ttHorZ_3l1tau_mg5
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // tthMEM_3l_1tau::MeasuredEvent
+#include "tthAnalysis/tthMEM/interface/BJetTransferFunction.h" // bJetTransferFunction
 
 #include "LHAPDF/LHAPDF.h" // LHAPDF::PDF
 
@@ -54,6 +55,7 @@ namespace tthMEM
     void setIdxPhiInv      (int idx);
     void setIdxMinvSquared (int idx);
     void setCurrentME(ME_mg5_3l1tau currentME);
+    void setBJetTransferFunction(bool setTF);
 
     /**
      * @brief Evaluates the integrand
@@ -121,6 +123,8 @@ namespace tthMEM
 
     mutable std::vector<double *> mgMomenta_;
     std::vector<unsigned> mgMomentaIdxs_;
+
+    bJetTransferFunction bJetTF_;
 
     /**
      * @brief Sets madgraph momenta

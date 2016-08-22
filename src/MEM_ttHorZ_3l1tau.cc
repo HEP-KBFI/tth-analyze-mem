@@ -39,6 +39,7 @@ MEM_ttHorZ_3l1tau::MEM_ttHorZ_3l1tau(const std::string & pdfName,
   , precision_(1.e-3)
   , xl_(0)
   , xu_(0)
+  , setTF_(false)
   , clock_(new TBenchmark())
   , numSeconds_cpu_(0.)
   , numSeconds_real_(0.)
@@ -81,6 +82,12 @@ MEM_ttHorZ_3l1tau::setIntegrationMode(const std::string & integrationModeString)
     integrationMode_ = IntegrationMode::kVAMP;
   else
     integrationMode_ = IntegrationMode::kUndefined;
+}
+
+void
+MEM_ttHorZ_3l1tau::setBJetTransferFunction(bool setTF)
+{
+  setTF_ = setTF;
 }
 
 void
@@ -154,11 +161,12 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   integrand_ -> setIdxPhiInv     (idxPhiInv);
   integrand_ -> setIdxMinvSquared(idxMinvSquared);
   integrand_ -> setCurrentME(currentME);
+  integrand_ -> setBJetTransferFunction(setTF_);
   Integrand_ttHorZ_3l1tau::gIntegrand = integrand_;
 
 //--- set integration boundaries
   double xl[8] = { -1., -pi(), -1., -pi(),  0., -pi(), -pi(), 0. };
-  double xu[8] = { +1., +pi(), +1., +pi(), +1., +pi(), +pi(), massTauSquared };
+  double xu[8] = { +1., +pi(), +1., +pi(), +1., +pi(), +pi(), constants::massTauSquared };
   xl_ = new double[numDimensions_];
   xu_ = new double[numDimensions_];
   std::copy(xl, xl + numDimensions_, xl_);
@@ -202,10 +210,10 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
 
 //--- divide by the process cross section (in GeV, i.e. natural units)
 //--- and adjust the uncertainty accordingly
-  pSum /= (currentME == ME_mg5_3l1tau::kTTH) ? xSectionTTH2diTauInGeV2 :
-                                               xSectionTTZinGeV2;
-  pSumErr /= (currentME == ME_mg5_3l1tau::kTTH) ? xSectionTTH2diTauInGeV2 :
-                                                  xSectionTTZinGeV2;
+  pSum /= (currentME == ME_mg5_3l1tau::kTTH) ? constants::xSectionTTH2diTauInGeV2 :
+                                               constants::xSectionTTZinGeV2;
+  pSumErr /= (currentME == ME_mg5_3l1tau::kTTH) ? constants::xSectionTTH2diTauInGeV2 :
+                                                  constants::xSectionTTZinGeV2;
   LOGINFO_S << "Summed over permutations: p = " << pSum << "; pErr = " << pSumErr;
 
 //--- cleanup

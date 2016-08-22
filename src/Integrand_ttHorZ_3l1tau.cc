@@ -37,6 +37,7 @@ Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(const std::string & pdfName,
   , idxPhi1_(-1)
   , idxPhiInv_(-1)
   , idxMinvSquared_(-1)
+  , bJetTF_(deltaFunction)
 {
   LOGTRC;
 
@@ -145,8 +146,17 @@ Integrand_ttHorZ_3l1tau::setCurrentME(ME_mg5_3l1tau currentME)
 {
   LOGTRC;
   currentME_ = currentME;
-  Q_ = currentME_ == ME_mg5_3l1tau::kTTH ? resolutionScaleTTH :
-                                           resolutionScaleTTZ;
+  Q_ = currentME_ == ME_mg5_3l1tau::kTTH ?
+                     constants::resolutionScaleTTH :
+                     constants::resolutionScaleTTZ;
+}
+
+void
+Integrand_ttHorZ_3l1tau::setBJetTransferFunction(bool setTF)
+{
+  LOGTRC;
+  if(setTF) bJetTF_ = bJetTF;
+  else      bJetTF_ = deltaFunction;
 }
 
 void
@@ -283,7 +293,7 @@ double
 Integrand_ttHorZ_3l1tau::nuHtauCosTheta(double nuHtau_en) const
 {
   return (nuHtau_en * hTauEnergy_ -
-             (massTauSquared - hTauMassSquared_) / 2.)
+             (constants::massTauSquared - hTauMassSquared_) / 2.)
            / (hTauMomentum_ * nuHtau_en);
 }
 
@@ -293,7 +303,7 @@ Integrand_ttHorZ_3l1tau::nuLeptTauCosTheta(double nuLeptTau_en,
                                            double nuLeptTau_p) const
 {
   return (nuLeptTau_en * complLeptEnergy_ -
-             (massTauSquared - (complLeptMassSquared_ + mInvSquared)) / 2.)
+             (constants::massTauSquared - (complLeptMassSquared_ + mInvSquared)) / 2.)
            / (complLeptMomentum_ * nuLeptTau_p);
 }
 
@@ -302,7 +312,7 @@ Integrand_ttHorZ_3l1tau::bJetEnergy(const LorentzVector & W,
                                     unsigned bIdx) const
 {
   const Vector Wp(W.x(), W.y(), W.z());
-  const double a_ = DeltaFactor / W.energy() / massB;
+  const double a_ = constants::DeltaFactor / W.energy() / constants::massB;
   const double b_ = W.Beta() * bJetP3Unit_[bIdx].Dot(Wp.unit());
   const double a_2 = std::pow(a_, 2);
   const double b_2 = std::pow(b_, 2);
@@ -320,8 +330,10 @@ Integrand_ttHorZ_3l1tau::bJetEnergy(const LorentzVector & W,
     return 0.;
   }
 
-  const double Eb[2] = { massB * (a_ + b_abs * std::sqrt(a_2b_2_1)) / (1 - b_2),
-                         massB * (a_ - b_abs * std::sqrt(a_2b_2_1)) / (1 - b_2) };
+  const double Eb[2] = {
+    constants::massB * (a_ + b_abs * std::sqrt(a_2b_2_1)) / (1 - b_2),
+    constants::massB * (a_ - b_abs * std::sqrt(a_2b_2_1)) / (1 - b_2)
+  };
   if(Eb[0] <= 0. && Eb[1] <= 0.)
   {
     LOGVRB << "Eb+[" << bIdx << "] = " << Eb[0] << " <= 0 and "
@@ -364,19 +376,20 @@ Integrand_ttHorZ_3l1tau::tDecayJacobiFactor(const LorentzVector & W,
     return 0.;
   }
   return b_en * std::pow(nuT_en, 2) /
-    (leptEnergy_[blIdx] * W.e() * massWSquared * invAbsFactor);
+    (leptEnergy_[blIdx] * W.e() * constants::massWSquared * invAbsFactor);
 }
 
 double
 Integrand_ttHorZ_3l1tau::MeffSquaredTau2hadrons() const
 {
-  const double denom = massTauSquared - hTauMassSquared_;
+  const double denom = constants::massTauSquared - hTauMassSquared_;
   if(denom == 0.)
   {
     LOGWARN << "Something's off: hadronic tau and tau lepton have the same mass";
     return 0.;
   }
-  return 16. * pi() * hTauMass_ * gammaTau2hadrons * hTauMassSquared_ / denom;
+  return 16. * pi() * hTauMass_ * constants::gammaTau2hadrons *
+         hTauMassSquared_ / denom;
 }
 
 double
@@ -390,32 +403,32 @@ double
 Integrand_ttHorZ_3l1tau::leptTauPSJacobiFactor(double mInvSquared,
                                                double z) const
 {
-  if(z >= complLeptMassSquared_ / massTauSquared &&
-     z < 1. - mInvSquared / massTauSquared)
+  if(z >= complLeptMassSquared_ / constants::massTauSquared &&
+     z < 1. - mInvSquared / constants::massTauSquared)
   {
     const double mInv = std::sqrt(mInvSquared);
-    const double tau_en = massTauSquared + mInvSquared - complLeptMassSquared_ /
-                          (2 * mInv);
+    const double tau_en =
+      (constants::massTauSquared + mInvSquared - complLeptMassSquared_) / (2 * mInv);
     const double vis_en = tau_en - mInv;
-    if(! (tau_en >= massTau && vis_en >= complLeptMass_))
+    if(! (tau_en >= constants::massTau && vis_en >= complLeptMass_))
     {
       LOGVRB << "tau energy not greater than or equal to the tau mass "
-             << "(" << tau_en << " < " << massTau << "); or "
+             << "(" << tau_en << " < " << constants::massTau << "); or "
              << "visible energy not greater than or equal to the associated "
              << "lepton mass (" << vis_en << " < " << complLeptMass_ << ")";
       return 0.;
     }
-    const double Iinv = GFSquared / std::pow(pi(), 2) * mInvSquared *
+    const double Iinv = constants::GFSquared / std::pow(pi(), 2) * mInvSquared *
       (2 * tau_en * vis_en -
-       2. / 3. * std::sqrt((std::pow(tau_en, 2) - massTauSquared) *
+       2. / 3. * std::sqrt((std::pow(tau_en, 2) - constants::massTauSquared) *
                            (std::pow(vis_en, 2) - complLeptMassSquared_)));
     return Iinv / (8 * std::pow(2 * pi() * z, 6) * complLeptMomentum_);
   }
   else
   {
     LOGVRB << "z = " << z << " not in the physical region "
-           << "[" << complLeptMassSquared_ / massTauSquared << ", "
-                  << 1. - mInvSquared / massTauSquared << ")";
+           << "[" << complLeptMassSquared_ / constants::massTauSquared << ", "
+                  << 1. - mInvSquared / constants::massTauSquared << ")";
     return 0.;
   }
 }
@@ -444,6 +457,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
     std::exit(EXIT_FAILURE);
   LOGVRB << "Current MG5 ME: " << me_madgraph_[currentME_] -> name();
   if(covDet_ == 0.) return 0.;
+  const bool isTTH = currentME_ == ME_mg5_3l1tau::kTTH;
 
 //--- read the sampled values
   std::ostringstream ss;
@@ -463,7 +477,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 
 //--- confirm that the energy fraction carried by the tau is indeed in (0,1)
   const double z2 = measuredVisMassSquared_ /
-      (z1 * (currentME_ == ME_mg5_3l1tau::kTTH ? massHiggsSquared : massZSquared));
+      (z1 * (isTTH ? constants::massHiggsSquared : constants::massZSquared));
   if(! (z2 >= 1.e-5 && z2 <= 1.))
   {
     LOGVRB << "z2 = " << z2 << " not in (0, 1) => p = 0";
@@ -515,16 +529,17 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const LorentzVector lTau = complLeptP4_ + nuLTau;
   LOGTRC << lvrap("leptonic tau", lTau);
 
-  const LorentzVector higgs = hTau + lTau;
-  LOGTRC << lvrap("higgs", higgs);
+  const LorentzVector higgsOrZ = hTau + lTau;
+  if(isTTH) LOGTRC << lvrap("higgs", higgsOrZ);
+  else      LOGTRC << lvrap("Z",     higgsOrZ);
 
 //--- get W boson and associated neutrino 4-vectors
   const VectorSpherical nuT1_p3unit(1., std::acos(cosTheta1), varphi1);
   const VectorSpherical nuT2_p3unit(1., std::acos(cosTheta2), varphi2);
-  const double nuT1_en = massWSquared / ((1 - leptP3Unit_[0].Dot(nuT1_p3unit))
-                                         * leptEnergy_[0] * 2.);
-  const double nuT2_en = massWSquared / ((1 - leptP3Unit_[1].Dot(nuT2_p3unit))
-                                         * leptEnergy_[1] * 2.);
+  const double nuT1_en = constants::massWSquared /
+      ((1 - leptP3Unit_[0].Dot(nuT1_p3unit)) * leptEnergy_[0] * 2.);
+  const double nuT2_en = constants::massWSquared /
+      ((1 - leptP3Unit_[1].Dot(nuT2_p3unit)) * leptEnergy_[1] * 2.);
   const Vector nuT1_p3(nuT1_en * nuT1_p3unit);
   const Vector nuT2_p3(nuT2_en * nuT2_p3unit);
   const LorentzVector nuT1(nuT1_p3.x(), nuT1_p3.y(), nuT1_p3.z(), nuT1_en);
@@ -539,8 +554,10 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double b1_en = bJetEnergy(W1, 0);
   const double b2_en = bJetEnergy(W2, 1);
   if(b1_en == 0. || b2_en == 0.) return 0.;
-  const Vector b1_p3 = std::sqrt(std::pow(b1_en, 2) - massBSquared) * bJetP3Unit_[0];
-  const Vector b2_p3 = std::sqrt(std::pow(b2_en, 2) - massBSquared) * bJetP3Unit_[1];
+  const Vector b1_p3 = std::sqrt(std::pow(b1_en, 2) - constants::massBSquared) *
+                       bJetP3Unit_[0];
+  const Vector b2_p3 = std::sqrt(std::pow(b2_en, 2) - constants::massBSquared) *
+                       bJetP3Unit_[1];
   const LorentzVector b1 = LorentzVector(b1_p3.x(), b1_p3.y(), b1_p3.z(), b1_en);
   const LorentzVector b2 = LorentzVector(b2_p3.x(), b2_p3.y(), b2_p3.z(), b2_en);
   LOGTRC << lvrap("b 1", b1);
@@ -551,8 +568,13 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   LOGTRC << lvrap("t 1", t1);
   LOGTRC << lvrap("t 2", t2);
 
-  LOGTRC << "b1_en = " << b1_en << " (reco = " << bJetRecoEnergy_[0] << "); "
-         << "b2_en = " << b2_en << " (reco = " << bJetRecoEnergy_[1] << ")";
+//--- b-jet energy transfer function
+  const double b1EnergyTF = bJetTF_(bJetRecoEnergy_[0], b1_en, b1_p3.eta());
+  const double b2EnergyTF = bJetTF_(bJetRecoEnergy_[1], b2_en, b2_p3.eta());
+  LOGTRC << "b1_en = " << b1_en << " (reco = " << bJetRecoEnergy_[0] << ", "
+         << "TF = " << std::scientific << b1EnergyTF << ")";
+  LOGTRC << "b2_en = " << b2_en << " (reco = " << bJetRecoEnergy_[1] << ", "
+         << "TF = " << std::scientific << b2EnergyTF << ")";
 
 //--- hadronic recoil transfer function; simplification: use only neutrinos
 //--- in the difference of ,,measured'' and ,,true'' hadronic recoil, because
@@ -572,9 +594,11 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 //--- assume that hadronic recoil has only transverse component
   const double hadRecE = 0.;
   const double hadRecPz = 0.;
-  const LorentzVector tth = higgs + t1 + t2;
-  const double xa = invSqrtS * (hadRecE + tth.e() + hadRecPz + tth.pz());
-  const double xb = invSqrtS * (hadRecE + tth.e() - hadRecPz - tth.pz());
+  const LorentzVector tthOrZ = higgsOrZ + t1 + t2;
+  const double xa = (hadRecE + tthOrZ.e() + hadRecPz + tthOrZ.pz()) *
+                    constants::invSqrtS;
+  const double xb = (hadRecE + tthOrZ.e() - hadRecPz - tthOrZ.pz()) *
+                    constants::invSqrtS;
   LOGTRC << "xa = " << xa << "; xb = " << xb;
   if(xa <= 0. || xa >= 1. || xb <= 0. || xb >= 1.)
   {
@@ -585,15 +609,17 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double fa = pdf_ -> xfxQ(21, xa, Q_) / xa;
   const double fb = pdf_ -> xfxQ(21, xb, Q_) / xb;
   const double probPDF = fa * fb;
-  const double flux = 1. / (s * xa * xb);
+  const double flux = 1. / (constants::s * xa * xb);
 
 //--- boost all MG momenta into frame where pT(tth) = 0
 //--- note: the boost vector must be a 3-vector of velocities, hence
 //---       the division by energy
-  const Vector boost(-tth.px() / tth.e(), -tth.py() / tth.e(), 0.);
+  const Vector boost(-tthOrZ.px() / tthOrZ.e(), -tthOrZ.py() / tthOrZ.e(), 0.);
   LOGTRC << cvrap("boost vector", boost);
-  const LorentzVector gluon1(0., 0., +0.5 * xa * sqrtS, 0.5 * xa * sqrtS);
-  const LorentzVector gluon2(0., 0., -0.5 * xb * sqrtS, 0.5 * xb * sqrtS);
+  const LorentzVector gluon1(0., 0., +0.5 * xa * constants::sqrtS,
+                                      0.5 * xa * constants::sqrtS);
+  const LorentzVector gluon2(0., 0., -0.5 * xb * constants::sqrtS,
+                                      0.5 * xb * constants::sqrtS);
   const LorentzVector b1_mem    = VectorUtil::boost(b1, boost);
   const LorentzVector b2_mem    = VectorUtil::boost(b2, boost);
   const LorentzVector hTau_mem  = VectorUtil::boost(hTau, boost);
@@ -605,9 +631,10 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 
   const LorentzVector t1_mem    = VectorUtil::boost(t1, boost);
   const LorentzVector t2_mem    = VectorUtil::boost(t2, boost);
-  const LorentzVector higgs_mem = VectorUtil::boost(higgs, boost);
-  const LorentzVector tth_mem = t1_mem + t2_mem + higgs_mem;
-  LOGTRC << lvrap("tth mem", tth_mem);
+  const LorentzVector hOrZ_mem  = VectorUtil::boost(higgsOrZ, boost);
+  const LorentzVector tthOrZ_mem = t1_mem + t2_mem + hOrZ_mem;
+  if(isTTH) LOGTRC << lvrap("tth mem", tthOrZ_mem);
+  else      LOGTRC << lvrap("ttz mem", tthOrZ_mem);
 
   const LorentzVector hTauP4_mem = VectorUtil::boost(hTauP4_, boost);
   const LorentzVector complLeptP4_mem = VectorUtil::boost(complLeptP4_, boost);
@@ -626,7 +653,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const std::vector<LorentzVector> memVector_p4 = {
     gluon1, gluon2, b1_mem, lept1_mem, nuT1_mem,
                     b2_mem, lept2_mem, nuT2_mem,
-    lTau_mem, hTau_mem};
+    lTau_mem, hTau_mem                            };
   setMGmomenta(memVector_p4);
   me_madgraph_[currentME_] -> setMomenta(mgMomenta_);
 
@@ -661,11 +688,12 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 
   const double jacobiFactor = t1DecayJacobiFactor * t2DecayJacobiFactor *
     hTauPSJacobiFactor * lTauPSJacobiFactor * z2 *
-    (currentME_ == ME_mg5_3l1tau::kTTH ? ttHfactor : ttZfactor);
+    (isTTH ? constants::ttHfactor : constants::ttZfactor);
   LOGTRC_S << "Product of all Jacobi factors = " << jacobiFactor;
 
 //--- assemble the integrand
-  const double p = prob_ME_mg * probPDF * flux * MET_TF * jacobiFactor;
+  const double p = prob_ME_mg * probPDF * flux * MET_TF *
+                   b1EnergyTF * b2EnergyTF * jacobiFactor;
   LOGVRB_S << "p = " << p;
 
   return p;
