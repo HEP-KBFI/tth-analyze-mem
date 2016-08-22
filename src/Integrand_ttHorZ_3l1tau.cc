@@ -576,6 +576,11 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double xa = invSqrtS * (hadRecE + tth.e() + hadRecPz + tth.pz());
   const double xb = invSqrtS * (hadRecE + tth.e() - hadRecPz - tth.pz());
   LOGTRC << "xa = " << xa << "; xb = " << xb;
+  if(xa <= 0. || xa >= 1. || xb <= 0. || xb >= 1.)
+  {
+    LOGVRB << "xa or xb have unphysical values";
+    return 0.;
+  }
 
   const double fa = pdf_ -> xfxQ(21, xa, Q_) / xa;
   const double fb = pdf_ -> xfxQ(21, xb, Q_) / xb;
@@ -603,6 +608,19 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const LorentzVector higgs_mem = VectorUtil::boost(higgs, boost);
   const LorentzVector tth_mem = t1_mem + t2_mem + higgs_mem;
   LOGTRC << lvrap("tth mem", tth_mem);
+
+  const LorentzVector hTauP4_mem = VectorUtil::boost(hTauP4_, boost);
+  const LorentzVector complLeptP4_mem = VectorUtil::boost(complLeptP4_, boost);
+  const double z1_mem = hTauP4_mem.e() / hTau_mem.e();
+  const double z2_mem = complLeptP4_mem.e() / lTau.e();
+  LOGTRC << "z1_mem = " << z1_mem << "; z2_mem = " << z2_mem;
+  if(! (z1_mem >= 1.e-5 && z1_mem <= 1.) ||
+     ! (z2_mem >= 1.e-5 && z2_mem <= 1.))
+  {
+    LOGVRB << "The tau energy fraction z1 and z2 have unphysical values "
+           << "when the lab frame is boosted such that pT(tth) = 0";
+    return 0.;
+  }
 
 //--- set MG momenta
   const std::vector<LorentzVector> memVector_p4 = {
