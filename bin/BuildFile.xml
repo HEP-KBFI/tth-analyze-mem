@@ -6,3 +6,9 @@
   <use name="tthAnalysis/tthMEM" />
 <!--  <Flags CXXFLAGS="-g" /> -->
 </bin>
+<bin file="bjetTFPlot.cc" name="bjetTFPlot">
+  <use name="root" />
+  <use name="rootgraphics" />
+  <use name="boost" />
+  <use name="tthAnalysis/tthMEM" />
+</bin>
