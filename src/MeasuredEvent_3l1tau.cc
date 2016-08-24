@@ -134,6 +134,12 @@ MeasuredEvent_3l1tau::resetPermutation() const
   currentPermutation_ = 0;
 }
 
+std::string
+MeasuredEvent_3l1tau::str() const
+{
+  return std::string(Form("%u_%u_%llu_%u", run, lumi, evt, currentPermutation_));
+}
+
 namespace tthMEM
 {
   std::ostream &

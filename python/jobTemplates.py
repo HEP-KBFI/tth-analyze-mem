@@ -30,7 +30,8 @@ process.tthMEM = cms.PSet(
   madgraphFileName = cms.string("tthAnalysis/tthMEM/data/param_card.dat"),
   integrationMode = cms.string("{{ integrationMode }}"),
   maxObjFunctionCalls = cms.uint32({{ maxObjFunctionCalls }}),
-  startingFromEntry = cms.int64({{startingFromEntry }})
+  startingFromEntry = cms.int64({{startingFromEntry }}),
+  debugPlots = cms.bool({{ debugPlots }})
 )
 
 """
@@ -188,7 +189,8 @@ def getNofEntries(fileName, treeName):
   return int(counterStdout)
 
 def createPythonCfg(inFileName, maxEvents, outFileName, treeName,
-                    integrationMode, maxObjFunctionCalls, startingFromEntry):
+                    integrationMode, maxObjFunctionCalls, startingFromEntry,
+                    debugPlots):
   return jinja2.Template(pythonCfgTemplate).render(
     inFileName = inFileName,
     maxEvents = maxEvents,
@@ -196,7 +198,8 @@ def createPythonCfg(inFileName, maxEvents, outFileName, treeName,
     treeName = treeName,
     integrationMode = integrationMode,
     maxObjFunctionCalls = maxObjFunctionCalls,
-    startingFromEntry = startingFromEntry)
+    startingFromEntry = startingFromEntry,
+    debugPlots = debugPlots)
 
 def createPythonROCcfg(signalFile, bkgFiles, outFolder, treeName,
                        branchName, labels, legendPosition):

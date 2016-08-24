@@ -4,7 +4,7 @@ from tthAnalysis.tthMEM.jobTemplates import getNofEntries, \
 
 def createJobs(samples, channel, version, lepton_selections, central_or_shifts, execName,
                treeName, integrationMode, maxObjFunctionCalls, nofIntegrationsPerJob,
-               lhRatioBranchName, rocLegendPosition):
+               lhRatioBranchName, rocLegendPosition, debugPlots):
   '''
   TODO: - remove unnecessary complexity in the paths (currently both the file name and dirname
           contain the same information)
@@ -95,7 +95,7 @@ def createJobs(samples, channel, version, lepton_selections, central_or_shifts, 
 
           pythonCfg = createPythonCfg(
             fileNameScratch_i, nofEventsToProcess, outFileNameScratch_i, treeName,
-            integrationMode, maxObjFunctionCalls, startingPoint
+            integrationMode, maxObjFunctionCalls, startingPoint, debugPlots
           )
           bashCfg = createBashCfg(
             fileNameLocal, outFileNameLocal_i, fileNameScratch_i, outFileNameScratch_i,

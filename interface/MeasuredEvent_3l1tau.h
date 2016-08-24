@@ -12,6 +12,7 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredHadronicTau.h" // tthMEM::MeasuredHadronicTau
 #include "tthAnalysis/tthMEM/interface/MVAVariables.h" // tthMEM::MVAVariables
 #include "tthAnalysis/tthMEM/interface/IndexWrapper.h" // tthMEM::IndexWrapper<,>
+#include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
 
 #include <ostream> // std::ostream
 #include <vector> // std::vector<>
@@ -42,6 +43,8 @@ namespace tthMEM
     unsigned complLeptonIdx;
     std::vector<unsigned> bjetLeptonIdxs;
 
+    mutable DebugPlotter_ttHorZ_3l1tau * debugPlotter_ = 0;
+
     void
     initialize();
 
@@ -59,6 +62,9 @@ namespace tthMEM
 
     void
     resetPermutation() const;
+
+    std::string
+    str() const;
 
     friend std::ostream &
     operator<<(std::ostream & os,

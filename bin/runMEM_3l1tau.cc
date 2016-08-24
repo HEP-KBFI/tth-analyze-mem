@@ -18,7 +18,8 @@
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // tthMEM::MeasuredEvent_3l1tau
 #include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h" // tthMEM::MEM_ttHorZ_3l1tau
-#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // tthMEM::findFile(), tthMEM::sqrtS
+#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // tthMEM::findFile()
+#include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
 
 using namespace tthMEM;
 
@@ -62,6 +63,7 @@ main(int argc,
   const std::string integrationMode = cfg_tthMEM.getParameter<std::string>("integrationMode");
   const unsigned maxObjFunctionCalls = cfg_tthMEM.getParameter<unsigned>("maxObjFunctionCalls");
   const Long64_t startingFromEntry = cfg_tthMEM.getParameter<Long64_t>("startingFromEntry");
+  const bool debugPlots = cfg_tthMEM.getParameter<bool>("debugPlots");
 
   LOGINFO << "PDF name: " << pdfName;
   LOGINFO << "MadGraph file name: " << madgraphFileName;
@@ -90,6 +92,8 @@ main(int argc,
   MeasuredEvent_3l1tau measuredEvent;
   measuredEvent.setBranches(inputTree);
   measuredEvent.initNewBranches(newTree);
+  if(debugPlots)
+    measuredEvent.debugPlotter_ = new DebugPlotter_ttHorZ_3l1tau(newFile);
 
 //--- set up the probability variables
   double probSignal;

@@ -26,5 +26,6 @@ process.tthMEM = cms.PSet(
   madgraphFileName = cms.string("tthAnalysis/tthMEM/data/param_card.dat"),
   integrationMode = cms.string("VEGAS"),
   maxObjFunctionCalls = cms.uint32(50), # just for testing; proper figure: 20k+
-  startingFromEntry = cms.int64(0)
+  startingFromEntry = cms.int64(0),
+  debugPlots = cms.bool(True)
 )

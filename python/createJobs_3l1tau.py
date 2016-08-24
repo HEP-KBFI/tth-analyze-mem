@@ -19,6 +19,7 @@ if __name__ == '__main__':
              maxObjFunctionCalls = 20000,
              nofIntegrationsPerJob = 200,
              lhRatioBranchName = "lhRatioNP",
-             rocLegendPosition = [0.15, 0.78, 0.3, 0.88])
+             rocLegendPosition = [0.15, 0.78, 0.3, 0.88],
+             debugPlots = True)
 
 
