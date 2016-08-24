@@ -12,3 +12,9 @@
   <use name="boost" />
   <use name="tthAnalysis/tthMEM" />
 </bin>
+<bin file="memROC.cc" name="memROC">
+  <use name="FWCore/ParameterSet" />
+  <use name="FWCore/PythonParameterSet" />
+  <use name="FWCore/Utilities" />
+  <use name="tthAnalysis/tthMEM" />
+</bin>

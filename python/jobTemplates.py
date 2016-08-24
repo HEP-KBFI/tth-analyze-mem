@@ -35,6 +35,22 @@ process.tthMEM = cms.PSet(
 
 """
 
+pythonROCcfgTemplate = r"""import FWCore.ParameterSet.Config as cms
+
+roc = cms.PSet()
+
+roc.tthMEM = cms.PSet(
+  signalFile = cms.string('{{ signalFile }}'),
+  bkgFiles = cms.vstring('{{ bkgFiles|join('\', \'') }}'),
+  outFolder = cms.string('{{ outFolder }}'),
+  treeName = cms.string('{{ treeName }}'),
+  branchName = cms.string('{{ branchName }}'),
+  labels = cms.vstring('{{ labels|join('\', \'') }}'),
+  legendPosition = cms.vdouble({{ legendPosition|join(', ') }})
+)
+
+"""
+
 jobTemplate = r"""#!/bin/bash
 
 echo -n "Current time: "
@@ -141,13 +157,19 @@ run:
 {{ outFileNameLocalResult }}: {{ outFileNameLocals|join(' ') }}
 \thadd -f {{ outFileNameLocalResult }} {{ outFileNameLocals|join(' ') }} {% endfor %}
 
-all: {{ outFileNameLocalArray.keys()|join(' ') }}
+{% for outFileName in rocOutFileNames %}
+{{ outFileName }}: {{ outFileNameLocalArray.keys()|join(' ') }}
+\t{{ rocCmd }} {{ rocCfg }}
+{% endfor %}
+
+all: {{ rocOutFileNames|join(' ') }}
 
 .PHONY: clean
 
 clean:{% for outFileNameLocalResult, outFileNameLocals in outFileNameLocalArray.iteritems() %}
 \trm -f {{ outFileNameLocalResult }} {% for outFileNameLocal in outFileNameLocals %}
-\trm -f {{ outFileNameLocal }} {% endfor %} {% endfor %}
+\trm -f {{ outFileNameLocal }} {% endfor %} {% endfor %} {% for outFileName in rocOutFileNames %}
+\trm -f {{ outFileName }} {% endfor %}
 \trm -rf {{ scratchDir }}
 
 """
@@ -176,6 +198,17 @@ def createPythonCfg(inFileName, maxEvents, outFileName, treeName,
     maxObjFunctionCalls = maxObjFunctionCalls,
     startingFromEntry = startingFromEntry)
 
+def createPythonROCcfg(signalFile, bkgFiles, outFolder, treeName,
+                       branchName, labels, legendPosition):
+  return jinja2.Template(pythonROCcfgTemplate).render(
+    signalFile = signalFile,
+    bkgFiles = bkgFiles,
+    outFolder = outFolder,
+    treeName = treeName,
+    branchName = branchName,
+    labels = labels,
+    legendPosition = legendPosition)
+
 def createBashCfg(inFileNameLocal, outFileNameLocal, inFileNameScratch,
                   outFileNameScratch, execName, pythonCfg, cmsswSrcDir):
   return jinja2.Template(jobTemplate).render(
@@ -191,8 +224,12 @@ def createSbatch(bashScript, logFile):
   return jinja2.Template(sbatchTemplate).render(
     zippedScriptLog = zip(bashScript, logFile))
 
-def createMakefile(waitingScript, outFileNameLocalArray, scratchDir):
+def createMakefile(waitingScript, outFileNameLocalArray, scratchDir,
+                   rocOutFileNames, rocCmd, rocCfg):
   return jinja2.Template(makefileTemplate).render(
     waitingScript = waitingScript,
     outFileNameLocalArray = outFileNameLocalArray,
-    scratchDir = scratchDir)
+    scratchDir = scratchDir,
+    rocOutFileNames = rocOutFileNames,
+    rocCmd = rocCmd,
+    rocCfg = rocCfg)

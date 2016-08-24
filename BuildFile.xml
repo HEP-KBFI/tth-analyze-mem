@@ -1,6 +1,7 @@
 <use name="DataFormats/Math" />
 <use name="FWCore/ParameterSet" />
 <use name="root" />
+<use name="rootgraphics" />
 <use name="lhapdf" />
 <use name="vamp" />
 <use name="boost" />
