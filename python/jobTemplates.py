@@ -107,8 +107,8 @@ echo "mv {{ outFileNameScratch }} {{ outFileNameLocal }}"
 mv {{ outFileNameScratch }} {{ outFileNameLocal }}
 
 echo -e "\n\nCleaning up"
-echo "rm {{ inFileNameScratch }}"
-rm {{ inFileNameScratch }}
+echo "rm -rf $(dirname {{ inFileNameScratch }})"
+rm -rf $(dirname {{ inFileNameScratch }})
 
 echo -e "\n\nDone"
 

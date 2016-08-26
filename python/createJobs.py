@@ -18,9 +18,18 @@ def createJobs(samples, channel, version, lepton_selections, central_or_shifts, 
 
   baseDirPattern = os.path.join("/%s", getpass.getuser(), "ttHAnalysis", version)
   baseDir = baseDirPattern % "home"
-  scratchDir = baseDirPattern % "scratch"
   cmsswSrcDir = os.path.join(os.environ.get('CMSSW_BASE'), "src")
-  rocDir = os.path.join(baseDir, "mem", "roc")
+
+  scratchDir = baseDirPattern % "scratch"
+  scratchTempOutputDir = os.path.join(scratchDir, "temp_output", "%d")
+  scratchOutputDir = os.path.join(scratchDir, "mem_output")
+
+  memDir = os.path.join(baseDir, "mem")
+  memCfgDir = os.path.join(memDir, "cfg")
+  memOutputDir = os.path.join(memDir, "output")
+  memLogDir = os.path.join(memDir, "log")
+
+  rocDir = os.path.join(memDir, "roc")
   rocPlotDir = os.path.join(rocDir, "plots")
   rocCmd = "memROC"
 
@@ -41,29 +50,28 @@ def createJobs(samples, channel, version, lepton_selections, central_or_shifts, 
     for lepton_selection in lepton_selections:
       for central_or_shift in central_or_shifts:
 
-        filePattern = os.path.join(
-          "%s", "%s", channel, lepton_selection, sampleValue["process_name_specific"],
-          "_".join(["%s", channel, sampleValue["process_name_specific"],
-                    lepton_selection, central_or_shift])
-        )
+        filePattern = "_".join(["%s", channel, sampleValue["process_name_specific"],
+                                lepton_selection, central_or_shift])
 
-        fileNameLocal = filePattern % (baseDir, "output_root", "out") + ".root"
+        fileNameLocal = os.path.join(baseDir, "output_root", channel, lepton_selection,
+                                     sampleValue["process_name_specific"],
+                                     filePattern % "out") + ".root"
         if not os.path.exists(fileNameLocal) or not os.path.isfile(fileNameLocal):
           logging.warning("File %s does not exists! Skipping" % fileNameLocal)
           continue
         else:
           logging.info("Create configuration files for %s" % fileNameLocal)
 
-        fileNameScratch = filePattern % (scratchDir, os.path.join("output_root", "%d"), "out") + ".root"
-        outFileNameLocal = filePattern % (baseDir, os.path.join("mem", "output"), "out") + "_%d.root"
-        outFileNameScratch = filePattern % (scratchDir, os.path.join("mem", "output"), "mem") + "_%d.root"
-        jobCfgFile = filePattern % (baseDir, os.path.join("mem", "cfg"), "cfg") + "_%d.py"
-        jobBashFile = filePattern % (baseDir, os.path.join("mem", "cfg"), "cfg") + "_%d.sh"
-        logFile = filePattern % (baseDir, os.path.join("mem", "log"), "log") + "_%d.txt"
+        fileNameScratch = os.path.join(scratchTempOutputDir, filePattern % "out") + ".root"
+        outFileNameLocal = os.path.join(memOutputDir, filePattern % "out") + "_%d.root"
+        outFileNameScratch = os.path.join(scratchOutputDir, filePattern % "mem") + "_%d.root"
+        jobCfgFile = os.path.join(memCfgDir, filePattern % "cfg") + "_%d.py" 
+        jobBashFile = os.path.join(memCfgDir, filePattern % "cfg") + "_%d.sh" 
+        logFile = os.path.join(memLogDir, filePattern % "log") + "_%d.txt" 
 
-        outFileNameLocalResult = filePattern % (baseDir, os.path.join("mem", "output"), "mem") + ".root"
+        outFileNameLocalResult = os.path.join(memOutputDir, filePattern % "out") + ".root"
         outFileNameLocalArray[outFileNameLocalResult] = []
-        
+
         if inputSignalFile == "" and sampleValue["sample_category"] == "signal":
           inputSignalFile = outFileNameLocalResult
         elif outFileNameLocalResult not in inputBkgFiles:
@@ -110,12 +118,14 @@ def createJobs(samples, channel, version, lepton_selections, central_or_shifts, 
           sbatchLogFiles.append(logFile_i)
           outFileNameLocalArray[outFileNameLocalResult].append(outFileNameLocal_i)
 
+  if not outFileNameLocalArray: sys.exit(0)
+
   for i in range(1, len(rocLabels)):
     rocOutFileNames.append(os.path.join(rocPlotDir, "roc_%s_%s.pdf" % (rocLabels[0], rocLabels[i])))
   if len(rocLabels) > 2:
     rocOutFileNames.append(os.path.join(rocPlotDir, "roc.pdf"))
 
-  sbatchFile = os.path.join(baseDir, "mem", "sbatchMEM_%s.py" % channel)
+  sbatchFile = os.path.join(memDir, "sbatchMEM_%s.py" % channel)
   sbatchContents = createSbatch(sbatchBashFiles, sbatchLogFiles)
   with codecs.open(sbatchFile, 'w', 'utf-8') as f: f.write(sbatchContents)
   st = os.stat(sbatchFile)
