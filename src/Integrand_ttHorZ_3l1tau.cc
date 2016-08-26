@@ -173,17 +173,20 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
   hTauMass_ = htau.mass();
   hTauMassSquared_ = std::pow(hTauMass_, 2);
   hTauP4_ = htau.p4();
-  eZ_htau_ = htau.p3().unit();
-  eY_htau_ = eZ_htau_.Cross(beamAxis_).unit();
-  eX_htau_ = eY_htau_.Cross(eZ_htau_).unit();
+  const Vector eZ_htau = htau.p3().unit();
+  const Vector eY_htau = eZ_htau.Cross(beamAxis_).unit();
+  const Vector eX_htau = eY_htau.Cross(eZ_htau).unit();
   // eX should already be unit vector by construction
   LOGVRB << lvrap("htau p4", hTauP4_);
-  LOGVRB << svrap("htau eX", eX_htau_);
-  LOGVRB << svrap("htau eY", eY_htau_);
-  LOGVRB << svrap("htau eZ", eZ_htau_);
-  LOGVRB << "htau: " << "eX x eY = " << eX_htau_.Cross(eY_htau_).r() << " ; "
-                     << "eX x eZ = " << eX_htau_.Cross(eZ_htau_).r() << " ; "
-                     << "eY x eZ = " << eY_htau_.Cross(eZ_htau_).r();
+  LOGVRB << svrap("htau eX", eX_htau);
+  LOGVRB << svrap("htau eY", eY_htau);
+  LOGVRB << svrap("htau eZ", eZ_htau);
+  LOGVRB << "htau: " << "eX x eY = " << eX_htau.Cross(eY_htau).r() << " ; "
+                     << "eX x eZ = " << eX_htau.Cross(eZ_htau).r() << " ; "
+                     << "eY x eZ = " << eY_htau.Cross(eZ_htau).r();
+  eX_htau_ = Vector(eX_htau.x(), eY_htau.x(), eZ_htau.x());
+  eY_htau_ = Vector(eX_htau.y(), eY_htau.y(), eZ_htau.y());
+  eZ_htau_ = Vector(eX_htau.z(), eY_htau.z(), eZ_htau.z());
 
 //--- set the variables related to the MET/hadronic recoil TF
   const MeasuredMET & met = measuredEvent_ -> met;
@@ -214,18 +217,21 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   complLeptMassSquared_ = std::pow(complLeptMass_, 2);
   complLeptP4_ = complLepton.p4();
   const int complLeptCharge = complLepton.charge();
-  eZ_lept_ = complLepton.p3().unit();
-  eY_lept_ = eZ_lept_.Cross(beamAxis_).unit();
-  eX_lept_ = eY_lept_.Cross(eZ_lept_).unit();
+  const Vector eZ_lept = complLepton.p3().unit();
+  const Vector eY_lept = eZ_lept.Cross(beamAxis_).unit();
+  const Vector eX_lept = eY_lept.Cross(eZ_lept).unit();
   // eX should already be unit vector by construction
   LOGVRB << lvrap("lept p4", complLeptP4_);
   LOGVRB << cvrap("lept p3", complLepton.p3());
-  LOGVRB << svrap("lept eX", eX_lept_);
-  LOGVRB << svrap("lept eY", eY_lept_);
-  LOGVRB << svrap("lept eZ", eZ_lept_);
-  LOGVRB << "lept: " << "eX x eY = " << eX_lept_.Cross(eY_lept_).R() << " ; "
-                     << "eX x eZ = " << eX_lept_.Cross(eZ_lept_).R() << " ; "
-                     << "eY x eZ = " << eY_lept_.Cross(eZ_lept_).R();
+  LOGVRB << svrap("lept eX", eX_lept);
+  LOGVRB << svrap("lept eY", eY_lept);
+  LOGVRB << svrap("lept eZ", eZ_lept);
+  LOGVRB << "lept: " << "eX x eY = " << eX_lept.Cross(eY_lept).R() << " ; "
+                     << "eX x eZ = " << eX_lept.Cross(eZ_lept).R() << " ; "
+                     << "eY x eZ = " << eY_lept.Cross(eZ_lept).R();
+  eX_lept_ = Vector(eX_lept.x(), eY_lept.x(), eZ_lept.x());
+  eY_lept_ = Vector(eX_lept.y(), eY_lept.y(), eZ_lept.y());
+  eZ_lept_ = Vector(eX_lept.z(), eY_lept.z(), eZ_lept.z());
 
 //--- find the measured mass of both visible tau decay products
   measuredVisMassSquared_ = (hTauP4_ + complLeptP4_).mass2();
