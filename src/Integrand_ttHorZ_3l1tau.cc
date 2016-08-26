@@ -535,7 +535,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
     return 0.;
   }
   const double nuLTau_theta = std::acos(nuLTau_cosTheta);
-  const VectorSpherical nuLTau_loc(nuLTau_en, nuLTau_theta, nuLTau_phi);
+  const VectorSpherical nuLTau_loc(nuLTau_p, nuLTau_theta, nuLTau_phi);
   const double nuLTau_px = nuLTau_loc.Dot(eX_lept_);
   const double nuLTau_py = nuLTau_loc.Dot(eY_lept_);
   const double nuLTau_pz = nuLTau_loc.Dot(eZ_lept_);
