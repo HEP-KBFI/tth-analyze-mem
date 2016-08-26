@@ -40,6 +40,34 @@ namespace tthMEM
     : VectorCartesianWrap("", v)
   {}
 
+  LorentzMinkowskiWrap::LorentzMinkowskiWrap(const LorentzVector & v)
+    : LorentzMinkowskiWrap("", v)
+  {}
+
+  LorentzMinkowskiWrap::LorentzMinkowskiWrap(const std::string & name,
+                                             const LorentzVector & v)
+    : name_(name)
+    , v_(v)
+  {
+    textFieldWidth_ = std::max(textFieldWidth_, name_.size()) + 2;
+  }
+
+  std::ostream &
+  operator<<(std::ostream & os,
+             const LorentzMinkowskiWrap & v)
+  {
+    if(v.name_.size() != 0)
+      os << std::setw(v.textFieldWidth_) << std::left << v.name_ + ":";
+    os << "En =" << std::setw(10) << std::right << v.v_.energy()
+       << ";" << std::string(5, ' ')
+       << "px =" << std::setw(10) << std::right << v.v_.px()
+       << ";" << std::string(5, ' ')
+       << "py =" << std::setw(10) << std::right << v.v_.py()
+       << ";" << std::string(5, ' ')
+       << "pz =" << std::setw(10) << std::right << v.v_.pz();
+    return os;
+  }
+
   VectorCartesianWrap::VectorCartesianWrap(const std::string & name,
                                            const Vector & v)
     : name_(name)

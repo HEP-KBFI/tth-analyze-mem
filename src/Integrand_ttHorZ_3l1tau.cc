@@ -328,51 +328,51 @@ Integrand_ttHorZ_3l1tau::bJetEnergy(const LorentzVector & W,
                                     unsigned bIdx) const
 {
   const Vector Wp(W.x(), W.y(), W.z());
-  const double a_ = constants::DeltaFactor / W.energy() / constants::massB;
-  const double b_ = W.Beta() * bJetP3Unit_[bIdx].Dot(Wp.unit());
-  const double a_2 = std::pow(a_, 2);
-  const double b_2 = std::pow(b_, 2);
-  const double b_abs = std::fabs(b_);
-  const double a_2b_2_1 = a_2 + b_2 - 1.;
+  const double a = constants::DeltaFactor / W.energy() / constants::massB;
+  const double b = W.Beta() * bJetP3Unit_[bIdx].Dot(Wp.unit());
+  const double a2 = a * a;
+  const double b2 = b * b;
+  const double b_abs = std::fabs(b);
+  const double disc = a2 + b2 - 1.;
+  const double sep = disc - a2 * b2;
+  const double Eb_reco = bJetRecoEnergy_[bIdx];
 
-  if((b_2 - 1.) >= 1.e-5)
+  if((b2 - 1.) >= 1.e-5)
   {
-    LOGVRB << "(b_)^2 = " << b_2 << " >= 1 => Eb[" << bIdx << "] = 0";
+    LOGVRB << "b^2 = " << b2 << " >= 1 => Eb[" << bIdx << "] = 0";
     return 0.;
   }
-  if(a_2b_2_1 < 0.)
+  if(disc < 0.)
   {
-    LOGVRB << "(a_)^2 + (b_)^2 - 1 = " << a_2b_2_1 << " < 1 => Eb[" << bIdx << "] = 0";
+    LOGVRB << "a^2 + b^2 - 1 = " << disc << " < 1 => Eb[" << bIdx << "] = 0";
     return 0.;
   }
 
   const double Eb[2] = {
-    constants::massB * (a_ + b_abs * std::sqrt(a_2b_2_1)) / (1 - b_2),
-    constants::massB * (a_ - b_abs * std::sqrt(a_2b_2_1)) / (1 - b_2)
+    (a + b_abs * std::sqrt(disc)) / (1. - b2),
+    (a - b_abs * std::sqrt(disc)) / (1. - b2)
   };
-  if(Eb[0] <= 0. && Eb[1] <= 0.)
+
+  const double Eb_p = Eb[0] * constants::massB;
+  const double Eb_m = (Eb[1] < 1.0 ? Eb_p : Eb[1]) * constants::massB;
+
+  if(Eb[0] <= 0. || Eb[1] <= 0.)
   {
-    LOGVRB << "Eb+[" << bIdx << "] = " << Eb[0] << " <= 0 and "
+    LOGVRB << "Eb+[" << bIdx << "] = " << Eb[0] << " <= 0 or "
            << "Eb-[" << bIdx << "] = " << Eb[1] << " <= 0 "
            << "=> Eb[" << bIdx << "] = 0";
     return 0.;
   }
 
-  const double Eb_a_[2] = { Eb[0] - a_, Eb[1] - a_ };
-  std::vector<unsigned> validSolIdx;
-  for(unsigned i = 0; i < 2; ++i)
-    if(b_ * Eb_a_[i] > 0. && Eb[i] > 0.) validSolIdx.push_back(i);
-  if(! validSolIdx.size())
-  {
-    LOGVRB << "Neither of Eb[" << bIdx << "] values satisfied the solution conditions";
-    LOGVRB << "(a' = " << a_ << "; b' = " << b_ << "; "
-           << "Eb+ = " << Eb[0] << "; Eb- = " << Eb[1] << ")";
-    return 0.;
-  }
-  else if(validSolIdx.size() == 2)
-    return std::max(Eb[0], Eb[1]);
-
-  return Eb[validSolIdx[0]];
+//--- choose physical solution
+  if(b > 0. && sep < 0.)
+//--- choose solution closest to the resonstructed energy
+    return std::fabs(Eb_reco - Eb_p) < std::fabs(Eb_reco - Eb_m) ? Eb_p : Eb_m;
+  else if(b > 0. && sep >= 0.)
+    return Eb_p;
+  else if(b <= 0. && sep > 0.)
+    return Eb_m;
+  return 0.;
 }
 
 double
@@ -576,21 +576,20 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
                        bJetP3Unit_[1];
   const LorentzVector b1 = LorentzVector(b1_p3.x(), b1_p3.y(), b1_p3.z(), b1_en);
   const LorentzVector b2 = LorentzVector(b2_p3.x(), b2_p3.y(), b2_p3.z(), b2_en);
-  LOGTRC << lvrap("b 1", b1);
-  LOGTRC << lvrap("b 2", b2);
-
   const LorentzVector t1 = b1 + W1;
   const LorentzVector t2 = b2 + W2;
+  LOGTRC << lvrap("b 1", b1);
+  LOGTRC << lvrap("b 1 reco", measuredEvent_ -> jets[0].p4());
+  LOGTRC << lvrap("b 2", b2);
+  LOGTRC << lvrap("b 2 reco", measuredEvent_ -> jets[1].p4());
   LOGTRC << lvrap("t 1", t1);
   LOGTRC << lvrap("t 2", t2);
 
 //--- b-jet energy transfer function
   const double b1EnergyTF = bJetTF_(bJetRecoEnergy_[0], b1_en, b1_p3.eta());
   const double b2EnergyTF = bJetTF_(bJetRecoEnergy_[1], b2_en, b2_p3.eta());
-  LOGTRC << "b1_en = " << b1_en << " (reco = " << bJetRecoEnergy_[0] << ", "
-         << "TF = " << std::scientific << b1EnergyTF << ")";
-  LOGTRC << "b2_en = " << b2_en << " (reco = " << bJetRecoEnergy_[1] << ", "
-         << "TF = " << std::scientific << b2EnergyTF << ")";
+  LOGTRC_S << "TF for #1 b-quark energy = " << b1EnergyTF;
+  LOGTRC_S << "TF for #2 b-quark energy = " << b2EnergyTF;
 
 //--- hadronic recoil transfer function; simplification: use only neutrinos
 //--- in the difference of ,,measured'' and ,,true'' hadronic recoil, because

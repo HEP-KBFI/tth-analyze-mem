@@ -27,6 +27,20 @@ namespace tthMEM
                const LorentzVectorWrap & v);
   } lvrap;
 
+  typedef struct LorentzMinkowskiWrap
+  {
+    LorentzMinkowskiWrap(const LorentzVector & v);
+    LorentzMinkowskiWrap(const std::string & name,
+                         const LorentzVector & v);
+    const std::string name_;
+    const LorentzVector & v_;
+    std::size_t textFieldWidth_ = 15;
+
+    friend std::ostream &
+    operator<<(std::ostream & os,
+               const LorentzMinkowskiWrap & v);
+  } lmvrap;
+
   typedef struct VectorCartesianWrap
   {
     VectorCartesianWrap(const Vector & v);
