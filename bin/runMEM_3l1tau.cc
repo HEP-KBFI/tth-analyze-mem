@@ -63,7 +63,7 @@ main(int argc,
   const std::string integrationMode = cfg_tthMEM.getParameter<std::string>("integrationMode");
   const unsigned maxObjFunctionCalls = cfg_tthMEM.getParameter<unsigned>("maxObjFunctionCalls");
   const Long64_t startingFromEntry = cfg_tthMEM.getParameter<Long64_t>("startingFromEntry");
-  const bool debugPlots = cfg_tthMEM.getParameter<bool>("debugPlots");
+  const unsigned debugPlots = cfg_tthMEM.getParameter<unsigned>("debugPlots");
 
   LOGINFO << "PDF name: " << pdfName;
   LOGINFO << "MadGraph file name: " << madgraphFileName;
@@ -93,7 +93,7 @@ main(int argc,
   measuredEvent.setBranches(inputTree);
   measuredEvent.initNewBranches(newTree);
   if(debugPlots)
-    measuredEvent.debugPlotter_ = new DebugPlotter_ttHorZ_3l1tau(newFile);
+    measuredEvent.debugPlotter = new DebugPlotter_ttHorZ_3l1tau(newFile, debugPlots);
 
 //--- set up the probability variables
   double probSignal;

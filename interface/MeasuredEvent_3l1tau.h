@@ -43,7 +43,7 @@ namespace tthMEM
     unsigned complLeptonIdx;
     std::vector<unsigned> bjetLeptonIdxs;
 
-    mutable DebugPlotter_ttHorZ_3l1tau * debugPlotter_ = 0;
+    mutable DebugPlotter_ttHorZ_3l1tau * debugPlotter = 0;
 
     void
     initialize();

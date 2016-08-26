@@ -16,10 +16,10 @@ if __name__ == '__main__':
              execName = "runMEM_3l1tau",
              treeName = "tree",
              integrationMode = "VEGAS",
-             maxObjFunctionCalls = 20000,
-             nofIntegrationsPerJob = 200,
+             maxObjFunctionCalls = 100000, # 25k per permutation
+             nofIntegrationsPerJob = 25,
              lhRatioBranchName = "lhRatioNP",
              rocLegendPosition = [0.15, 0.78, 0.3, 0.88],
-             debugPlots = True)
+             debugPlots = 80) # every 10th event is dumped to TH1D
 
 

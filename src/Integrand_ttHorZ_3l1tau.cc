@@ -288,13 +288,13 @@ Integrand_ttHorZ_3l1tau::renewInputs()
     mgMomentaIdxs_ = { 0, 1, 5, 6, 7, 2, 3, 4, 9, 8 };
 
 //--- for debugging purposes plot some variables
-  if(measuredEvent_ -> debugPlotter_)
+  if(measuredEvent_ -> debugPlotter)
   {
-    measuredEvent_ -> debugPlotter_ -> write();
+    measuredEvent_ -> debugPlotter -> write();
     std::string measuredEventStr = measuredEvent_ -> str();
     measuredEventStr += std::string("_") +
       (currentME_ == ME_mg5_3l1tau::kTTH ? "tth" : "ttz");
-    measuredEvent_ -> debugPlotter_ -> initialize(measuredEventStr);
+    measuredEvent_ -> debugPlotter -> initialize(measuredEventStr);
   }
 }
 
@@ -715,24 +715,24 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   LOGVRB_S << "p = " << p;
 
 //--- for debugging purposes plot some variables
-  if(measuredEvent_ -> debugPlotter_)
+  if(measuredEvent_ -> debugPlotter)
   {
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kZ1, z1);
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kZ2, z2);
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kMassHorZ, higgsOrZ.mass());
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kMassHtau, hTau.mass());
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kMassLtau, lTau.mass());
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kB1en, b1.e());
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kB2en, b2.e());
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kB1RecoEn, bJetRecoEnergy_[0]);
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kB2RecoEn, bJetRecoEnergy_[1]);
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kMETpull, MET_pull);
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kXa, xa);
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kXb, xb);
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kHtauJPS, hTauPSJacobiFactor);
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kLtauJPS, lTauPSJacobiFactor);
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kMsquared, prob_ME_mg);
-    measuredEvent_ -> debugPlotter_ -> fill(hVar::kProb, p);
+    measuredEvent_ -> debugPlotter -> fill(hVar::kZ1, z1);
+    measuredEvent_ -> debugPlotter -> fill(hVar::kZ2, z2);
+    measuredEvent_ -> debugPlotter -> fill(hVar::kMassHorZ, higgsOrZ.mass());
+    measuredEvent_ -> debugPlotter -> fill(hVar::kMassHtau, hTau.mass());
+    measuredEvent_ -> debugPlotter -> fill(hVar::kMassLtau, lTau.mass());
+    measuredEvent_ -> debugPlotter -> fill(hVar::kB1en, b1.e());
+    measuredEvent_ -> debugPlotter -> fill(hVar::kB2en, b2.e());
+    measuredEvent_ -> debugPlotter -> fill(hVar::kB1RecoEn, bJetRecoEnergy_[0]);
+    measuredEvent_ -> debugPlotter -> fill(hVar::kB2RecoEn, bJetRecoEnergy_[1]);
+    measuredEvent_ -> debugPlotter -> fill(hVar::kMETpull, MET_pull);
+    measuredEvent_ -> debugPlotter -> fill(hVar::kXa, xa);
+    measuredEvent_ -> debugPlotter -> fill(hVar::kXb, xb);
+    measuredEvent_ -> debugPlotter -> fill(hVar::kDrecX, hadRecDiff(0));
+    measuredEvent_ -> debugPlotter -> fill(hVar::kDrecY, hadRecDiff(1));
+    measuredEvent_ -> debugPlotter -> fill(hVar::kMsquared, prob_ME_mg);
+    measuredEvent_ -> debugPlotter -> fill(hVar::kProb, p);
   }
 
   return p;

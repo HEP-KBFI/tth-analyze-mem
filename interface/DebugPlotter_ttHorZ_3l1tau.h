@@ -27,8 +27,8 @@ namespace tthMEM
     kMETpull,  // exponent in hadronic recoil TF
     kXa,       // 1st Bjorken variable
     kXb,       // 2nd Bjorken variable
-    kHtauJPS,  // Jacobi x PS factor for the hadronic tau
-    kLtauJPS,  // Jacobi x PS factor for the leptonic tau
+    kDrecX,    // x component of the hadronic recoil difference
+    kDrecY,    // y component of the hadronic recoil difference
     kMsquared, // squared matrix element amplitude
     kProb      // overall probability in the integrand
   };
@@ -43,9 +43,8 @@ namespace tthMEM
   public:
     DebugPlotter_ttHorZ_3l1tau();
     DebugPlotter_ttHorZ_3l1tau(TFile * file);
-
-    void
-    setFile(TFile * file_);
+    DebugPlotter_ttHorZ_3l1tau(TFile * file,
+                               unsigned debugFrequency);
 
     void
     initialize(const std::string & dirName);
@@ -59,8 +58,11 @@ namespace tthMEM
 
   private:
     std::unordered_map<hVar, TH1D *, std::hash<int>> histograms_;
-    TFile * file_;
-    std::string dirName_;
+    TFile * const file_;
+    const unsigned debugFrequency_;
+    const unsigned debugRange_;
+    unsigned logCounter_;
+    bool log_;
   };
 }
 

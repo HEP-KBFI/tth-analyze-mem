@@ -31,7 +31,7 @@ process.tthMEM = cms.PSet(
   integrationMode = cms.string("{{ integrationMode }}"),
   maxObjFunctionCalls = cms.uint32({{ maxObjFunctionCalls }}),
   startingFromEntry = cms.int64({{startingFromEntry }}),
-  debugPlots = cms.bool({{ debugPlots }})
+  debugPlots = cms.uint32({{ debugPlots }})
 )
 
 """
