@@ -1,4 +1,5 @@
 #include "tthAnalysis/tthMEM/interface/BJetTransferFunction.h"
+#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // pow2()
 
 #include <cmath> // std::fabs()
 
@@ -33,10 +34,10 @@ namespace tthMEM
     const double mu = m * bEnergy + n;
     const double mu_ = m_ * bEnergy + n_;
     const double sigma = std::sqrt(
-      a * a + b * b * bEnergy + c * c * std::pow(bEnergy, 2)
+      a * a + b * b * bEnergy + c * c * pow2(bEnergy)
     );
     const double sigma_ = std::sqrt(
-      a_ * a_ + b_ * b_ * bEnergy + c_ * c_ * std::pow(bEnergy, 2)
+      a_ * a_ + b_ * b_ * bEnergy + c_ * c_ * pow2(bEnergy)
     );
     const double pdf = fb * gaussianPDF(bEnergyReco, mu, sigma);
     const double pdf_ = (1. - fb) * gaussianPDF(bEnergyReco, mu_, sigma_);
@@ -49,7 +50,7 @@ namespace tthMEM
               double mu,
               double sigma)
   {
-    const double var = std::pow((x - mu) / sigma, 2);
+    const double var = pow2((x - mu) / sigma);
     return constants::invSqrt2Pi / sigma * std::exp(-var / 2.);
   }
 }

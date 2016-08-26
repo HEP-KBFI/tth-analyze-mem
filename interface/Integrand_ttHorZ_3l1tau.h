@@ -85,6 +85,7 @@ namespace tthMEM
     // for the hadronic tau:
     double hTauEnergy_;
     double hTauMomentum_;
+    double hTauInvBeta_;
     double hTauMass_;
     double hTauMassSquared_;
     LorentzVector hTauP4_;

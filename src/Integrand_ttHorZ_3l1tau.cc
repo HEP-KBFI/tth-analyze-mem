@@ -4,7 +4,7 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 
-#include <cmath> // std::pow(), std::sqrt()
+#include <cmath> // std::sqrt()
 #include <cstdlib> // std::exit(), EXIT_FAILURE
 #include <cstring> // std::memset()
 #include <algorithm> // std::for_each(), std::copy()
@@ -170,8 +170,9 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
   const MeasuredHadronicTau & htau = measuredEvent_ -> htau1;
   hTauEnergy_ = htau.energy();
   hTauMomentum_ = htau.p();
+  hTauInvBeta_ = 1. / htau.p4().Beta();
   hTauMass_ = htau.mass();
-  hTauMassSquared_ = std::pow(hTauMass_, 2);
+  hTauMassSquared_ = pow2(hTauMass_);
   hTauP4_ = htau.p4();
   const Vector eZ_htau = htau.p3().unit();
   const Vector eY_htau = eZ_htau.Cross(beamAxis_).unit();
@@ -214,7 +215,7 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   complLeptEnergy_ = complLepton.energy();
   complLeptMomentum_ = complLepton.p();
   complLeptMass_ = complLepton.mass();
-  complLeptMassSquared_ = std::pow(complLeptMass_, 2);
+  complLeptMassSquared_ = pow2(complLeptMass_);
   complLeptP4_ = complLepton.p4();
   const int complLeptCharge = complLepton.charge();
   const Vector eZ_lept = complLepton.p3().unit();
@@ -242,14 +243,13 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   int lept1Charge = 0;
   for(unsigned i = 0; i < 2; ++i)
   {
+//--- set the lepton energy equal to its momentum, thus setting it massless
     const unsigned leptIdx_i = measuredEvent_ -> bjetLeptonIdxs[i];
     const MeasuredLepton & lept_i = measuredEvent_ -> leptons[leptIdx_i];
     leptP3_[i] = lept_i.p3();
     leptEnergy_[i] = lept_i.p();
     leptP3Unit_[i] = leptP3_[i].unit();
-    leptP4_[i] = LorentzVector(
-      leptP3_[i].x(), leptP3_[i].y(), leptP3_[i].z(), leptEnergy_[i]
-    );
+    leptP4_[i] = getLorentzVector(leptP3_[i], leptEnergy_[i]);
     if(i == 0) lept1Charge = lept_i.charge();
     LOGVRB << lvrap("t lept " + std::to_string(i + 1) + " p4", leptP4_[i]);
   }
@@ -327,15 +327,15 @@ double
 Integrand_ttHorZ_3l1tau::bJetEnergy(const LorentzVector & W,
                                     unsigned bIdx) const
 {
-  const Vector Wp(W.x(), W.y(), W.z());
+  const Vector Wp = getVector(W);
   const double a = constants::DeltaFactor / W.energy() / constants::massB;
   const double b = W.Beta() * bJetP3Unit_[bIdx].Dot(Wp.unit());
-  const double a2 = a * a;
-  const double b2 = b * b;
+  const double a2 = pow2(a);
+  const double b2 = pow2(b);
   const double b_abs = std::fabs(b);
   const double disc = a2 + b2 - 1.;
   const double sep = disc - a2 * b2;
-  const double Eb_reco = bJetRecoEnergy_[bIdx];
+  const double & Eb_reco = bJetRecoEnergy_[bIdx];
 
   if((b2 - 1.) >= 1.e-5)
   {
@@ -391,7 +391,7 @@ Integrand_ttHorZ_3l1tau::tDecayJacobiFactor(const LorentzVector & W,
             << "#" << (blIdx + 1) << "th Jacobi factor of the top decay";
     return 0.;
   }
-  return b_en * std::pow(nuT_en, 2) /
+  return b_en * pow2(nuT_en) /
     (leptEnergy_[blIdx] * W.e() * constants::massWSquared * invAbsFactor);
 }
 
@@ -404,15 +404,14 @@ Integrand_ttHorZ_3l1tau::MeffSquaredTau2hadrons() const
     LOGWARN << "Something's off: hadronic tau and tau lepton have the same mass";
     return 0.;
   }
-  return 16. * pi() * hTauMass_ * constants::gammaTau2hadrons *
-         hTauMassSquared_ / denom;
+  return constants::ttHhadTauPSfactor / denom;
 }
 
 double
 Integrand_ttHorZ_3l1tau::hadTauPSJacobiFactor(const double z) const
 {
-  return MeffSquaredTau2hadrons() * hTauEnergy_ /
-    (4 * std::pow(2 * pi(), 6) * hTauMomentum_ * std::pow(z, 2));
+  return MeffSquaredTau2hadrons() /
+         (4 * pow6(2 * pi() * z) * hTauInvBeta_);
 }
 
 double
@@ -434,11 +433,15 @@ Integrand_ttHorZ_3l1tau::leptTauPSJacobiFactor(double mInvSquared,
              << "lepton mass (" << vis_en << " < " << complLeptMass_ << ")";
       return 0.;
     }
-    const double Iinv = constants::GFSquared / std::pow(pi(), 2) * mInvSquared *
-      (2 * tau_en * vis_en -
-       2. / 3. * std::sqrt((std::pow(tau_en, 2) - constants::massTauSquared) *
-                           (std::pow(vis_en, 2) - complLeptMassSquared_)));
-    return Iinv / (8 * std::pow(2 * pi() * z, 6) * complLeptMomentum_);
+//--- evaluate Iinv in the rest frame of the neutrino pair
+    const double Iinv = 2 * constants::GFSquared / pow2(pi()) * mInvSquared *
+      (tau_en * vis_en -
+       std::sqrt((pow2(tau_en) - constants::massTauSquared) *
+                 (pow2(vis_en) - complLeptMassSquared_)) / 3.);
+    LOGTRC   << "di-neutrino rest frame: tau en = " << tau_en;
+    LOGTRC   << "di-neutrino rest frame: vis en = " << vis_en;
+    LOGTRC_S << "di-neutrino rest frame: I_inv = "  << Iinv;
+    return Iinv / (8 * pow6(2 * pi() * z) * complLeptMomentum_);
   }
   else
   {
@@ -524,7 +527,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 
 //--- compute the neutrino and tau lepton 4-vector from leptonic tau
   const double nuLTau_en = complLeptEnergy_ * (1. - z2) / z2;
-  const double nuLTau_p = std::sqrt(std::max(0., std::pow(nuLTau_en, 2) -
+  const double nuLTau_p = std::sqrt(std::max(0., pow2(nuLTau_en) -
                                                  mInvSquared));
   const double nuLTau_cosTheta = nuLeptTauCosTheta(nuLTau_en, mInvSquared,
                                                    nuLTau_p);
@@ -558,8 +561,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
       ((1 - leptP3Unit_[1].Dot(nuT2_p3unit)) * leptEnergy_[1] * 2.);
   const Vector nuT1_p3(nuT1_en * nuT1_p3unit);
   const Vector nuT2_p3(nuT2_en * nuT2_p3unit);
-  const LorentzVector nuT1(nuT1_p3.x(), nuT1_p3.y(), nuT1_p3.z(), nuT1_en);
-  const LorentzVector nuT2(nuT2_p3.x(), nuT2_p3.y(), nuT2_p3.z(), nuT2_en);
+  const LorentzVector nuT1 = getLorentzVector(nuT1_p3, nuT1_en);
+  const LorentzVector nuT2 = getLorentzVector(nuT2_p3, nuT2_en);
   const LorentzVector W1 = nuT1 + leptP4_[0];
   const LorentzVector W2 = nuT2 + leptP4_[1];
   LOGTRC << lvrap("t nu 1", nuT1);
@@ -570,12 +573,12 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double b1_en = bJetEnergy(W1, 0);
   const double b2_en = bJetEnergy(W2, 1);
   if(b1_en == 0. || b2_en == 0.) return 0.;
-  const Vector b1_p3 = std::sqrt(std::pow(b1_en, 2) - constants::massBSquared) *
+  const Vector b1_p3 = std::sqrt(pow2(b1_en) - constants::massBSquared) *
                        bJetP3Unit_[0];
-  const Vector b2_p3 = std::sqrt(std::pow(b2_en, 2) - constants::massBSquared) *
+  const Vector b2_p3 = std::sqrt(pow2(b2_en) - constants::massBSquared) *
                        bJetP3Unit_[1];
-  const LorentzVector b1 = LorentzVector(b1_p3.x(), b1_p3.y(), b1_p3.z(), b1_en);
-  const LorentzVector b2 = LorentzVector(b2_p3.x(), b2_p3.y(), b2_p3.z(), b2_en);
+  const LorentzVector b1 = getLorentzVector(b1_p3, b1_en);
+  const LorentzVector b2 = getLorentzVector(b2_p3, b2_en);
   const LorentzVector t1 = b1 + W1;
   const LorentzVector t2 = b2 + W2;
   LOGTRC << lvrap("b 1", b1);

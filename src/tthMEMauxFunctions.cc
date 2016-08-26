@@ -142,6 +142,19 @@ namespace tthMEM
     mg[3] = lv.pz();
   }
 
+  LorentzVector
+  getLorentzVector(const Vector & v,
+                   const double e)
+  {
+    return LorentzVector(v.x(), v.y(), v.z(), e);
+  }
+
+  Vector
+  getVector(const LorentzVector & v)
+  {
+    return Vector(v.x(), v.y(), v.z());
+  }
+
   std::string
   findFile(const std::string & fileName)
   {
