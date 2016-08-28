@@ -36,22 +36,17 @@ DebugPlotter_ttHorZ_3l1tau::initialize(const std::string & dirName)
     file_ -> mkdir(dirName.c_str());
     file_ -> cd(dirName.c_str());
 
-    histograms_[hVar::kZ1]       = new TH1D("z1",       "z1",       100, 0.,    1.);
-    histograms_[hVar::kZ2]       = new TH1D("z2",       "z2",       100, 0.,    1.);
-    histograms_[hVar::kMassHorZ] = new TH1D("massHorZ", "massHorZ", 200, 0.,    200.);
-    histograms_[hVar::kMassHtau] = new TH1D("massHtau", "massHtau", 200, 0.,    3.);
-    histograms_[hVar::kMassLtau] = new TH1D("massLtau", "massLtau", 200, 0.,    3.);
-    histograms_[hVar::kB1en]     = new TH1D("B1en",     "B1en",     200, 0.,    600.);
-    histograms_[hVar::kB2en]     = new TH1D("B2en",     "B2en",     200, 0.,    600.);
-    histograms_[hVar::kB1RecoEn] = new TH1D("B1RecoEn", "B1RecoEn", 200, 0.,    600.);
-    histograms_[hVar::kB2RecoEn] = new TH1D("B2RecoEn", "B2RecoEn", 200, 0.,    600.);
-    histograms_[hVar::kMETpull]  = new TH1D("METpull",  "METpull",  200, 0.,    300.);
-    histograms_[hVar::kXa]       = new TH1D("xa",       "xa",       100, 0.,    1.);
-    histograms_[hVar::kXb]       = new TH1D("xb",       "xb",       100, 0.,    1.);
-    histograms_[hVar::kDrecX]    = new TH1D("dRecX",    "dRecX",    200, -300., 300.);
-    histograms_[hVar::kDrecY]    = new TH1D("dRecY",    "dRecY",    200, -300., 300.);
-    histograms_[hVar::kMsquared] = new TH1D("Msquared", "Msquared", 200, 0.,    1.e-9);
-    histograms_[hVar::kProb]     = new TH1D("prob",     "prob",     200, 0.,    1.e-50);
+    histograms_[hVar::kZ1]       = new TH1D("z1",       "z1",       100, 0., 1.);
+    histograms_[hVar::kZ2]       = new TH1D("z2",       "z2",       100, 0., 1.);
+    histograms_[hVar::kMassHorZ] = new TH1D("massHorZ", "massHorZ", 200, 0., 200.);
+    histograms_[hVar::kMassHtau] = new TH1D("massHtau", "massHtau", 200, 0., 3.);
+    histograms_[hVar::kMassLtau] = new TH1D("massLtau", "massLtau", 200, 0., 3.);
+    histograms_[hVar::kB1en]     = new TH1D("B1en",     "B1en",     200, 0., 600.);
+    histograms_[hVar::kB2en]     = new TH1D("B2en",     "B2en",     200, 0., 600.);
+    histograms_[hVar::kB1RecoEn] = new TH1D("B1RecoEn", "B1RecoEn", 200, 0., 600.);
+    histograms_[hVar::kB2RecoEn] = new TH1D("B2RecoEn", "B2RecoEn", 200, 0., 600.);
+    histograms_[hVar::kMsquared] = new TH1D("Msquared", "Msquared", 200, 0., 1.e-10);
+    histograms_[hVar::kProb]     = new TH1D("prob",     "prob",     200, 0., 1.e-51);
   }
 }
 

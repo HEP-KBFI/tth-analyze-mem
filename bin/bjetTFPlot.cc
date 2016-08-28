@@ -61,7 +61,7 @@ main()
     {
       double y[jetEs.size()];
       for(unsigned j = 0; j < jetEs.size(); ++j)
-        y[j] = tthMEM::bJetTF(jetEs[j], bQuarkEs[i], eta[etaIdx]);
+        y[j] = tthMEM::functions::bJetTF(bQuarkEs[i], jetEs[j], eta[etaIdx]);
       grs[grIdx] = new TGraph(jetEs.size(), x, y);
       grs[grIdx] -> SetLineColor(colors[i]);
       grs[grIdx] -> SetLineStyle(lineTypes[etaIdx]);

@@ -24,11 +24,6 @@ namespace tthMEM
     kB2en,     // energy of the 2nd b-quark
     kB1RecoEn, // energy of the 1st b-jet
     kB2RecoEn, // energy of the 2nd b-jet
-    kMETpull,  // exponent in hadronic recoil TF
-    kXa,       // 1st Bjorken variable
-    kXb,       // 2nd Bjorken variable
-    kDrecX,    // x component of the hadronic recoil difference
-    kDrecY,    // y component of the hadronic recoil difference
     kMsquared, // squared matrix element amplitude
     kProb      // overall probability in the integrand
   };

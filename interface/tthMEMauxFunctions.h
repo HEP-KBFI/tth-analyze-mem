@@ -152,6 +152,7 @@ namespace tthMEM
     const double sqrtS = 13.e+3;
     const double s = pow2(sqrtS);
     const double invSqrtS = 1. / sqrtS;
+    const double invS = 1. / s;
 
     const double cTimesHbar = 0.1973; // GeV x fm
     const double conversionFactor = pow2(cTimesHbar) * 1.e+10; ///< 1 pb = 10^-40 m^2 = 10^10 fm^2

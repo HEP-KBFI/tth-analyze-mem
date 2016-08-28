@@ -5,8 +5,6 @@
 
 namespace tthMEM
 {
-  typedef double (*bJetTransferFunction) (double, double, double);
-
   namespace constants
   {
     const double fb = 0.65;                  // 1
@@ -24,20 +22,23 @@ namespace tthMEM
     const double invSqrt2Pi = 1. / std::sqrt(2. * pi());
   }
 
-  double
-  deltaFunction(double bEnergyReco,
-                double bEnergy,
-                double bEta);
+  namespace functions
+  {
+    double
+    deltaFunction(double bEnergy,
+                  double bEnergyReco,
+                  double bEta);
 
-  double
-  bJetTF(double bEnergyReco,
-         double bEnergy,
-         double bEta);
+    double
+    bJetTF(double bEnergy,
+           double bEnergyReco,
+           double bEta);
 
-  inline double
-  gaussianPDF(double x,
-              double mu,
-              double sigma);
+    inline double
+    gaussianPDF(double x,
+                double mu,
+                double sigma);
+  }
 }
 
 #endif // BJETTRANSFERFUNCTION_H
