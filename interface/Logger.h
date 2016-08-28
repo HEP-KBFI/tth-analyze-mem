@@ -79,6 +79,9 @@ namespace tthMEM
     static unsigned
     getFloatPrecision();
 
+    static void
+    flush();
+
   private:
     class Holder
     {

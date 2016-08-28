@@ -1,7 +1,8 @@
-#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE, setenv()
+#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE, setenv(), std::atexit()
 #include <string> // std::string
 #include <vector> // std::vector<>
 #include <algorithm> // std::inner_product()
+#include <csignal> // std::signal(), SIG*
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
@@ -33,6 +34,11 @@ main(int argc,
 //--- untie std::cout from std::cin
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(nullptr);
+//--- flush before exit
+  std::atexit(Logger::flush);
+//--- point signal handler to std::exit() which also flushes the stdout
+  for(int sig: { SIGABRT, SIGILL, SIGINT, SIGSEGV, SIGTERM, SIGQUIT })
+    std::signal(sig, std::exit);
 
 //--- parse the configuration file
   if(argc != 2)

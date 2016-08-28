@@ -82,6 +82,12 @@ namespace tthMEM
     return floatPrecision_;
   }
 
+  void
+  Logger::flush()
+  {
+    if(os_) (*os_).flush();
+  }
+
   Logger::Holder::Holder(Logger::LogLevel logLevel,
                          Logger & logger)
     : logger_(logger)
