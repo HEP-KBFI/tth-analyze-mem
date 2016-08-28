@@ -34,8 +34,9 @@ namespace tthMEM
     /**
      * @brief Set measured/reconstructed event as an input
      * @param measuredEvent The event
+     * @return reference to this
      */
-    void
+    Integrand_ttHorZ_3l1tau &
     setEvent(const MeasuredEvent_3l1tau & measuredEvent);
 
     /**
@@ -45,17 +46,17 @@ namespace tthMEM
     renewInputs();
 
     /* simple setters */
-    void setNumDimensions(unsigned numDimensions);
-    void setIdxCosTheta1   (int idx);
-    void setIdxVarphi1     (int idx);
-    void setIdxCosTheta2   (int idx);
-    void setIdxVarphi2     (int idx);
-    void setIdxZ1          (int idx);
-    void setIdxPhi1        (int idx);
-    void setIdxPhiInv      (int idx);
-    void setIdxMinvSquared (int idx);
-    void setCurrentME(ME_mg5_3l1tau currentME);
-    void setBJetTransferFunction(bool setTF);
+    Integrand_ttHorZ_3l1tau & setNumDimensions  (unsigned numDimensions);
+    Integrand_ttHorZ_3l1tau & setIdxCosTheta1   (int idx);
+    Integrand_ttHorZ_3l1tau & setIdxVarphi1     (int idx);
+    Integrand_ttHorZ_3l1tau & setIdxCosTheta2   (int idx);
+    Integrand_ttHorZ_3l1tau & setIdxVarphi2     (int idx);
+    Integrand_ttHorZ_3l1tau & setIdxZ1          (int idx);
+    Integrand_ttHorZ_3l1tau & setIdxPhi1        (int idx);
+    Integrand_ttHorZ_3l1tau & setIdxPhiInv      (int idx);
+    Integrand_ttHorZ_3l1tau & setIdxMinvSquared (int idx);
+    Integrand_ttHorZ_3l1tau & setCurrentME      (ME_mg5_3l1tau currentME);
+    Integrand_ttHorZ_3l1tau & setBJetTransferFunction(bool setTF);
 
     /**
      * @brief Evaluates the integrand

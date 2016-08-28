@@ -87,61 +87,70 @@ Integrand_ttHorZ_3l1tau::~Integrand_ttHorZ_3l1tau()
   );
 }
 
-void
+Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setNumDimensions(unsigned numDimensions)
 {
   numDimensions_ = numDimensions;
+  return *this;
 }
 
-void
+Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setIdxCosTheta1(int idx)
 {
   idxCosTheta1_ = idx;
+  return *this;
 }
 
-void
+Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setIdxVarphi1(int idx)
 {
   idxVarphi1_ = idx;
+  return *this;
 }
 
-void
+Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setIdxCosTheta2(int idx)
 {
   idxCosTheta2_ = idx;
+  return *this;
 }
 
-void
+Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setIdxVarphi2(int idx)
 {
   idxVarphi2_ = idx;
+  return *this;
 }
 
-void
+Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setIdxZ1(int idx)
 {
   idxZ1_ = idx;
+  return *this;
 }
 
-void
+Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setIdxPhi1(int idx)
 {
   idxPhi1_ = idx;
+  return *this;
 }
 
-void
+Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setIdxPhiInv(int idx)
 {
   idxPhiInv_ = idx;
+  return *this;
 }
 
-void
+Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setIdxMinvSquared(int idx)
 {
   idxMinvSquared_ = idx;
+  return *this;
 }
 
-void
+Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setCurrentME(ME_mg5_3l1tau currentME)
 {
   LOGTRC;
@@ -149,17 +158,19 @@ Integrand_ttHorZ_3l1tau::setCurrentME(ME_mg5_3l1tau currentME)
   Q_ = currentME_ == ME_mg5_3l1tau::kTTH ?
                      constants::resolutionScaleTTH :
                      constants::resolutionScaleTTZ;
+  return *this;
 }
 
-void
+Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setBJetTransferFunction(bool setTF)
 {
   LOGTRC;
   if(setTF) bJetTF_ = bJetTF;
   else      bJetTF_ = deltaFunction;
+  return *this;
 }
 
-void
+Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
 {
   LOGTRC;
@@ -203,6 +214,8 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
   }
   else
     LOGERR << "Cannot invert MET covariance matrix b/c det = 0";
+
+  return *this;
 }
 
 void
@@ -288,13 +301,13 @@ Integrand_ttHorZ_3l1tau::renewInputs()
     mgMomentaIdxs_ = { 0, 1, 5, 6, 7, 2, 3, 4, 9, 8 };
 
 //--- for debugging purposes plot some variables
-  if(measuredEvent_ -> debugPlotter)
+  if(DebugPlotter_ttHorZ_3l1tau * dPlotter = measuredEvent_ -> debugPlotter)
   {
-    measuredEvent_ -> debugPlotter -> write();
+    dPlotter -> write();
     std::string measuredEventStr = measuredEvent_ -> str();
     measuredEventStr += std::string("_") +
       (currentME_ == ME_mg5_3l1tau::kTTH ? "tth" : "ttz");
-    measuredEvent_ -> debugPlotter -> initialize(measuredEventStr);
+    dPlotter -> initialize(measuredEventStr);
   }
 }
 
@@ -715,25 +728,23 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   LOGVRB_S << "p = " << p;
 
 //--- for debugging purposes plot some variables
-  if(measuredEvent_ -> debugPlotter)
-  {
-    measuredEvent_ -> debugPlotter -> fill(hVar::kZ1, z1);
-    measuredEvent_ -> debugPlotter -> fill(hVar::kZ2, z2);
-    measuredEvent_ -> debugPlotter -> fill(hVar::kMassHorZ, higgsOrZ.mass());
-    measuredEvent_ -> debugPlotter -> fill(hVar::kMassHtau, hTau.mass());
-    measuredEvent_ -> debugPlotter -> fill(hVar::kMassLtau, lTau.mass());
-    measuredEvent_ -> debugPlotter -> fill(hVar::kB1en, b1.e());
-    measuredEvent_ -> debugPlotter -> fill(hVar::kB2en, b2.e());
-    measuredEvent_ -> debugPlotter -> fill(hVar::kB1RecoEn, bJetRecoEnergy_[0]);
-    measuredEvent_ -> debugPlotter -> fill(hVar::kB2RecoEn, bJetRecoEnergy_[1]);
-    measuredEvent_ -> debugPlotter -> fill(hVar::kMETpull, MET_pull);
-    measuredEvent_ -> debugPlotter -> fill(hVar::kXa, xa);
-    measuredEvent_ -> debugPlotter -> fill(hVar::kXb, xb);
-    measuredEvent_ -> debugPlotter -> fill(hVar::kDrecX, hadRecDiff(0));
-    measuredEvent_ -> debugPlotter -> fill(hVar::kDrecY, hadRecDiff(1));
-    measuredEvent_ -> debugPlotter -> fill(hVar::kMsquared, prob_ME_mg);
-    measuredEvent_ -> debugPlotter -> fill(hVar::kProb, p);
-  }
+  if(DebugPlotter_ttHorZ_3l1tau * dPlotter = measuredEvent_ -> debugPlotter)
+    (*dPlotter).fill(hVar::kZ1, z1)
+               .fill(hVar::kZ2, z2)
+               .fill(hVar::kMassHorZ, higgsOrZ.mass())
+               .fill(hVar::kMassHtau, hTau.mass())
+               .fill(hVar::kMassLtau, lTau.mass())
+               .fill(hVar::kB1en, b1.e())
+               .fill(hVar::kB2en, b2.e())
+               .fill(hVar::kB1RecoEn, bJetRecoEnergy_[0])
+               .fill(hVar::kB2RecoEn, bJetRecoEnergy_[1])
+               .fill(hVar::kMETpull, MET_pull)
+               .fill(hVar::kXa, xa)
+               .fill(hVar::kXb, xb)
+               .fill(hVar::kDrecX, hadRecDiff(0))
+               .fill(hVar::kDrecY, hadRecDiff(1))
+               .fill(hVar::kMsquared, prob_ME_mg)
+               .fill(hVar::kProb, p);
 
   return p;
 }

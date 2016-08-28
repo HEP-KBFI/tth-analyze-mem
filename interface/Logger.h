@@ -46,6 +46,7 @@ namespace tthMEM
     };
 
     Logger(Logger::LogLevel logLevel);
+    ~Logger();
 
     template <typename T>
     friend std::ostream &
@@ -100,7 +101,7 @@ namespace tthMEM
     static LogLevel logLevel_;
     static bool enableLogging_;
     static bool enableTimeStamp_;
-    static std::ostream * os_;
+    static std::ostream & os_;
     static unsigned floatPrecision_;
     static std::vector<std::string> logLevelStrings_;
   };

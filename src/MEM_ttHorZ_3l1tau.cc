@@ -150,18 +150,18 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   const int idxPhiInv = 6;      // (invisible) rotation angle of leptonic tau nu
   const int idxMinvSquared = 7; // (invisible) mass of leptonic neutrino pair
 
-  integrand_ -> setEvent(ev);
-  integrand_ -> setNumDimensions(numDimensions_);
-  integrand_ -> setIdxCosTheta1  (idxCosTheta1);
-  integrand_ -> setIdxVarphi1    (idxVarphi1);
-  integrand_ -> setIdxCosTheta2  (idxCosTheta2);
-  integrand_ -> setIdxVarphi2    (idxVarphi2);
-  integrand_ -> setIdxZ1         (idxZ1);
-  integrand_ -> setIdxPhi1       (idxPhi1);
-  integrand_ -> setIdxPhiInv     (idxPhiInv);
-  integrand_ -> setIdxMinvSquared(idxMinvSquared);
-  integrand_ -> setCurrentME(currentME);
-  integrand_ -> setBJetTransferFunction(setTF_);
+  (*integrand_).setEvent         (ev)
+               .setNumDimensions (numDimensions_)
+               .setIdxCosTheta1  (idxCosTheta1)
+               .setIdxVarphi1    (idxVarphi1)
+               .setIdxCosTheta2  (idxCosTheta2)
+               .setIdxVarphi2    (idxVarphi2)
+               .setIdxZ1         (idxZ1)
+               .setIdxPhi1       (idxPhi1)
+               .setIdxPhiInv     (idxPhiInv)
+               .setIdxMinvSquared(idxMinvSquared)
+               .setCurrentME     (currentME)
+               .setBJetTransferFunction(setTF_);
   Integrand_ttHorZ_3l1tau::gIntegrand = integrand_;
 
 //--- set integration boundaries

@@ -26,6 +26,12 @@ namespace tthMEM
     : holder_(new Holder(logLevel, *this))
   {}
 
+  Logger::~Logger()
+  {
+    holder_.reset();
+    holder_ = nullptr;
+  }
+
   void
   Logger::setLogLevel(Logger::LogLevel logLevel)
   {
@@ -85,7 +91,7 @@ namespace tthMEM
   void
   Logger::flush()
   {
-    if(os_) (*os_).flush();
+    os_.flush();
   }
 
   Logger::Holder::Holder(Logger::LogLevel logLevel,
@@ -105,7 +111,7 @@ namespace tthMEM
     if(enableLogging_)
     {
       ss_ << "\n";
-      *(logger_.os_) << ss_.str();
+      logger_.os_ << ss_.str();
     }
   }
 
@@ -117,7 +123,7 @@ namespace tthMEM
   Logger::LogLevel Logger::logLevel_ = Logger::LogLevel::kAll;
   bool Logger::enableLogging_ = true;
   bool Logger::enableTimeStamp_ = true;
-  std::ostream * Logger::os_ = &std::cout;
+  std::ostream & Logger::os_ = std::cout;
   unsigned Logger::floatPrecision_ = 3;
 
   Logger

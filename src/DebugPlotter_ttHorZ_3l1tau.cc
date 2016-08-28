@@ -55,12 +55,13 @@ DebugPlotter_ttHorZ_3l1tau::initialize(const std::string & dirName)
   }
 }
 
-void
+DebugPlotter_ttHorZ_3l1tau &
 DebugPlotter_ttHorZ_3l1tau::fill(hVar var,
                                  double value)
 {
-  if(! log_) return;
+  if(! log_) return *this;
   if(histograms_[var]) histograms_[var] -> Fill(value);
+  return *this;
 }
 
 void

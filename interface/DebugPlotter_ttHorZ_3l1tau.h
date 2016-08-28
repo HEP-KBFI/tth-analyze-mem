@@ -49,7 +49,7 @@ namespace tthMEM
     void
     initialize(const std::string & dirName);
 
-    void
+    DebugPlotter_ttHorZ_3l1tau &
     fill(hVar var,
          double value);
 
