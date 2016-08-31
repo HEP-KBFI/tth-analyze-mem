@@ -6,6 +6,7 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/Integrand_ttHorZ_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorBase.h"
+#include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h"
 
 #include <TBenchmark.h> // TBenchmark
 
@@ -22,10 +23,14 @@ namespace tthMEM
   class MEM_ttHorZ_3l1tau
   {
   public:
-    enum IntegrationMode { kUndefined, kVEGAS, kVAMP };
+    enum class IntegrationMode { kUndefined, kVEGAS, kVAMP };
 
     MEM_ttHorZ_3l1tau(const std::string & pdfName,
-                      const std::string & madgraphFileName);
+                      const std::string & madgraphFileName,
+                      const VariableManager_3l1tau & vm);
+    MEM_ttHorZ_3l1tau(const std::string & pdfName,
+                      const std::string & madgraphFileName,
+                      VariableManager_3l1tau && vm);
     ~MEM_ttHorZ_3l1tau();
 
     void
@@ -57,6 +62,7 @@ namespace tthMEM
               ME_mg5_3l1tau currentME);
 
   private:
+    VariableManager_3l1tau vm_;
     Integrand_ttHorZ_3l1tau * integrand_;
     MeasuredEvent_3l1tau ev_;
 
@@ -65,9 +71,6 @@ namespace tthMEM
     unsigned maxObjFunctionCalls_;
     unsigned numDimensions_;
     double precision_;
-
-    double * xl_;
-    double * xu_;
     bool setTF_;
 
     TBenchmark * clock_;

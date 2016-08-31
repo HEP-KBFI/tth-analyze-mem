@@ -1,6 +1,8 @@
 #ifndef DEBUGPLOTTER_TTHORZ_3L1TAU_H
 #define DEBUGPLOTTER_TTHORZ_3L1TAU_H
 
+#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // EnumClassHash
+
 #include <string> // std::string
 #include <unordered_map> // std::unordered_map<,>
 #include <functional> // std::hash<>
@@ -13,7 +15,7 @@ namespace tthMEM
   /**
    * @brief Histogram variable
    */
-  enum hVar
+  enum class hVar
   {
     kZ1,       // energy fraction of hadronic tau decay products
     kZ2,       // energy fraction of leptonic tau decay products
@@ -25,7 +27,10 @@ namespace tthMEM
     kB1RecoEn, // energy of the 1st b-jet
     kB2RecoEn, // energy of the 2nd b-jet
     kMsquared, // squared matrix element amplitude
-    kProb      // overall probability in the integrand
+    kProb,     // overall probability in the integrand
+//--- for iteration
+    First = kZ1,
+    Last = kProb
   };
   ///< histogram variable
 
@@ -52,7 +57,7 @@ namespace tthMEM
     write();
 
   private:
-    std::unordered_map<hVar, TH1D *, std::hash<int>> histograms_;
+    std::unordered_map<hVar, TH1D *, EnumClassHash> histograms_;
     TFile * const file_;
     const unsigned debugFrequency_;
     const unsigned debugRange_;

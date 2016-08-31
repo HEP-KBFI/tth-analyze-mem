@@ -7,7 +7,7 @@
 
 #include "tthAnalysis/tthMEM/interface/me_ttHorZ_3l1tau_mg5.h" // me_ttHorZ_3l1tau_mg5
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // tthMEM_3l_1tau::MeasuredEvent
-#include "tthAnalysis/tthMEM/interface/BJetTransferFunction.h" // bJetTransferFunction
+#include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 
 #include "LHAPDF/LHAPDF.h" // LHAPDF::PDF
 
@@ -30,7 +30,8 @@ namespace tthMEM
      * @param madgraphFileName Full path to madgraph5 file (param_card.dat)
      */
     Integrand_ttHorZ_3l1tau(const std::string & pdfName,
-                            const std::string & madgraphFileName);
+                            const std::string & madgraphFileName,
+                            const VariableManager_3l1tau & vm);
     ~Integrand_ttHorZ_3l1tau();
 
     /**
@@ -48,17 +49,11 @@ namespace tthMEM
     renewInputs();
 
     /* simple setters */
-    Integrand_ttHorZ_3l1tau & setNumDimensions  (unsigned numDimensions);
-    Integrand_ttHorZ_3l1tau & setIdxCosTheta1   (int idx);
-    Integrand_ttHorZ_3l1tau & setIdxVarphi1     (int idx);
-    Integrand_ttHorZ_3l1tau & setIdxCosTheta2   (int idx);
-    Integrand_ttHorZ_3l1tau & setIdxVarphi2     (int idx);
-    Integrand_ttHorZ_3l1tau & setIdxZ1          (int idx);
-    Integrand_ttHorZ_3l1tau & setIdxPhi1        (int idx);
-    Integrand_ttHorZ_3l1tau & setIdxPhiInv      (int idx);
-    Integrand_ttHorZ_3l1tau & setIdxMinvSquared (int idx);
-    Integrand_ttHorZ_3l1tau & setCurrentME      (ME_mg5_3l1tau currentME);
-    Integrand_ttHorZ_3l1tau & setBJetTransferFunction(bool setTF);
+    Integrand_ttHorZ_3l1tau &
+    setCurrentME(ME_mg5_3l1tau currentME);
+
+    Integrand_ttHorZ_3l1tau &
+    setBJetTransferFunction(bool setTF);
 
     /**
      * @brief Evaluates the integrand
@@ -81,19 +76,10 @@ namespace tthMEM
     ///< @note mutable members can be modified by a const function (e.g. eval())
     ///< @note dynamic dispatch is tad bit slower because of additional vlookup
 
-    unsigned numDimensions_;
     double Q_;
 
     const MeasuredEvent_3l1tau * measuredEvent_;
-
-    int idxCosTheta1_;
-    int idxVarphi1_;
-    int idxCosTheta2_;
-    int idxVarphi2_;
-    int idxZ1_;
-    int idxPhi1_;
-    int idxPhiInv_;
-    int idxMinvSquared_;
+    const VariableManager_3l1tau & vm_;
 
     double measuredVisMassSquared_; ///< mass of visible tau decay products
     LorentzVector hTauP4_,          ///< hadronic tau

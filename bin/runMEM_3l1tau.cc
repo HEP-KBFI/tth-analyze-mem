@@ -21,6 +21,7 @@
 #include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h" // tthMEM::MEM_ttHorZ_3l1tau
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // tthMEM::findFile()
 #include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
+#include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 
 using namespace tthMEM;
 
@@ -63,6 +64,7 @@ main(int argc,
   Logger::enableTimeStamp(enableTimeStamp);
 
   const edm::ParameterSet cfg_tthMEM = cfg.getParameter<edm::ParameterSet>("tthMEM");
+  const bool isMC = cfg_tthMEM.getParameter<bool>("isMC");
   const std::string treeName = cfg_tthMEM.getParameter<std::string>("treeName");
   const std::string pdfName = cfg_tthMEM.getParameter<std::string>("pdfName");
   const std::string madgraphFileName = cfg_tthMEM.getParameter<std::string>("madgraphFileName");
@@ -70,6 +72,41 @@ main(int argc,
   const unsigned maxObjFunctionCalls = cfg_tthMEM.getParameter<unsigned>("maxObjFunctionCalls");
   const Long64_t startingFromEntry = cfg_tthMEM.getParameter<Long64_t>("startingFromEntry");
   const unsigned debugPlots = cfg_tthMEM.getParameter<unsigned>("debugPlots");
+
+//--- clamp the variables if needed
+  VariableManager_3l1tau vm;
+  typedef std::vector<edm::ParameterSet> vPSet;
+  const vPSet clampVariables = cfg_tthMEM.getParameter<vPSet>("clampVariables");
+  for(const auto & cfg_clamp: clampVariables)
+  {
+    const std::string clampStr = cfg_clamp.getParameter<std::string>("var");
+    const bool useGen = cfg_clamp.getParameter<bool>("useGen");
+    const bool useCfg = cfg_clamp.getParameter<bool>("useCfg");
+    const double clampValue = cfg_clamp.getParameter<double>("val");
+
+    if(useGen && ! isMC)
+    {
+      LOGERR << "Generator level not accessible for variable '" << clampStr << "' "
+             << "as the sample is not a Monte Carlo simulation but a data sample";
+      return EXIT_FAILURE;
+    }
+    if(useGen && useCfg)
+    {
+      LOGERR << "Conflicting boolean values 'useGen' and 'useCfg' for variable '"
+             << clampStr << "'  => pick one!";
+      return EXIT_FAILURE;
+    }
+
+    if(useCfg)
+    {
+      if(vm.clamp(clampStr, clampValue)) return EXIT_FAILURE;
+    }
+    else if(useGen)
+    {
+      if(vm.clamp(clampStr)) return EXIT_FAILURE;
+    }
+  }
+  LOGINFO << vm;
 
   LOGINFO << "PDF name: " << pdfName;
   LOGINFO << "MadGraph file name: " << madgraphFileName;
@@ -118,7 +155,7 @@ main(int argc,
 
 //--- initialize the MEM instance and start looping over the events
   LOGINFO << "Initializing the tth&z MEM instance";
-  MEM_ttHorZ_3l1tau mem_tt_HandZ(pdfName, findFile(madgraphFileName));
+  MEM_ttHorZ_3l1tau mem_tt_HandZ(pdfName, findFile(madgraphFileName), std::move(vm));
   mem_tt_HandZ.setIntegrationMode(integrationMode);
   mem_tt_HandZ.setMaxObjFunctionCalls(maxObjFunctionCalls);
   mem_tt_HandZ.setBJetTransferFunction(true);

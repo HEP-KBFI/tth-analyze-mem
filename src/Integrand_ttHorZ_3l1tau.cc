@@ -3,6 +3,7 @@
 #include "tthAnalysis/tthMEM/interface/me_ttz_3l1tau_mg5.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMrecFunctions.h"
+#include "tthAnalysis/tthMEM/interface/BJetTransferFunction.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 
 #include <cmath> // std::sqrt()
@@ -22,21 +23,14 @@ namespace VectorUtil = ROOT::Math::VectorUtil;
 const Integrand_ttHorZ_3l1tau * Integrand_ttHorZ_3l1tau::gIntegrand = 0;
 
 Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(const std::string & pdfName,
-                                                 const std::string & madgraphFilename)
+                                                 const std::string & madgraphFilename,
+                                                 const VariableManager_3l1tau & vm)
   : beamAxis_(0., 0., 1.)
   , pdf_(0)
   , currentME_(ME_mg5_3l1tau::kTTH) // default to tth
   , me_madgraph_{0, 0}
-  , numDimensions_(0)
   , measuredEvent_(0)
-  , idxCosTheta1_(-1)
-  , idxVarphi1_(-1)
-  , idxCosTheta2_(-1)
-  , idxVarphi2_(-1)
-  , idxZ1_(-1)
-  , idxPhi1_(-1)
-  , idxPhiInv_(-1)
-  , idxMinvSquared_(-1)
+  , vm_(vm)
   , bJetTF_(functions::deltaFunction)
 {
   LOGTRC;
@@ -85,69 +79,6 @@ Integrand_ttHorZ_3l1tau::~Integrand_ttHorZ_3l1tau()
   std::for_each(mgMomenta_.begin(), mgMomenta_.end(),
     [](double * & d) { delete d; d = 0; }
   );
-}
-
-Integrand_ttHorZ_3l1tau &
-Integrand_ttHorZ_3l1tau::setNumDimensions(unsigned numDimensions)
-{
-  numDimensions_ = numDimensions;
-  return *this;
-}
-
-Integrand_ttHorZ_3l1tau &
-Integrand_ttHorZ_3l1tau::setIdxCosTheta1(int idx)
-{
-  idxCosTheta1_ = idx;
-  return *this;
-}
-
-Integrand_ttHorZ_3l1tau &
-Integrand_ttHorZ_3l1tau::setIdxVarphi1(int idx)
-{
-  idxVarphi1_ = idx;
-  return *this;
-}
-
-Integrand_ttHorZ_3l1tau &
-Integrand_ttHorZ_3l1tau::setIdxCosTheta2(int idx)
-{
-  idxCosTheta2_ = idx;
-  return *this;
-}
-
-Integrand_ttHorZ_3l1tau &
-Integrand_ttHorZ_3l1tau::setIdxVarphi2(int idx)
-{
-  idxVarphi2_ = idx;
-  return *this;
-}
-
-Integrand_ttHorZ_3l1tau &
-Integrand_ttHorZ_3l1tau::setIdxZ1(int idx)
-{
-  idxZ1_ = idx;
-  return *this;
-}
-
-Integrand_ttHorZ_3l1tau &
-Integrand_ttHorZ_3l1tau::setIdxPhi1(int idx)
-{
-  idxPhi1_ = idx;
-  return *this;
-}
-
-Integrand_ttHorZ_3l1tau &
-Integrand_ttHorZ_3l1tau::setIdxPhiInv(int idx)
-{
-  idxPhiInv_ = idx;
-  return *this;
-}
-
-Integrand_ttHorZ_3l1tau &
-Integrand_ttHorZ_3l1tau::setIdxMinvSquared(int idx)
-{
-  idxMinvSquared_ = idx;
-  return *this;
 }
 
 Integrand_ttHorZ_3l1tau &
@@ -397,38 +328,25 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   if(! pdf_)                      LOGERR << "PDF not initialized!";
   if(! me_madgraph_[currentME_])  LOGERR << "Madgraph's ME not initialized!";
   if(! measuredEvent_)            LOGERR << "Measured event not specified!";
-  if(! numDimensions_)            LOGERR << "Number of dimensions unspecified!";
   if(mgMomentaIdxs_.size() != 10) LOGERR << "Number of MG momenta indexes not equal to 10";
-  if(idxCosTheta1_ < 0)           LOGERR << "Index idxCosTheta1 not set";
-  if(idxVarphi1_ < 0)             LOGERR << "Index idxVarphi1 not set";
-  if(idxCosTheta2_ < 0)           LOGERR << "Index idxCosTheta2 not set";
-  if(idxVarphi2_ < 0)             LOGERR << "Index idxVarphi2 not set";
-  if(idxZ1_ < 0)                  LOGERR << "Index idxZ1 not set";
-  if(idxPhi1_ < 0)                LOGERR << "Index idxPhi1 not set";
-  if(idxPhiInv_ < 0)              LOGERR << "Index idxPhiInv not set";
-  if(idxMinvSquared_ < 0)         LOGERR << "Index idxMinvSquared not set";
-  if(! pdf_ || ! me_madgraph_[currentME_] || ! measuredEvent_ ||
-     idxCosTheta1_ < 0 || idxVarphi1_ < 0 || idxCosTheta2_ < 0 ||
-     idxVarphi2_ < 0 || idxZ1_ < 0 || idxPhi1_ < 0 || idxPhiInv_ < 0 ||
-     idxMinvSquared_ < 0 || mgMomentaIdxs_.size() != 10)
+  if(! pdf_ || ! me_madgraph_[currentME_] || ! measuredEvent_ || mgMomentaIdxs_.size() != 10)
     std::exit(EXIT_FAILURE);
+
   LOGVRB << "Current MG5 ME: " << me_madgraph_[currentME_] -> name();
   if(! MET_TF_) return 0.;
   const bool isTTH = currentME_ == ME_mg5_3l1tau::kTTH;
 
 //--- read the sampled values
-  std::ostringstream ss;
-  ss << std::fixed << std::setprecision(Logger::getFloatPrecision());
-  std::copy(x, x + numDimensions_ - 1, std::ostream_iterator<double>(ss, ", "));
-  ss << x[numDimensions_ - 1];
-  LOGVRB << "x = { " << ss.str() << " }";
+  LOGVRB << "x = { " << vm_.getArrayString(x) << " }";
 
-  const double cosTheta[2]   = { x[idxCosTheta1_], x[idxCosTheta2_] };
-  const double varphi[2]     = { x[idxVarphi1_],   x[idxVarphi2_] };
-  const double z1            = x[idxZ1_];
-  const double nuHtau_phi    = x[idxPhi1_];
-  const double nuLTau_phi    = x[idxPhiInv_];
-  const double mInvSquared   = x[idxMinvSquared_];
+  const double cosTheta[2]   = { vm_.get(Var_3l1tau::kBcosTheta1, x),
+                                 vm_.get(Var_3l1tau::kBcosTheta2, x) };
+  const double varphi[2]     = { vm_.get(Var_3l1tau::kBphi1, x),
+                                 vm_.get(Var_3l1tau::kBphi1, x) };
+  const double z1            = vm_.get(Var_3l1tau::kZ1, x);
+  const double nuHtau_phi    = vm_.get(Var_3l1tau::kTauPhi, x);
+  const double nuLTau_phi    = vm_.get(Var_3l1tau::kTauPhiInv, x);
+  const double mInvSquared   = vm_.get(Var_3l1tau::kTauMinvSquared, x);
 
 //--- confirm that the energy fraction carried by the tau is indeed in (0,1)
   const double z2 = measuredVisMassSquared_ /

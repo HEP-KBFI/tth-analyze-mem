@@ -21,11 +21,44 @@ process.logging = cms.PSet(
 )
 
 process.tthMEM = cms.PSet(
-  treeName = cms.string("tree"),
-  pdfName = cms.string("MSTW2008lo68cl"),
-  madgraphFileName = cms.string("tthAnalysis/tthMEM/data/param_card.dat"),
-  integrationMode = cms.string("VEGAS"),
+  isMC                = cms.bool(True),
+  treeName            = cms.string("tree"),
+  pdfName             = cms.string("MSTW2008lo68cl"),
+  madgraphFileName    = cms.string("tthAnalysis/tthMEM/data/param_card.dat"),
+  integrationMode     = cms.string("VEGAS"),
   maxObjFunctionCalls = cms.uint32(50), # just for testing; proper figure: 100k+
-  startingFromEntry = cms.int64(0),
-  debugPlots = cms.uint32(16)
+  startingFromEntry   = cms.int64(0),
+  debugPlots          = cms.uint32(16), # use 0 if no debug plots needed
+  clampVariables      = cms.VPSet(
+    cms.PSet( var = cms.string("bCosTheta1"),     useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),
+    cms.PSet( var = cms.string("bPhi1"),          useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),
+    cms.PSet( var = cms.string("bCosTheta2"),     useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),
+    cms.PSet( var = cms.string("bPhi2"),          useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),
+    cms.PSet( var = cms.string("z1"),             useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),
+    cms.PSet( var = cms.string("tauPhi"),         useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),
+    cms.PSet( var = cms.string("tauPhiInv"),      useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),
+    cms.PSet( var = cms.string("tauMinvSquared"), useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0))
+  )
 )
+
+"""
+Legend:
+var    = variable name you want to fix (and not integrate over)
+useGen = use the value calculated from generator level information (can be used only if isMC is True)
+useCfg = use the value provided in this configuration file
+val    = the variable value (ignored if useCfg is False)
+
+Therefore, for each entry there are four possible scenarious:
+1) useGen = False, useCfg = False, isMC = any value:
+    In this case the variable is sampled over by the lib specified by integrationMode
+2) useGen = False, useCfg = True, isMC = any value:
+    In this case the variable is fixated to the value specified by the current file,
+    provided that the value is within expected limits
+3) useGen = True, useCfg = False, isMC = True:
+    Uses the value calculated from the generator level information
+4) The entry is missing in clampVariables (effectively commented out):
+    Reduces to the case 1)
+
+Any other combination of boolean variables are not permitted and the program reading
+the configuration file is expected to bail out before running the MEM.
+"""

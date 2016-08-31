@@ -10,8 +10,7 @@ DebugPlotter_ttHorZ_3l1tau::DebugPlotter_ttHorZ_3l1tau(TFile * file,
   , logCounter_(0)
   , log_(false)
 {
-  for(int i = hVar::kZ1; i < hVar::kProb; ++i)
-    histograms_[static_cast<hVar>(i)] = 0;
+  for(auto e: Enum<hVar>()) histograms_[e] = 0;
 }
 
 DebugPlotter_ttHorZ_3l1tau::DebugPlotter_ttHorZ_3l1tau(TFile * file)
