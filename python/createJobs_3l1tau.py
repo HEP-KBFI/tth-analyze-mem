@@ -8,6 +8,17 @@ if __name__ == '__main__':
     level = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
+  clampVariables = [
+    ("bCosTheta1",     False, False, 0.0),
+    ("bPhi1",          False, False, 0.0),
+    ("bCosTheta2",     False, False, 0.0),
+    ("bPhi2",          False, False, 0.0),
+    ("z1",             False, False, 0.0),
+    ("tauPhi",         False, False, 0.0),
+    ("tauPhiInv",      False, False, 0.0),
+    ("tauMinvSquared", False, False, 0.0)
+  ]
+
   createJobs(samples = samples,
              channel = "3l_1tau",
              version = "2016Aug01_dR03mvaTight",
@@ -20,6 +31,7 @@ if __name__ == '__main__':
              nofIntegrationsPerJob = 25,
              lhRatioBranchName = "lhRatioNP",
              rocLegendPosition = [0.15, 0.78, 0.3, 0.88],
-             debugPlots = 80) # every 10th event is dumped to TH1D
+             debugPlots = 80, # every 10th event is dumped to TH1D
+             clampVariables = clampVariables)
 
 

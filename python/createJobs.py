@@ -4,11 +4,9 @@ from tthAnalysis.tthMEM.jobTemplates import getNofEntries, \
 
 def createJobs(samples, channel, version, lepton_selections, central_or_shifts, execName,
                treeName, integrationMode, maxObjFunctionCalls, nofIntegrationsPerJob,
-               lhRatioBranchName, rocLegendPosition, debugPlots):
+               lhRatioBranchName, rocLegendPosition, debugPlots, clampVariables):
   '''
-  TODO: - remove unnecessary complexity in the paths (currently both the file name and dirname
-          contain the same information)
-        - make the file names of roc curve plots channel and version specific
+  TODO: - make the file names of roc curve plots channel and version specific
   '''
 
   if os.environ.get('CMSSW_BASE') is None:
@@ -46,6 +44,8 @@ def createJobs(samples, channel, version, lepton_selections, central_or_shifts, 
       rocLabels.insert(0, sampleValue["process_name_specific"])
     else:
       rocLabels.append(sampleValue["process_name_specific"])
+
+    isMC = (sampleValue["type"] == "mc")
 
     for lepton_selection in lepton_selections:
       for central_or_shift in central_or_shifts:
@@ -102,8 +102,8 @@ def createJobs(samples, channel, version, lepton_selections, central_or_shifts, 
           nofEventsToProcess = nofIntegrationsPerJob if i != nofJobs - 1 else -1
 
           pythonCfg = createPythonCfg(
-            fileNameScratch_i, nofEventsToProcess, outFileNameScratch_i, treeName,
-            integrationMode, maxObjFunctionCalls, startingPoint, debugPlots
+            isMC, fileNameScratch_i, nofEventsToProcess, outFileNameScratch_i, treeName,
+            integrationMode, maxObjFunctionCalls, startingPoint, debugPlots, clampVariables
           )
           bashCfg = createBashCfg(
             fileNameLocal, outFileNameLocal_i, fileNameScratch_i, outFileNameScratch_i,

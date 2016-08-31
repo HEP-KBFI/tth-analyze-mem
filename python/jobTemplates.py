@@ -25,13 +25,17 @@ process.logging = cms.PSet(
 )
 
 process.tthMEM = cms.PSet(
-  treeName = cms.string("{{ treeName }}"),
-  pdfName = cms.string("MSTW2008lo68cl"),
-  madgraphFileName = cms.string("tthAnalysis/tthMEM/data/param_card.dat"),
-  integrationMode = cms.string("{{ integrationMode }}"),
+  isMC                = cms.bool({{ isMC }}),
+  treeName            = cms.string("{{ treeName }}"),
+  pdfName             = cms.string("MSTW2008lo68cl"),
+  madgraphFileName    = cms.string("tthAnalysis/tthMEM/data/param_card.dat"),
+  integrationMode     = cms.string("{{ integrationMode }}"),
   maxObjFunctionCalls = cms.uint32({{ maxObjFunctionCalls }}),
-  startingFromEntry = cms.int64({{startingFromEntry }}),
-  debugPlots = cms.uint32({{ debugPlots }})
+  startingFromEntry   = cms.int64({{startingFromEntry }}),
+  debugPlots          = cms.uint32({{ debugPlots }})
+  clampVariables      = cms.VPSet({% for it in clampVariables %}
+    cms.PSet( var = cms.string("{{ it.0 }}"), useGen = cms.bool({{ it.1 }}), useCfg = cms.bool({{ it.2 }}), val = cms.double({{ it.3 }})),{% endfor %}
+  )
 )
 
 """
@@ -188,10 +192,11 @@ def getNofEntries(fileName, treeName):
   if counterStderr != "": raise ValueError(counterStderr)
   return int(counterStdout)
 
-def createPythonCfg(inFileName, maxEvents, outFileName, treeName,
+def createPythonCfg(isMC, inFileName, maxEvents, outFileName, treeName,
                     integrationMode, maxObjFunctionCalls, startingFromEntry,
-                    debugPlots):
+                    debugPlots, clampVariables):
   return jinja2.Template(pythonCfgTemplate).render(
+    isMC = isMC,
     inFileName = inFileName,
     maxEvents = maxEvents,
     outFileName = outFileName,
@@ -199,7 +204,8 @@ def createPythonCfg(inFileName, maxEvents, outFileName, treeName,
     integrationMode = integrationMode,
     maxObjFunctionCalls = maxObjFunctionCalls,
     startingFromEntry = startingFromEntry,
-    debugPlots = debugPlots)
+    debugPlots = debugPlots,
+    clampVariables = clampVariables)
 
 def createPythonROCcfg(signalFile, bkgFiles, outFolder, treeName,
                        branchName, labels, legendPosition):
