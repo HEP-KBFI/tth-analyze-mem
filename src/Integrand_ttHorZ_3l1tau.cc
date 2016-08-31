@@ -25,10 +25,10 @@ const Integrand_ttHorZ_3l1tau * Integrand_ttHorZ_3l1tau::gIntegrand = 0;
 Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(const std::string & pdfName,
                                                  const std::string & madgraphFilename,
                                                  const VariableManager_3l1tau & vm)
-  : beamAxis_(0., 0., 1.)
-  , pdf_(0)
+  : pdf_(0)
   , currentME_(ME_mg5_3l1tau::kTTH) // default to tth
   , me_madgraph_{0, 0}
+  , beamAxis_(0., 0., 1.)
   , measuredEvent_(0)
   , vm_(vm)
   , bJetTF_(functions::deltaFunction)

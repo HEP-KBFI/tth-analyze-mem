@@ -17,17 +17,17 @@ namespace tthMEM
    * @brief MEM integrand of the process tth, h->tautau, 3l1tau channel (LO)
    *
    * @todo
-   *   - add methods for setting transfer functions
-   *   - implement the integrand
+   *   - transfer function for tau pT
    */
   class Integrand_ttHorZ_3l1tau
   {
   public:
     /**
      * @brief Simple constructor
-     * @param sqrtS            Center of momentum energy
      * @param pdfName          Name of parton distribution function (pdf)
      * @param madgraphFileName Full path to madgraph5 file (param_card.dat)
+     * @param vm               Variable manager (needed to pull new values
+     *                         at every iteration)
      */
     Integrand_ttHorZ_3l1tau(const std::string & pdfName,
                             const std::string & madgraphFileName,
@@ -48,10 +48,19 @@ namespace tthMEM
     void
     renewInputs();
 
-    /* simple setters */
+    /**
+     * @brief Sets the mode in which the MEM integration is carried out
+     * @param currentME The mode: either kTTH or kTTZ
+     * @return Reference to the this instance
+     */
     Integrand_ttHorZ_3l1tau &
     setCurrentME(ME_mg5_3l1tau currentME);
 
+    /**
+     * @brief Enables or disables the transfer function (TF) for b-quark energy
+     * @param setTF If true, uses Gaussian-like TF; if false, uses the delta-function
+     * @return Reference to the this instance
+     */
     Integrand_ttHorZ_3l1tau &
     setBJetTransferFunction(bool setTF);
 
@@ -67,27 +76,28 @@ namespace tthMEM
     ///< static pointer to this instance
 
   protected:
-    const Vector beamAxis_;
-
     LHAPDF::PDF * pdf_;
-
+    ///< pointer to the parton distribution function (PDF)
     ME_mg5_3l1tau currentME_;
+    ///< tells whether current integration is for tth or ttz
     mutable me_ttHorZ_3l1tau_mg5 * me_madgraph_[2];
-    ///< @note mutable members can be modified by a const function (e.g. eval())
-    ///< @note dynamic dispatch is tad bit slower because of additional vlookup
+    ///< two sets of MadGraph matrix elements: one for tth, the other for ttz
 
-    double Q_;
+    double Q_;              ///< the resolution scale needed by the PDF
+    const Vector beamAxis_; ///< defines the z-coordinate in the lab frame
 
-    const MeasuredEvent_3l1tau * measuredEvent_;
-    const VariableManager_3l1tau & vm_;
+    const MeasuredEvent_3l1tau * measuredEvent_; ///< pointer to the measured event
+    const VariableManager_3l1tau & vm_; ///< variable metadata used to pull new values
 
     double measuredVisMassSquared_; ///< mass of visible tau decay products
-    LorentzVector hTauP4_,          ///< hadronic tau
-                  complLeptP4_,     ///< complementary lepton coming from tau
-                  leptP4_[2];       ///< leptons coming from top decay
+    LorentzVector hTauP4_,          ///< 4-momentum of the hadronic tau
+                  complLeptP4_,     ///< 4-momentum of the complementary lepton
+                  leptP4_[2];       ///< 4-momenta of leptons coming from top decay
 
     mutable std::vector<double *> mgMomenta_;
+    ///< needed by MadGraph to calculate the matrix elements
     std::vector<unsigned> mgMomentaIdxs_;
+    ///< specifies the order in which the 4-momenta are assigned in MadGraph
 
     /* reconstruction functionals */
     std::function<double(double)>                  nuHtauCosTheta_;

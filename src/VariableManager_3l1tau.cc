@@ -110,10 +110,11 @@ VariableManager_3l1tau::VariableManager_3l1tau()
   updateIndices();
 }
 
-VariableManager_3l1tau::VariableManager_3l1tau(const VariableManager_3l1tau & vm)
+VariableManager_3l1tau::VariableManager_3l1tau(const VariableManager_3l1tau & vm) noexcept
   : variables_(vm.variables_)
   , xl_(vm.xl_)
   , xu_(vm.xu_)
+  , numDimensions_(vm.numDimensions_)
 {}
 
 VariableManager_3l1tau::VariableManager_3l1tau(VariableManager_3l1tau && vm) noexcept
@@ -186,7 +187,7 @@ VariableManager_3l1tau::get(Var_3l1tau var,
     const std::string varName = varNames_.right.find(var) -> second;
     LOGERR << "Fetched value '" << varName << "' = " << val << " "
            << "is not within expected limits: " << varLimits_.at(var);
-    std::exit(EXIT_FAILURE);
+    throw EXIT_FAILURE;
   }
   return val;
 }
@@ -210,6 +211,13 @@ VariableManager_3l1tau::set(Var_3l1tau var,
     const std::string varName = varNames_.right.find(var) -> second;
     LOGERR << "Variable '" << varName << "' not configured "
            << "to read from generator level";
+    return EXIT_FAILURE;
+  }
+  if(! varLimits_.at(var).isWithin(value))
+  {
+    const std::string varName = varNames_.right.find(var) -> second;
+    LOGERR << "Variable '" << varName << "' = " << value << " "
+           << "not within expected limits: " << varLimits_.at(var);
     return EXIT_FAILURE;
   }
   variables_[var].value_ = value;
