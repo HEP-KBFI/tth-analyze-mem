@@ -6,10 +6,9 @@
 //==========================================================================
 
 #include "tthAnalysis/tthMEM/interface/HelAmps_sm_tth_3l1tau.h"
-#include <complex> 
-#include <cmath> 
-#include <iostream> 
-#include <cstdlib> 
+#include <complex>
+#include <cmath>
+#include <stdexcept>
 using namespace std; 
 
 namespace MG5_sm_tth_3l1tau
@@ -353,8 +352,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double>
     }
     else
     {
-      std::cerr <<  "Invalid helicity in txxxxx.\n"; 
-      std::exit(1); 
+      throw std::invalid_argument("Invalid helicity in txxxxx");
     }
   }
 

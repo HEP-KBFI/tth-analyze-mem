@@ -8,6 +8,17 @@
 
 namespace tthMEM
 {
+  /** Interface to "Vegas AMPlified: Anisotropy, Multi-channel sampling and Parallelization" (VAMP) integration algorithm.
+   *
+   * The VAMP algorithm is documented in:
+   *  [1] "Vegas revisited: Adaptive Monte Carlo integration beyond factorization",
+   *      T. Ohl, J. Comput. Phys. 120 (1999) 13.
+   *  [2] https://whizard.hepforge.org/vamp.pdf
+   *
+   * Originally created by
+   * @author Christian Veelken, NICPB Tallinn
+   * (visit https://github.com/veelken/SVfitMEM)
+   */
   class MEMIntegratorVAMP
     : public MEMIntegratorBase
   {

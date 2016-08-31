@@ -5,7 +5,7 @@
 #include <utility> // std::move()
 #include <iomanip> // std::setw()
 #include <sstream> // std::stringstream
-#include <cstdlib> // EXIT_FAILURE, EXIT_SUCCESS, std::exit()
+#include <cstdlib> // EXIT_FAILURE, EXIT_SUCCESS
 
 #include <boost/assign/list_of.hpp> // boost::assign::list_of<>
 

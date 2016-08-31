@@ -7,11 +7,11 @@
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 
 #include <cmath> // std::sqrt()
-#include <cstdlib> // std::exit(), EXIT_FAILURE
 #include <cstring> // std::memset()
 #include <algorithm> // std::for_each(), std::copy()
 #include <sstream> // std::ostringstream
 #include <iomanip> // std::setprecision()
+#include <exception> // std::invalid_argument, std::domain_error
 
 #include "TMath.h" // TMath::IsNaN() ...
  // ... (why not use std here: http://stackoverflow.com/a/570694)
@@ -38,8 +38,7 @@ Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(const std::string & pdfName,
   if(! pdf_ && pdfName != "") pdf_ = LHAPDF::mkPDF(pdfName.c_str(), 0);
   else
   {
-    LOGERR << "PDF file name empty!";
-    std::exit(EXIT_FAILURE);
+    throw std::invalid_argument("PDF file name empty!");
   }
 
   me_madgraph_[ME_mg5_3l1tau::kTTH] = new me_tth_3l1tau_mg5();
@@ -52,8 +51,7 @@ Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(const std::string & pdfName,
   }
   else
   {
-    LOGERR << "Madgraph file name empty!";
-    std::exit(EXIT_FAILURE);
+    throw std::invalid_argument("Madgraph file name empty!");
   }
 
   for(unsigned i = 0; i < 10; ++i)
@@ -330,7 +328,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   if(! measuredEvent_)            LOGERR << "Measured event not specified!";
   if(mgMomentaIdxs_.size() != 10) LOGERR << "Number of MG momenta indexes not equal to 10";
   if(! pdf_ || ! me_madgraph_[currentME_] || ! measuredEvent_ || mgMomentaIdxs_.size() != 10)
-    std::exit(EXIT_FAILURE);
+    throw std::domain_error("Insufficient data for eval()");
 
   LOGVRB << "Current MG5 ME: " << me_madgraph_[currentME_] -> name();
   if(! MET_TF_) return 0.;

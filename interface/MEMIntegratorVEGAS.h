@@ -12,6 +12,16 @@
 
 namespace tthMEM
 {
+  /** Interface to VEGAS integration algorithm.
+   *
+   * The VEGAS algorithm is documented in:
+   *  [1] "A New Algorithm for Adaptive Multidimensional Integration",
+   *      G.P. Lepage, J. Comput. Phys. 27 (1978) 192.
+   *
+   * Originally created by
+   * @author Christian Veelken, NICPB Tallinn
+   * (visit https://github.com/veelken/SVfitMEM)
+   */
   class MEMIntegratorVEGAS
     : public MEMIntegratorBase
   {
