@@ -11,7 +11,8 @@ namespace tthMEM
   {
     /**
      * @brief Functions for reconstructing the underlying event
-     *        from reconstructed values in the event.
+     *        from reconstructed values in the event or reconstruction variables
+     *        from generator level values.
      */
 
       /**
@@ -211,6 +212,39 @@ namespace tthMEM
            double METy,                    /* bind */
            double MET_TF_denom,            /* bind */
            const TMatrixDSym & invCovMET); /* bind */
+
+    /**
+     * @brief Calculates rotation angle between visible and invisible tau decay products
+     *        in the lab frame
+     * @param mother The tau 4-momentum which decays into visible and invisible products
+     * @param vis      4-momentum of the visible tau decay product
+     * @param beamAxis Collision axis
+     * @return The rotation angle in the lab frame
+     */
+    double
+    phiFromLabMomenta(const LorentzVector & mother,
+                      const LorentzVector & vis,
+                      const Vector & beamAxis);
+
+    /**
+     * @brief Calculates energy fraction between its mother particle and its visible product
+     * @param mother 4-momentum of the mother particle
+     * @param vis    4-momentum of its visible decay product
+     * @return The energy fraction E_{mother} / E_{vis}
+     */
+    double
+    z(const LorentzVector & mother,
+      const LorentzVector & vis);
+
+    /**
+     * @brief Calculates cosine of the angle between the two decay products
+     * @param vis 4-momentum of the visible decay product
+     * @param inv 4-momentum of the invisible decay product
+     * @return The cosine of the angle between the decay products
+     */
+    double
+    cosTheta(const LorentzVector & vis,
+             const LorentzVector & inv);
   }
 }
 

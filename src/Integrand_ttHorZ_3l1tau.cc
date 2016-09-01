@@ -478,13 +478,9 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
     return 0.;
   }
 
-//--- set MG momenta
+//--- set MG momenta & calculate the matrix element
   setMGmomenta(recoEventmem.getForMG());
   me_madgraph_[currentME_] -> setMomenta(mgMomenta_);
-
-  LOGTRC_S << "prob(PDF) = " << probPDF << "; flux factor = " << flux;
-
-//--- calculate the matrix element
   me_madgraph_[currentME_] -> sigmaKin();
   const double prob_ME_mg = me_madgraph_[currentME_] -> getMatrixElements()[0];
   if(TMath::IsNaN(prob_ME_mg) || prob_ME_mg < 0.)
@@ -493,6 +489,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
               << "|M|^2 = " << prob_ME_mg << " => skipping event";
     return 0.;
   }
+  LOGTRC_S << "prob(PDF) = " << probPDF << "; flux factor = " << flux;
   LOGVRB_S << "|M|^2 = " << prob_ME_mg;
 
 //--- jacobi factors

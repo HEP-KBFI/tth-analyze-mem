@@ -1,7 +1,7 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMrecFunctions.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 
-#include <cmath> // std::fabs(), std::sqrt()
+#include <cmath> // std::fabs(), std::sqrt(), std::atan2()
 
 #include <TVectorD.h> // TVectorD
 
@@ -231,6 +231,37 @@ namespace tthMEM
       LOGTRC_S << "=> MET_pull = " << MET_pull << " => MET_TF = " << MET_TF_value;
 
       return MET_TF_value;
+    }
+
+    double
+    phiFromLabMomenta(const LorentzVector & mother,
+                      const LorentzVector & vis,
+                      const Vector & beamAxis)
+    {
+      const Vector eZ = getVector(vis).unit();
+      const Vector eY = beamAxis.Cross(eZ).unit();
+      const Vector eX = eY.Cross(eZ).unit();
+
+      const Vector motherUnit = getVector(mother).unit();
+      const double phiLab = std::atan2(motherUnit.Dot(eY),
+                                       motherUnit.Dot(eX));
+      return phiLab;
+    }
+
+    double
+    z(const LorentzVector & mother,
+      const LorentzVector & vis)
+    {
+      return vis.e() / mother.e();
+    }
+
+    double
+    cosTheta(const LorentzVector & vis,
+             const LorentzVector & inv)
+    {
+      const Vector vis3 = getVector(vis);
+      const Vector inv3 = getVector(inv);
+      return vis3.Dot(inv3) / (vis3.R() * inv3.R());
     }
   }
 }
