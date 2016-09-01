@@ -15,10 +15,8 @@
 
 #include "TMath.h" // TMath::IsNaN() ...
  // ... (why not use std here: http://stackoverflow.com/a/570694)
-#include "Math/VectorUtil.h" // ROOT::Math::VectorUtil::boost()
 
 using namespace tthMEM;
-namespace VectorUtil = ROOT::Math::VectorUtil;
 
 const Integrand_ttHorZ_3l1tau * Integrand_ttHorZ_3l1tau::gIntegrand = 0;
 
@@ -107,12 +105,12 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
 
 //--- set the variables related to the hadronic tau
   const MeasuredHadronicTau & htau = measuredEvent_ -> htau1;
-  hTauP4_ = htau.p4();
+  recoEvent.hTauLepton = htau.p4();
   const Vector eZ_htau = htau.p3().unit();
   const Vector eY_htau = eZ_htau.Cross(beamAxis_).unit();
   const Vector eX_htau = eY_htau.Cross(eZ_htau).unit();
   // eX should already be unit vector by construction
-  LOGVRB << lvrap("htau p4", hTauP4_);
+  LOGVRB << lvrap("htau p4", recoEvent.hTauLepton);
   LOGVRB << svrap("htau eX", eX_htau);
   LOGVRB << svrap("htau eY", eY_htau);
   LOGVRB << svrap("htau eZ", eZ_htau);
@@ -186,13 +184,13 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   const unsigned complLeptIdx = measuredEvent_ -> complLeptonIdx;
   const MeasuredLepton & complLepton = measuredEvent_-> leptons[complLeptIdx];
 
-  complLeptP4_ = complLepton.p4();
+  recoEvent.lTauLepton = complLepton.p4();
   const int complLeptCharge = complLepton.charge();
   const Vector eZ_lept = complLepton.p3().unit();
   const Vector eY_lept = eZ_lept.Cross(beamAxis_).unit();
   const Vector eX_lept = eY_lept.Cross(eZ_lept).unit();
   // eX should already be unit vector by construction
-  LOGVRB << lvrap("lept p4", complLeptP4_);
+  LOGVRB << lvrap("lept p4", recoEvent.lTauLepton);
   LOGVRB << cvrap("lept p3", complLepton.p3());
   LOGVRB << svrap("lept eX", eX_lept);
   LOGVRB << svrap("lept eY", eY_lept);
@@ -205,9 +203,12 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   const Vector eZ_lept_(eX_lept.z(), eY_lept.z(), eZ_lept.z());
 
 //--- find the measured mass of both visible tau decay products
-  measuredVisMassSquared_ = (hTauP4_ + complLeptP4_).mass2();
+  const double measuredVisMassSquared =
+    (recoEvent.hTauLepton + recoEvent.lTauLepton).mass2();
+  const double massHiggsOrZsquared = currentME_ == ME_mg5_3l1tau::kTTH ?
+    constants::massHiggsSquared : constants::massZSquared;
   LOGVRB << "measured mass of visible tau decay products: "
-         << std::sqrt(measuredVisMassSquared_);
+         << std::sqrt(measuredVisMassSquared);
 
 //--- find the kinematic variables of the rest of the leptons (from t decay)
 //--- and bind the functional arguments, so that no explicit storage is needed
@@ -238,6 +239,10 @@ Integrand_ttHorZ_3l1tau::renewInputs()
                       eX_lept_,
                       eY_lept_,
                       eZ_lept_);
+  z2_ = std::bind(functions::z2,
+                  std::placeholders::_1,
+                  measuredVisMassSquared,
+                  massHiggsOrZsquared);
   int lept1Charge = 0;
   for(unsigned i = 0; i < 2; ++i)
   {
@@ -248,12 +253,12 @@ Integrand_ttHorZ_3l1tau::renewInputs()
 
     const unsigned leptIdx_i = measuredEvent_ -> bjetLeptonIdxs[i];
     const MeasuredLepton & lept_i = measuredEvent_ -> leptons[leptIdx_i];
+//--- set the lepton energy equal to its momentum, thus setting it massless
     const double leptEnergy_i = lept_i.p();
     const Vector leptP3_i = lept_i.p3();
     const Vector leptP3unit_i = leptP3_i.unit();
-//--- set the lepton energy equal to its momentum, thus setting it massless
-    leptP4_[i] = getLorentzVector(leptP3_i, leptEnergy_i);
-    LOGVRB << lvrap("t lept " + std::to_string(i + 1) + " p4", leptP4_[i]);
+    recoEvent.lW[i] = getLorentzVector(leptP3_i, leptEnergy_i);
+    LOGVRB << lvrap("W lept " + std::to_string(i + 1) + " p4", recoEvent.lW[i]);
     if(i == 0) lept1Charge = lept_i.charge();
 
     bQuarkEnergy_[i] = std::bind(functions::bQuarkEnergy,
@@ -347,8 +352,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double mInvSquared   = vm_.get(Var_3l1tau::kTauMinvSquared, x);
 
 //--- confirm that the energy fraction carried by the tau is indeed in (0,1)
-  const double z2 = measuredVisMassSquared_ /
-      (z1 * (isTTH ? constants::massHiggsSquared : constants::massZSquared));
+  const double z2 = z2_(z1);
   if(! (z2 >= 1.e-5 && z2 <= 1.))
   {
     LOGVRB << "z2 = " << z2 << " not in (0, 1) => p = 0";
@@ -365,10 +369,10 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
     return 0.;
   }
   else LOGTRC << "nuHtau_cosTheta = " << nuHtau_cosTheta;
-  const LorentzVector nuHtau = nuHTau_(std::acos(nuHtau_cosTheta), nuHtau_phi, nuHtau_en);
-  const LorentzVector hTau = hTauP4_ + nuHtau;
-  LOGTRC << lvrap("htau nu", nuHtau);
-  LOGTRC << lvrap("hadronic tau", hTau);
+  recoEvent.nuHtau = nuHTau_(std::acos(nuHtau_cosTheta), nuHtau_phi, nuHtau_en);
+  recoEvent.hTau = recoEvent.hTauLepton + recoEvent.nuHtau;
+  LOGTRC << lvrap("htau nu",      recoEvent.nuHtau);
+  LOGTRC << lvrap("hadronic tau", recoEvent.hTau);
 
 //--- compute the neutrino and tau lepton 4-vector from leptonic tau
   const double nuLTau_en = nuLTauEnergy_(z2);
@@ -380,43 +384,39 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
            << "=> p = 0";
     return 0.;
   }
-  const LorentzVector nuLTau = nuLTau_(std::acos(nuLTau_cosTheta),
-                                       nuLTau_phi, nuLTau_en, nuLTau_p);
-  const LorentzVector lTau = complLeptP4_ + nuLTau;
-  LOGTRC << lvrap("lept tau nu", nuLTau);
-  LOGTRC << lvrap("leptonic tau", lTau);
+  recoEvent.nuLtau = nuLTau_(std::acos(nuLTau_cosTheta), nuLTau_phi, nuLTau_en, nuLTau_p);
+  recoEvent.lTau = recoEvent.lTauLepton + recoEvent.nuLtau;
+  LOGTRC << lvrap("lept tau nu",  recoEvent.nuLtau);
+  LOGTRC << lvrap("leptonic tau", recoEvent.lTau);
 
-  const LorentzVector higgsOrZ = hTau + lTau;
-  if(isTTH) LOGTRC << lvrap("higgs", higgsOrZ);
-  else      LOGTRC << lvrap("Z",     higgsOrZ);
+  recoEvent.higgsOrZ = recoEvent.hTau + recoEvent.lTau;
+  if(isTTH) LOGTRC << lvrap("higgs", recoEvent.higgsOrZ);
+  else      LOGTRC << lvrap("Z",     recoEvent.higgsOrZ);
 
 //--- get 4-momenta of top decay products (and top itself)
-  LorentzVector nuT[2]; // neutrinos from top decay
-  LorentzVector W[2];   // W-bosons from top decay
-  LorentzVector b[2];   // b-quarks from top decay
-  LorentzVector t[2];   // top quark itself
   double bEnergyTF[2];  // value of b-quark energy transfer function
   for(unsigned i = 0; i < 2; ++i)
   {
+    const std::string i_str = std::to_string(i + 1);
     const VectorSpherical nuTP3unit_i(1., std::acos(cosTheta[i]), varphi[i]);
     const double nuTenergy_i = nuTopEnergy_[i](nuTP3unit_i);
-    nuT[i] = getLorentzVector(Vector(nuTenergy_i * nuTP3unit_i), nuTenergy_i);
-    W[i] = nuT[i] + leptP4_[i];
+    recoEvent.nuW[i] = getLorentzVector(Vector(nuTenergy_i * nuTP3unit_i), nuTenergy_i);
+    recoEvent.W[i] = recoEvent.nuW[i] + recoEvent.lW[i];
 
-    LOGTRC << lvrap("t nu " + std::to_string(i + 1), nuT[i]);
-    LOGTRC << lvrap("W " + std::to_string(i + 1), W[i]);
+    LOGTRC << lvrap("W nu " + i_str, recoEvent.nuW[i]);
+    LOGTRC << lvrap("W " + i_str,    recoEvent.W[i]);
 
-    const double bEnergy_i = bQuarkEnergy_[i](W[i]);
+    const double bEnergy_i = bQuarkEnergy_[i](recoEvent.W[i]);
     if(bEnergy_i == 0.) return 0.;
     const MeasuredJet & bJet_i = measuredEvent_ -> jets[i];
     const Vector bP3_i = std::sqrt(pow2(bEnergy_i) - constants::massBSquared) *
                          bJet_i.p3().unit();
-    b[i] = getLorentzVector(bP3_i, bEnergy_i);
-    t[i] = b[i] + W[i];
+    recoEvent.b[i] = getLorentzVector(bP3_i, bEnergy_i);
+    recoEvent.t[i] = recoEvent.b[i] + recoEvent.W[i];
 
-    LOGTRC << lvrap("b " + std::to_string(i + 1), b[i]);
-    LOGTRC << lvrap("b " + std::to_string(i + 1) + " reco", bJet_i.p4());
-    LOGTRC << lvrap("t " + std::to_string(i + 1), t[i]);
+    LOGTRC << lvrap("b " + i_str,           recoEvent.b[i]);
+    LOGTRC << lvrap("b " + i_str + " reco", bJet_i.p4());
+    LOGTRC << lvrap("t " + i_str,           recoEvent.t[i]);
 
 //--- b-jet energy transfer function
     bEnergyTF[i] = bJetTFBound_[i](bEnergy_i);
@@ -429,14 +429,14 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 //--- in the difference of ,,measured'' and ,,true'' hadronic recoil, because
 //--- leptons are assumed to be measured perfectly whereas the pT of jets/quarks
 //--- introduces uncertainties difficult to handle here
-  const LorentzVector nuSum = nuHtau + nuLTau + nuT[0] + nuT[1];
+  const LorentzVector nuSum = recoEvent.getNuSum();
   const double MET_TF = MET_TF_(nuSum.x(), nuSum.y());
 
 //--- compute Bjorken x variables
 //--- assume that hadronic recoil has only transverse component
   const double hadRecE = 0.;
   const double hadRecPz = 0.;
-  const LorentzVector tthOrZ = higgsOrZ + t[0] + t[1];
+  const LorentzVector tthOrZ = recoEvent.getTTHorZ();
   const double xa = (hadRecE + tthOrZ.e() + hadRecPz + tthOrZ.pz()) *
                     constants::invSqrtS;
   const double xb = (hadRecE + tthOrZ.e() - hadRecPz - tthOrZ.pz()) *
@@ -458,35 +458,17 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 //---       the division by energy
   const Vector boost(-tthOrZ.px() / tthOrZ.e(), -tthOrZ.py() / tthOrZ.e(), 0.);
   LOGTRC << cvrap("boost vector", boost);
-  const LorentzVector gluon1(0., 0., +0.5 * xa * constants::sqrtS,
-                                      0.5 * xa * constants::sqrtS);
-  const LorentzVector gluon2(0., 0., -0.5 * xb * constants::sqrtS,
-                                      0.5 * xb * constants::sqrtS);
-//--- top decay branches
-  LorentzVector lept_mem[2]; // lepton 4-momentum in pT(tth) = 0 frame
-  LorentzVector nuT_mem[2];  // neutrino 4-momentum in pT(tth) = 0 frame
-  LorentzVector b_mem[2];    // b-quark 4-momentum in pT(tth) = 0 frame
-  LorentzVector W_mem[2];    // W-boson 4-momentum in pT(tth) = 0 frame
-  LorentzVector t_mem[2];    // top-quark 4-momentum in pT(tth) = 0 frame
-  for(unsigned i = 0; i < 2; ++i)
-  {
-    lept_mem[i] = VectorUtil::boost(leptP4_[i], boost);
-    nuT_mem[i]  = VectorUtil::boost(nuT[i], boost);
-    b_mem[i]    = VectorUtil::boost(b[i], boost);
-    W_mem[i]    = VectorUtil::boost(W[i], boost);
-    t_mem[i]    = VectorUtil::boost(t[i], boost);
-  }
-  const LorentzVector hTau_mem   = VectorUtil::boost(hTau, boost);
-  const LorentzVector lTau_mem   = VectorUtil::boost(lTau, boost);
-  const LorentzVector hOrZ_mem   = VectorUtil::boost(higgsOrZ, boost);
-  const LorentzVector tthOrZ_mem = t_mem[0] + t_mem[1] + hOrZ_mem;
+  recoEvent.g[0] = LorentzVector(0., 0., +0.5 * xa * constants::sqrtS,
+                                           0.5 * xa * constants::sqrtS);
+  recoEvent.g[1] = LorentzVector(0., 0., -0.5 * xb * constants::sqrtS,
+                                           0.5 * xb * constants::sqrtS);
+  const RecoTrueEvent_ttHorZ_3l1tau recoEventmem = recoEvent.boost(boost);
+  const LorentzVector tthOrZ_mem = recoEventmem.getTTHorZ();
   if(isTTH) LOGTRC << lvrap("tth mem", tthOrZ_mem);
   else      LOGTRC << lvrap("ttz mem", tthOrZ_mem);
 
-  const LorentzVector hTauP4_mem = VectorUtil::boost(hTauP4_, boost);
-  const LorentzVector complLeptP4_mem = VectorUtil::boost(complLeptP4_, boost);
-  const double z1_mem = hTauP4_mem.e() / hTau_mem.e();
-  const double z2_mem = complLeptP4_mem.e() / lTau.e();
+  const double z1_mem = recoEventmem.hTauLepton.e() / recoEventmem.hTau.e();
+  const double z2_mem = recoEventmem.lTauLepton.e() / recoEventmem.lTau.e();
   LOGTRC << "z1_mem = " << z1_mem << "; z2_mem = " << z2_mem;
   if(! (z1_mem >= 1.e-5 && z1_mem <= 1.) ||
      ! (z2_mem >= 1.e-5 && z2_mem <= 1.))
@@ -497,13 +479,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   }
 
 //--- set MG momenta
-  const std::vector<LorentzVector> memVector_p4 =
-  {
-    gluon1, gluon2, b_mem[0], lept_mem[0], nuT_mem[0],
-                    b_mem[1], lept_mem[1], nuT_mem[1],
-    lTau_mem, hTau_mem
-  };
-  setMGmomenta(memVector_p4);
+  setMGmomenta(recoEventmem.getForMG());
   me_madgraph_[currentME_] -> setMomenta(mgMomenta_);
 
   LOGTRC_S << "prob(PDF) = " << probPDF << "; flux factor = " << flux;
@@ -523,7 +499,9 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   double tDecayJacobiFactors[2];
   for(unsigned i = 0; i < 2; ++i)
   {
-    tDecayJacobiFactors[i] = tDecayJacobiFactor_[i](W[i], b[i].e(), b[i].P(), nuT[i].e());
+    tDecayJacobiFactors[i] = tDecayJacobiFactor_[i](
+      recoEvent.W[i], recoEvent.b[i].e(), recoEvent.b[i].P(), recoEvent.nuW[i].e()
+    );
     LOGTRC_S << "Jacobi factors arising from the top decay: #" << (i + 1) << " = "
              << tDecayJacobiFactors[i];
     if(tDecayJacobiFactors[i] == 0.) return 0.;
@@ -549,17 +527,17 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 
 //--- for debugging purposes plot some variables
   if(DebugPlotter_ttHorZ_3l1tau * dPlotter = measuredEvent_ -> debugPlotter)
-    (*dPlotter).fill(hVar::kZ1, z1)
-               .fill(hVar::kZ2, z2)
-               .fill(hVar::kMassHorZ, higgsOrZ.mass())
-               .fill(hVar::kMassHtau, hTau.mass())
-               .fill(hVar::kMassLtau, lTau.mass())
-               .fill(hVar::kB1en, b[0].e())
-               .fill(hVar::kB2en, b[1].e())
+    (*dPlotter).fill(hVar::kZ1,       z1)
+               .fill(hVar::kZ2,       z2)
+               .fill(hVar::kMassHorZ, recoEvent.higgsOrZ.mass())
+               .fill(hVar::kMassHtau, recoEvent.hTau.mass())
+               .fill(hVar::kMassLtau, recoEvent.lTau.mass())
+               .fill(hVar::kB1en,     recoEvent.b[0].e())
+               .fill(hVar::kB2en,     recoEvent.b[1].e())
                .fill(hVar::kB1RecoEn, measuredEvent_ -> jets[0].energy())
                .fill(hVar::kB2RecoEn, measuredEvent_ -> jets[1].energy())
                .fill(hVar::kMsquared, prob_ME_mg)
-               .fill(hVar::kProb, p);
+               .fill(hVar::kProb,     p);
 
   return p;
 }

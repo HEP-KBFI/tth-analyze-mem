@@ -8,6 +8,7 @@
 #include "tthAnalysis/tthMEM/interface/me_ttHorZ_3l1tau_mg5.h" // me_ttHorZ_3l1tau_mg5
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // tthMEM_3l_1tau::MeasuredEvent
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
+#include "tthAnalysis/tthMEM/interface/RecoTrueEvent_ttHorZ_3l1tau.h" // RecoTrueEvent_ttHorZ_3l1tau
 
 #include "LHAPDF/LHAPDF.h" // LHAPDF::PDF
 
@@ -75,6 +76,9 @@ namespace tthMEM
     static const Integrand_ttHorZ_3l1tau * gIntegrand;
     ///< static pointer to this instance
 
+    mutable RecoTrueEvent_ttHorZ_3l1tau recoEvent;
+    ///< reconstructed event in the lab frame
+
   protected:
     LHAPDF::PDF * pdf_;
     ///< pointer to the parton distribution function (PDF)
@@ -86,13 +90,10 @@ namespace tthMEM
     double Q_;              ///< the resolution scale needed by the PDF
     const Vector beamAxis_; ///< defines the z-coordinate in the lab frame
 
-    const MeasuredEvent_3l1tau * measuredEvent_; ///< pointer to the measured event
-    const VariableManager_3l1tau & vm_; ///< variable metadata used to pull new values
-
-    double measuredVisMassSquared_; ///< mass of visible tau decay products
-    LorentzVector hTauP4_,          ///< 4-momentum of the hadronic tau
-                  complLeptP4_,     ///< 4-momentum of the complementary lepton
-                  leptP4_[2];       ///< 4-momenta of leptons coming from top decay
+    const MeasuredEvent_3l1tau * measuredEvent_;
+    ///< pointer to the measured event
+    const VariableManager_3l1tau & vm_;
+    ///< variable metadata used to pull new values
 
     mutable std::vector<double *> mgMomenta_;
     ///< needed by MadGraph to calculate the matrix elements
@@ -100,6 +101,7 @@ namespace tthMEM
     ///< specifies the order in which the 4-momenta are assigned in MadGraph
 
     /* reconstruction functionals */
+    std::function<double(double)>                  z2_;
     std::function<double(double)>                  nuHtauCosTheta_;
     std::function<double(double, double, double)>  nuLeptTauCosTheta_;
     std::function<double(double)>                  nuHtauEnergy_;

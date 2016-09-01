@@ -10,6 +10,14 @@ namespace tthMEM
   namespace functions
   {
     double
+    z2(double z1,
+       double measuredVisMassSquared,
+       double massHiggsOrZsquared)
+    {
+      return measuredVisMassSquared / (massHiggsOrZsquared * z1);
+    }
+
+    double
     nuHtauCosTheta(double nuHtau_en,
                    double hTauEnergy,
                    double hTauMassSquared,

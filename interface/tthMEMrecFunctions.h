@@ -14,6 +14,22 @@ namespace tthMEM
      *        from reconstructed values in the event.
      */
 
+      /**
+     * @brief Calculates energy fraction of leptonic tau decay products
+     * @param measuredVisMassSquared Measured mass squared of visible tau decay products
+     * @param massHiggsOrZsquared    Mass of Higgs or Z
+     * @param z1                     Energy fraction of hadronic tau decay products
+     * @return The energy fraction of leptonic tau decay products
+     *
+     * Note that we could use the energy fraction of hadronic tau decay products
+     * in the same manner, given leptonic energy fraction. But in the code we use it
+     * in the former way.
+     */
+    double
+    z2(double z1,
+       double measuredVisMassSquared, /* bind */
+       double massHiggsOrZsquared);   /* bind */
+
     /**
      * @brief Reconstructs cosine of the opening angle between the hadronic tau
      *         decay products (a hadronic tau lepton and a neutrino): tau -> htau nu
