@@ -1,8 +1,6 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
 
-#include <cmath> // std::pow(), std::ceil(), std::log10(), std::fabs(),
-                 // std::round(), std::rint()
 #include <cfenv> // std::fesetround(), FE_TONEAREST
 #include <cassert> // assert()
 
@@ -165,5 +163,96 @@ namespace tthMEM
       assert(0);
     }
     return inputFile.fullPath();
+  }
+
+  namespace functions
+  {
+    double
+    l2(const std::vector<double> & v,
+       double shiftValue)
+    {
+      return l2(v, 0, v.size(), shiftValue);
+    }
+
+    double
+    l2(const std::vector<double> & v,
+       unsigned shiftFromBegin,
+       double shiftValue)
+    {
+      assert(shiftFromBegin <= v.size());
+      return l2(v, 0, shiftFromBegin, shiftValue);
+    }
+
+    double
+    l2(const std::vector<double> & v,
+       unsigned shiftFromBegin_begin,
+       unsigned shiftFromBegin_end,
+       double shiftValue)
+    {
+      assert(shiftFromBegin_begin <= shiftFromBegin_end &&
+             shiftFromBegin_begin <= v.size() &&
+             shiftFromBegin_end <= v.size());
+      return std::sqrt(std::accumulate(
+        v.begin() + shiftFromBegin_begin, v.end() + shiftFromBegin_end, 0.,
+        [shiftValue](double sum,
+                     double element) -> double
+        {
+          return sum + pow2(element - shiftValue);
+        }
+      ));
+    }
+
+    double
+    avg(const std::vector<double> & v)
+    {
+      return avg(v, 0, v.size());
+    }
+
+    double
+    avg(const std::vector<double> & v,
+        unsigned shiftFromBegin)
+    {
+      return avg(v, 0, shiftFromBegin);
+    }
+
+    double
+    avg(const std::vector<double> & v,
+        unsigned shiftFromBegin_begin,
+        unsigned shiftFromBegin_end)
+    {
+      assert(shiftFromBegin_begin <= shiftFromBegin_end &&
+             shiftFromBegin_begin <= v.size() &&
+             shiftFromBegin_end <= v.size());
+      if(! v.size() || shiftFromBegin_begin == shiftFromBegin_end) return 0.;
+      return std::accumulate(v.begin() + shiftFromBegin_begin,
+                             v.begin() + shiftFromBegin_end,
+                             0.) /
+             (shiftFromBegin_end - shiftFromBegin_begin);
+    }
+
+    double
+    stdev(const std::vector<double> & v, double average)
+    {
+      return stdev(v, 0, v.size(), average);
+    }
+
+    double
+    stdev(const std::vector<double> & v,
+          unsigned shiftFromBegin,
+          double average)
+    {
+      return stdev(v, 0, shiftFromBegin, average);
+    }
+
+    double
+    stdev(const std::vector<double> & v,
+          unsigned shiftFromBegin_begin,
+          unsigned shiftFromBegin_end,
+          double average)
+    {
+      const unsigned range = shiftFromBegin_end - shiftFromBegin_begin;
+      return l2(v, shiftFromBegin_begin, shiftFromBegin_end, average) /
+             std::sqrt(range >= 2 ? range * (range - 1) : 1.);
+    }
   }
 }
