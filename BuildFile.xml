@@ -5,7 +5,7 @@
 <use name="lhapdf" />
 <use name="vamp" />
 <use name="boost" />
-<!-- <Flags CXXFLAGS="-g" /> -->
+<!-- <Flags CXXFLAGS="-g3 -Og -ggdb3" /> -->
 <export>
   <lib name="1" />
 </export>

@@ -2,10 +2,12 @@
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorVEGAS.h"
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorVAMP.h"
+#include "tthAnalysis/tthMEM/interface/MEMIntegratorMarkovChain.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // ...
   // ... roundToNearestUInt(), pi(), massTauSquared, xSectionTTHinGeV2
 
 #include <cmath> // std::round()
+#include <stdexcept> // std::runtime_error
 
 #include <boost/algorithm/string/predicate.hpp> // boost::iequals()
 
@@ -33,42 +35,44 @@ MEM_ttHorZ_3l1tau::MEM_ttHorZ_3l1tau(const std::string & pdfName,
                                      const std::string & madgraphFileName,
                                      const VariableManager_3l1tau & vm)
   : vm_(vm)
-  , integrand_(new Integrand_ttHorZ_3l1tau(pdfName, madgraphFileName, vm_))
-  , integrationMode_(IntegrationMode::kUndefined)
-  , intAlgo_(0)
-  , maxObjFunctionCalls_(20000)
-  , numDimensions_(vm_.getCurrentDim())
-  , precision_(1.e-3)
-  , setTF_(false)
-  , clock_(new TBenchmark())
-  , numSeconds_cpu_(0.)
-  , numSeconds_real_(0.)
-  , numSecondsAccumul_cpu_(0.)
-  , numSecondsAccumul_real_(0.)
-  , nof_calls_(0)
 {
   LOGTRC;
+  initialize(pdfName, madgraphFileName);
 }
 
 MEM_ttHorZ_3l1tau::MEM_ttHorZ_3l1tau(const std::string & pdfName,
                                      const std::string & madgraphFileName,
                                      VariableManager_3l1tau && vm)
   : vm_(std::move(vm))
-  , integrand_(new Integrand_ttHorZ_3l1tau(pdfName, madgraphFileName, vm_))
-  , integrationMode_(IntegrationMode::kUndefined)
-  , intAlgo_(0)
-  , maxObjFunctionCalls_(20000)
-  , numDimensions_(vm_.getCurrentDim())
-  , precision_(1.e-3)
-  , setTF_(false)
-  , clock_(new TBenchmark())
-  , numSeconds_cpu_(0.)
-  , numSeconds_real_(0.)
-  , numSecondsAccumul_cpu_(0.)
-  , numSecondsAccumul_real_(0.)
-  , nof_calls_(0)
 {
   LOGTRC;
+  initialize(pdfName, madgraphFileName);
+}
+
+void
+MEM_ttHorZ_3l1tau::initialize(const std::string & pdfName,
+                              const std::string madgraphFileName)
+{
+  LOGTRC;
+  integrand_ = new Integrand_ttHorZ_3l1tau(pdfName, madgraphFileName, vm_);
+  integrationMode_ = IntegrationMode::kUndefined;
+  intAlgo_ = 0;
+  numDimensions_ = vm_.getCurrentDim();
+  setTF_ = false;
+  clock_ = new TBenchmark();
+  numSeconds_cpu_ = 0.;
+  numSeconds_real_ = 0.;
+  numSecondsAccumul_cpu_ = 0.;
+  numSecondsAccumul_real_ = 0.;
+  nof_calls_ = 0;
+
+  nofBatches_ = 100;
+  nofChains_ = 1;
+  epsilon0_ = 1.e-2;
+  T0_ = 15.;
+  nu_ = 0.71;
+
+  setMaxObjFunctionCalls(20000);
 }
 
 MEM_ttHorZ_3l1tau::~MEM_ttHorZ_3l1tau()
@@ -86,14 +90,15 @@ MEM_ttHorZ_3l1tau::~MEM_ttHorZ_3l1tau()
   }
 }
 
-void
+MEM_ttHorZ_3l1tau &
 MEM_ttHorZ_3l1tau::setIntegrationMode(IntegrationMode integrationMode)
 {
   LOGTRC;
   integrationMode_ = integrationMode;
+  return *this;
 }
 
-void
+MEM_ttHorZ_3l1tau &
 MEM_ttHorZ_3l1tau::setIntegrationMode(const std::string & integrationModeString)
 {
   LOGTRC;
@@ -101,21 +106,57 @@ MEM_ttHorZ_3l1tau::setIntegrationMode(const std::string & integrationModeString)
     integrationMode_ = IntegrationMode::kVEGAS;
   else if(boost::iequals(integrationModeString, "vamp"))
     integrationMode_ = IntegrationMode::kVAMP;
+  else if(boost::iequals(integrationModeString, "markovchain"))
+    integrationMode_ = IntegrationMode::kMarkovChain;
   else
     integrationMode_ = IntegrationMode::kUndefined;
+  return *this;
 }
 
-void
+MEM_ttHorZ_3l1tau &
 MEM_ttHorZ_3l1tau::setBJetTransferFunction(bool setTF)
 {
   setTF_ = setTF;
+  return *this;
 }
 
-void
+MEM_ttHorZ_3l1tau &
 MEM_ttHorZ_3l1tau::setMaxObjFunctionCalls(unsigned maxObjFunctionCalls)
 {
   LOGTRC;
   maxObjFunctionCalls_ = maxObjFunctionCalls;
+  numCallsGridOpt_     = roundToNearestUInt(0.20 * maxObjFunctionCalls_);
+  numCallsIntEval_     = roundToNearestUInt(0.80 * maxObjFunctionCalls_);
+//--- Markov Chain stuff
+  nofIterBurnin_       = roundToNearestUInt(0.10 * maxObjFunctionCalls_ / nofChains_);
+  nofIterSampling_     = roundToNearestUInt(0.90 * maxObjFunctionCalls_ / nofChains_);
+  nofIterSimAnnPhase1_ = roundToNearestUInt(0.20 * nofIterBurnin_);
+  nofIterSimAnnPhase2_ = roundToNearestUInt(0.60 * nofIterBurnin_);
+  alpha_ = 1. - 10. / nofIterBurnin_;
+
+  return *this;
+}
+
+MEM_ttHorZ_3l1tau &
+MEM_ttHorZ_3l1tau::setMarkovChainParams(unsigned nofBatches,
+                                        unsigned nofChains,
+                                        double epsilon0,
+                                        double T0,
+                                        double nu)
+{
+  nofBatches_ = nofBatches;
+  nofChains_ = nofChains;
+  epsilon0_ = epsilon0;
+  T0_ = T0;
+  nu_ = nu;
+//--- update the nofIter* parameters
+  return setMaxObjFunctionCalls(maxObjFunctionCalls_);
+}
+
+bool
+MEM_ttHorZ_3l1tau::isMarkovChainIntegrator() const
+{
+  return integrationMode_ == IntegrationMode::kMarkovChain;
 }
 
 double
@@ -150,7 +191,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   if(integrationMode_ == IntegrationMode::kUndefined)
   {
     LOGERR << "Integration mode not set";
-    assert(0);
+    throw std::runtime_error(__PRETTY_FUNCTION__);
   }
   const bool isTTH = currentME == ME_mg5_3l1tau::kTTH;
 
@@ -172,15 +213,24 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   double pSum = 0.;
   double pSumErr = 0;
 
-//--- set integration settings
-  const unsigned numCallsGridOpt = roundToNearestUInt(0.20 * maxObjFunctionCalls_);
-  const unsigned numCallsIntEval = roundToNearestUInt(0.80 * maxObjFunctionCalls_);
+//--- integration settings
   if(numDimensions_)
   {
     if(integrationMode_ == IntegrationMode::kVEGAS)
-      intAlgo_ = new MEMIntegratorVEGAS(numCallsGridOpt, numCallsIntEval, 1, 2.);
+      intAlgo_ = new MEMIntegratorVEGAS(numCallsGridOpt_, numCallsIntEval_, 1, 2.);
     else if(integrationMode_ == IntegrationMode::kVAMP)
-      intAlgo_ = new MEMIntegratorVAMP(numCallsGridOpt, numCallsIntEval);
+      intAlgo_ = new MEMIntegratorVAMP(numCallsGridOpt_, numCallsIntEval_);
+    else if(integrationMode_ == IntegrationMode::kMarkovChain)
+    {
+      intAlgo_ = new MEMIntegratorMarkovChain(
+        MarkovChainMode::kUniform,
+        nofIterBurnin_,       nofIterSampling_,
+        nofIterSimAnnPhase1_, nofIterSimAnnPhase2_,
+        T0_,                  alpha_,
+        nofChains_,           nofBatches_,
+        epsilon0_,            nu_
+      );
+    }
   }
 
 //--- loop over different permutations of same-sign leptons and b-jets
@@ -195,7 +245,8 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
 
     if(numDimensions_)
     {
-      if(integrationMode_ == IntegrationMode::kVEGAS)
+      if(integrationMode_ == IntegrationMode::kVEGAS ||
+         integrationMode_ == IntegrationMode::kMarkovChain)
         intAlgo_ -> integrate(&g_C, xl, xu, numDimensions_, p, pErr);
       else if(integrationMode_ == IntegrationMode::kVAMP)
         intAlgo_ -> integrate(&g_Fortran, xl, xu, numDimensions_, p, pErr);

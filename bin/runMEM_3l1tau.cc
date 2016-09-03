@@ -25,6 +25,9 @@
 
 using namespace tthMEM;
 
+typedef edm::ParameterSet PSet;
+typedef std::vector<PSet> vPSet;
+
 int
 main(int argc,
      char * argv[])
@@ -39,7 +42,7 @@ main(int argc,
   std::atexit(Logger::flush);
 //--- point signal handler to std::exit() which also flushes the stdout
   for(int sig: { SIGABRT, SIGILL, SIGINT, SIGSEGV, SIGTERM, SIGQUIT })
-    std::signal(sig, std::exit);
+    std::signal(sig, [](int sig) { LOGERR << "Encountered signal " << sig; std::exit(sig); });
 
 //--- parse the configuration file
   if(argc != 2)
@@ -49,12 +52,12 @@ main(int argc,
   }
 
   const std::string ps = "process";
-  if(!edm::readPSetsFrom(argv[1]) -> existsAs<edm::ParameterSet>(ps.c_str()))
+  if(!edm::readPSetsFrom(argv[1]) -> existsAs<PSet>(ps.c_str()))
     throw cms::Exception("tthMEM")
       << "No ParameterSet '" << ps << "' found in configuration file = " << argv[1] << "\n";
-  const edm::ParameterSet cfg = edm::readPSetsFrom(argv[1]) -> getParameter<edm::ParameterSet>(ps.c_str());
+  const PSet cfg = edm::readPSetsFrom(argv[1]) -> getParameter<PSet>(ps.c_str());
 
-  const edm::ParameterSet cfg_log = cfg.getParameter<edm::ParameterSet>("logging");
+  const PSet cfg_log = cfg.getParameter<PSet>("logging");
   const std::string logLevel = cfg_log.getParameter<std::string>("logLevel");
   const bool enableLogging = cfg_log.getParameter<bool>("enableLogging");
   const bool enableTimeStamp = cfg_log.getParameter<bool>("enableTimeStamp");
@@ -63,7 +66,7 @@ main(int argc,
   Logger::enableLogging(enableLogging);
   Logger::enableTimeStamp(enableTimeStamp);
 
-  const edm::ParameterSet cfg_tthMEM = cfg.getParameter<edm::ParameterSet>("tthMEM");
+  const PSet cfg_tthMEM = cfg.getParameter<PSet>("tthMEM");
   const bool isMC = cfg_tthMEM.getParameter<bool>("isMC");
   const std::string treeName = cfg_tthMEM.getParameter<std::string>("treeName");
   const std::string pdfName = cfg_tthMEM.getParameter<std::string>("pdfName");
@@ -75,7 +78,6 @@ main(int argc,
 
 //--- clamp the variables if needed
   VariableManager_3l1tau vm;
-  typedef std::vector<edm::ParameterSet> vPSet;
   const vPSet clampVariables = cfg_tthMEM.getParameter<vPSet>("clampVariables");
   for(const auto & cfg_clamp: clampVariables)
   {
@@ -112,6 +114,24 @@ main(int argc,
   LOGINFO << "MadGraph file name: " << madgraphFileName;
   LOGINFO << "Integation mode: " << integrationMode;
   LOGINFO << "Maximum number of calls per event: " << maxObjFunctionCalls;
+
+//--- initialize the MEM instance
+  LOGINFO << "Initializing the tth&z MEM instance";
+  MEM_ttHorZ_3l1tau mem_tt_HandZ(pdfName, findFile(madgraphFileName), std::move(vm));
+  mem_tt_HandZ.setIntegrationMode(integrationMode);
+  mem_tt_HandZ.setMaxObjFunctionCalls(maxObjFunctionCalls);
+  mem_tt_HandZ.setBJetTransferFunction(true);
+  if(mem_tt_HandZ.isMarkovChainIntegrator())
+  {
+//--- retrieve the parameters for Markov Chain integrator
+    const PSet cfg_mx = cfg_tthMEM.getParameter<PSet>("markovChainParams");
+    const unsigned nofBatches = cfg_mx.getParameter<unsigned>("nofBatches");
+    const unsigned nofChains = cfg_mx.getParameter<unsigned>("nofChains");
+    const double epsilon0 = cfg_mx.getParameter<double>("epsilon0");
+    const double T0 = cfg_mx.getParameter<double>("T0");
+    const double nu = cfg_mx.getParameter<double>("nu");
+    mem_tt_HandZ.setMarkovChainParams(nofBatches, nofChains, epsilon0, T0, nu);
+  }
 
   const fwlite::InputSource inputFiles(cfg);
   const int maxEvents = inputFiles.maxEvents();
@@ -153,18 +173,14 @@ main(int argc,
   TBranch * lhRatioNPBranch            __attribute__((unused)) =
     newTree -> Branch("lhRatioNP",             &lhRatioNP,            "lhRatioNP/D");
 
-//--- initialize the MEM instance and start looping over the events
-  LOGINFO << "Initializing the tth&z MEM instance";
-  MEM_ttHorZ_3l1tau mem_tt_HandZ(pdfName, findFile(madgraphFileName), std::move(vm));
-  mem_tt_HandZ.setIntegrationMode(integrationMode);
-  mem_tt_HandZ.setMaxObjFunctionCalls(maxObjFunctionCalls);
-  mem_tt_HandZ.setBJetTransferFunction(true);
+//--- set up the weights in the denominator of Neyman-Pearson likelihood ratio
 //  const double bkgWeightDenom = 1. / (constants::xSectionTTZ + constants::xSectionTTH2diW);
   const double bkgWeightDenom = 1. / constants::xSectionTTZ;
   const std::vector<double> denomWeights = {
     1., constants::xSectionTTZ * bkgWeightDenom//, constants::xSectionTTH2diW * bkgWeightDenom
   };
 
+//--- start looping over the events
   const Long64_t nof_tree_entries = inputTree -> GetEntries();
   const Long64_t nof_max_entries = maxEvents < 0 ? nof_tree_entries : (startingFromEntry + maxEvents);
   if(nof_max_entries > nof_tree_entries)

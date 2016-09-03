@@ -26,7 +26,7 @@ process.tthMEM = cms.PSet(
   pdfName             = cms.string("MSTW2008lo68cl"),
   madgraphFileName    = cms.string("tthAnalysis/tthMEM/data/param_card.dat"),
   integrationMode     = cms.string("VEGAS"),
-  maxObjFunctionCalls = cms.uint32(50), # just for testing; proper figure: 100k+
+  maxObjFunctionCalls = cms.uint32(150), # just for testing; proper figure: 100k+
   startingFromEntry   = cms.int64(0),
   debugPlots          = cms.uint32(16), # use 0 if no debug plots needed
   clampVariables      = cms.VPSet(
@@ -38,6 +38,13 @@ process.tthMEM = cms.PSet(
     cms.PSet( var = cms.string("tauPhi"),         useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),
     cms.PSet( var = cms.string("tauPhiInv"),      useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),
     cms.PSet( var = cms.string("tauMinvSquared"), useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0))
+  ),
+  markovChainParams   = cms.PSet( # only read if the integrationMode is set to 'markovchain'
+    nofBatches = cms.uint32(27), # must divide (maxObjFunctionCalls * 0.9 / nofChains)
+    nofChains  = cms.uint32(1),
+    epsilon0   = cms.double(1.e-2),
+    T0         = cms.double(15.),
+    nu         = cms.double(0.71)
   )
 )
 

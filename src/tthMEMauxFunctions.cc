@@ -193,7 +193,7 @@ namespace tthMEM
              shiftFromBegin_begin <= v.size() &&
              shiftFromBegin_end <= v.size());
       return std::sqrt(std::accumulate(
-        v.begin() + shiftFromBegin_begin, v.end() + shiftFromBegin_end, 0.,
+        v.begin() + shiftFromBegin_begin, v.begin() + shiftFromBegin_end, 0.,
         [shiftValue](double sum,
                      double element) -> double
         {

@@ -4,7 +4,7 @@
   <use name="FWCore/Utilities" />
   <use name="root" />
   <use name="tthAnalysis/tthMEM" />
-<!--  <Flags CXXFLAGS="-g" /> -->
+<!--  <Flags CXXFLAGS="-g3 -Og -ggdb3" /> -->
 </bin>
 <bin file="bjetTFPlot.cc" name="bjetTFPlot">
   <use name="root" />

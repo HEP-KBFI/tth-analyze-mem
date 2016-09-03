@@ -10,7 +10,17 @@
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 #include "tthAnalysis/tthMEM/interface/RecoTrueEvent_ttHorZ_3l1tau.h" // RecoTrueEvent_ttHorZ_3l1tau
 
+// ignore "-Wmaybe-uninitialized" gcc error if compiled with -Og -g3 -ggdb3
+#if defined(__OPTIMIZE__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+
 #include "LHAPDF/LHAPDF.h" // LHAPDF::PDF
+
+#if defined(__OPTIMIZE__)
+#pragma GCC diagnostic pop
+#endif
 
 namespace tthMEM
 {

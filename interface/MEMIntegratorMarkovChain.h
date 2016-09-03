@@ -2,9 +2,11 @@
 #define MEMINTEGRATORMARKOVCHAIN_H
 
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorBase.h" // MEMIntegratorBase
+#include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 
 #include <vector> // std::vector<>
 #include <ostream> // std::ostream
+#include <stdexcept> // std::runtime_error
 
 #include <TRandom3.h> // TRandom3
 
@@ -41,6 +43,18 @@ namespace tthMEM
               unsigned dimension,
               double & integral,
               double & integralErr) override;
+
+    void
+    integrate(gPtr_Fortran integrand,
+              const double * xl,
+              const double * xu,
+              unsigned dimension,
+              double & integral,
+              double & integralErr) override
+    {
+      LOGERR << "You must use the other integrate() not this one";
+      throw std::runtime_error(__PRETTY_FUNCTION__);
+    }
 
     friend std::ostream &
     operator<<(std::ostream & os,
@@ -113,7 +127,7 @@ namespace tthMEM
     ///< integrand functional
     unsigned nofDimensions_;
     ///< dimensionality of the integration space
-    double * x_;
+    std::vector<double> x_;
     ///< current point in the integration space
     std::vector<double> xMin_;
     ///< lower boundaries of integration region
@@ -130,7 +144,7 @@ namespace tthMEM
     /* counter variables */
     unsigned long nofMoves_accepted_,      nofMoves_rejected_,
                   nofMoves_acceptedTotal_, nofMoves_rejectedTotal_,
-                  nofIntegrationCalls_,    nofChainsRun_;
+                  nofIntegrationCalls_;
 
     TRandom3 prng_;
     ///< PRNG (Mersenne Twister)

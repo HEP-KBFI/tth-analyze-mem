@@ -1,9 +1,7 @@
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorMarkovChain.h"
-#include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*, Logger::
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // pow*(), functions::
 
 #include <cmath> // std::sqrt(), std::exp()
-#include <stdexcept> // std::invalid_argument, std::runtime_error
 #include <algorithm> // std::copy(), std::fill(), std::generate(), ...
   // ..., std::transform(), find_if_not()
 #include <functional> // std::divides<>, std::bind2nd()
@@ -39,8 +37,7 @@ MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(MarkovChainMode mode,
   , nofChainsXnofBatches_(nofChains_ * nofBatches_)
   , epsilon0_(epsilon0)
   , nu_(nu)
-  , maxCallsStartingPos_(1000000)
-  , x_(0)
+  , maxCallsStartingPos_(200)//(1000000)
 {
   if(nofIterSimAnnPhaseSum_ > nofIterBurnin_)
   {
@@ -90,13 +87,8 @@ MEMIntegratorMarkovChain::~MEMIntegratorMarkovChain()
            << "accepted moves = " << nofMoves_acceptedTotal_ << "; "
            << "rejected moves = " << nofMoves_rejectedTotal_ << " "
            << "(acceptance rate = "
-           << static_cast<double>(nofMoves_acceptedTotal_) /
-              (nofMoves_acceptedTotal_ + nofMoves_rejectedTotal_) << ")";
-  if(x_)
-  {
-    delete [] x_;
-    x_ = 0;
-  }
+           << 100. * nofMoves_acceptedTotal_ /
+              (nofMoves_acceptedTotal_ + nofMoves_rejectedTotal_) << "%)";
 }
 
 void
@@ -108,16 +100,19 @@ MEMIntegratorMarkovChain::setIntegrand(gPtr_C integrand,
 //--- reset current dimensionality
   nofDimensions_ = dimension;
 //--- clean old stuff
-  if(x_) delete [] x_;
+  x_.clear();
   xMin_.clear();
   xMax_.clear();
 //--- ...
-  x_ = new double[nofDimensions_];
+  x_.resize(nofDimensions_);
 //--- copy the integration space boundaries over
-  xMin_.resize(nofDimensions_);
-  xMax_.resize(nofDimensions_);
+//  xMin_.resize(nofDimensions_);
+//  xMax_.resize(nofDimensions_);
   std::copy(xl, xl + nofDimensions_, std::back_inserter(xMin_));
   std::copy(xu, xu + nofDimensions_, std::back_inserter(xMax_));
+  LOGTRC << "xMin = " << xMin_;
+  LOGTRC << "xMax = " << xMax_;
+  epsilon0s_.resize(nofDimensions_);
   std::fill(epsilon0s_.begin(), epsilon0s_.end(), epsilon0_);
 //--- 1st N entries ,,significant'' components, last N ,,dummy'' components
   p_.resize(2 * nofDimensions_);
@@ -141,7 +136,7 @@ MEMIntegratorMarkovChain::initialize()
 {
 //--- randomly choose starting position of MX in the N-dimensional space
   q_.clear();
-  q_.reserve(nofDimensions_);
+  q_.resize(nofDimensions_);
   std::generate(
     q_.begin(), q_.end(),
     [this]() -> double
@@ -181,12 +176,13 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
 //--- initialize counters
   nofMoves_accepted_ = 0;
   nofMoves_rejected_ = 0;
-  nofChainsRun_ = 0;
 
 //--- TTree stuff (tbd)
 
 //--- loop over MX
-  const unsigned nofIterPerBatch = nofBatches_ / nofIterSampling_;
+  /// @todo move to private variables
+  const unsigned nofIterPerBatch = nofIterSampling_ / nofBatches_;
+  LOGTRC << "nofIterPerBatch = " << nofIterPerBatch;
   for(unsigned iChain = 0; iChain < nofChains_; ++iChain)
   {
     bool isValidStartPos = false;
@@ -259,8 +255,6 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
       }
       probSum_[iBatch] += prob_;
     } // nofIterSampling
-
-    ++nofChainsRun_;
   } // nofChains
 
   std::transform(probSum_.begin(), probSum_.end(), integral_.begin(),
@@ -276,6 +270,8 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
   nofMoves_acceptedTotal_ += nofMoves_accepted_;
   nofMoves_rejectedTotal_ += nofMoves_rejected_;
 
+  LOGTRC << *this;
+
 //--- TTree stuff (tbd)
 }
 
@@ -284,6 +280,11 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
                                              bool & isAccepted)
 {
 //--- performs ,,stochastic move''
+  LOGTRC << "idxMove = " << idxMove;
+  LOGTRC << "nofIterSimAnnPhase1 = " << nofIterSimAnnPhase1_;
+  LOGTRC << "nofIterSimAnnPhaseSum = " << nofIterSimAnnPhaseSum_;
+  LOGTRC << "p = " << p_;
+  LOGTRC << "q = " << q_;
 
 //--- perform random updates of momentum components
   if     (idxMove < nofIterSimAnnPhase1_)
@@ -304,9 +305,12 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
 //--- divide by the magnitude of the vector, uL2
     std::transform(u_.begin(), u_.end(), u_.begin(),
                    std::bind2nd(std::divides<double>(), uL2));
+    LOGTRC << "u = " << u_;
+    /// @todo remove member status of u_
     const double pL2 = functions::l2(p_);
-    for(unsigned i = 0; i < p_.size(); ++i)
-      p_[i] = alpha_ * pL2 * u_[i] + (1. - alphaSquared_) * prng_.Gaus(0., 1.);
+    LOGTRC << "pL2 = " << pL2;
+    for(unsigned iDim = 0; iDim < p_.size(); ++iDim)
+      p_[iDim] = alpha_ * pL2 * u_[iDim] + (1. - alphaSquared_) * prng_.Gaus(0., 1.);
   }
   else
     std::generate(p_.begin(), p_.end(),
@@ -314,13 +318,14 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
                   {
                     return prng_.Gaus(0., 1.);
                   });
+  LOGTRC;
 
 //--- choose random stpe size
   double expNuTimesC = 0.;
   do
   {
     expNuTimesC = std::exp(nu_ * prng_.BreitWigner(0., 1.));
-  } while(! TMath::IsNaN(expNuTimesC) ||
+  } while(TMath::IsNaN(expNuTimesC) ||
           ! TMath::Finite(expNuTimesC) ||
           expNuTimesC > 1.e+6);
   std::vector<double> epsilons;
@@ -330,27 +335,33 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
                    return expNuTimesC * epsilon0;
                  }
   );
+  LOGTRC << "epsilon0s = " << epsilon0s_;
+  LOGTRC << "qProposal = " << qProposal_;
+  LOGTRC << "p = " << p_;
+  LOGTRC << "q = " << q_;
 
 //--- Metropolis algorithm move
 
 //--- update position components by single step of chosen size
 //--- in the direction of the momentum components
-  for(unsigned i = 0; i < qProposal_.size(); ++i)
-    qProposal_[i] = q_[i] + epsilons[i] * p_[i];
+  for(unsigned iDim = 0; iDim < qProposal_.size(); ++iDim)
+    qProposal_[iDim] = q_[iDim] + epsilons[iDim] * p_[iDim];
 
 //--- ensure that proposed new point is within integration region
 //--- (assume ,,periodic'' integration domain)
-  for(unsigned i = 0; i < qProposal_.size(); ++i)
+  for(unsigned iDim = 0; iDim < qProposal_.size(); ++iDim)
   {
-    const double qi = qProposal_[i] - std::floor(qProposal_[i]);
+    const double qi = qProposal_[iDim] - std::floor(qProposal_[iDim]);
     if(! (qi >= 0. && qi <= 1.))
     {
-      LOGERR << "Encountered position component q[" << i << "] = " << qi << ", "
+      LOGERR << "Encountered position component q[" << iDim << "] = " << qi << ", "
              << "which is not in [0, 1] => bailing out";
+      Logger::flush();
       throw std::runtime_error(__PRETTY_FUNCTION__);
     }
-    qProposal_[i] = qi;
+    qProposal_[iDim] = qi;
   }
+  LOGTRC;
 
 //--- check if proposed move of MX to a new position is accepted or not:
 //--- compute change in the phase space volume for ,,dummy'' momentum components
@@ -369,6 +380,7 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
            << "'prob_' = " << prob_;
     throw std::runtime_error(__PRETTY_FUNCTION__);
   }
+  LOGTRC;
 
 //--- Metropolis move: accept the move if generated number drawn
 //--- from uniform distribution is less than the probability
@@ -382,20 +394,21 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
   }
   else
     isAccepted = false;
+  LOGTRC;
 }
 
 void
 MEMIntegratorMarkovChain::update_x(const std::vector<double> & q)
 {
-  for(unsigned i = 0; i < nofDimensions_; ++i)
-    x_[i] = (1. - q[i]) * xMin_[i] + q[i] * xMax_[i];
+  for(unsigned iDim = 0; iDim < nofDimensions_; ++iDim)
+    x_[iDim] = (1. - q[iDim]) * xMin_[iDim] + q[iDim] * xMax_[iDim];
 }
 
 double
 MEMIntegratorMarkovChain::evalProb(const std::vector<double> & q)
 {
   update_x(q);
-  return (*integrand_)(x_, nofDimensions_, 0);
+  return (*integrand_)(x_.data(), nofDimensions_, 0);
 }
 
 namespace tthMEM
@@ -406,7 +419,7 @@ namespace tthMEM
   {
     os << "Moves: accepted = " << MX.nofMoves_accepted_ << "; "
        << "rejected = " << MX.nofMoves_rejected_ << " "
-       << "(acceptance rate " << static_cast<double>(MX.nofMoves_accepted_) /
+       << "(acceptance rate " << 100. * MX.nofMoves_accepted_ /
                                  (MX.nofMoves_accepted_ + MX.nofMoves_rejected_)
        << " %)\n";
 

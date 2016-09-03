@@ -23,7 +23,13 @@ namespace tthMEM
   class MEM_ttHorZ_3l1tau
   {
   public:
-    enum class IntegrationMode { kUndefined, kVEGAS, kVAMP };
+    enum class IntegrationMode
+    {
+      kUndefined = 0,
+      kVEGAS = 1,
+      kVAMP = 2,
+      kMarkovChain = 3
+    };
 
     MEM_ttHorZ_3l1tau(const std::string & pdfName,
                       const std::string & madgraphFileName,
@@ -33,17 +39,27 @@ namespace tthMEM
                       VariableManager_3l1tau && vm);
     ~MEM_ttHorZ_3l1tau();
 
-    void
+    MEM_ttHorZ_3l1tau &
     setMaxObjFunctionCalls(unsigned maxObjFunctionCalls);
 
-    void
+    MEM_ttHorZ_3l1tau &
+    setMarkovChainParams(unsigned nofBatches,
+                         unsigned nofChains,
+                         double epsilon0,
+                         double T0,
+                         double nu);
+
+    MEM_ttHorZ_3l1tau &
     setIntegrationMode(IntegrationMode integrationMode);
 
-    void
+    MEM_ttHorZ_3l1tau &
     setIntegrationMode(const std::string & integrationModeString);
 
-    void
+    MEM_ttHorZ_3l1tau &
     setBJetTransferFunction(bool setTF);
+
+    bool
+    isMarkovChainIntegrator() const;
 
     double
     getComputingTime_cpu() const;
@@ -62,6 +78,10 @@ namespace tthMEM
               ME_mg5_3l1tau currentME);
 
   private:
+    void
+    initialize(const std::string & pdfName,
+               const std::string madgraphFileName);
+
     VariableManager_3l1tau vm_;
     Integrand_ttHorZ_3l1tau * integrand_;
     MeasuredEvent_3l1tau ev_;
@@ -69,8 +89,22 @@ namespace tthMEM
     IntegrationMode integrationMode_;
     MEMIntegratorBase * intAlgo_;
     unsigned maxObjFunctionCalls_;
+    unsigned numCallsGridOpt_;
+    unsigned numCallsIntEval_;
+
+    /* for Markov Chain integrator */
+    unsigned nofChains_;
+    unsigned nofIterBurnin_;
+    unsigned nofIterSampling_;
+    unsigned nofIterSimAnnPhase1_;
+    unsigned nofIterSimAnnPhase2_;
+    unsigned nofBatches_;
+    double T0_;
+    double alpha_;
+    double epsilon0_;
+    double nu_;
+
     unsigned numDimensions_;
-    double precision_;
     bool setTF_;
 
     TBenchmark * clock_;
