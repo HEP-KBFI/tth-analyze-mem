@@ -16,6 +16,7 @@ MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(MarkovChainMode mode,
                                                    unsigned nofIterSampling,
                                                    unsigned nofIterSimAnnPhase1,
                                                    unsigned nofIterSimAnnPhase2,
+                                                   unsigned maxCallsStartingPos,
                                                    double T0,
                                                    double alpha,
                                                    unsigned nofChains,
@@ -28,6 +29,7 @@ MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(MarkovChainMode mode,
   , nofIterSimAnnPhase1_(nofIterSimAnnPhase1)
   , nofIterSimAnnPhase2_(nofIterSimAnnPhase2)
   , nofIterSimAnnPhaseSum_(nofIterSimAnnPhase1_ + nofIterSimAnnPhase2_)
+  , maxCallsStartingPos_(maxCallsStartingPos)
   , T0_(T0)
   , sqrtT0_(std::sqrt(T0))
   , alpha_(alpha)
@@ -35,9 +37,9 @@ MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(MarkovChainMode mode,
   , nofChains_(nofChains)
   , nofBatches_(nofBatches)
   , nofChainsXnofBatches_(nofChains_ * nofBatches_)
+  , nofIterPerBatch_(nofBatches_ > 0 ? nofIterSampling_ / nofBatches_ : 0)
   , epsilon0_(epsilon0)
   , nu_(nu)
-  , maxCallsStartingPos_(200)//(1000000)
 {
   if(nofIterSimAnnPhaseSum_ > nofIterBurnin_)
   {
@@ -110,13 +112,10 @@ MEMIntegratorMarkovChain::setIntegrand(gPtr_C integrand,
 //  xMax_.resize(nofDimensions_);
   std::copy(xl, xl + nofDimensions_, std::back_inserter(xMin_));
   std::copy(xu, xu + nofDimensions_, std::back_inserter(xMax_));
-  LOGTRC << "xMin = " << xMin_;
-  LOGTRC << "xMax = " << xMax_;
   epsilon0s_.resize(nofDimensions_);
   std::fill(epsilon0s_.begin(), epsilon0s_.end(), epsilon0_);
 //--- 1st N entries ,,significant'' components, last N ,,dummy'' components
   p_.resize(2 * nofDimensions_);
-  u_.resize(2 * nofDimensions_);
 //--- ,,potential energy'' E(q) depends on only the 1st N ,,significant components''
   q_.resize(nofDimensions_);
   pProposal_.resize(nofDimensions_);
@@ -129,6 +128,20 @@ MEMIntegratorMarkovChain::setIntegrand(gPtr_C integrand,
   integral_.resize(nofChains_ * nofBatches_);
 //--- actually set the integrand
   integrand_ = integrand;
+//--- printout
+  LOGVRB << "nofIterBurnin = "         << nofIterBurnin_;
+  LOGVRB << "nofIterSampling = "       << nofIterSampling_;
+  LOGVRB << "nofIterSimAnnPhase1 = "   << nofIterSimAnnPhase1_;
+  LOGVRB << "nofIterSimAnnPhase2 = "   << nofIterSimAnnPhase2_;
+  LOGVRB << "nofIterSimAnnPhaseSum = " << nofIterSimAnnPhaseSum_;
+  LOGVRB << "maxCallsStartingPos = "   << maxCallsStartingPos_;
+  LOGVRB << "nofChains = "             << nofChains_;
+  LOGVRB << "nofBatches = "            << nofBatches_;
+  LOGVRB << "nofIterPerBatch = "       << nofIterPerBatch_;
+  LOGVRB << "T0 = "                    << T0_;
+  LOGVRB << "alpha = "                 << alpha_;
+  LOGVRB << "epsilon0 = "              << epsilon0_;
+  LOGVRB << "nu = "                    << nu_;
 }
 
 void
@@ -180,9 +193,6 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
 //--- TTree stuff (tbd)
 
 //--- loop over MX
-  /// @todo move to private variables
-  const unsigned nofIterPerBatch = nofIterSampling_ / nofBatches_;
-  LOGTRC << "nofIterPerBatch = " << nofIterPerBatch;
   for(unsigned iChain = 0; iChain < nofChains_; ++iChain)
   {
     bool isValidStartPos = false;
@@ -246,7 +256,7 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
 
 //--- TTree stuff (tbd)
 
-      if(iMove > 0 && iMove % nofIterPerBatch == 0) ++iBatch;
+      if(iMove > 0 && iMove % nofIterPerBatch_ == 0) ++iBatch;
       if(iBatch >= probSum_.size())
       {
         LOGERR << "Something's off: 'iBatch' = " << iBatch << " >= "
@@ -258,7 +268,7 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
   } // nofChains
 
   std::transform(probSum_.begin(), probSum_.end(), integral_.begin(),
-                 std::bind2nd(std::divides<double>(), nofIterPerBatch));
+                 std::bind2nd(std::divides<double>(), nofIterPerBatch_));
   LOGTRC_S << "integral = " << integral_;
 
 //--- compute integral value and its uncertainty
@@ -281,10 +291,6 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
 {
 //--- performs ,,stochastic move''
   LOGTRC << "idxMove = " << idxMove;
-  LOGTRC << "nofIterSimAnnPhase1 = " << nofIterSimAnnPhase1_;
-  LOGTRC << "nofIterSimAnnPhaseSum = " << nofIterSimAnnPhaseSum_;
-  LOGTRC << "p = " << p_;
-  LOGTRC << "q = " << q_;
 
 //--- perform random updates of momentum components
   if     (idxMove < nofIterSimAnnPhase1_)
@@ -296,21 +302,20 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
   else if(idxMove < nofIterSimAnnPhaseSum_)
   {
 //--- sample random numbers spherically (?)
-    std::generate(u_.begin(), u_.end(),
+    std::vector<double> u;
+    u.resize(2 * nofDimensions_);
+    std::generate(u.begin(), u.end(),
                   [this]() -> double
                   {
                     return prng_.Gaus(0., 1.);
                   });
-    const double uL2 = functions::l2(u_);
+    const double uL2 = functions::l2(u);
 //--- divide by the magnitude of the vector, uL2
-    std::transform(u_.begin(), u_.end(), u_.begin(),
+    std::transform(u.begin(), u.end(), u.begin(),
                    std::bind2nd(std::divides<double>(), uL2));
-    LOGTRC << "u = " << u_;
-    /// @todo remove member status of u_
     const double pL2 = functions::l2(p_);
-    LOGTRC << "pL2 = " << pL2;
     for(unsigned iDim = 0; iDim < p_.size(); ++iDim)
-      p_[iDim] = alpha_ * pL2 * u_[iDim] + (1. - alphaSquared_) * prng_.Gaus(0., 1.);
+      p_[iDim] = alpha_ * pL2 * u[iDim] + (1. - alphaSquared_) * prng_.Gaus(0., 1.);
   }
   else
     std::generate(p_.begin(), p_.end(),
@@ -318,7 +323,6 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
                   {
                     return prng_.Gaus(0., 1.);
                   });
-  LOGTRC;
 
 //--- choose random stpe size
   double expNuTimesC = 0.;
@@ -335,10 +339,6 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
                    return expNuTimesC * epsilon0;
                  }
   );
-  LOGTRC << "epsilon0s = " << epsilon0s_;
-  LOGTRC << "qProposal = " << qProposal_;
-  LOGTRC << "p = " << p_;
-  LOGTRC << "q = " << q_;
 
 //--- Metropolis algorithm move
 
@@ -361,7 +361,10 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
     }
     qProposal_[iDim] = qi;
   }
-  LOGTRC;
+  LOGTRC << "epsilon0s = " << epsilon0s_;
+  LOGTRC << "qProposal = " << qProposal_;
+  LOGTRC << "q = " << q_;
+  LOGTRC << "p = " << p_;
 
 //--- check if proposed move of MX to a new position is accepted or not:
 //--- compute change in the phase space volume for ,,dummy'' momentum components
@@ -380,7 +383,6 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
            << "'prob_' = " << prob_;
     throw std::runtime_error(__PRETTY_FUNCTION__);
   }
-  LOGTRC;
 
 //--- Metropolis move: accept the move if generated number drawn
 //--- from uniform distribution is less than the probability
@@ -394,7 +396,6 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
   }
   else
     isAccepted = false;
-  LOGTRC;
 }
 
 void

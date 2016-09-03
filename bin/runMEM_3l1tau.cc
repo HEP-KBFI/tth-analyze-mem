@@ -127,10 +127,12 @@ main(int argc,
     const PSet cfg_mx = cfg_tthMEM.getParameter<PSet>("markovChainParams");
     const unsigned nofBatches = cfg_mx.getParameter<unsigned>("nofBatches");
     const unsigned nofChains = cfg_mx.getParameter<unsigned>("nofChains");
+    const unsigned maxCallsStartingPos = cfg_mx.getParameter<unsigned>("maxCallsStartingPos");
     const double epsilon0 = cfg_mx.getParameter<double>("epsilon0");
     const double T0 = cfg_mx.getParameter<double>("T0");
     const double nu = cfg_mx.getParameter<double>("nu");
-    mem_tt_HandZ.setMarkovChainParams(nofBatches, nofChains, epsilon0, T0, nu);
+    mem_tt_HandZ.setMarkovChainParams(nofBatches, nofChains, maxCallsStartingPos,
+                                      epsilon0, T0, nu);
   }
 
   const fwlite::InputSource inputFiles(cfg);

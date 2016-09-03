@@ -45,6 +45,7 @@ namespace tthMEM
     MEM_ttHorZ_3l1tau &
     setMarkovChainParams(unsigned nofBatches,
                          unsigned nofChains,
+                         unsigned maxCallsStartingPos,
                          double epsilon0,
                          double T0,
                          double nu);
@@ -99,6 +100,7 @@ namespace tthMEM
     unsigned nofIterSimAnnPhase1_;
     unsigned nofIterSimAnnPhase2_;
     unsigned nofBatches_;
+    unsigned maxCallsStartingPos_;
     double T0_;
     double alpha_;
     double epsilon0_;

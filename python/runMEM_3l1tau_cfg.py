@@ -40,11 +40,12 @@ process.tthMEM = cms.PSet(
     cms.PSet( var = cms.string("tauMinvSquared"), useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0))
   ),
   markovChainParams   = cms.PSet( # only read if the integrationMode is set to 'markovchain'
-    nofBatches = cms.uint32(27), # must divide (maxObjFunctionCalls * 0.9 / nofChains)
-    nofChains  = cms.uint32(1),
-    epsilon0   = cms.double(1.e-2),
-    T0         = cms.double(15.),
-    nu         = cms.double(0.71)
+    nofBatches          = cms.uint32(27), # must divide (maxObjFunctionCalls * 0.9 / nofChains)
+    nofChains           = cms.uint32(1),
+    maxCallsStartingPos = cms.uint32(200),
+    epsilon0            = cms.double(1.e-2),
+    T0                  = cms.double(15.),
+    nu                  = cms.double(0.71)
   )
 )
 

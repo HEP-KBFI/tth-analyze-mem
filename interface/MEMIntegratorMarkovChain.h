@@ -28,6 +28,7 @@ namespace tthMEM
                              unsigned nofIterSampling,
                              unsigned nofIterSimAnnPhase1,
                              unsigned nofIterSimAnnPhase2,
+                             unsigned maxCallsStartingPos,
                              double T0,
                              double alpha,
                              unsigned nofChains,
@@ -99,6 +100,9 @@ namespace tthMEM
     const unsigned nofIterSimAnnPhaseSum_;
     ///< ,,simulated annealing'' phase: number of ,,stochastic moves'' performed
     ///<                                at high temperature during ,,burnin'' stage
+    const unsigned maxCallsStartingPos_;
+    ///< max number of attempts to find a valid starting position for the MX
+    ///< aka initial position of non-zero probability
     const double T0_;
     ///< ,,simulated annealing'' phase: initial annealing temperature
     const double sqrtT0_;
@@ -110,18 +114,17 @@ namespace tthMEM
     const unsigned nofChains_;
     ///< number of MXs run in parallel
     const unsigned nofBatches_;
-    ///< number of iterations per batch (used for uncertainty of computed integral value)
+    ///< number of batches per chain (used for uncertainty of computed integral value)
     const unsigned nofChainsXnofBatches_;
-    ///< product of the nofChains_ and nofBatches_
+    ///< product of the nofChains_ and nofBatches_ (total number of batches)
+    const unsigned nofIterPerBatch_;
+    ///< number of iterations per batch
     const double epsilon0_;
     ///< average step size of Metropolis moves
     const double nu_;
     ///< variation of step-size for individual Metropolis moves
     std::vector<double> epsilon0s_;
     ///< vector of step-sizes for individual Metropolis moves
-    const double maxCallsStartingPos_;
-    ///< max number of attempts to find a valid starting position for the MX
-    ///< aka initial position of non-zero probability
 
     gPtr_C integrand_;
     ///< integrand functional
@@ -139,7 +142,7 @@ namespace tthMEM
     double prob_;
 
     /* temporary variables used in computations */
-    std::vector<double> u_, pProposal_, qProposal_, probSum_, integral_;
+    std::vector<double> pProposal_, qProposal_, probSum_, integral_;
 
     /* counter variables */
     unsigned long nofMoves_accepted_,      nofMoves_rejected_,

@@ -280,10 +280,12 @@ namespace tthMEM
   operator<<(std::ostream & os,
              const std::vector<T> & v)
   {
-    if(! v.size()) return os;
+    if(! v.size()) return os << "{}";
+    os << "{ ";
     if(v.size() > 1)
       std::copy(v.begin(), v.end() - 1, std::ostream_iterator<T>(os, ", "));
     os << v[v.size() - 1];
+    os << " }";
     return os;
   }
 
