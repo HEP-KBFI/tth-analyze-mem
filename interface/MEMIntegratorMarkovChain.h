@@ -1,12 +1,16 @@
 #ifndef MEMINTEGRATORMARKOVCHAIN_H
 #define MEMINTEGRATORMARKOVCHAIN_H
 
+#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // iStrComparator
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorBase.h" // MEMIntegratorBase
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 
 #include <vector> // std::vector<>
 #include <ostream> // std::ostream
 #include <stdexcept> // std::runtime_error
+
+#include <boost/bimap/bimap.hpp> // boost::bimaps::bimap<,>
+#include <boost/bimap/set_of.hpp> // boost::bimaps::set_of<,>
 
 #include <TRandom3.h> // TRandom3
 
@@ -23,7 +27,7 @@ namespace tthMEM
     : public MEMIntegratorBase
   {
   public:
-    MEMIntegratorMarkovChain(MarkovChainMode mode,
+    MEMIntegratorMarkovChain(const std::string & modeStr,
                              unsigned nofIterBurnin,
                              unsigned nofIterSampling,
                              unsigned nofIterSimAnnPhase1,
@@ -53,7 +57,7 @@ namespace tthMEM
               double & integral,
               double & integralErr) override
     {
-      LOGERR << "You must use the other integrate() not this one";
+      LOGERR << "You must use integrate(gPtr_C, ...) not this one";
       throw std::runtime_error(__PRETTY_FUNCTION__);
     }
 
@@ -82,7 +86,7 @@ namespace tthMEM
     double
     evalProb(const std::vector<double> & q);
 
-    const MarkovChainMode mode_;
+    MarkovChainMode mode_;
     ///< flag indicating how initial position of Markov Chain (MX) is chosen
     const unsigned nofIterBurnin_;
     ///< number of ,,stochastic moves'' performed to reach ,,ergodic'' state of MX
@@ -151,6 +155,12 @@ namespace tthMEM
 
     TRandom3 prng_;
     ///< PRNG (Mersenne Twister)
+
+    static const boost::bimaps::bimap<
+      boost::bimaps::set_of<std::string, iStrComparator>, MarkovChainMode
+    > mxModeStrings_;
+    ///< bimap where the keys in left presentation are case-insensitive strings
+    ///< needed to initialize the mode_ variable in the constructor
   };
 }
 

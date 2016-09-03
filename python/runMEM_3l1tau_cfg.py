@@ -40,6 +40,7 @@ process.tthMEM = cms.PSet(
     cms.PSet( var = cms.string("tauMinvSquared"), useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0))
   ),
   markovChainParams   = cms.PSet( # only read if the integrationMode is set to 'markovchain'
+    mode                = cms.string("uniform"),
     nofBatches          = cms.uint32(27), # must divide (maxObjFunctionCalls * 0.9 / nofChains)
     nofChains           = cms.uint32(1),
     maxCallsStartingPos = cms.uint32(200),

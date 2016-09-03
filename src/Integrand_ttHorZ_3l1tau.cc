@@ -13,7 +13,7 @@
 #include <iomanip> // std::setprecision()
 #include <exception> // std::invalid_argument, std::domain_error
 
-#include "TMath.h" // TMath::IsNaN() ...
+#include <TMath.h> // TMath::IsNaN() ...
  // ... (why not use std here: http://stackoverflow.com/a/570694)
 
 using namespace tthMEM;

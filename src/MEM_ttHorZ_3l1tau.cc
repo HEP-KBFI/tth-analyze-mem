@@ -66,6 +66,7 @@ MEM_ttHorZ_3l1tau::initialize(const std::string & pdfName,
   numSecondsAccumul_real_ = 0.;
   nof_calls_ = 0;
 
+  mxMode_ = "uniform";
   nofBatches_ = 100;
   nofChains_ = 1;
   maxCallsStartingPos_ = 1000000;
@@ -139,13 +140,15 @@ MEM_ttHorZ_3l1tau::setMaxObjFunctionCalls(unsigned maxObjFunctionCalls)
 }
 
 MEM_ttHorZ_3l1tau &
-MEM_ttHorZ_3l1tau::setMarkovChainParams(unsigned nofBatches,
+MEM_ttHorZ_3l1tau::setMarkovChainParams(const std::string & mxMode,
+                                        unsigned nofBatches,
                                         unsigned nofChains,
                                         unsigned maxCallsStartingPos,
                                         double epsilon0,
                                         double T0,
                                         double nu)
 {
+  mxMode_ = mxMode;
   nofBatches_ = nofBatches;
   nofChains_ = nofChains;
   maxCallsStartingPos_ = maxCallsStartingPos;
@@ -226,7 +229,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
     else if(integrationMode_ == IntegrationMode::kMarkovChain)
     {
       intAlgo_ = new MEMIntegratorMarkovChain(
-        MarkovChainMode::kUniform,
+        mxMode_,
         nofIterBurnin_,       nofIterSampling_,
         nofIterSimAnnPhase1_, nofIterSimAnnPhase2_,
         maxCallsStartingPos_,

@@ -43,7 +43,8 @@ namespace tthMEM
     setMaxObjFunctionCalls(unsigned maxObjFunctionCalls);
 
     MEM_ttHorZ_3l1tau &
-    setMarkovChainParams(unsigned nofBatches,
+    setMarkovChainParams(const std::string & mxMode,
+                         unsigned nofBatches,
                          unsigned nofChains,
                          unsigned maxCallsStartingPos,
                          double epsilon0,
@@ -94,6 +95,7 @@ namespace tthMEM
     unsigned numCallsIntEval_;
 
     /* for Markov Chain integrator */
+    std::string mxMode_;
     unsigned nofChains_;
     unsigned nofIterBurnin_;
     unsigned nofIterSampling_;

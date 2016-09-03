@@ -4,7 +4,11 @@
 #include <cfenv> // std::fesetround(), FE_TONEAREST
 #include <cassert> // assert()
 
-#include "FWCore/ParameterSet/interface/FileInPath.h" // edm::FileInPath
+#include <boost/range/algorithm/lexicographical_compare.hpp> // ...
+  // ... boost::range::lexicographical_compare()
+#include <boost/algorithm/string/compare.hpp> // boost::is_iless()
+
+#include <FWCore/ParameterSet/interface/FileInPath.h> // edm::FileInPath
 
 namespace tthMEM
 {
@@ -254,5 +258,12 @@ namespace tthMEM
       return l2(v, shiftFromBegin_begin, shiftFromBegin_end, average) /
              std::sqrt(range >= 2 ? range * (range - 1) : 1.);
     }
+  }
+
+  bool
+  iStrComparator::operator ()(const std::string & lhs,
+                              const std::string & rhs) const
+  {
+    return boost::range::lexicographical_compare(lhs, rhs, boost::is_iless());
   }
 }

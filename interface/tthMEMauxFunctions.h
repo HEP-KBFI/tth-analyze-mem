@@ -1,8 +1,8 @@
 #ifndef TTHMEMAUXFUNCTIONS_H
 #define TTHMEMAUXFUNCTIONS_H
 
-#include "DataFormats/Math/interface/LorentzVector.h" // math::XYZTLorentzVectorD
-#include "DataFormats/Math/interface/Vector3D.h" // math::XYZVectorD, math::RThetaPhiVectorD
+#include <DataFormats/Math/interface/LorentzVector.h> // math::XYZTLorentzVectorD
+#include <DataFormats/Math/interface/Vector3D.h> // math::XYZVectorD, math::RThetaPhiVectorD
 
 #include <string> // std::string
 #include <cmath> // std::acos()
@@ -351,6 +351,19 @@ namespace tthMEM
   {
     return typename Enum<T>::Iterator(static_cast<int>(T::Last) + 1);
   }
+
+  /**
+   * @brief Case-insensitive string comparison functor
+   *
+   * Needed in building the by-directional map where the value can be
+   * fetched by a string, while ignoring its case
+   */
+  struct iStrComparator
+  {
+    bool
+    operator()(const std::string & lhs,
+               const std::string & rhs) const;
+  };
 
   namespace constants
   {

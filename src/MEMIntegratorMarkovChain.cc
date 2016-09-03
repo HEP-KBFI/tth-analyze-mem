@@ -7,11 +7,20 @@
 #include <functional> // std::divides<>, std::bind2nd()
 #include <limits> // std::numeric_limist<>
 
+#include <boost/assign/list_of.hpp> // boost::assign::list_of<>
+
 #include <TMath.h> // TMath::IsNaN(), TMath::Finite()
 
 using namespace tthMEM;
 
-MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(MarkovChainMode mode,
+const decltype(MEMIntegratorMarkovChain::mxModeStrings_)
+  MEMIntegratorMarkovChain::mxModeStrings_ =
+  boost::assign::list_of<decltype(mxModeStrings_)::relation>
+  ( "uniform",  MarkovChainMode::kUniform  )
+  ( "gaussian", MarkovChainMode::kGaussian )
+  ( "none",     MarkovChainMode::kNone     );
+
+MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(const std::string & modeStr,
                                                    unsigned nofIterBurnin,
                                                    unsigned nofIterSampling,
                                                    unsigned nofIterSimAnnPhase1,
@@ -23,8 +32,7 @@ MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(MarkovChainMode mode,
                                                    unsigned nofBatches,
                                                    double epsilon0,
                                                    double nu)
-  : mode_(mode)
-  , nofIterBurnin_(nofIterBurnin)
+  : nofIterBurnin_(nofIterBurnin)
   , nofIterSampling_(nofIterSampling)
   , nofIterSimAnnPhase1_(nofIterSimAnnPhase1)
   , nofIterSimAnnPhase2_(nofIterSimAnnPhase2)
@@ -41,6 +49,14 @@ MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(MarkovChainMode mode,
   , epsilon0_(epsilon0)
   , nu_(nu)
 {
+  const decltype(mxModeStrings_)::left_const_iterator it =
+    mxModeStrings_.left.find(modeStr);
+  if(it == mxModeStrings_.left.end())
+  {
+    LOGERR << "No such Markov Chain mode: '" << modeStr << "'";
+    throw std::invalid_argument(__PRETTY_FUNCTION__);
+  }
+  mode_ = it -> second;
   if(nofIterSimAnnPhaseSum_ > nofIterBurnin_)
   {
     LOGERR << "Invalid configuration parameters: "
@@ -129,6 +145,7 @@ MEMIntegratorMarkovChain::setIntegrand(gPtr_C integrand,
 //--- actually set the integrand
   integrand_ = integrand;
 //--- printout
+  LOGVRB << "Markov Chain mode = "     << mxModeStrings_.right.at(mode_);
   LOGVRB << "nofIterBurnin = "         << nofIterBurnin_;
   LOGVRB << "nofIterSampling = "       << nofIterSampling_;
   LOGVRB << "nofIterSimAnnPhase1 = "   << nofIterSimAnnPhase1_;
@@ -293,22 +310,15 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
   LOGTRC << "idxMove = " << idxMove;
 
 //--- perform random updates of momentum components
+  const auto gaus = [this]() -> double { return prng_.Gaus(0., 1.); };
   if     (idxMove < nofIterSimAnnPhase1_)
-    std::generate(p_.begin(), p_.end(),
-                  [this]() -> double
-                  {
-                    return sqrtT0_ * prng_.Gaus(0., 1.);
-                  });
+    std::generate(p_.begin(), p_.end(), gaus);
   else if(idxMove < nofIterSimAnnPhaseSum_)
   {
 //--- sample random numbers spherically (?)
     std::vector<double> u;
     u.resize(2 * nofDimensions_);
-    std::generate(u.begin(), u.end(),
-                  [this]() -> double
-                  {
-                    return prng_.Gaus(0., 1.);
-                  });
+    std::generate(u.begin(), u.end(), gaus);
     const double uL2 = functions::l2(u);
 //--- divide by the magnitude of the vector, uL2
     std::transform(u.begin(), u.end(), u.begin(),
@@ -318,11 +328,7 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
       p_[iDim] = alpha_ * pL2 * u[iDim] + (1. - alphaSquared_) * prng_.Gaus(0., 1.);
   }
   else
-    std::generate(p_.begin(), p_.end(),
-                  [this]() -> double
-                  {
-                    return prng_.Gaus(0., 1.);
-                  });
+    std::generate(p_.begin(), p_.end(), gaus);
 
 //--- choose random stpe size
   double expNuTimesC = 0.;

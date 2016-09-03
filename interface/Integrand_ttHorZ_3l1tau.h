@@ -16,7 +16,7 @@
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 
-#include "LHAPDF/LHAPDF.h" // LHAPDF::PDF
+#include <LHAPDF/LHAPDF.h> // LHAPDF::PDF
 
 #if defined(__OPTIMIZE__)
 #pragma GCC diagnostic pop

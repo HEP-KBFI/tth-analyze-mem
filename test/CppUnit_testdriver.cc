@@ -1,9 +1,9 @@
 #include <iostream> // std::cout
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
 
-#include "cppunit/extensions/TestFactoryRegistry.h" // CppUnit::TestFactoryRegistry
-#include "cppunit/ui/text/TestRunner.h" // CppUnit::TextUi::TestRunner
-#include "cppunit/CompilerOutputter.h" // CppUnit::CompilerOutputter, CppUnit::Test
+#include <cppunit/extensions/TestFactoryRegistry.h> // CppUnit::TestFactoryRegistry
+#include <cppunit/ui/text/TestRunner.h> // CppUnit::TextUi::TestRunner
+#include <cppunit/CompilerOutputter.h> // CppUnit::CompilerOutputter, CppUnit::Test
 
 /**
  * @brief The main cppunit test suite
