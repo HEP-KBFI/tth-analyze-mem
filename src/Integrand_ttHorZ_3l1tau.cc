@@ -525,17 +525,16 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 
 //--- for debugging purposes plot some variables
   if(DebugPlotter_ttHorZ_3l1tau * dPlotter = measuredEvent_ -> debugPlotter)
-    (*dPlotter).fill(hVar::kZ1,       z1)
-               .fill(hVar::kZ2,       z2)
-               .fill(hVar::kMassHorZ, recoEvent.higgsOrZ.mass())
-               .fill(hVar::kMassHtau, recoEvent.hTau.mass())
-               .fill(hVar::kMassLtau, recoEvent.lTau.mass())
-               .fill(hVar::kB1en,     recoEvent.b[0].e())
-               .fill(hVar::kB2en,     recoEvent.b[1].e())
-               .fill(hVar::kB1RecoEn, measuredEvent_ -> jets[0].energy())
-               .fill(hVar::kB2RecoEn, measuredEvent_ -> jets[1].energy())
-               .fill(hVar::kMsquared, prob_ME_mg)
-               .fill(hVar::kProb,     p);
+    (*dPlotter).fill(hVar_3l1tau::kZ2,       z2)
+               .fill(hVar_3l1tau::kMassHorZ, recoEvent.higgsOrZ.mass())
+               .fill(hVar_3l1tau::kMassHtau, recoEvent.hTau.mass())
+               .fill(hVar_3l1tau::kMassLtau, recoEvent.lTau.mass())
+               .fill(hVar_3l1tau::kB1en,     recoEvent.b[0].e())
+               .fill(hVar_3l1tau::kB2en,     recoEvent.b[1].e())
+               .fill(hVar_3l1tau::kB1RecoEn, measuredEvent_ -> jets[0].energy())
+               .fill(hVar_3l1tau::kB2RecoEn, measuredEvent_ -> jets[1].energy())
+               .fill(hVar_3l1tau::kMsquared, prob_ME_mg)
+               .fill(hVar_3l1tau::kProb,     p);
 
   return p;
 }

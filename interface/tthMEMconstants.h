@@ -1,6 +1,8 @@
 #ifndef TTHMEMCONSTANTS_H
 #define TTHMEMCONSTANTS_H
 
+#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // pow*(), pi()
+
 namespace tthMEM
 {
   namespace constants

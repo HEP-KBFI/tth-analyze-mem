@@ -5,8 +5,9 @@
 #include <vector> // std::vector<>
 #include <functional> // std::function<>
 
+#include "tthAnalysis/tthMEM/interface/tthMEMenums.h" // ME_mg5_3l1tau
 #include "tthAnalysis/tthMEM/interface/me_ttHorZ_3l1tau_mg5.h" // me_ttHorZ_3l1tau_mg5
-#include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // tthMEM_3l_1tau::MeasuredEvent
+#include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // MeasuredEvent
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 #include "tthAnalysis/tthMEM/interface/RecoTrueEvent_ttHorZ_3l1tau.h" // RecoTrueEvent_ttHorZ_3l1tau
 

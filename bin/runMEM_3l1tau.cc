@@ -21,6 +21,7 @@
 #include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h" // tthMEM::MEM_ttHorZ_3l1tau
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // tthMEM::findFile()
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // tthMEM::constants
+#include "tthAnalysis/tthMEM/interface/tthMEMenums.h" // tthMEM::ME_mg5_3l1tau::
 #include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 

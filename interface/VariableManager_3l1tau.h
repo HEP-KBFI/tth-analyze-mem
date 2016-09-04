@@ -8,7 +8,7 @@
 
 #include <boost/bimap/bimap.hpp> // boost::bimaps::bimap<,>
 
-#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // EnumClassHash
+#include "tthAnalysis/tthMEM/interface/tthMEMenums.h" // EnumClassHash
 
 namespace tthMEM
 {
