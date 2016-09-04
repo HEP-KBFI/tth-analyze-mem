@@ -15,8 +15,7 @@ namespace tthMEM
    *      T. Ohl, J. Comput. Phys. 120 (1999) 13.
    *  [2] https://whizard.hepforge.org/vamp.pdf
    *
-   * Originally created by
-   * @author Christian Veelken, NICPB Tallinn
+   * Originally created by Christian Veelken, NICPB Tallinn
    * (visit https://github.com/veelken/SVfitMEM)
    */
   class MEMIntegratorVAMP

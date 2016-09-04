@@ -18,8 +18,7 @@ namespace tthMEM
    *  [1] "A New Algorithm for Adaptive Multidimensional Integration",
    *      G.P. Lepage, J. Comput. Phys. 27 (1978) 192.
    *
-   * Originally created by
-   * @author Christian Veelken, NICPB Tallinn
+   * Originally created by Christian Veelken, NICPB Tallinn
    * (visit https://github.com/veelken/SVfitMEM)
    */
   class MEMIntegratorVEGAS

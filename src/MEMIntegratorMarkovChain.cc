@@ -1,11 +1,13 @@
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorMarkovChain.h"
-#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // pow*(), functions::
+#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // pow*()
+#include "tthAnalysis/tthMEM/interface/tthMEMvecFunctions.h" // tthMEM::vec::
 
 #include <cmath> // std::sqrt(), std::exp()
-#include <algorithm> // std::copy(), std::fill(), std::generate(), ...
-  // ..., std::transform(), find_if_not()
+#include <algorithm> // std::copy(), std::fill_n(), std::generate(), ...
+  // ..., std::transform(), find_if_not(), std::generate_n()
 #include <functional> // std::divides<>, std::bind2nd()
 #include <limits> // std::numeric_limist<>
+#include <iterator> // std::back_inserter()
 
 #include <boost/assign/list_of.hpp> // boost::assign::list_of<>
 
@@ -39,7 +41,7 @@ MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(const std::string & modeStr,
   , nofIterSimAnnPhaseSum_(nofIterSimAnnPhase1_ + nofIterSimAnnPhase2_)
   , maxCallsStartingPos_(maxCallsStartingPos)
   , T0_(T0)
-  , sqrtT0_(std::sqrt(T0))
+  , sqrtT0_(T0 > 0. ? std::sqrt(T0) : 0.)
   , alpha_(alpha)
   , alphaSquared_(pow2(alpha_))
   , nofChains_(nofChains)
@@ -117,31 +119,24 @@ MEMIntegratorMarkovChain::setIntegrand(gPtr_C integrand,
 {
 //--- reset current dimensionality
   nofDimensions_ = dimension;
-//--- clean old stuff
-  x_.clear();
-  xMin_.clear();
-  xMax_.clear();
-//--- ...
-  x_.resize(nofDimensions_);
+//--- clean old stuff (quick n dirty)
+  for(auto & vec: { &x_, &xMin_, &xMax_, &epsilon0s_, &p_, &q_,
+                    &pProposal_, &qProposal_, &probSum_, &integral_ })
+    (*vec).clear();
 //--- copy the integration space boundaries over
-//  xMin_.resize(nofDimensions_);
-//  xMax_.resize(nofDimensions_);
   std::copy(xl, xl + nofDimensions_, std::back_inserter(xMin_));
   std::copy(xu, xu + nofDimensions_, std::back_inserter(xMax_));
-  epsilon0s_.resize(nofDimensions_);
-  std::fill(epsilon0s_.begin(), epsilon0s_.end(), epsilon0_);
+  std::fill_n(std::back_inserter(epsilon0s_), nofDimensions_, epsilon0_);
 //--- 1st N entries ,,significant'' components, last N ,,dummy'' components
-  p_.resize(2 * nofDimensions_);
-//--- ,,potential energy'' E(q) depends on only the 1st N ,,significant components''
-  q_.resize(nofDimensions_);
-  pProposal_.resize(nofDimensions_);
-  qProposal_.resize(nofDimensions_);
-//--- reset the current probability
+  std::fill_n(std::back_inserter(p_), 2 * nofDimensions_, 0.);
+//--- reset other vectors as well (quick n dirty)
+//--- ,,potential energy'' E(q) depends only on the 1st N ,,significant components''
+  for(auto & vec: { &x_, &q_, &pProposal_, &qProposal_ })
+    std::fill_n(std::back_inserter(*vec), nofDimensions_, 0.);
+//--- reset the current probability and integral
   prob_ = 0.;
-  probSum_.resize(nofChainsXnofBatches_);
-  std::fill(probSum_.begin(), probSum_.end(), 0.);
-//--- ...
-  integral_.resize(nofChains_ * nofBatches_);
+  std::fill_n(std::back_inserter(probSum_), nofChainsXnofBatches_, 0.);
+  std::fill_n(std::back_inserter(integral_), nofChainsXnofBatches_, 0.);
 //--- actually set the integrand
   integrand_ = integrand;
 //--- printout
@@ -166,9 +161,7 @@ MEMIntegratorMarkovChain::initialize()
 {
 //--- randomly choose starting position of MX in the N-dimensional space
   q_.clear();
-  q_.resize(nofDimensions_);
-  std::generate(
-    q_.begin(), q_.end(),
+  std::generate_n(std::back_inserter(q_), nofDimensions_,
     [this]() -> double
     {
       while(true)
@@ -284,13 +277,12 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
     } // nofIterSampling
   } // nofChains
 
-  std::transform(probSum_.begin(), probSum_.end(), integral_.begin(),
-                 std::bind2nd(std::divides<double>(), nofIterPerBatch_));
+  integral_ = probSum_ / nofIterPerBatch_;
   LOGTRC_S << "integral = " << integral_;
 
-//--- compute integral value and its uncertainty
-  integral = functions::avg(integral_);
-  integralErr = functions::stdev(integral_, integral);
+//--- compute integral value and its uncertainty ((6.39) and (6.40) in [1])
+  integral = vec::avg(integral_);
+  integralErr = vec::stdev(integral_, integral);
   LOGVRB_S << "integral = " << integral << " +/- " << integralErr;
 
   ++nofIntegrationCalls_;
@@ -306,26 +298,25 @@ void
 MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
                                              bool & isAccepted)
 {
-//--- performs ,,stochastic move''
+//--- performs ,,stochastic move'' ((24) in [2])
   LOGTRC << "idxMove = " << idxMove;
 
 //--- perform random updates of momentum components
-  const auto gaus = [this]() -> double { return prng_.Gaus(0., 1.); };
+  const std::function<double()> gaus = [this]() -> double
+    {
+      return prng_.Gaus(0., 1.);
+    };
   if     (idxMove < nofIterSimAnnPhase1_)
     std::generate(p_.begin(), p_.end(), gaus);
   else if(idxMove < nofIterSimAnnPhaseSum_)
   {
 //--- sample random numbers spherically (?)
-    std::vector<double> u;
-    u.resize(2 * nofDimensions_);
-    std::generate(u.begin(), u.end(), gaus);
-    const double uL2 = functions::l2(u);
+    std::vector<double> u = vec::genv(gaus, p_.size());
+    const double uL2 = vec::l2(u);
 //--- divide by the magnitude of the vector, uL2
-    std::transform(u.begin(), u.end(), u.begin(),
-                   std::bind2nd(std::divides<double>(), uL2));
-    const double pL2 = functions::l2(p_);
-    for(unsigned iDim = 0; iDim < p_.size(); ++iDim)
-      p_[iDim] = alpha_ * pL2 * u[iDim] + (1. - alphaSquared_) * prng_.Gaus(0., 1.);
+    u /= uL2;
+    const double pL2 = vec::l2(p_);
+    p_ = alpha_ * pL2 * u + (1. - alphaSquared_) * vec::genv(gaus, p_.size());
   }
   else
     std::generate(p_.begin(), p_.end(), gaus);
@@ -338,20 +329,13 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
   } while(TMath::IsNaN(expNuTimesC) ||
           ! TMath::Finite(expNuTimesC) ||
           expNuTimesC > 1.e+6);
-  std::vector<double> epsilons;
-  std::transform(epsilon0s_.begin(), epsilon0s_.end(), std::back_inserter(epsilons),
-                 [expNuTimesC](double epsilon0) -> double
-                 {
-                   return expNuTimesC * epsilon0;
-                 }
-  );
+  const std::vector<double> epsilons = expNuTimesC * epsilon0s_;
 
-//--- Metropolis algorithm move
+//--- Metropolis algorithm move ((27) in [2])
 
 //--- update position components by single step of chosen size
 //--- in the direction of the momentum components
-  for(unsigned iDim = 0; iDim < qProposal_.size(); ++iDim)
-    qProposal_[iDim] = q_[iDim] + epsilons[iDim] * p_[iDim];
+  qProposal_ = q_ + epsilons * vec::subv(p_, nofDimensions_);
 
 //--- ensure that proposed new point is within integration region
 //--- (assume ,,periodic'' integration domain)
@@ -362,18 +346,17 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
     {
       LOGERR << "Encountered position component q[" << iDim << "] = " << qi << ", "
              << "which is not in [0, 1] => bailing out";
-      Logger::flush();
       throw std::runtime_error(__PRETTY_FUNCTION__);
     }
     qProposal_[iDim] = qi;
   }
-  LOGTRC << "epsilon0s = " << epsilon0s_;
+  LOGTRC << "epsilons = " << epsilons;
   LOGTRC << "qProposal = " << qProposal_;
   LOGTRC << "q = " << q_;
   LOGTRC << "p = " << p_;
 
-//--- check if proposed move of MX to a new position is accepted or not:
-//--- compute change in the phase space volume for ,,dummy'' momentum components
+//--- check if proposed move of MX to a new position is accepted or not: compute change
+//--- in the phase space volume for ,,dummy'' momentum components ((25) in [2])
   const double probProposal = evalProb(qProposal_);
   double deltaEnergy = 0.;
   if     (probProposal > 0. && prob_ > 0.)
@@ -407,8 +390,7 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
 void
 MEMIntegratorMarkovChain::update_x(const std::vector<double> & q)
 {
-  for(unsigned iDim = 0; iDim < nofDimensions_; ++iDim)
-    x_[iDim] = (1. - q[iDim]) * xMin_[iDim] + q[iDim] * xMax_[iDim];
+  x_ = (1. - q) * xMin_ + q * xMax_;
 }
 
 double
@@ -433,11 +415,11 @@ namespace tthMEM
     for(unsigned i = 0; i < MX.nofChains_; ++i)
     {
 //--- find the average per batch
-      const double integral = functions::avg(
+      const double integral = vec::avg(
         MX.integral_, MX.nofBatches_ * i, MX.nofBatches_ * (i + 1)
       );
 //--- find the standard deviation per batch
-      const double integralErr = functions::stdev(
+      const double integralErr = vec::stdev(
         MX.integral_, MX.nofBatches_ * i, MX.nofBatches_ * (i + 1), integral
       );
       os << std::string(10, ' ') << "chain #" << i << ": "
@@ -448,4 +430,3 @@ namespace tthMEM
     return os;
   }
 }
-

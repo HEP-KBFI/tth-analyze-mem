@@ -23,6 +23,18 @@ namespace tthMEM
     kNone = 2
   };
 
+  /**
+   * @brief Generic class to perform Markov Chain type integration in N-dimensional space.
+   *
+   * The code is implemented following the description in:
+   *  [1] "Probabilistic Inference Using Markov Chain Monte Carlo Methods",
+   *      R. Neal, http://www.cs.toronto.edu/pub/radford/review.pdf
+   *  [2] "Bayesian Training of Backpropagation Networks by the Hybrid Monte Carlo Method",
+   *      R. Neal, http://www.cs.toronto.edu/pub/radford/bbp.ps
+   *
+   * Originally created by Christian Veelken, NICPB Tallinn
+   * (visit https://github.com/veelken/SVfitMEM)
+   */
   class MEMIntegratorMarkovChain
     : public MEMIntegratorBase
   {
@@ -142,7 +154,7 @@ namespace tthMEM
     ///< upper boundaries of integration region
 
     /* internal variables storing current MX state */
-    std::vector<double> p_, q_, gradE_;
+    std::vector<double> p_, q_;
     double prob_;
 
     /* temporary variables used in computations */
