@@ -3,6 +3,7 @@
 #include "tthAnalysis/tthMEM/interface/me_ttz_3l1tau_mg5.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMrecFunctions.h"
+#include "tthAnalysis/tthMEM/interface/tthMEMconstants.h"
 #include "tthAnalysis/tthMEM/interface/BJetTransferFunction.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 

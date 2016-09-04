@@ -4,7 +4,8 @@
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorVAMP.h"
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorMarkovChain.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // ...
-  // ... roundToNearestUInt(), pi(), massTauSquared, xSectionTTHinGeV2
+  // ... roundToNearestUInt(), pi()
+#include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::
 
 #include <cmath> // std::round()
 #include <stdexcept> // std::runtime_error

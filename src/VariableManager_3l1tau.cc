@@ -1,4 +1,5 @@
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h"
+#include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 
 #include <algorithm> // std::count_if(), std:find_if()

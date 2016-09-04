@@ -1,5 +1,5 @@
-#include "tthAnalysis/tthMEM/interface/MeasuredHadronicTau.h" // MeasuredHadronicTau, ...
-  // ..., chargedPionMass, std::sqrt(), LorentzVector, minVisTauMass, maxVisTauMass
+#include "tthAnalysis/tthMEM/interface/MeasuredHadronicTau.h" // MeasuredHadronicTau
+#include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 
 using namespace tthMEM;
