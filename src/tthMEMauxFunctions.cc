@@ -1,8 +1,8 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 
 #include <cfenv> // std::fesetround(), FE_TONEAREST
-#include <stdexcept> // std::invalid_argument
 
 #include <boost/range/algorithm/lexicographical_compare.hpp> // ...
   // ... boost::range::lexicographical_compare()
@@ -43,16 +43,13 @@ namespace tthMEM
   {
     edm::FileInPath inputFile(fileName);
     if(inputFile.fullPath() == "")
-    {
-      LOGERR << "Error: cannot find file = " << fileName;
-      throw std::invalid_argument(__PRETTY_FUNCTION__);
-    }
+      throw_line("invalid argument") << "Error: cannot find file = " << fileName;
     return inputFile.fullPath();
   }
 
   bool
-  iStrComparator::operator ()(const std::string & lhs,
-                              const std::string & rhs) const
+  iStrComparator::operator()(const std::string & lhs,
+                             const std::string & rhs) const
   {
     return boost::range::lexicographical_compare(lhs, rhs, boost::is_iless());
   }

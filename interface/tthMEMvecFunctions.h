@@ -7,7 +7,8 @@
 #include <algorithm> // std::copy(), std::transform()
 #include <functional> // std::bind1st(), std::bind2nd(), std::multiplies<>, ...
   // ..., std::plus<>, std::minus<>, std::divides<>
-#include <stdexcept> // std::range_error
+
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 
 namespace tthMEM
 {
@@ -144,7 +145,11 @@ namespace tthMEM
       if(! (shiftFromBegin_begin <= shiftFromBegin_end &&
             shiftFromBegin_begin <= vec.size() &&
             shiftFromBegin_end <= vec.size()))
-        throw std::range_error(__PRETTY_FUNCTION__);
+        throw_line("range error")
+          << "Invalid arguments: "
+          << "'shiftFromBegin_begin' = " << shiftFromBegin_begin << "; "
+          << "'shiftFromBegin_end' = " << shiftFromBegin_end << "; "
+          << "vector size = " << vec.size();
 
       return std::vector<VectorElementType>(vec.begin() + shiftFromBegin_begin,
                                             vec.begin() + shiftFromBegin_end);
@@ -222,7 +227,7 @@ namespace tthMEM
             const std::vector<VectorElementType> & rhs)
   {
     if(lhs.size() != rhs.size())
-      throw std::range_error(__PRETTY_FUNCTION__);
+      ;
     std::vector<VectorElementType> result;
     std::transform(
       lhs.begin(), lhs.end(), rhs.begin(), std::back_inserter(result),
@@ -243,7 +248,8 @@ namespace tthMEM
             const std::vector<VectorElementType> & rhs)
   {
     if(lhs.size() != rhs.size())
-      throw std::range_error(__PRETTY_FUNCTION__);
+      throw_line("range error") << "LHS size = " << lhs.size() << "; "
+                                << "RHS size = " << rhs.size();
     std::vector<VectorElementType> result;
     std::transform(
       lhs.begin(), lhs.end(), rhs.begin(), std::back_inserter(result),
@@ -264,7 +270,8 @@ namespace tthMEM
             const std::vector<VectorElementType> & rhs)
   {
     if(lhs.size() != rhs.size())
-      throw std::range_error(__PRETTY_FUNCTION__);
+      throw_line("range error") << "LHS size = " << lhs.size() << "; "
+                                << "RHS size = " << rhs.size();
     std::vector<VectorElementType> result;
     std::transform(
       lhs.begin(), lhs.end(), rhs.begin(), std::back_inserter(result),
@@ -565,7 +572,8 @@ namespace tthMEM
              const std::vector<VectorElementType> & rhs)
   {
     if(lhs.size() != rhs.size())
-      throw std::range_error(__PRETTY_FUNCTION__);
+      throw_line("range error") << "LHS size = " << lhs.size() << "; "
+                                << "RHS size = " << rhs.size();
     std::transform(
       lhs.begin(), lhs.end(), rhs.begin(),
       std::plus<VectorElementType>()
@@ -585,7 +593,8 @@ namespace tthMEM
              const std::vector<VectorElementType> & rhs)
   {
     if(lhs.size() != rhs.size())
-      throw std::range_error(__PRETTY_FUNCTION__);
+      throw_line("range error") << "LHS size = " << lhs.size() << "; "
+                                << "RHS size = " << rhs.size();
     std::transform(
       lhs.begin(), lhs.end(), rhs.begin(),
       std::minus<VectorElementType>()

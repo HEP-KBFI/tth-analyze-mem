@@ -4,10 +4,10 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // iStrComparator
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorBase.h" // MEMIntegratorBase
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 
 #include <vector> // std::vector<>
 #include <ostream> // std::ostream
-#include <stdexcept> // std::runtime_error
 
 #include <boost/bimap/bimap.hpp> // boost::bimaps::bimap<,>
 #include <boost/bimap/set_of.hpp> // boost::bimaps::set_of<,>
@@ -69,8 +69,8 @@ namespace tthMEM
               double & integral,
               double & integralErr) override
     {
-      LOGERR << "You must use integrate(gPtr_C, ...) not this one";
-      throw std::runtime_error(__PRETTY_FUNCTION__);
+      throw_line("invalid usage")
+        << "You must use integrate(gPtr_C, ...) not this one";
     }
 
     friend std::ostream &

@@ -1,8 +1,9 @@
 #ifndef INDEXWRAPPER_H
 #define INDEXWRAPPER_H
 
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+
 #include <numeric> // std::iota()
-#include <cassert> // assert()
 
 template<typename T,
          unsigned NofObjects>
@@ -20,11 +21,17 @@ struct IndexWrapper
                      unsigned * currentPermutation,
                      unsigned maxCurrentPermutation)
   {
-    if(! permutations.size()) assert(0);
+    if(! permutations.size())
+      throw_line("runtime error") << "Permutation size is zero";
     for(const std::vector<unsigned> & permutation: permutations)
-      if(permutation.size() != NofObjects) assert(0);
-    assert(currentPermutation);
-    assert(maxCurrentPermutation);
+      if(permutation.size() != NofObjects)
+        throw_line("runtime error")
+          << "Permutation size = " << permutation.size() << " does not equal to "
+          << "the number of objects = " << NofObjects;
+    if(! currentPermutation)
+      throw_line("runtime error") << "Passed nullptr for 'currentPermutation'";
+    if(! maxCurrentPermutation)
+      throw_line("runtime error") << "Passed 0 for 'maxCurrentPermutation'";
 
     permutations_ = permutations;
     currentPermutation_ = currentPermutation;
@@ -36,7 +43,10 @@ struct IndexWrapper
   {
     if(currentPermutation_)
     {
-      if(*currentPermutation_ >= maxCurrentPermutation_) assert(0);
+      if(*currentPermutation_ >= maxCurrentPermutation_)
+        throw_line("runtime error")
+          << "'currentPermutation' ( = " << *currentPermutation_ << ") >= "
+          << "'maxCurrentPermutation' ( = " << maxCurrentPermutation_ << ")";
       return objects[permutations_[*currentPermutation_][index]];
     }
     return objects[defaultPermutation[index]];
@@ -47,7 +57,10 @@ struct IndexWrapper
   {
     if(currentPermutation_)
     {
-      if(*currentPermutation_ >= maxCurrentPermutation_) assert(0);
+      if(*currentPermutation_ >= maxCurrentPermutation_)
+        throw_line("runtime error")
+          << "'currentPermutation' ( = " << *currentPermutation_ << ") >= "
+          << "'maxCurrentPermutation' ( = " << maxCurrentPermutation_ << ")";
       return objects[permutations_[*currentPermutation_][index]];
     }
     return objects[defaultPermutation[index]];

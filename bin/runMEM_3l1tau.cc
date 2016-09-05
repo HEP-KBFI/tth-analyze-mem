@@ -4,12 +4,6 @@
 #include <algorithm> // std::inner_product()
 #include <csignal> // std::signal(), SIG*
 
-#include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
-#include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
-#include <FWCore/Utilities/interface/Exception.h> // cms::Exception
-#include <DataFormats/FWLite/interface/InputSource.h> // fwlite::InputSource
-#include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles
-
 #include <Rtypes.h> // Long64_t
 #include <TFile.h> // TFile
 #include <TChain.h> // TChain
@@ -24,6 +18,14 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMenums.h" // tthMEM::ME_mg5_3l1tau::
 #include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+
+#include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
+#include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
+#include <DataFormats/FWLite/interface/InputSource.h> // fwlite::InputSource
+#include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles
+
+// JFC!!! fwlite:: doesn't include "FWCore/Utilities/interface/Exception.h"
 
 using namespace tthMEM;
 
@@ -54,9 +56,9 @@ main(int argc,
   }
 
   const std::string ps = "process";
-  if(!edm::readPSetsFrom(argv[1]) -> existsAs<PSet>(ps.c_str()))
-    throw cms::Exception("tthMEM")
-      << "No ParameterSet '" << ps << "' found in configuration file = " << argv[1] << "\n";
+  if(! edm::readPSetsFrom(argv[1]) -> existsAs<PSet>(ps.c_str()))
+    throw_line("tthMEM") << "No ParameterSet '" << ps << "' found "
+                         << "in configuration file = " << argv[1];
   const PSet cfg = edm::readPSetsFrom(argv[1]) -> getParameter<PSet>(ps.c_str());
 
   const PSet cfg_log = cfg.getParameter<PSet>("logging");

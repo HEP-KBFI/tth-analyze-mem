@@ -3,6 +3,7 @@
 #include <fstream>
 #include "tthAnalysis/tthMEM/interface/read_slha.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h"
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 
 using namespace std;
 
@@ -11,7 +12,7 @@ void SLHABlock::set_entry(vector<int> indices, double value)
   if (_entries.size() == 0)
     _indices = indices.size();
   else if(indices.size() != _indices)
-    throw "Wrong number of indices in set_entry";
+    throw_line("runtime error") << "Wrong number of indices in set_entry";
     
   _entries[indices] = value;
 }
@@ -31,7 +32,7 @@ void SLHAReader::read_slha_file(string file_name)
   ifstream param_card;
   param_card.open(file_name.c_str(), ifstream::in);
   if(!param_card.good())
-    throw "Error while opening param card";
+    throw_line("input error") << "Error while opening param card";
   LOGINFO << "Opened slha file " << file_name << " for reading";
   char buf[200];
   string line;
@@ -99,7 +100,7 @@ void SLHAReader::read_slha_file(string file_name)
   }
 
   if (_blocks.size() == 0)
-    throw "No information read from SLHA card";
+    throw_line("runtime error") << "No information read from SLHA card";
 
   param_card.close();
 }

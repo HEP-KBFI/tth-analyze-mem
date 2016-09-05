@@ -18,8 +18,6 @@ namespace tthMEM
        unsigned shiftFromBegin,
        double shiftValue)
     {
-      if(! (shiftFromBegin <= vec.size()))
-        throw std::range_error(__PRETTY_FUNCTION__);
       return l2(vec, 0, shiftFromBegin, shiftValue);
     }
 
@@ -32,7 +30,11 @@ namespace tthMEM
       if(! (shiftFromBegin_begin <= shiftFromBegin_end &&
             shiftFromBegin_begin <= vec.size() &&
             shiftFromBegin_end <= vec.size()))
-        throw std::range_error(__PRETTY_FUNCTION__);
+        throw_line("range error")
+          << "Invalid arguments: "
+          << "'shiftFromBegin_begin' = " << shiftFromBegin_begin << "; "
+          << "'shiftFromBegin_end' = " << shiftFromBegin_end << "; "
+          << "vector size = " << vec.size();
 
       return std::sqrt(std::accumulate(
         vec.begin() + shiftFromBegin_begin, vec.begin() + shiftFromBegin_end, 0.,
@@ -66,7 +68,11 @@ namespace tthMEM
       if(! (shiftFromBegin_begin <= shiftFromBegin_end &&
             shiftFromBegin_begin <= vec.size() &&
             shiftFromBegin_end <= vec.size()))
-        throw std::range_error(__PRETTY_FUNCTION__);
+        throw_line("range error")
+          << "Invalid arguments: "
+          << "'shiftFromBegin_begin' = " << shiftFromBegin_begin << "; "
+          << "'shiftFromBegin_end' = " << shiftFromBegin_end << "; "
+          << "vector size = " << vec.size();
 
       if(! vec.size() || shiftFromBegin_begin == shiftFromBegin_end) return 0.;
       return std::accumulate(vec.begin() + shiftFromBegin_begin,

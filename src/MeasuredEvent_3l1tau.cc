@@ -1,11 +1,11 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 
 #include <TString.h> // Form()
 
 #include <algorithm> // std::swap(), std::accumulate()
 #include <cmath> // std::abs()
-#include <exception> // std::runtime_error
 
 using namespace tthMEM;
 
@@ -31,7 +31,8 @@ MeasuredEvent_3l1tau::initialize()
     }
   );
   if(std::abs(leptonChargeSum) != 1)
-    throw std::runtime_error("Something's off: the abs of sum of lepton charges is not 1");
+    throw_line("runtime error")
+      << "Something's off: the abs of sum of lepton charges is not 1";
 
 //--- retrieve the indices of leptons that have the same charge
   int leptonIdx1 = -1,
@@ -44,7 +45,8 @@ MeasuredEvent_3l1tau::initialize()
         leptonIdx2 = j;
       }
   if(leptonIdx1 < 0 || leptonIdx2 < 0)
-    throw std::runtime_error("Something's off: there were no leptons with equal signs");
+    throw_line("runtime error")
+      << "Something's off: there were no leptons with equal signs";
 
 //--- determine the four index permutations the event can possibly have
   currentPermutation_ = 0;
@@ -60,7 +62,8 @@ MeasuredEvent_3l1tau::initialize()
 //--- use the first lepton index in the default representation that
 //--- has opposite sign w.r.t the tau lepton
   if((leptonChargeSum + htau1.charge()) != 0)
-    throw std::runtime_error("The sum of charges of leptonic products is not zero");
+    throw_line("runtime error")
+      << "The sum of charges of leptonic products is not zero";
   complLeptonIdx = leptonIdx1;
   bjetLeptonIdxs = (complLeptonIdx == 0) ? std::vector<unsigned>{{1, 2}} : (
                    (complLeptonIdx == 1) ? std::vector<unsigned>{{0, 2}} :

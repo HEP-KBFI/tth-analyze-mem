@@ -8,7 +8,9 @@
 #include "tthAnalysis/tthMEM/interface/HelAmps_sm_tth_3l1tau.h"
 #include <complex>
 #include <cmath>
-#include <stdexcept>
+
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+
 using namespace std; 
 
 namespace MG5_sm_tth_3l1tau
@@ -352,7 +354,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double>
     }
     else
     {
-      throw std::invalid_argument("Invalid helicity in txxxxx");
+      throw_line("impossible error?") << "Invalid helicity in txxxxx";
     }
   }
 

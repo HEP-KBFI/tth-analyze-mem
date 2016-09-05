@@ -2,6 +2,7 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // pi()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 
 #include <algorithm> // std::count_if(), std:find_if()
 #include <utility> // std::move()
@@ -166,9 +167,9 @@ VariableManager_3l1tau::get(Var_3l1tau var,
   if(! varLimits_.at(var).isWithin(val))
   {
     const std::string varName = varNames_.right.find(var) -> second;
-    LOGERR << "Fetched value '" << varName << "' = " << val << " "
-           << "is not within expected limits: " << varLimits_.at(var);
-    throw EXIT_FAILURE;
+    throw_line("runtime error")
+      << "Fetched value '" << varName << "' = " << val << " "
+      << "is not within expected limits: " << varLimits_.at(var);
   }
   return val;
 }

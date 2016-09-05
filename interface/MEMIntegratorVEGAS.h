@@ -2,9 +2,7 @@
 #define MEMINTEGRATORVEGAS_H
 
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorBase.h" // MEMIntegratorBase
-#include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
-
-#include <cassert> // assert()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 
 #include <gsl/gsl_rng.h> // gsl_rng
 #include <gsl/gsl_monte.h>       // gsl_monte_function
@@ -47,8 +45,8 @@ namespace tthMEM
               double & integral,
               double & integralErr) override
     {
-      LOGERR << "You must use the other integrate() not this one";
-      assert(0);
+      throw_line("invalid usage")
+        << "You must use integrate(gPtr_C, ...) not this one";
     }
 
   private:

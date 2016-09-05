@@ -8,7 +8,6 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::
 
 #include <cmath> // std::round()
-#include <stdexcept> // std::runtime_error, std::invalid_argument
 
 #include <boost/algorithm/string/predicate.hpp> // boost::iequals()
 
@@ -129,11 +128,9 @@ MEM_ttHorZ_3l1tau &
 MEM_ttHorZ_3l1tau::setHiggsWidth(double higgsWidth)
 {
   if(higgsWidth < 0.)
-  {
-    LOGERR << "Provided 'higgsWidth' = " << higgsWidth
-           << "cannot be a negative number";
-    throw std::invalid_argument(__PRETTY_FUNCTION__);
-  }
+    throw_line("invalid argument")
+      << "Provided 'higgsWidth' = " << higgsWidth << " "
+      << "cannot be a negative number";
   higgsWidth_ = higgsWidth;
   return *this;
 }
@@ -211,10 +208,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
 {
   LOGTRC;
   if(integrationMode_ == IntegrationMode::kUndefined)
-  {
-    LOGERR << "Integration mode not set";
-    throw std::runtime_error(__PRETTY_FUNCTION__);
-  }
+    throw_line("runtime error") << "Integration mode not set";
   const bool isTTH = currentME == ME_mg5_3l1tau::kTTH;
 
   LOGINFO << (isTTH ? "[TTH]" : "[TTZ]");

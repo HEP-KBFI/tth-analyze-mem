@@ -1,10 +1,8 @@
 #ifndef MEMINTEGRATORVAMP_H
 #define MEMINTEGRATORVAMP_H
 
-#include <cassert> // assert()
-
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorBase.h" // MEMIntegratorBase
-#include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 
 namespace tthMEM
 {
@@ -42,8 +40,8 @@ namespace tthMEM
               double & integral,
               double & integralErr) override
     {
-      LOGERR << "You must use the other integrate() not this one";
-      assert(0);
+      throw_line("invalid usage")
+        << "You must use integrate(gPtr_Fortran, ...) not this one";
     }
 
   private:

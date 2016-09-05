@@ -54,10 +54,7 @@ MEMIntegratorVAMP::integrate(MEMIntegratorBase::gPtr_Fortran integrand,
 {
   setIntegrand(integrand, xl, xu, dimension);
   if(! integrand_)
-  {
-    LOGERR << "No integrand function has been set";
-    assert(0);
-  }
+    throw_line("invalid arument") << "No integrand function has been set";
   int numDimensions = numDimensions_;
   int numCallsGridOpt = numCallsGridOpt_;
   int numCallsIntEval = numCallsIntEval_;

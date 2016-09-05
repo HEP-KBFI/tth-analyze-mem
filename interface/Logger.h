@@ -7,23 +7,30 @@
 #include <sstream> // std::stringstream
 #include <vector> // std::vector<>
 
-#define LOGERR  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
-#define LOGWARN tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
-#define LOGFIX  tthMEM::wrap(tthMEM::Logger::LogLevel::kFixme)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
-#define LOGINFO tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)     <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
-#define LOGDBG  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
-#define LOGVRB  tthMEM::wrap(tthMEM::Logger::LogLevel::kVerbose)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
-#define LOGTRC  tthMEM::wrap(tthMEM::Logger::LogLevel::kTrace)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
-#define LOGALL  tthMEM::wrap(tthMEM::Logger::LogLevel::kAll)      <<"["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#if !defined(__FILENAME__)
+#define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
+#endif
 
-#define LOGERR_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
-#define LOGWARN_S tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
-#define LOGFIX_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kFixme)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
-#define LOGINFO_S tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)     <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
-#define LOGDBG_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
-#define LOGVRB_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kVerbose)  <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
-#define LOGTRC_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kTrace)    <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
-#define LOGALL_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kAll)      <<"["<<__FUNCTION__<<":"<<__LINE__<<"] " << std::scientific
+#define INFIXMSG "[" << __FILENAME__ << "]" << "["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define INFIXMSG_S INFIXMSG << std::scientific
+
+#define LOGERR  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)   << INFIXMSG
+#define LOGWARN tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning) << INFIXMSG
+#define LOGFIX  tthMEM::wrap(tthMEM::Logger::LogLevel::kFixme)   << INFIXMSG
+#define LOGINFO tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)    << INFIXMSG
+#define LOGDBG  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)   << INFIXMSG
+#define LOGVRB  tthMEM::wrap(tthMEM::Logger::LogLevel::kVerbose) << INFIXMSG
+#define LOGTRC  tthMEM::wrap(tthMEM::Logger::LogLevel::kTrace)   << INFIXMSG
+#define LOGALL  tthMEM::wrap(tthMEM::Logger::LogLevel::kAll)     << INFIXMSG
+
+#define LOGERR_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)   << INFIXMSG_S
+#define LOGWARN_S tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning) << INFIXMSG_S
+#define LOGFIX_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kFixme)   << INFIXMSG_S
+#define LOGINFO_S tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)    << INFIXMSG_S
+#define LOGDBG_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)   << INFIXMSG_S
+#define LOGVRB_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kVerbose) << INFIXMSG_S
+#define LOGTRC_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kTrace)   << INFIXMSG_S
+#define LOGALL_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kAll)     << INFIXMSG_S
 
 namespace tthMEM
 {
