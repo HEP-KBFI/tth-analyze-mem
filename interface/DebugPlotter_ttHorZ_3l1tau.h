@@ -2,6 +2,7 @@
 #define DEBUGPLOTTER_TTHORZ_3L1TAU_H
 
 #include "tthAnalysis/tthMEM/interface/tthMEMenums.h" // EnumClassHash, hVar_3l1tau::
+#include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 
 #include <string> // std::string
 #include <unordered_map> // std::unordered_map<,>
@@ -67,6 +68,7 @@ namespace tthMEM
      * @brief Creates a new subdirectory for the set of histograms
      *        and initializes the histograms under the directory
      * @param dirName Directory name
+     * @param vm      Variable manager (holds sampled values)
      *
      * Also explicitly points the histograms to readily created subdirectory.
      *
@@ -76,7 +78,8 @@ namespace tthMEM
      * e.g. 1_123_12345678_3_tth)
      */
     void
-    initialize(const std::string & dirName);
+    initialize(const std::string & dirName,
+               const VariableManager_3l1tau & vm);
 
     /**
      * @brief Fills a given variable
@@ -89,14 +92,39 @@ namespace tthMEM
          double value);
 
     /**
+     * @brief Fills historgrams for the sampled values
+     * @param x The sampled values
+     * @return Reference to this instance
+     */
+    DebugPlotter_ttHorZ_3l1tau &
+    fill(const VariableManager_3l1tau & vm,
+         const double * const x);
+
+    /**
      * @brief Writes the histograms to the file and resets them to 0
      */
     void
     write();
 
   private:
-    std::unordered_map<hVar_3l1tau, TH1D *, EnumClassHash> histograms_;
-    ///< map of all histograms
+    struct HVarHolder
+    {
+      HVarHolder(const std::string & hVarName,
+                 double begin,
+                 double end);
+
+      const std::string hVarName_;
+      const Limits limits_;
+    };
+
+    static const unsigned nofBins_;
+    ///< number of bins
+    static const std::unordered_map<hVar_3l1tau, HVarHolder, EnumClassHash> hVarMap_;
+    ///< table for additional variables
+    std::unordered_map<Var_3l1tau, TH1D *, EnumClassHash> histSampled_;
+    ///< map of histograms for the sampled values
+    std::unordered_map<hVar_3l1tau, TH1D *, EnumClassHash> histRecod_;
+    ///< map of additional histograms
     TFile * const file_; ///< pointer to the file
     const unsigned debugFrequency_; ///< debugging frequency (see constructor)
     const unsigned debugRange_; ///< debugging range (== 8; see constructor)

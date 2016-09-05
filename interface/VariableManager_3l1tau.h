@@ -1,14 +1,15 @@
 #ifndef VARIABLEMANAGER_3L1TAU_H
 #define VARIABLEMANAGER_3L1TAU_H
 
+#include "tthAnalysis/tthMEM/interface/tthMEMenums.h" // EnumClassHash
+#include "tthAnalysis/tthMEM/interface/Limits.h" // Limits
+
 #include <string> // std::string
 #include <unordered_map> // std::unordered_map<,,>
 #include <ostream> // std::ostream
 #include <vector> // std::vector<>
 
 #include <boost/bimap/bimap.hpp> // boost::bimaps::bimap<,>
-
-#include "tthAnalysis/tthMEM/interface/tthMEMenums.h" // EnumClassHash
 
 namespace tthMEM
 {
@@ -132,6 +133,22 @@ namespace tthMEM
     getArrayString(const double * const x) const;
 
     /**
+     * @brief Returns the name of the variable
+     * @param var Variable enum
+     * @return The variable name
+     */
+    std::string
+    getVarName(Var_3l1tau var) const;
+
+    /**
+     * @brief Returns the integration limits of a variable
+     * @param var The variable
+     * @return The limits
+     */
+    Limits
+    getVarLimits(Var_3l1tau var) const;
+
+    /**
      * @brief Sets the variable to a given value at runtime
      * @param var   The variable to which the new value is assigned
      * @param value The new value
@@ -172,38 +189,6 @@ namespace tthMEM
     getXL() const;
 
   private:
-    /**
-     * @brief Helper POD struct which holds the physical (or equivalently,
-     *        the integration) limits of a particular variable.
-     */
-    struct Limits
-    {
-      Limits() = default;
-      Limits(double begin,
-             double end);
-
-      /**
-       * @brief Checks whether a given value falls within the limits
-       * @param val The given value
-       * @return True, if the value is indeed between the limits,
-       *         false otherwise
-       */
-      bool
-      isWithin(double val) const;
-
-      /**
-       * @brief Simple ostream operator for pretty-printing the limits
-       * @param os     The std::ostream to print to
-       * @param limits The instance of this class
-       * @return The modified ostream
-       */
-      friend std::ostream &
-      operator<<(std::ostream & os,
-                 const Limits & limits);
-
-      double begin_, end_; ///< end points
-    };
-
     /**
      * @brief Simple helper struct holding variable mode, its value
      *        and array index. The latter is used to read the actual
@@ -267,7 +252,7 @@ namespace tthMEM
   public:
     friend std::ostream &
     operator<<(std::ostream &,
-               const VariableManager_3l1tau::Limits & limits);
+               const Limits & limits);
 
     friend std::ostream &
     operator<<(std::ostream &,

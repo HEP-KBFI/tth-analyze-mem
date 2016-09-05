@@ -314,7 +314,7 @@ Integrand_ttHorZ_3l1tau::renewInputs()
     std::string measuredEventStr = measuredEvent_ -> str();
     measuredEventStr += std::string("_") +
       (currentME_ == ME_mg5_3l1tau::kTTH ? "tth" : "ttz");
-    dPlotter -> initialize(measuredEventStr);
+    dPlotter -> initialize(measuredEventStr, vm_);
   }
 }
 
@@ -534,7 +534,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
                .fill(hVar_3l1tau::kB1RecoEn, measuredEvent_ -> jets[0].energy())
                .fill(hVar_3l1tau::kB2RecoEn, measuredEvent_ -> jets[1].energy())
                .fill(hVar_3l1tau::kMsquared, prob_ME_mg)
-               .fill(hVar_3l1tau::kProb,     p);
+               .fill(hVar_3l1tau::kProb,     p)
+               .fill(vm_, x);
 
   return p;
 }

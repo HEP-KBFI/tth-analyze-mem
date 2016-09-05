@@ -14,7 +14,7 @@
 using namespace tthMEM;
 
 //--- complete the static declarations
-const std::unordered_map<Var_3l1tau, VariableManager_3l1tau::Limits, EnumClassHash>
+const std::unordered_map<Var_3l1tau, Limits, EnumClassHash>
 VariableManager_3l1tau::varLimits_ = {
   { Var_3l1tau::kBcosTheta1,     {   -1., +1.                       } },
   { Var_3l1tau::kBphi1,          { -pi(), +pi()                     } },
@@ -38,29 +38,8 @@ VariableManager_3l1tau::varNames_ =
   ( "tauPhiInv",      Var_3l1tau::kTauPhiInv      )
   ( "tauMinvSquared", Var_3l1tau::kTauMinvSquared );
 
-//--- private inner classes
-VariableManager_3l1tau::Limits::Limits(double begin,
-                                       double end)
-  : begin_(begin)
-  , end_(end)
-{}
-
-bool
-VariableManager_3l1tau::Limits::isWithin(double val) const
-{
-  return begin_ <= val && val <= end_;
-}
-
 namespace tthMEM
 {
-  std::ostream &
-  operator<<(std::ostream & os,
-             const VariableManager_3l1tau::Limits & limits)
-  {
-    os << "[" << limits.begin_ << "; " << limits.end_ << "]";
-    return os;
-  }
-
   std::ostream &
   operator<<(std::ostream & os,
              const VariableManager_3l1tau::Variable & var)
@@ -204,20 +183,32 @@ VariableManager_3l1tau::getArrayString(const double * const x) const
   return ss.str();
 }
 
+std::string
+VariableManager_3l1tau::getVarName(Var_3l1tau var) const
+{
+  return varNames_.right.find(var) -> second;
+}
+
+Limits
+VariableManager_3l1tau::getVarLimits(Var_3l1tau var) const
+{
+  return varLimits_.at(var);
+}
+
 int
 VariableManager_3l1tau::set(Var_3l1tau var,
                             double value)
 {
   if(variables_[var].mode_ != VarMode_3l1tau::kGenerator)
   {
-    const std::string varName = varNames_.right.find(var) -> second;
+    const std::string varName = getVarName(var);
     LOGERR << "Variable '" << varName << "' not configured "
            << "to read from generator level";
     return EXIT_FAILURE;
   }
   if(! varLimits_.at(var).isWithin(value))
   {
-    const std::string varName = varNames_.right.find(var) -> second;
+    const std::string varName = getVarName(var);
     LOGERR << "Variable '" << varName << "' = " << value << " "
            << "not within expected limits: " << varLimits_.at(var);
     return EXIT_FAILURE;
