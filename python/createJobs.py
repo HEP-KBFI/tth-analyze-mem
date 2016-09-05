@@ -4,7 +4,8 @@ from tthAnalysis.tthMEM.jobTemplates import getNofEntries, \
 
 def createJobs(samples, channel, version, lepton_selections, central_or_shifts, execName,
                treeName, integrationMode, maxObjFunctionCalls, nofIntegrationsPerJob,
-               lhRatioBranchName, rocLegendPosition, debugPlots, clampVariables):
+               lhRatioBranchName, rocLegendPosition, debugPlots, clampVariables,
+               markovChainParams):
   '''
   TODO: - make the file names of roc curve plots channel and version specific
   '''
@@ -103,7 +104,8 @@ def createJobs(samples, channel, version, lepton_selections, central_or_shifts, 
 
           pythonCfg = createPythonCfg(
             isMC, fileNameScratch_i, nofEventsToProcess, outFileNameScratch_i, treeName,
-            integrationMode, maxObjFunctionCalls, startingPoint, debugPlots, clampVariables
+            integrationMode, maxObjFunctionCalls, startingPoint, debugPlots, clampVariables,
+            markovChainParams
           )
           bashCfg = createBashCfg(
             fileNameLocal, outFileNameLocal_i, fileNameScratch_i, outFileNameScratch_i,

@@ -35,6 +35,15 @@ process.tthMEM = cms.PSet(
   debugPlots          = cms.uint32({{ debugPlots }})
   clampVariables      = cms.VPSet({% for it in clampVariables %}
     cms.PSet( var = cms.string("{{ it.0 }}"), useGen = cms.bool({{ it.1 }}), useCfg = cms.bool({{ it.2 }}), val = cms.double({{ it.3 }})),{% endfor %}
+  ),
+  markovChainParams   = cms.PSet(
+    mode                = cms.string("{{ markovChainParams["mode"] }}"),
+    nofBatches          = cms.uint32({{ markovChainParams["nofBatches"] }}),
+    nofChains           = cms.uint32({{ markovChainParams["nofChains"] }}),
+    maxCallsStartingPos = cms.uint32({{ markovChainParams["maxCallsStartingPos"] }}),
+    epsilon0            = cms.double({{ markovChainParams["epsilon0"] }}),
+    T0                  = cms.double({{ markovChainParams["T0"] }}),
+    nu                  = cms.double({{ markovChainParams["nu"] }})
   )
 )
 
@@ -194,7 +203,7 @@ def getNofEntries(fileName, treeName):
 
 def createPythonCfg(isMC, inFileName, maxEvents, outFileName, treeName,
                     integrationMode, maxObjFunctionCalls, startingFromEntry,
-                    debugPlots, clampVariables):
+                    debugPlots, clampVariables, markovChainParams):
   return jinja2.Template(pythonCfgTemplate).render(
     isMC = isMC,
     inFileName = inFileName,
@@ -205,7 +214,8 @@ def createPythonCfg(isMC, inFileName, maxEvents, outFileName, treeName,
     maxObjFunctionCalls = maxObjFunctionCalls,
     startingFromEntry = startingFromEntry,
     debugPlots = debugPlots,
-    clampVariables = clampVariables)
+    clampVariables = clampVariables,
+    markovChainParams = markovChainParams)
 
 def createPythonROCcfg(signalFile, bkgFiles, outFolder, treeName,
                        branchName, labels, legendPosition):

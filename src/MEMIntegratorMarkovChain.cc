@@ -200,8 +200,6 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
   nofMoves_accepted_ = 0;
   nofMoves_rejected_ = 0;
 
-//--- TTree stuff (tbd)
-
 //--- loop over MX
   for(unsigned iChain = 0; iChain < nofChains_; ++iChain)
   {
@@ -264,8 +262,6 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
 
       update_x(q_);
 
-//--- TTree stuff (tbd)
-
       if(iMove > 0 && iMove % nofIterPerBatch_ == 0) ++iBatch;
       if(iBatch >= probSum_.size())
       {
@@ -290,8 +286,6 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
   nofMoves_rejectedTotal_ += nofMoves_rejected_;
 
   LOGTRC << *this;
-
-//--- TTree stuff (tbd)
 }
 
 void
