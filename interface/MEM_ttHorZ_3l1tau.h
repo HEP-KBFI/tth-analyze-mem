@@ -60,6 +60,9 @@ namespace tthMEM
     MEM_ttHorZ_3l1tau &
     setBJetTransferFunction(bool setTF);
 
+    MEM_ttHorZ_3l1tau &
+    setHiggsWidth(double higgsWidth);
+
     bool
     isMarkovChainIntegrator() const;
 
@@ -107,6 +110,9 @@ namespace tthMEM
     double alpha_;
     double epsilon0_;
     double nu_;
+
+    double higgsWidth_;
+    ///< use custom Higgs width in case the phase space is too narrow
 
     unsigned numDimensions_;
     bool setTF_;

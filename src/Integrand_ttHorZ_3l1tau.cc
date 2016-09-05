@@ -97,6 +97,13 @@ Integrand_ttHorZ_3l1tau::setBJetTransferFunction(bool setTF)
   return *this;
 }
 
+void
+Integrand_ttHorZ_3l1tau::setHiggsWidth(double higgsWidth) const
+{
+  me_madgraph_[ME_mg5_3l1tau::kTTH] -> setHiggsWidth(higgsWidth);
+  LOGVRB << "Set Higgs width to = " << higgsWidth << " GeV";
+}
+
 Integrand_ttHorZ_3l1tau &
 Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
 {

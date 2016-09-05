@@ -8,7 +8,7 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::
 
 #include <cmath> // std::round()
-#include <stdexcept> // std::runtime_error
+#include <stdexcept> // std::runtime_error, std::invalid_argument
 
 #include <boost/algorithm/string/predicate.hpp> // boost::iequals()
 
@@ -75,6 +75,8 @@ MEM_ttHorZ_3l1tau::initialize(const std::string & pdfName,
   T0_ = 15.;
   nu_ = 0.71;
 
+  higgsWidth_ = -1.;
+
   setMaxObjFunctionCalls(20000);
 }
 
@@ -120,6 +122,19 @@ MEM_ttHorZ_3l1tau &
 MEM_ttHorZ_3l1tau::setBJetTransferFunction(bool setTF)
 {
   setTF_ = setTF;
+  return *this;
+}
+
+MEM_ttHorZ_3l1tau &
+MEM_ttHorZ_3l1tau::setHiggsWidth(double higgsWidth)
+{
+  if(higgsWidth < 0.)
+  {
+    LOGERR << "Provided 'higgsWidth' = " << higgsWidth
+           << "cannot be a negative number";
+    throw std::invalid_argument(__PRETTY_FUNCTION__);
+  }
+  higgsWidth_ = higgsWidth;
   return *this;
 }
 
@@ -210,6 +225,8 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   (*integrand_).setEvent               (ev)
                .setCurrentME           (currentME)
                .setBJetTransferFunction(setTF_);
+  if(higgsWidth_ > 0.)
+    (*integrand_).setHiggsWidth(higgsWidth_);
   Integrand_ttHorZ_3l1tau::gIntegrand = integrand_;
 
 //--- get the lower and upper corners of the integration hyperspace

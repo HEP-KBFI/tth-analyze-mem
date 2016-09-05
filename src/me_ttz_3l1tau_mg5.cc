@@ -8,6 +8,8 @@
 #include "tthAnalysis/tthMEM/interface/me_ttz_3l1tau_mg5.h"
 #include "tthAnalysis/tthMEM/interface/HelAmps_sm_ttz_3l1tau.h"
 
+#include <stdexcept> // std::runtime_error
+
 using namespace MG5_sm_ttz_3l1tau;
 
 //==========================================================================
@@ -696,6 +698,13 @@ double me_ttz_3l1tau_mg5::sigmaHat()
     // Return 0 if not correct initial state assignment
     return 0.; 
   }
+}
+
+//--------------------------------------------------------------------------
+// Set Higgs width
+void me_ttz_3l1tau_mg5::setHiggsWidth(double __attribute__((unused)) higgsWidth)
+{
+  throw std::runtime_error("Cannot set Higgs width for TTZ matrix element!!!");
 }
 
 //==========================================================================

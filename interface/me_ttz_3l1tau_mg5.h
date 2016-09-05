@@ -61,6 +61,10 @@ class me_ttz_3l1tau_mg5
       return "[TTZ] g g > b e+ ve b~ e- ve~ ta+ ta- (sm)";
     }
 
+    // Set Higgs width
+    virtual void
+    setHiggsWidth(double higgsWidth) override;
+
   private:
 
     // Private functions to calculate the matrix element for all subprocesses

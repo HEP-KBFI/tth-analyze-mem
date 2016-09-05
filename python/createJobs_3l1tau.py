@@ -21,7 +21,7 @@ if __name__ == '__main__':
   
   markovChainParams = {
     "mode"                : "uniform",
-    "nofBatches"          : 100, # must divide (maxObjFunctionCalls * 0.9 / nofChains)
+    "nofBatches"          : 100,     # must divide (maxObjFunctionCalls * 0.9 / nofChains)
     "nofChains"           : 1,
     "maxCallsStartingPos" : 1000000,
     "epsilon0"            : 1.e-2,
@@ -29,20 +29,21 @@ if __name__ == '__main__':
     "nu"                  : 0.71
   }
 
-  createJobs(samples = samples,
-             channel = "3l_1tau",
-             version = "2016Aug01_dR03mvaTight",
-             lepton_selections = ["Tight"],
-             central_or_shifts = ["central"],
-             execName = "runMEM_3l1tau",
-             treeName = "tree",
-             integrationMode = "markovchain",
-             maxObjFunctionCalls = 100000, # 25k per permutation
+  createJobs(samples               = samples,
+             channel               = "3l_1tau",
+             version               = "2016Aug01_dR03mvaTight",
+             lepton_selections     = ["Tight"],
+             central_or_shifts     = ["central"],
+             execName              = "runMEM_3l1tau",
+             treeName              = "tree",
+             integrationMode       = "markovchain",
+             maxObjFunctionCalls   = 100000,                  # 25k per permutation
              nofIntegrationsPerJob = 25,
-             lhRatioBranchName = "lhRatioNP",
-             rocLegendPosition = [0.15, 0.78, 0.3, 0.88],
-             debugPlots = 80, # every 10th event is dumped to TH1D
-             clampVariables = clampVariables,
-             markovChainParams = markovChainParams)
+             lhRatioBranchName     = "lhRatioNP",
+             rocLegendPosition     = [0.15, 0.78, 0.3, 0.88],
+             debugPlots            = 80,                      # every 10th event is dumped to TH1D
+             higgsWidth            = -1.,                     # use negative number in case of default H width
+             clampVariables        = clampVariables,
+             markovChainParams     = markovChainParams)
 
 

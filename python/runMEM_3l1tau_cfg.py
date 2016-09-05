@@ -6,8 +6,8 @@ process = cms.PSet()
 process.fwliteInput = cms.PSet(
   fileNames = cms.vstring(os.path.join(os.getenv("CMSSW_BASE"), "src", "tthAnalysis", "tthMEM", \
                                        "data", "out_3l_1tau_ttHJetToNonbb_M125_Tight_central.root")),
-  maxEvents = cms.int32(3), # test with only three events
-  outputEvery = cms.uint32(10000)
+  maxEvents = cms.int32(3),        # test with only three events
+  outputEvery = cms.uint32(10000)  # never used
 )
 
 process.fwliteOutput = cms.PSet(
@@ -28,7 +28,8 @@ process.tthMEM = cms.PSet(
   integrationMode     = cms.string("VEGAS"),
   maxObjFunctionCalls = cms.uint32(150), # just for testing; proper figure: 100k+
   startingFromEntry   = cms.int64(0),
-  debugPlots          = cms.uint32(16), # use 0 if no debug plots needed
+  debugPlots          = cms.uint32(16),  # use 0 if no debug plots needed
+  higgsWidth          = cms.double(-1.), # use negative number in case of default H width
   clampVariables      = cms.VPSet(
     cms.PSet( var = cms.string("bCosTheta1"),     useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),
     cms.PSet( var = cms.string("bPhi1"),          useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),
@@ -39,7 +40,7 @@ process.tthMEM = cms.PSet(
     cms.PSet( var = cms.string("tauPhiInv"),      useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),
     cms.PSet( var = cms.string("tauMinvSquared"), useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0))
   ),
-  markovChainParams   = cms.PSet( # only read if the integrationMode is set to 'markovchain'
+  markovChainParams   = cms.PSet(         # only read if the integrationMode is set to 'markovchain'
     mode                = cms.string("uniform"),
     nofBatches          = cms.uint32(27), # must divide (maxObjFunctionCalls * 0.9 / nofChains)
     nofChains           = cms.uint32(1),

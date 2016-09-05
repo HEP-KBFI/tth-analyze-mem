@@ -698,6 +698,13 @@ double me_tth_3l1tau_mg5::sigmaHat()
   }
 }
 
+//--------------------------------------------------------------------------
+// Set Higgs width
+void me_tth_3l1tau_mg5::setHiggsWidth(double higgsWidth)
+{
+  if(pars) pars -> mdl_WH = higgsWidth;
+}
+
 //==========================================================================
 // Private class member functions
 

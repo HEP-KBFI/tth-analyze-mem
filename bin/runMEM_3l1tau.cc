@@ -77,6 +77,7 @@ main(int argc,
   const unsigned maxObjFunctionCalls = cfg_tthMEM.getParameter<unsigned>("maxObjFunctionCalls");
   const Long64_t startingFromEntry = cfg_tthMEM.getParameter<Long64_t>("startingFromEntry");
   const unsigned debugPlots = cfg_tthMEM.getParameter<unsigned>("debugPlots");
+  const double higgsWidth = cfg_tthMEM.getParameter<double>("higgsWidth");
 
 //--- clamp the variables if needed
   VariableManager_3l1tau vm;
@@ -137,6 +138,8 @@ main(int argc,
     mem_tt_HandZ.setMarkovChainParams(mxMode, nofBatches, nofChains,
                                       maxCallsStartingPos, epsilon0, T0, nu);
   }
+  if(higgsWidth > 0.)
+    mem_tt_HandZ.setHiggsWidth(higgsWidth);
 
   const fwlite::InputSource inputFiles(cfg);
   const int maxEvents = inputFiles.maxEvents();

@@ -35,6 +35,10 @@ public:
   virtual std::string
   name() const = 0;
 
+  // Set Higgs width
+  virtual void
+  setHiggsWidth(double higgsWidth) = 0;
+
   const std::vector<double> &
   getMasses() const
   {

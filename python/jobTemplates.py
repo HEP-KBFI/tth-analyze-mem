@@ -32,7 +32,8 @@ process.tthMEM = cms.PSet(
   integrationMode     = cms.string("{{ integrationMode }}"),
   maxObjFunctionCalls = cms.uint32({{ maxObjFunctionCalls }}),
   startingFromEntry   = cms.int64({{startingFromEntry }}),
-  debugPlots          = cms.uint32({{ debugPlots }})
+  debugPlots          = cms.uint32({{ debugPlots }}),
+  higgsWidth          = cms.double({{ higgsWidth }}),
   clampVariables      = cms.VPSet({% for it in clampVariables %}
     cms.PSet( var = cms.string("{{ it.0 }}"), useGen = cms.bool({{ it.1 }}), useCfg = cms.bool({{ it.2 }}), val = cms.double({{ it.3 }})),{% endfor %}
   ),
@@ -203,7 +204,7 @@ def getNofEntries(fileName, treeName):
 
 def createPythonCfg(isMC, inFileName, maxEvents, outFileName, treeName,
                     integrationMode, maxObjFunctionCalls, startingFromEntry,
-                    debugPlots, clampVariables, markovChainParams):
+                    debugPlots, higgsWidth, clampVariables, markovChainParams):
   return jinja2.Template(pythonCfgTemplate).render(
     isMC = isMC,
     inFileName = inFileName,
@@ -214,6 +215,7 @@ def createPythonCfg(isMC, inFileName, maxEvents, outFileName, treeName,
     maxObjFunctionCalls = maxObjFunctionCalls,
     startingFromEntry = startingFromEntry,
     debugPlots = debugPlots,
+    higgsWidth = higgsWidth,
     clampVariables = clampVariables,
     markovChainParams = markovChainParams)
 
