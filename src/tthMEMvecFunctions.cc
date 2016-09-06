@@ -41,7 +41,7 @@ namespace tthMEM
         [shiftValue](double sum,
                      double element) -> double
         {
-          const double eShifted = (element - shiftValue);
+          const double eShifted = (element + shiftValue);
           return sum + eShifted * eShifted;
         }
       ));
@@ -103,7 +103,7 @@ namespace tthMEM
           double average)
     {
       const unsigned range = shiftFromBegin_end - shiftFromBegin_begin;
-      return l2(vec, shiftFromBegin_begin, shiftFromBegin_end, average) /
+      return l2(vec, shiftFromBegin_begin, shiftFromBegin_end, -average) /
              std::sqrt(range >= 2 ? range * (range - 1) : 1.);
     }
   }

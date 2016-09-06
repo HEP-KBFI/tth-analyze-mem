@@ -1,6 +1,7 @@
 #include <string> // std::string
 #include <vector> // std::vector<>
 #include <algorithm> // std::equal()
+#include <cmath> // std::sqrt()
 
 #include <cppunit/extensions/HelperMacros.h> // CppUnit::TestFixture, CPPUNIT_ASSERT_DOUBLES_EQUAL,
                                              // CPPUNIT_ASSERT_ASSERTION_FAIL
@@ -17,6 +18,9 @@ class Test_tthMEMvecFunctions
 
   CPPUNIT_TEST_SUITE(Test_tthMEMvecFunctions);
   CPPUNIT_TEST(testSubv);
+  CPPUNIT_TEST(testAvg);
+  CPPUNIT_TEST(testL2);
+  CPPUNIT_TEST(testStdev);
   CPPUNIT_TEST(testVectorHadamardMultiplication);
   CPPUNIT_TEST(testVectorAddition);
   CPPUNIT_TEST(testVectorSubtraction);
@@ -33,6 +37,25 @@ class Test_tthMEMvecFunctions
   CPPUNIT_TEST_SUITE_END();
 
 public:
+
+  /* for function operating on (sub)vectors */
+  const std::vector<double> simpleVector   { +1., +2., +3., +4., +5. };
+  const std::vector<double> subVector0to3  { +1., +2., +3.           };
+  const std::vector<double> subVector2toEnd{           +3., +4., +5. };
+  const std::vector<double> subVector1to4  {      +2., +3., +4.      };
+  const double subVector0to3Avg   = +2.0;
+  const double subVector2toEndAvg = +4.0;
+  const double subVector1to4Avg   = +3.0;
+  const double subVector0to3L2        = std::sqrt(14.);
+  const double subVector0to3L2ShiftM1 = std::sqrt(5.);
+  const double subVector2toEndL2        = std::sqrt(50.);
+  const double subVector2toEndL2ShiftM1 = std::sqrt(29.);
+  const double subVector1to4L2        = std::sqrt(29.);
+  const double subVector1to4L2ShiftM1 = std::sqrt(14.);
+  const double subVector0to3Stdev   = std::sqrt(1. / 3);
+  const double subVector2toEndStdev = std::sqrt(1. / 3);
+  const double subVector1to4Stdev   = std::sqrt(1. / 3);
+  const unsigned simpleVectorSize = simpleVector.size();
 
   /* general purpose vectors */
   const std::vector<double> emptyVector  {     };
@@ -101,10 +124,111 @@ public:
     /* empty */
   }
 
+  /**
+   * @brief tests:
+   *
+   * std::vector<VectorElementType>
+   * subv(const std::vector<VectorElementType> & vec,
+   *      unsigned shiftFromBegin_begin,
+   *      unsigned shiftFromBegin_end);
+   */
   void
   testSubv()
   {
-    //
+    /* test with conflicting shifts */
+    CPPUNIT_ASSERT_THROW(vec::subv(simpleVector, 1,                       0                      ), cms::Exception);
+    CPPUNIT_ASSERT_THROW(vec::subv(simpleVector, 0,                       simpleVector.size() + 1), cms::Exception);
+    CPPUNIT_ASSERT_THROW(vec::subv(simpleVector, simpleVector.size() + 1, simpleVector.size() + 2), cms::Exception);
+    /* test actual functionality */
+    CPPUNIT_ASSERT_NO_THROW(vec::subv(simpleVector, 0, 3));
+    const auto simpleVector0to3 = vec::subv(simpleVector, 0, 3);
+    CPPUNIT_ASSERT(std::equal(simpleVector0to3.begin(), simpleVector0to3.end(), subVector0to3.begin()));
+    CPPUNIT_ASSERT_NO_THROW(vec::subv(simpleVector, 2, simpleVector.size()));
+    const auto simpleVector2toEnd = vec::subv(simpleVector, 2, simpleVector.size());
+    CPPUNIT_ASSERT(std::equal(simpleVector2toEnd.begin(), simpleVector2toEnd.end(), subVector2toEnd.begin()));
+    CPPUNIT_ASSERT_NO_THROW(vec::subv(simpleVector, 1, 4));
+    const auto simpleVector1to4 = vec::subv(simpleVector, 1, 4);
+    CPPUNIT_ASSERT(std::equal(simpleVector1to4.begin(), simpleVector1to4.end(), subVector1to4.begin()));
+  }
+
+  /**
+   * @brief tests:
+   *
+   * double
+   * avg(const std::vector<double> & vec,
+   *     unsigned shiftFromBegin_begin,
+   *     unsigned shiftFromBegin_end);
+   */
+  void
+  testAvg()
+  {
+    /* test with conflicting shifts */
+    CPPUNIT_ASSERT_THROW(vec::avg(simpleVector, 1,                    0                   ), cms::Exception);
+    CPPUNIT_ASSERT_THROW(vec::avg(simpleVector, 0,                    simpleVectorSize + 1), cms::Exception);
+    CPPUNIT_ASSERT_THROW(vec::avg(simpleVector, simpleVectorSize + 1, simpleVectorSize + 2), cms::Exception);
+    /* test actual functionality */
+    CPPUNIT_ASSERT_NO_THROW(     vec::avg(simpleVector, 0, 3));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::avg(simpleVector, 0, 3),                subVector0to3Avg,   +1.e-8);
+    CPPUNIT_ASSERT_NO_THROW(     vec::avg(simpleVector, 2, simpleVectorSize));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::avg(simpleVector, 2, simpleVectorSize), subVector2toEndAvg, +1.e-8);
+    CPPUNIT_ASSERT_NO_THROW(     vec::avg(simpleVector, 1, 4));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::avg(simpleVector, 1, 4),                subVector1to4Avg,   +1.e-8);
+  }
+
+  /**
+   * @brief tests:
+   *
+   * double
+   * l2(const std::vector<double> & vec,
+   *    unsigned shiftFromBegin_begin,
+   *    unsigned shiftFromBegin_end,
+   *    double shiftValue = 0.);
+   */
+  void
+  testL2()
+  {
+    /* test with conflicting shifts */
+    CPPUNIT_ASSERT_THROW(vec::l2(simpleVector, 1u,                    0u                   ), cms::Exception);
+    CPPUNIT_ASSERT_THROW(vec::l2(simpleVector, 0u,                    simpleVectorSize + 1u), cms::Exception);
+    CPPUNIT_ASSERT_THROW(vec::l2(simpleVector, simpleVectorSize + 1u, simpleVectorSize + 2u), cms::Exception);
+    /* test actual functionality */
+    CPPUNIT_ASSERT_NO_THROW(     vec::l2(simpleVector, 0u, 3u));
+    CPPUNIT_ASSERT_NO_THROW(     vec::l2(simpleVector, 0u, 3u, -1.));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::l2(simpleVector, 0u, 3u),      subVector0to3L2,        +1.e-8);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::l2(simpleVector, 0u, 3u, -1.), subVector0to3L2ShiftM1, +1.e-8);
+    CPPUNIT_ASSERT_NO_THROW(     vec::l2(simpleVector, 2u, simpleVectorSize));
+    CPPUNIT_ASSERT_NO_THROW(     vec::l2(simpleVector, 2u, simpleVectorSize, -1.));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::l2(simpleVector, 2u, simpleVectorSize),      subVector2toEndL2,        +1.e-8);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::l2(simpleVector, 2u, simpleVectorSize, -1.), subVector2toEndL2ShiftM1, +1.e-8);
+    CPPUNIT_ASSERT_NO_THROW(     vec::l2(simpleVector, 1u, 4u));
+    CPPUNIT_ASSERT_NO_THROW(     vec::l2(simpleVector, 1u, 4u, -1.));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::l2(simpleVector, 1u, 4u),      subVector1to4L2,        +1.e-8);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::l2(simpleVector, 1u, 4u, -1.), subVector1to4L2ShiftM1, +1.e-8);
+  }
+
+  /**
+   * @brief tests:
+   *
+   * double
+   * stdev(const std::vector<double> & vec,
+   *       unsigned shiftFromBegin_begin,
+   *       unsigned shiftFromBegin_end,
+   *       double average);
+   */
+  void
+  testStdev()
+  {
+    /* test with conflicting shifts */
+    CPPUNIT_ASSERT_THROW(vec::stdev(simpleVector, 1,                    0                   , subVector0to3Avg  ), cms::Exception);
+    CPPUNIT_ASSERT_THROW(vec::stdev(simpleVector, 0,                    simpleVectorSize + 1, subVector2toEndAvg), cms::Exception);
+    CPPUNIT_ASSERT_THROW(vec::stdev(simpleVector, simpleVectorSize + 1, simpleVectorSize + 2, subVector1to4Avg  ), cms::Exception);
+    /* test actual functionality */
+    CPPUNIT_ASSERT_NO_THROW(     vec::stdev(simpleVector, 0, 3,                subVector0to3Avg));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::stdev(simpleVector, 0, 3,                subVector0to3Avg),   subVector0to3Stdev,    +1.e-8);
+    CPPUNIT_ASSERT_NO_THROW(     vec::stdev(simpleVector, 2, simpleVectorSize, subVector2toEndAvg));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::stdev(simpleVector, 2, simpleVectorSize, subVector2toEndAvg), subVector2toEndStdev, +1.e-8);
+    CPPUNIT_ASSERT_NO_THROW(     vec::stdev(simpleVector, 1, 4,                subVector1to4Avg));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::stdev(simpleVector, 1, 4,                subVector1to4Avg),   subVector1to4Stdev,   +1.e-8);
   }
 
   /**

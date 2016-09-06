@@ -17,7 +17,7 @@ namespace tthMEM
     /**
      * @brief Calculates L2 norm aka Euclidean norm of a given vector of doubles
      * @param vec        The vector of doubles
-     * @param shiftValue The value which is subtracted from every element beforehand
+     * @param shiftValue The value which is added to every element beforehand
      * @return Magnitude of the vector in Euclidean space
      */
     double
@@ -28,7 +28,7 @@ namespace tthMEM
      * @brief Calculates L2 norm aka Euclidean norm of a given vector of doubles
      * @param vec            The vector
      * @param shiftFromBegin End point up to which the norm is calculated
-     * @param shiftValue     The value which is subtracted from every
+     * @param shiftValue     The value which is added to every
      *                       element beforehand
      * @return The norm of the subvector in the element range [0, shiftFromBegin)
      */
@@ -43,7 +43,7 @@ namespace tthMEM
      * @param shiftFromBegin_begin The starting point from which the norm is
      *                             calculated
      * @param shiftFromBegin_end   The end point up to which the norm is calculated
-     * @param shiftValue           The value which is subtracted from every
+     * @param shiftValue           The value which is added to every
      *                             element beforehand
      * @return The norm of the subvector in the element range
      *         [shiftFromBegin_begin, shiftFromBegin_end)
