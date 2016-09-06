@@ -8,3 +8,8 @@
   <use name="tthAnalysis/tthMEM" />
   <use name="cppunit" />
 </bin>
+<bin file="CppUnit_testdriver.cc,test_tthMEMrecFunctions.cc" name="testMEMrec">
+  <use name="DataFormats/Math" />
+  <use name="tthAnalysis/tthMEM" />
+  <use name="cppunit" />
+</bin>

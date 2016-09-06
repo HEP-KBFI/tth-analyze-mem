@@ -3,8 +3,7 @@
 #include <algorithm> // std::equal()
 #include <cmath> // std::sqrt()
 
-#include <cppunit/extensions/HelperMacros.h> // CppUnit::TestFixture, CPPUNIT_ASSERT_DOUBLES_EQUAL,
-                                             // CPPUNIT_ASSERT_ASSERTION_FAIL
+#include <cppunit/extensions/HelperMacros.h> // CppUnit::TestFixture, CPPUNIT_ASSERT_*
 #include <FWCore/Utilities/interface/Exception.h> // cms::Exception
 
 #include "tthAnalysis/tthMEM/interface/tthMEMvecFunctions.h"

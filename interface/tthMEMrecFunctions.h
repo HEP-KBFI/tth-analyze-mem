@@ -230,7 +230,7 @@ namespace tthMEM
      * @brief Calculates energy fraction between its mother particle and its visible product
      * @param mother 4-momentum of the mother particle
      * @param vis    4-momentum of its visible decay product
-     * @return The energy fraction E_{mother} / E_{vis}
+     * @return The energy fraction E_{vis} / E_{mother}
      */
     double
     z(const LorentzVector & mother,
