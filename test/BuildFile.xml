@@ -1,4 +1,9 @@
-<bin file="CppUnit_testdriver.cc,test_tthMEMauxFunctions.cc" name="testMEM">
+<bin file="CppUnit_testdriver.cc,test_tthMEMauxFunctions.cc" name="testMEMaux">
+  <use name="DataFormats/Math" />
+  <use name="tthAnalysis/tthMEM" />
+  <use name="cppunit" />
+</bin>
+<bin file="CppUnit_testdriver.cc,test_tthMEMvecFunctions.cc" name="testMEMvec">
   <use name="DataFormats/Math" />
   <use name="tthAnalysis/tthMEM" />
   <use name="cppunit" />

@@ -15,13 +15,13 @@ class Test_tthMEMauxFunctions
 public:
 
   void
-  setUp()
+  setUp() override
   {
     /* empty */
   }
 
   void
-  tearDown()
+  tearDown() override
   {
     /* empty */
   }

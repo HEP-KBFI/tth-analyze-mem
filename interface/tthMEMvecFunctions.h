@@ -227,7 +227,8 @@ namespace tthMEM
             const std::vector<VectorElementType> & rhs)
   {
     if(lhs.size() != rhs.size())
-      ;
+      throw_line("range error") << "LHS size = " << lhs.size() << "; "
+                                << "RHS size = " << rhs.size();
     std::vector<VectorElementType> result;
     std::transform(
       lhs.begin(), lhs.end(), rhs.begin(), std::back_inserter(result),
@@ -437,8 +438,13 @@ namespace tthMEM
     std::vector<VectorElementType> result;
     std::transform(
       rhs.begin(), rhs.end(), std::back_inserter(result),
-      std::bind1st(std::divides<VectorElementType>(),
-                   static_cast<VectorElementType>(lhs))
+      [&lhs](const VectorElementType element) -> VectorElementType
+      {
+        if(element == 0)
+          throw_line("invalid argument")
+            << "Dividing with a vector that contains a zero element";
+        return static_cast<VectorElementType>(lhs) / element;
+      }
     );
     return result;
   }
@@ -459,6 +465,9 @@ namespace tthMEM
   operator/(const std::vector<VectorElementType> & lhs,
             ScalarType rhs)
   {
+    if(rhs == 0)
+      throw_line("invalid argument")
+        << "Passed zero divisor";
     std::vector<VectorElementType> result;
     std::transform(
       lhs.begin(), lhs.end(), std::back_inserter(result),
@@ -552,6 +561,9 @@ namespace tthMEM
   operator/=(std::vector<VectorElementType> & lhs,
              ScalarType rhs)
   {
+    if(rhs == 0)
+      throw_line("invalid argument")
+        << "Division by zero";
     std::transform(
       lhs.begin(), lhs.end(), lhs.begin(),
       std::bind2nd(std::divides<VectorElementType>(),
@@ -575,7 +587,7 @@ namespace tthMEM
       throw_line("range error") << "LHS size = " << lhs.size() << "; "
                                 << "RHS size = " << rhs.size();
     std::transform(
-      lhs.begin(), lhs.end(), rhs.begin(),
+      lhs.begin(), lhs.end(), rhs.begin(), lhs.begin(),
       std::plus<VectorElementType>()
     );
     return lhs;
@@ -596,7 +608,7 @@ namespace tthMEM
       throw_line("range error") << "LHS size = " << lhs.size() << "; "
                                 << "RHS size = " << rhs.size();
     std::transform(
-      lhs.begin(), lhs.end(), rhs.begin(),
+      lhs.begin(), lhs.end(), rhs.begin(), lhs.begin(),
       std::minus<VectorElementType>()
     );
     return lhs;
