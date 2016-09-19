@@ -99,7 +99,7 @@ namespace tthMEM
     tDecayJacobiFactor(const LorentzVector & W,
                        double bQuarkEnergy,
                        double bQuarkP,
-                       double nuTopEnergy,
+                       double nuWEnergy,
                        double leptonEnergy,
                        const Vector & bQuarkPunit)
     {
@@ -114,7 +114,7 @@ namespace tthMEM
         LOGWARN << "(for reference: " << lvrap("W", W) << ')';
         return 0.;
       }
-      return bQuarkEnergy * pow2(nuTopEnergy) /
+      return bQuarkEnergy * pow2(nuWEnergy) /
              (leptonEnergy * W.e() * constants::massWSquared * invAbsFactor);
     }
 
@@ -205,12 +205,12 @@ namespace tthMEM
     }
 
     double
-    nuTopEnergy(const VectorSpherical & nuTopPunit,
-                const Vector & leptonPunit,
-                double leptonEnergy)
+    nuWEnergy(const VectorSpherical & nuWPunit,
+              const Vector & leptonPunit,
+              double leptonEnergy)
     {
       return constants::massWSquared /
-             ((1 - leptonPunit.Dot(nuTopPunit)) * leptonEnergy * 2.);
+             ((1 - leptonPunit.Dot(nuWPunit)) * leptonEnergy * 2.);
     }
 
     double

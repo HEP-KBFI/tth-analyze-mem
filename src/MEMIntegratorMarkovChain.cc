@@ -4,8 +4,7 @@
 
 #include <cmath> // std::sqrt(), std::exp()
 #include <algorithm> // std::copy(), std::fill_n(), std::generate(), ...
-  // ..., std::transform(), find_if_not(), std::generate_n()
-#include <functional> // std::divides<>, std::bind2nd()
+  // ..., std::transform(), std::find_if_not(), std::generate_n()
 #include <limits> // std::numeric_limist<>
 #include <iterator> // std::back_inserter()
 

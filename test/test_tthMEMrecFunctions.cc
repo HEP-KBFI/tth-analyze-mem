@@ -252,8 +252,8 @@ public:
   void
   testNuWEnergy()
   {
-    const double nuTopEnergy = functions::nuTopEnergy(nuW0unit, lW0unit, lW0energy);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(nuTopEnergy, nuW0.e(), +1.e-3);
+    const double nuWEnergy = functions::nuWEnergy(nuW0unit, lW0unit, lW0energy);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(nuWEnergy, nuW0.e(), +1.e-3);
   }
 };
 

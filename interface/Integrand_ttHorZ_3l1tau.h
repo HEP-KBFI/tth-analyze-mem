@@ -129,7 +129,7 @@ namespace tthMEM
                                 double)>           nuHTau_;
     std::function<LorentzVector(double, double,
                                 double, double)>   nuLTau_;
-    std::function<double(const VectorSpherical &)> nuTopEnergy_[2];
+    std::function<double(const VectorSpherical &)> nuWEnergy_[2];
     std::function<double(const LorentzVector &)>   bQuarkEnergy_[2];
 
     /* transfer functionals */

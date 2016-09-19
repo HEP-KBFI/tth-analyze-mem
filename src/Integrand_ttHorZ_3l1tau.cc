@@ -135,26 +135,29 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
   const double hTauMassSquared = pow2(htau.mass());
   const double hTauMomentum = htau.p();
   const double hTauInvBeta = 1. / htau.p4().Beta();
-  nuHtauCosTheta_ = std::bind(functions::nuHtauCosTheta,
-                              std::placeholders::_1,
-                              hTauEnergy,
-                              hTauMassSquared,
-                              hTauMomentum);
-  hadTauPSJacobiFactor_ = std::bind(functions::hadTauPSJacobiFactor,
-                                    std::placeholders::_1,
-                                    hTauMassSquared,
-                                    hTauInvBeta);
-  nuHtauEnergy_ = std::bind(functions::nuTauEnergy,
-                            std::placeholders::_1,
-                            hTauEnergy);
-  nuHTau_ = std::bind(functions::nuP4,
-                      std::placeholders::_1,
-                      std::placeholders::_2,
-                      std::placeholders::_3,
-                      std::placeholders::_3,
-                      eX_htau_,
-                      eY_htau_,
-                      eZ_htau_);
+  nuHtauCosTheta_ = [hTauEnergy, hTauMassSquared, hTauMomentum]
+                    (double nuHtau_en) -> double
+  {
+    return functions::nuHtauCosTheta(
+      nuHtau_en, hTauEnergy, hTauMassSquared, hTauMomentum
+    );
+  };
+  hadTauPSJacobiFactor_ = [hTauMassSquared, hTauInvBeta]
+                          (double z1) -> double
+  {
+    return functions::hadTauPSJacobiFactor(z1, hTauMassSquared, hTauInvBeta);
+  };
+  nuHtauEnergy_ = [hTauEnergy] (double z1) -> double
+  {
+    return functions::nuTauEnergy(z1, hTauEnergy);
+  };
+  nuHTau_ = [eX_htau_, eY_htau_, eZ_htau_]
+            (double nuHtau_theta, double nuHtau_phi, double nuHtau_en) -> LorentzVector
+  {
+    return functions::nuP4( //      <- notice ->
+      nuHtau_theta, nuHtau_phi, nuHtau_en, nuHtau_en, eX_htau_, eY_htau_, eZ_htau_
+    );
+  };
 
 //--- set the variables related to the MET/hadronic recoil TF
   const MeasuredMET & met = measuredEvent_ -> met;
@@ -167,13 +170,13 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
     invCovMET.Invert();
     const double MET_TF_denom = 1. / (2. * pi() * std::sqrt(invCovMET.Determinant()));
     LOGVRB << "MET TF denominator = " << MET_TF_denom;
-    MET_TF_ = std::bind(functions::MET_TF,
-                        std::placeholders::_1,
-                        std::placeholders::_2,
-                        MET_x,
-                        MET_y,
-                        MET_TF_denom,
-                        invCovMET);
+    MET_TF_ = [MET_x, MET_y, MET_TF_denom, invCovMET]
+              (double nuSumX, double nuSumY) -> double
+    {
+      return functions::MET_TF(
+        nuSumX, nuSumY, MET_x, MET_y, MET_TF_denom, invCovMET
+      );
+    };
   }
   else
   {
@@ -224,33 +227,36 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   const double complLeptMassSquared = pow2(complLepton.mass());
   const double complLeptEnergy = complLepton.energy();
   const double complLeptP = complLepton.p();
-  nuLeptTauCosTheta_ = std::bind(functions::nuLeptTauCosTheta,
-                                 std::placeholders::_1,
-                                 std::placeholders::_2,
-                                 std::placeholders::_3,
-                                 complLeptEnergy,
-                                 complLeptMassSquared,
-                                 complLeptP);
-  leptTauPSJacobiFactor_ = std::bind(functions::leptTauPSJacobiFactor,
-                                     std::placeholders::_1,
-                                     std::placeholders::_2,
-                                     complLeptMassSquared,
-                                     complLeptP);
-  nuLTauEnergy_ = std::bind(functions::nuTauEnergy,
-                            std::placeholders::_1,
-                            complLeptEnergy);
-  nuLTau_ = std::bind(functions::nuP4,
-                      std::placeholders::_1,
-                      std::placeholders::_2,
-                      std::placeholders::_3,
-                      std::placeholders::_4,
-                      eX_lept_,
-                      eY_lept_,
-                      eZ_lept_);
-  z2_ = std::bind(functions::z2,
-                  std::placeholders::_1,
-                  measuredVisMassSquared,
-                  massHiggsOrZsquared);
+  nuLeptTauCosTheta_ = [complLeptEnergy, complLeptMassSquared, complLeptP]
+                       (double nuLTau_en, double mInvSquared, double nuLTau_p) -> double
+  {
+    return functions::nuLeptTauCosTheta(
+      nuLTau_en, mInvSquared, nuLTau_p, complLeptEnergy, complLeptMassSquared, complLeptP
+    );
+  };
+  leptTauPSJacobiFactor_ = [complLeptMassSquared, complLeptP]
+                           (double mInvSquared, double z2) -> double
+  {
+    return functions::leptTauPSJacobiFactor(
+      mInvSquared, z2, complLeptMassSquared, complLeptP
+    );
+  };
+  nuLTauEnergy_ = [complLeptEnergy] (double z2) -> double
+  {
+    return functions::nuTauEnergy(z2, complLeptEnergy);
+  };
+  nuLTau_ = [eX_lept_, eY_lept_, eZ_lept_]
+            (double nuLTau_theta, double nuLTau_phi, double nuLTau_en, double nuLTau_p)
+              -> LorentzVector
+  {
+    return functions::nuP4(
+      nuLTau_theta, nuLTau_phi, nuLTau_en, nuLTau_p, eX_lept_, eY_lept_, eZ_lept_
+    );
+  };
+  z2_ = [measuredVisMassSquared, massHiggsOrZsquared] (double z1) -> double
+  {
+    return functions::z2(z1, measuredVisMassSquared, massHiggsOrZsquared);
+  };
   int lept1Charge = 0;
   for(unsigned i = 0; i < 2; ++i)
   {
@@ -269,25 +275,28 @@ Integrand_ttHorZ_3l1tau::renewInputs()
     LOGVRB << lvrap("W lept " + std::to_string(i + 1) + " p4", recoEvent.lW[i]);
     if(i == 0) lept1Charge = lept_i.charge();
 
-    bQuarkEnergy_[i] = std::bind(functions::bQuarkEnergy,
-                                 std::placeholders::_1,
-                                 bJetP3unit_i,
-                                 bJetEnergy_i);
-    bJetTFBound_[i] = std::bind(functions::bJetTF,
-                                std::placeholders::_1,
-                                bJetEnergy_i,
-                                bJetEta_i);
-    tDecayJacobiFactor_[i] = std::bind(functions::tDecayJacobiFactor,
-                                       std::placeholders::_1,
-                                       std::placeholders::_2,
-                                       std::placeholders::_3,
-                                       std::placeholders::_4,
-                                       leptEnergy_i,
-                                       bJetP3unit_i);
-    nuTopEnergy_[i] = std::bind(functions::nuTopEnergy,
-                                std::placeholders::_1,
-                                leptP3unit_i,
-                                leptEnergy_i);
+    bQuarkEnergy_[i] = [bJetP3unit_i, bJetEnergy_i]
+                       (const LorentzVector & W_i) -> double
+    {
+      return functions::bQuarkEnergy(W_i, bJetP3unit_i, bJetEnergy_i);
+    };
+    bJetTFBound_[i] = [bJetEnergy_i, bJetEta_i](double bEnergy_i) -> double
+    {
+      return functions::bJetTF(bEnergy_i, bJetEnergy_i, bJetEta_i);
+    };
+    tDecayJacobiFactor_[i] = [leptEnergy_i, bJetP3unit_i]
+                             (const LorentzVector & W_i, double bQuarkEnergy_i,
+                              double bQuarkP_i, double nuWEnergy_i) -> double
+    {
+      return functions::tDecayJacobiFactor(
+        W_i, bQuarkEnergy_i, bQuarkP_i, nuWEnergy_i, leptEnergy_i, bJetP3unit_i
+      );
+    };
+    nuWEnergy_[i] = [leptP3unit_i, leptEnergy_i]
+                      (const VectorSpherical & nuTopPunit_i) -> double
+    {
+      return functions::nuWEnergy(nuTopPunit_i, leptP3unit_i, leptEnergy_i);
+    };
   }
 
 //--- MadGraph momenta legend:
@@ -406,13 +415,13 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   for(unsigned i = 0; i < 2; ++i)
   {
     const std::string i_str = std::to_string(i + 1);
-    const VectorSpherical nuTP3unit_i(1., std::acos(cosTheta[i]), varphi[i]);
-    const double nuTenergy_i = nuTopEnergy_[i](nuTP3unit_i);
-    recoEvent.nuW[i] = getLorentzVector(Vector(nuTenergy_i * nuTP3unit_i), nuTenergy_i);
+    const VectorSpherical nuWP3unit_i(1., std::acos(cosTheta[i]), varphi[i]);
+    const double nuWenergy_i = nuWEnergy_[i](nuWP3unit_i);
+    recoEvent.nuW[i] = getLorentzVector(Vector(nuWenergy_i * nuWP3unit_i), nuWenergy_i);
     recoEvent.W[i] = recoEvent.nuW[i] + recoEvent.lW[i];
 
     LOGTRC << lvrap("W nu " + i_str, recoEvent.nuW[i]);
-    LOGTRC << lvrap("W " + i_str,    recoEvent.W[i]);
+    LOGTRC << lvrap("W "    + i_str, recoEvent.W[i]);
 
     const double bEnergy_i = bQuarkEnergy_[i](recoEvent.W[i]);
     if(bEnergy_i == 0.) return 0.;

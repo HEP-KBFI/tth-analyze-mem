@@ -5,8 +5,8 @@
 #include <ostream> // std::ostream
 #include <iterator> // std::ostream_iterator<>, std::back_inserter()
 #include <algorithm> // std::copy(), std::transform()
-#include <functional> // std::bind1st(), std::bind2nd(), std::multiplies<>, ...
-  // ..., std::plus<>, std::minus<>, std::divides<>
+#include <functional> // std::multiplies<>, std::plus<>, std::minus<>, ...
+  // ... std::divides<>
 
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 
@@ -300,8 +300,10 @@ namespace tthMEM
     std::vector<VectorElementType> result;
     std::transform(
       rhs.begin(), rhs.end(), std::back_inserter(result),
-      std::bind1st(std::plus<VectorElementType>(),
-                   static_cast<VectorElementType>(lhs))
+      [lhs](VectorElementType x) -> VectorElementType
+      {
+        return static_cast<ScalarType>(lhs) + x;
+      }
     );
     return result;
   }
@@ -344,8 +346,10 @@ namespace tthMEM
     std::vector<VectorElementType> result;
     std::transform(
       rhs.begin(), rhs.end(), std::back_inserter(result),
-      std::bind1st(std::minus<VectorElementType>(),
-                   static_cast<VectorElementType>(lhs))
+      [lhs](VectorElementType x) -> VectorElementType
+      {
+        return static_cast<ScalarType>(lhs) - x;
+      }
     );
     return result;
   }
@@ -369,8 +373,10 @@ namespace tthMEM
     std::vector<VectorElementType> result;
     std::transform(
       lhs.begin(), lhs.end(), std::back_inserter(result),
-      std::bind2nd(std::minus<VectorElementType>(),
-                   static_cast<ScalarType>(rhs))
+      [rhs](VectorElementType x) -> VectorElementType
+      {
+        return x - static_cast<ScalarType>(rhs);
+      }
     );
     return result;
   }
@@ -394,8 +400,10 @@ namespace tthMEM
     std::vector<VectorElementType> result;
     std::transform(
       rhs.begin(), rhs.end(), std::back_inserter(result),
-      std::bind1st(std::multiplies<VectorElementType>(),
-                   static_cast<VectorElementType>(lhs))
+      [lhs](VectorElementType x) -> VectorElementType
+      {
+        return static_cast<ScalarType>(lhs) * x;
+      }
     );
     return result;
   }
@@ -438,7 +446,7 @@ namespace tthMEM
     std::vector<VectorElementType> result;
     std::transform(
       rhs.begin(), rhs.end(), std::back_inserter(result),
-      [&lhs](const VectorElementType element) -> VectorElementType
+      [lhs](const VectorElementType element) -> VectorElementType
       {
         if(element == 0)
           throw_line("invalid argument")
@@ -471,8 +479,10 @@ namespace tthMEM
     std::vector<VectorElementType> result;
     std::transform(
       lhs.begin(), lhs.end(), std::back_inserter(result),
-      std::bind2nd(std::divides<VectorElementType>(),
-                   static_cast<VectorElementType>(rhs))
+      [rhs](VectorElementType x) -> VectorElementType
+      {
+        return x / rhs;
+      }
     );
     return result;
   }
@@ -494,8 +504,10 @@ namespace tthMEM
   {
     std::transform(
       lhs.begin(), lhs.end(), lhs.begin(),
-      std::bind2nd(std::plus<VectorElementType>(),
-                   static_cast<VectorElementType>(rhs))
+      [rhs](VectorElementType x) -> VectorElementType
+      {
+        return x + static_cast<VectorElementType>(rhs);
+      }
     );
     return lhs;
   }
@@ -517,8 +529,10 @@ namespace tthMEM
   {
     std::transform(
       lhs.begin(), lhs.end(), lhs.begin(),
-      std::bind2nd(std::minus<VectorElementType>(),
-                   static_cast<VectorElementType>(rhs))
+      [rhs](VectorElementType x) -> VectorElementType
+      {
+        return x - static_cast<VectorElementType>(rhs);
+      }
     );
     return lhs;
   }
@@ -540,8 +554,10 @@ namespace tthMEM
   {
     std::transform(
       lhs.begin(), lhs.end(), lhs.begin(),
-      std::bind2nd(std::multiplies<VectorElementType>(),
-                   static_cast<VectorElementType>(rhs))
+      [rhs](VectorElementType x) -> VectorElementType
+      {
+        return x * static_cast<VectorElementType>(rhs);
+      }
     );
     return lhs;
   }
@@ -566,8 +582,10 @@ namespace tthMEM
         << "Division by zero";
     std::transform(
       lhs.begin(), lhs.end(), lhs.begin(),
-      std::bind2nd(std::divides<VectorElementType>(),
-                   static_cast<VectorElementType>(rhs))
+      [rhs](VectorElementType x) -> VectorElementType
+      {
+        return x / static_cast<VectorElementType>(rhs);
+      }
     );
     return lhs;
   }

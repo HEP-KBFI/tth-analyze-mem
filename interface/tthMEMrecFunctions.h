@@ -89,19 +89,19 @@ namespace tthMEM
 
     /**
      * @brief Calculates Jacobi factor associated w/ the top decay: t -> W b -> l nu b
-     * @param W       4-momentum of the W-boson
-     * @param b_en    Energy of the b-quark
-     * @param b_p     Magnitude of the momentum of the b-quark
-     * @param nuT_en  Neutrino energy originating from the top decay
-     * @param lept_en Lepton energy originating from the top decay
-     * @param b_Punit Unit vector of b-jet 3-momentum
+     * @param W            4-momentum of the W-boson
+     * @param bQuarkEnergy Energy of the b-quark
+     * @param bQuarkP      Magnitude of the momentum of the b-quark
+     * @param nuWEnergy    Neutrino energy originating from the W decay
+     * @param leptonEnergy Lepton energy originating from the top decay
+     * @param bQuarkPunit  Unit vector of b-jet 3-momentum
      * @return Jacobi factor associated w/ the top decay
      */
     double
     tDecayJacobiFactor(const LorentzVector & W,
                        double bQuarkEnergy,
                        double bQuarkP,
-                       double nuTopEnergy,
+                       double nuWEnergy,
                        double leptonEnergy,         /* bind */
                        const Vector & bQuarkPunit); /* bind */
 
@@ -183,17 +183,17 @@ namespace tthMEM
          const Vector & eZ); /* bind */
 
     /**
-     * @brief Calculates lepton neutrino energy originating from top decay:
-     *        t -> W b -> l nu b
-     * @param nuTopPunit   Unit vector of neutrino 3-momentum
+     * @brief Calculates lepton neutrino energy originating from W decay:
+     *        W -> l nu
+     * @param nuWPunit   Unit vector of neutrino 3-momentum
      * @param leptonPunit  Unit vector of lepton 3-momentum
      * @param leptonEnergy The lepton energy
      * @return Neutrino energy
      */
     double
-    nuTopEnergy(const VectorSpherical & nuTopPunit,
-                const Vector & leptonPunit,         /* bind */
-                double leptonEnergy);               /* bind */
+    nuWEnergy(const VectorSpherical & nuWPunit,
+                const Vector & leptonPunit,     /* bind */
+                double leptonEnergy);           /* bind */
 
     /**
      * @brief Calculates the value of MET/hadronic recoil transfer function (TF)
