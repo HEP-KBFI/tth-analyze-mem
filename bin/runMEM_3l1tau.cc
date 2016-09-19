@@ -157,7 +157,7 @@ main(int argc,
     LOGINFO << "Chained file = " << inputFile;
   }
   inputTree -> LoadTree(0);
-  LOGINFO << "Loaded tree '" << treeName << "'";
+  LOGINFO << "Loaded tree '" << treeName << '\'';
 
   TFile * newFile = new TFile(outputFileName.c_str(), "recreate");
   TTree * newTree = new TTree("tree", Form("Tree created by %s", argv[0]));

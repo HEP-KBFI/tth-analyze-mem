@@ -20,7 +20,7 @@ namespace tthMEM
   operator<<(std::ostream & os,
              const Limits & limits)
   {
-    os << "[" << limits.begin_ << "; " << limits.end_ << "]";
+    os << '[' << limits.begin_ << "; " << limits.end_ << ']';
     return os;
   }
 }

@@ -129,7 +129,7 @@ MEM_ttHorZ_3l1tau::setHiggsWidth(double higgsWidth)
 {
   if(higgsWidth < 0.)
     throw_line("invalid argument")
-      << "Provided 'higgsWidth' = " << higgsWidth << " "
+      << "Provided 'higgsWidth' = " << higgsWidth << ' '
       << "cannot be a negative number";
   higgsWidth_ = higgsWidth;
   return *this;

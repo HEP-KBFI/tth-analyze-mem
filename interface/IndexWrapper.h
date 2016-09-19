@@ -46,7 +46,7 @@ struct IndexWrapper
       if(*currentPermutation_ >= maxCurrentPermutation_)
         throw_line("runtime error")
           << "'currentPermutation' ( = " << *currentPermutation_ << ") >= "
-          << "'maxCurrentPermutation' ( = " << maxCurrentPermutation_ << ")";
+          << "'maxCurrentPermutation' ( = " << maxCurrentPermutation_ << ')';
       return objects[permutations_[*currentPermutation_][index]];
     }
     return objects[defaultPermutation[index]];
@@ -60,7 +60,7 @@ struct IndexWrapper
       if(*currentPermutation_ >= maxCurrentPermutation_)
         throw_line("runtime error")
           << "'currentPermutation' ( = " << *currentPermutation_ << ") >= "
-          << "'maxCurrentPermutation' ( = " << maxCurrentPermutation_ << ")";
+          << "'maxCurrentPermutation' ( = " << maxCurrentPermutation_ << ')';
       return objects[permutations_[*currentPermutation_][index]];
     }
     return objects[defaultPermutation[index]];

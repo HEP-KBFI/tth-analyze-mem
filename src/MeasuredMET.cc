@@ -120,17 +120,17 @@ namespace tthMEM
     const unsigned actualIndent = std::max(minIndent, 16u);
     const unsigned nameIndent = actualIndent - 7;
     const unsigned numberFieldWidth = 12;
-    ss << "\n" << std::string(actualIndent, ' ') << "|";
+    ss << '\n' << std::string(actualIndent, ' ') << '|';
     for(unsigned i = 0; i < 2; ++i)
       ss << std::setw(numberFieldWidth) << i << " |";
-    ss << "\n" << std::setw(nameIndent) << "covMET =    "
-       << std::string(2 * (numberFieldWidth + 2) + 10, '-') << "\n";
+    ss << '\n' << std::setw(nameIndent) << "covMET =    "
+       << std::string(2 * (numberFieldWidth + 2) + 10, '-') << '\n';
     for(unsigned i = 0; i < 2; ++i)
     {
       ss << std::setw(actualIndent - 1) << i << " |";
       for(unsigned j = 0; j < 2; ++j)
         ss << std::setw(numberFieldWidth) << o.covMET_(i, j) << " |";
-      ss << "\n";
+      ss << '\n';
     }
 
     os << ss.str();

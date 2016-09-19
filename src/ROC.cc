@@ -175,7 +175,7 @@ ROC::plotROC()
     if(x.size() != y.size())
     {
       LOGERR << "Something's off: the number of x and y coordinates of "
-             << "the ROC curve between " << labels_[0] << " and " << labels_[i] << " "
+             << "the ROC curve between " << labels_[0] << " and " << labels_[i] << ' '
              << "are not equal";
       return EXIT_FAILURE;
     }

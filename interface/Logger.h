@@ -11,7 +11,7 @@
 #define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 #endif
 
-#define INFIXMSG "[" << __FILENAME__ << "]" << "["<<__FUNCTION__<<":"<<__LINE__<<"] "
+#define INFIXMSG '[' << __FILENAME__ << "][" << __FUNCTION__ << ':' << __LINE__ << "] "
 #define INFIXMSG_S INFIXMSG << std::scientific
 
 #define LOGERR  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)   << INFIXMSG

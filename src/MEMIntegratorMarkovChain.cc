@@ -54,14 +54,14 @@ MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(const std::string & modeStr,
   const decltype(mxModeStrings_)::left_const_iterator it =
     mxModeStrings_.left.find(modeStr);
   if(it == mxModeStrings_.left.end())
-    throw_line("invalid argument") << "No such Markov Chain mode: '" << modeStr << "'";
+    throw_line("invalid argument") << "No such Markov Chain mode: '" << modeStr << '\'';
   mode_ = it -> second;
   if(nofIterSimAnnPhaseSum_ > nofIterBurnin_)
     throw_line("invalid argument")
       << "Invalid configuration parameters: "
       << "'nofIterSimAnnPhase1' = " << nofIterSimAnnPhase1_ << "; "
       << "'nofIterSimAnnPhase2' = " << nofIterSimAnnPhase2_ << "; "
-      << "'nofIterBurnin' = " << nofIterBurnin_ << "\n"
+      << "'nofIterBurnin' = " << nofIterBurnin_ << '\n'
       << " => Annealing and sampling stages must not overlap, i.e. "
       << "the number of ,,burnin'' iterations must be less than "
       << "the sum of annealing and sampling iteration numbers";
@@ -81,7 +81,7 @@ MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(const std::string & modeStr,
     throw_line("invalid argument")
       << "Invalid configuration parameters: "
       << "'nofIterSampling' = " << nofIterSampling_ << "; "
-      << "'nofBatches' = " << nofBatches_ << "\n"
+      << "'nofBatches' = " << nofBatches_ << '\n'
       << " => 'nofIterSampling' must be divisible by 'nofBatches'";
   if(T0 <= 0.)
     throw_line("invalid argument")
@@ -98,7 +98,7 @@ MEMIntegratorMarkovChain::~MEMIntegratorMarkovChain()
 {
   LOGVRB_S << "integration calls = " << nofIntegrationCalls_ << "; "
            << "accepted moves = " << nofMoves_acceptedTotal_ << "; "
-           << "rejected moves = " << nofMoves_rejectedTotal_ << " "
+           << "rejected moves = " << nofMoves_rejectedTotal_ << ' '
            << "(acceptance rate = "
            << 100. * nofMoves_acceptedTotal_ /
               (nofMoves_acceptedTotal_ + nofMoves_rejectedTotal_) << "%)";
@@ -210,12 +210,12 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
         if(isWithinBounds)
           isValidStartPos = true;
         else
-          LOGVRB_S << "Requested start position = " << q_ << " "
+          LOGVRB_S << "Requested start position = " << q_ << ' '
                    << "not within interval (0, 1) => "
                    << "searching for a valid alternative";
       } // prob_ > 0.
       else
-        LOGVRB_S << "Requested start position = " << q_ << " "
+        LOGVRB_S << "Requested start position = " << q_ << ' '
                  << "returned zero probability => "
                  << "searching for a valid alternative";
     } // mode_ == MarkovChainMode::kNone
@@ -386,7 +386,7 @@ namespace tthMEM
              const MEMIntegratorMarkovChain & MX)
   {
     os << "Moves: accepted = " << MX.nofMoves_accepted_ << "; "
-       << "rejected = " << MX.nofMoves_rejected_ << " "
+       << "rejected = " << MX.nofMoves_rejected_ << ' '
        << "(acceptance rate " << 100. * MX.nofMoves_accepted_ /
                                  (MX.nofMoves_accepted_ + MX.nofMoves_rejected_)
        << " %)\n";
@@ -403,7 +403,7 @@ namespace tthMEM
       );
       os << std::string(10, ' ') << "chain #" << i << ": "
          << "integral = " << integral << "; "
-         << "error = " << integralErr << "\n";
+         << "error = " << integralErr << '\n';
     }
 
     return os;

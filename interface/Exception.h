@@ -8,8 +8,8 @@
 #endif
 
 #define throw_line(category) throw cms::Exception(category) \
-  << __FILENAME__ << ":" \
-  << __FUNCTION__ << ":" \
+  << __FILENAME__ << ':' \
+  << __FUNCTION__ << ':' \
   << __LINE__ << ": "
 
 #endif // EXCEPTION_H

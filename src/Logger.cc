@@ -104,14 +104,14 @@ namespace tthMEM
     {
       ss_ << std::fixed << std::setprecision(logger_.floatPrecision_)
           << std::setw(10) << std::left << logger_.logLevelStrings_[logLevel];
-      if(logger_.enableTimeStamp_) ss_ << tthMEM::getTimeStamp() << " ";
+      if(logger_.enableTimeStamp_) ss_ << tthMEM::getTimeStamp() << ' ';
     }
   }
   Logger::Holder::~Holder()
   {
     if(enableLogging_)
     {
-      ss_ << "\n";
+      ss_ << '\n';
       logger_.os_ << ss_.str();
     }
   }

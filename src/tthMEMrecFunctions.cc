@@ -79,7 +79,7 @@ namespace tthMEM
       {
         LOGWARN << "Eb+ = " << Eb[0] << " <= 0 or Eb- = " << Eb[1] << " <= 0 "
                 << "=> Eb = 0";
-        LOGWARN << "(for reference: " << lvrap(W) << ")";
+        LOGWARN << "(for reference: " << lvrap(W) << ')';
         return 0.;
       }
 
@@ -111,7 +111,7 @@ namespace tthMEM
       {
         LOGWARN << "Encountered singularities in the calculation of the"
                 << "Jacobi factor of the top decay";
-        LOGWARN << "(for reference: " << lvrap("W", W) << ")";
+        LOGWARN << "(for reference: " << lvrap("W", W) << ')';
         return 0.;
       }
       return bQuarkEnergy * pow2(nuTopEnergy) /
@@ -157,9 +157,9 @@ namespace tthMEM
         if(! (tau_en >= constants::massTau && vis_en >= complLeptMass))
         {
           LOGVRB << "tau energy not greater than or equal to the tau mass "
-                 << "(" << tau_en << " < " << constants::massTau << "); or "
+                 << '(' << tau_en << " < " << constants::massTau << "); or "
                  << "visible energy not greater than or equal to the associated "
-                 << "lepton mass (" << vis_en << " < " << complLeptMass << ")";
+                 << "lepton mass (" << vis_en << " < " << complLeptMass << ')';
           return 0.;
         }
     //--- evaluate Iinv in the rest frame of the neutrino pair
@@ -175,8 +175,8 @@ namespace tthMEM
       else
       {
         LOGVRB << "z = " << z << " not in the physical region "
-               << "[" << complLeptMassSquared / constants::massTauSquared << ", "
-                      << 1. - mInvSquared / constants::massTauSquared << ")";
+               << '[' << complLeptMassSquared / constants::massTauSquared << ", "
+                      << 1. - mInvSquared / constants::massTauSquared << ')';
         return 0.;
       }
     }

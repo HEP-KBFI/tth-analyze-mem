@@ -135,8 +135,8 @@ void SLHAReader::set_block_entry(string block_name, vector<int> indices,
   _blocks[block_name].set_entry(indices, value);  
   /* cout << "Set block " << block_name << " entry ";
      for (int i=0;i < indices.size();i++) 
-     cout << indices[i] << " ";
-     cout << "to " << _blocks[block_name].get_entry(indices) << "\n";*/
+     cout << indices[i] << ' ';
+     cout << "to " << _blocks[block_name].get_entry(indices) << '\n';*/
 }
 
 void SLHAReader::set_block_entry(string block_name, int index, 

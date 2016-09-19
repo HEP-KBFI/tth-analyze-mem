@@ -68,7 +68,7 @@ MeasuredHadronicTau::initialize()
 
   if(preciseVisMass_ < 0.9 * minVisMass || preciseVisMass_ > 1.1 * maxVisMass)
     LOGWARN << "Hadronic tau (" << *this << ") expected in the mass range "
-            << "[" << minVisMass << "; " << maxVisMass << "]";
+            << '[' << minVisMass << "; " << maxVisMass << ']';
 
   if(preciseVisMass_ < minVisMass) preciseVisMass_ = minVisMass;
   if(preciseVisMass_ > maxVisMass) preciseVisMass_ = maxVisMass;

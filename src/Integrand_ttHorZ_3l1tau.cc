@@ -350,14 +350,14 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 //--- read the sampled values
   LOGVRB << "x = { " << vm_.getArrayString(x) << " }";
 
-  const double cosTheta[2]   = { vm_.get(Var_3l1tau::kBcosTheta1, x),
-                                 vm_.get(Var_3l1tau::kBcosTheta2, x) };
-  const double varphi[2]     = { vm_.get(Var_3l1tau::kBphi1, x),
-                                 vm_.get(Var_3l1tau::kBphi1, x) };
-  const double z1            = vm_.get(Var_3l1tau::kZ1, x);
-  const double nuHtau_phi    = vm_.get(Var_3l1tau::kTauPhi, x);
-  const double nuLTau_phi    = vm_.get(Var_3l1tau::kTauPhiInv, x);
-  const double mInvSquared   = vm_.get(Var_3l1tau::kTauMinvSquared, x);
+  const double cosTheta[2] = { vm_.get(Var_3l1tau::kBcosTheta1, x),
+                               vm_.get(Var_3l1tau::kBcosTheta2, x) };
+  const double varphi[2]   = { vm_.get(Var_3l1tau::kBphi1, x),
+                               vm_.get(Var_3l1tau::kBphi1, x) };
+  const double z1          = vm_.get(Var_3l1tau::kZ1, x);
+  const double nuHtau_phi  = vm_.get(Var_3l1tau::kTauPhi, x);
+  const double nuLTau_phi  = vm_.get(Var_3l1tau::kTauPhiInv, x);
+  const double mInvSquared = vm_.get(Var_3l1tau::kTauMinvSquared, x);
 
 //--- confirm that the energy fraction carried by the tau is indeed in (0,1)
   const double z2 = z2_(z1);

@@ -22,11 +22,11 @@ namespace tthMEM
              const LorentzVectorWrap & v)
   {
     if(v.name_.size() != 0)
-      os << std::setw(v.textFieldWidth_) << std::left << v.name_ + ":";
+      os << std::setw(v.textFieldWidth_) << std::left << v.name_ + ':';
     os << "En ="   << std::setw(10) << std::right << v.v_.energy()
-       << ";" << std::string(5, ' ')
+       << ';' << std::string(5, ' ')
        << "pT ="   << std::setw(10) << std::right << v.v_.pt()
-       << ";" << std::string(5, ' ')
+       << ';' << std::string(5, ' ')
        << "mass =" << std::setw(10) << std::right << v.v_.mass();
     return os;
   }
@@ -52,13 +52,13 @@ namespace tthMEM
              const LorentzMinkowskiWrap & v)
   {
     if(v.name_.size() != 0)
-      os << std::setw(v.textFieldWidth_) << std::left << v.name_ + ":";
+      os << std::setw(v.textFieldWidth_) << std::left << v.name_ + ':';
     os << "En =" << std::setw(10) << std::right << v.v_.energy()
-       << ";" << std::string(5, ' ')
+       << ';' << std::string(5, ' ')
        << "px =" << std::setw(10) << std::right << v.v_.px()
-       << ";" << std::string(5, ' ')
+       << ';' << std::string(5, ' ')
        << "py =" << std::setw(10) << std::right << v.v_.py()
-       << ";" << std::string(5, ' ')
+       << ';' << std::string(5, ' ')
        << "pz =" << std::setw(10) << std::right << v.v_.pz();
     return os;
   }
@@ -76,11 +76,11 @@ namespace tthMEM
              const VectorCartesianWrap & v)
   {
     if(v.name_.size() != 0)
-      os << std::setw(v.textFieldWidth_) << std::left << v.name_ + ":";
+      os << std::setw(v.textFieldWidth_) << std::left << v.name_ + ':';
     os << "x =" << std::setw(10) << std::right << v.v_.x()
-       << ";" << std::string(5, ' ')
+       << ';' << std::string(5, ' ')
        << "y =" << std::setw(10) << std::right << v.v_.y()
-       << ";" << std::string(5, ' ')
+       << ';' << std::string(5, ' ')
        << "z =" << std::setw(10) << std::right << v.v_.z();
     return os;
   }
@@ -102,11 +102,11 @@ namespace tthMEM
              const VectorSphericalWrap & v)
   {
     if(v.name_.size() != 0)
-      os << std::setw(v.textFieldWidth_) << std::left << v.name_ + ":";
+      os << std::setw(v.textFieldWidth_) << std::left << v.name_ + ':';
     os << "norm ="  << std::setw(10) << std::right << v.v_.r()
-       << ";" << std::string(5, ' ')
+       << ';' << std::string(5, ' ')
        << "theta =" << std::setw(10) << std::right << v.v_.theta()
-       << ";" << std::string(5, ' ')
+       << ';' << std::string(5, ' ')
        << "phi ="   << std::setw(10) << std::right << v.v_.phi();
     return os;
   }

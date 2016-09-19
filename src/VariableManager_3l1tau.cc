@@ -53,7 +53,7 @@ namespace tthMEM
       { VarMode_3l1tau::kGenerator, "[generator]" }
     };
     os << modeMap.at(var.mode_) << std::setw(12) << std::left
-       << std::string("(" + std::to_string(var.idx_) + ")");
+       << std::string('(' + std::to_string(var.idx_) + ')');
     if(var.mode_ == VarMode_3l1tau::kFixed)
       os << std::setw(5) << std::left << var.value_;
     return os;
@@ -68,7 +68,7 @@ namespace tthMEM
       os << std::string(10, ' ')
          << std::setw(15) << std::left << kv.first
          << std::setw(12) << std::left << vm.variables_.at(kv.second)
-         << "\n";
+         << '\n';
     os << "Total integration dimension: " << vm.numDimensions_;
     return os;
   }
@@ -118,7 +118,7 @@ VariableManager_3l1tau::clamp(const std::string & varName)
   }
   else
   {
-    LOGERR << "No such integration variable: '" << varName << "'";
+    LOGERR << "No such integration variable: '" << varName << '\'';
     return EXIT_FAILURE;
   }
 
@@ -134,7 +134,7 @@ VariableManager_3l1tau::clamp(const std::string & varName,
     const Var_3l1tau var = varNames_.left.find(varName) -> second;
     if(! varLimits_.at(var).isWithin(value))
     {
-      LOGERR << "Variable '" << varName << "' value = " << value << " "
+      LOGERR << "Variable '" << varName << "' value = " << value << ' '
              << "is not within expected limits: " << varLimits_.at(var);
       return EXIT_FAILURE;
     }
@@ -145,7 +145,7 @@ VariableManager_3l1tau::clamp(const std::string & varName,
   }
   else
   {
-    LOGERR << "No such integration variable: '" << varName << "'";
+    LOGERR << "No such integration variable: '" << varName << '\'';
     return EXIT_FAILURE;
   }
 
@@ -168,7 +168,7 @@ VariableManager_3l1tau::get(Var_3l1tau var,
   {
     const std::string varName = varNames_.right.find(var) -> second;
     throw_line("runtime error")
-      << "Fetched value '" << varName << "' = " << val << " "
+      << "Fetched value '" << varName << "' = " << val << ' '
       << "is not within expected limits: " << varLimits_.at(var);
   }
   return val;
@@ -210,7 +210,7 @@ VariableManager_3l1tau::set(Var_3l1tau var,
   if(! varLimits_.at(var).isWithin(value))
   {
     const std::string varName = getVarName(var);
-    LOGERR << "Variable '" << varName << "' = " << value << " "
+    LOGERR << "Variable '" << varName << "' = " << value << ' '
            << "not within expected limits: " << varLimits_.at(var);
     return EXIT_FAILURE;
   }
