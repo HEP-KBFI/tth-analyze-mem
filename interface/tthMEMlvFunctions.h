@@ -4,6 +4,8 @@
 #include <DataFormats/Math/interface/LorentzVector.h> // math::XYZTLorentzVectorD
 #include <DataFormats/Math/interface/Vector3D.h> // math::XYZVectorD, math::RThetaPhiVectorD
 
+#include <TVectorD.h> // TVectorD
+
 #include <ostream> // std::ostream
 #include <string> // std::string
 
@@ -86,6 +88,30 @@ namespace tthMEM
    */
   Vector
   getVector(const LorentzVector & v);
+
+  /**
+   * @brief Returns TVectorD from Vector
+   * @param v The Vector
+   * @return The TVectorD
+   */
+  TVectorD
+  getVector(const Vector & v);
+
+  /**
+   * @brief Returns Vector from TVectorD
+   * @param v The TVectorD
+   * @return The Vector
+   */
+  Vector
+  getVector(const TVectorD & v);
+
+  /**
+   * @brief Returns Vector from TMatrixDRow
+   * @param row The TMatrixDRow
+   * @return The Vector
+   */
+  Vector
+  getVector(const TMatrixDRow & row);
 }
 
 #endif // TTHMEMLVFUNCTIONS_H

@@ -67,28 +67,21 @@ public:
     thetaH = std::acos(cosThetaH);
     thetaL = std::acos(cosThetaL);
 
-    const Vector eZ_htau_ = getVector(hTauLepton).unit();
-    const Vector eY_htau_ = eZ_htau_.Cross(beamAxis).unit();
-    const Vector eX_htau_ = eY_htau_.Cross(eZ_htau_).unit();
-    eX_htau = Vector(eX_htau_.x(), eY_htau_.x(), eZ_htau_.x());
-    eY_htau = Vector(eX_htau_.y(), eY_htau_.y(), eZ_htau_.y());
-    eZ_htau = Vector(eX_htau_.z(), eY_htau_.z(), eZ_htau_.z());
-
-    const Vector eZ_ltau_ = getVector(lTauLepton).unit();
-    const Vector eY_ltau_ = eZ_ltau_.Cross(beamAxis).unit();
-    const Vector eX_ltau_ = eY_ltau_.Cross(eZ_ltau_).unit();
-    eX_ltau = Vector(eX_ltau_.x(), eY_ltau_.x(), eZ_ltau_.x());
-    eY_ltau = Vector(eX_ltau_.y(), eY_ltau_.y(), eZ_ltau_.y());
-    eZ_ltau = Vector(eX_ltau_.z(), eY_ltau_.z(), eZ_ltau_.z());
+    const TMatrixD nuHlocalSystem = functions::nuLocalSystem(
+      beamAxis, getVector(hTauLepton).unit()
+    );
+    const TMatrixD nuLlocalSystem = functions::nuLocalSystem(
+      beamAxis, getVector(lTauLepton).unit()
+    );
 
     nuHTauPhi = functions::phiFromLabMomenta(hTau, hTauLepton, beamAxis);
     hTauNu_2 = functions::nuP4(
-      thetaH, nuHTauPhi, hTauNu.e(), hTauNu.P(), eX_htau, eY_htau, eZ_htau
+      thetaH, nuHTauPhi, hTauNu.e(), hTauNu.P(), nuHlocalSystem
     );
 
     nuLTauPhi = functions::phiFromLabMomenta(lTau, lTauLepton, beamAxis);
     lTauNu_2 = functions::nuP4(
-      thetaL, nuLTauPhi, lTauNu.e(), lTauNu.P(), eX_ltau, eY_ltau, eZ_ltau
+      thetaL, nuLTauPhi, lTauNu.e(), lTauNu.P(), nuLlocalSystem
     );
 
     const Vector nuW0unitCart = getVector(nuW0).unit();
@@ -109,7 +102,7 @@ public:
   void
   testZmass()
   {
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Z.mass(), constants::massZ, +1.);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Z.mass(), constants::massZ, constants::gammaZ);
   }
 
   /**

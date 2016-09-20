@@ -114,20 +114,10 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
 //--- set the variables related to the hadronic tau
   const MeasuredHadronicTau & htau = measuredEvent_ -> htau1;
   recoEvent.hTauLepton = htau.p4();
-  const Vector eZ_htau = htau.p3().unit();
-  const Vector eY_htau = eZ_htau.Cross(beamAxis_).unit();
-  const Vector eX_htau = eY_htau.Cross(eZ_htau).unit();
-  // eX should already be unit vector by construction
   LOGVRB << lvrap("htau p4", recoEvent.hTauLepton);
-  LOGVRB << svrap("htau eX", eX_htau);
-  LOGVRB << svrap("htau eY", eY_htau);
-  LOGVRB << svrap("htau eZ", eZ_htau);
-  LOGVRB << "htau: " << "eX x eY = " << eX_htau.Cross(eY_htau).r() << " ; "
-                     << "eX x eZ = " << eX_htau.Cross(eZ_htau).r() << " ; "
-                     << "eY x eZ = " << eY_htau.Cross(eZ_htau).r();
-  const Vector eX_htau_(eX_htau.x(), eY_htau.x(), eZ_htau.x());
-  const Vector eY_htau_(eX_htau.y(), eY_htau.y(), eZ_htau.y());
-  const Vector eZ_htau_(eX_htau.z(), eY_htau.z(), eZ_htau.z());
+  const TMatrixD nuHtauLocalSystem = functions::nuLocalSystem(
+    beamAxis_, htau.p3().unit(), "htau"
+  );
 
 //--- bind the functional arguments, so that no explicit storage is needed
 //--- for the variables which remain constant during the integration
@@ -151,11 +141,11 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
   {
     return functions::nuTauEnergy(z1, hTauEnergy);
   };
-  nuHTau_ = [eX_htau_, eY_htau_, eZ_htau_]
+  nuHTau_ = [nuHtauLocalSystem]
             (double nuHtau_theta, double nuHtau_phi, double nuHtau_en) -> LorentzVector
   {
     return functions::nuP4( //      <- notice ->
-      nuHtau_theta, nuHtau_phi, nuHtau_en, nuHtau_en, eX_htau_, eY_htau_, eZ_htau_
+      nuHtau_theta, nuHtau_phi, nuHtau_en, nuHtau_en, nuHtauLocalSystem
     );
   };
 
@@ -192,26 +182,15 @@ Integrand_ttHorZ_3l1tau::renewInputs()
 {
   LOGTRC;
 //--- set the variables related to the leptonic tau
-  const unsigned complLeptIdx = measuredEvent_ -> complLeptonIdx;
+  const unsigned & complLeptIdx = measuredEvent_ -> complLeptonIdx;
   const MeasuredLepton & complLepton = measuredEvent_-> leptons[complLeptIdx];
 
   recoEvent.lTauLepton = complLepton.p4();
-  const int complLeptCharge = complLepton.charge();
-  const Vector eZ_lept = complLepton.p3().unit();
-  const Vector eY_lept = eZ_lept.Cross(beamAxis_).unit();
-  const Vector eX_lept = eY_lept.Cross(eZ_lept).unit();
-  // eX should already be unit vector by construction
   LOGVRB << lvrap("lept p4", recoEvent.lTauLepton);
-  LOGVRB << cvrap("lept p3", complLepton.p3());
-  LOGVRB << svrap("lept eX", eX_lept);
-  LOGVRB << svrap("lept eY", eY_lept);
-  LOGVRB << svrap("lept eZ", eZ_lept);
-  LOGVRB << "lept: " << "eX x eY = " << eX_lept.Cross(eY_lept).R() << " ; "
-                     << "eX x eZ = " << eX_lept.Cross(eZ_lept).R() << " ; "
-                     << "eY x eZ = " << eY_lept.Cross(eZ_lept).R();
-  const Vector eX_lept_(eX_lept.x(), eY_lept.x(), eZ_lept.x());
-  const Vector eY_lept_(eX_lept.y(), eY_lept.y(), eZ_lept.y());
-  const Vector eZ_lept_(eX_lept.z(), eY_lept.z(), eZ_lept.z());
+  const int complLeptCharge = complLepton.charge();
+  const TMatrixD nuLtauLocalSystem = functions::nuLocalSystem(
+    beamAxis_, complLepton.p3().unit(), "ltau"
+  );
 
 //--- find the measured mass of both visible tau decay products
   const double measuredVisMassSquared =
@@ -245,12 +224,12 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   {
     return functions::nuTauEnergy(z2, complLeptEnergy);
   };
-  nuLTau_ = [eX_lept_, eY_lept_, eZ_lept_]
+  nuLTau_ = [nuLtauLocalSystem]
             (double nuLTau_theta, double nuLTau_phi, double nuLTau_en, double nuLTau_p)
               -> LorentzVector
   {
     return functions::nuP4(
-      nuLTau_theta, nuLTau_phi, nuLTau_en, nuLTau_p, eX_lept_, eY_lept_, eZ_lept_
+      nuLTau_theta, nuLTau_phi, nuLTau_en, nuLTau_p, nuLtauLocalSystem
     );
   };
   z2_ = [measuredVisMassSquared, massHiggsOrZsquared] (double z1) -> double
@@ -265,7 +244,7 @@ Integrand_ttHorZ_3l1tau::renewInputs()
     const double bJetEta_i = bJet_i.eta();
     const Vector bJetP3unit_i = bJet_i.p3().unit();
 
-    const unsigned leptIdx_i = measuredEvent_ -> bjetLeptonIdxs[i];
+    const unsigned & leptIdx_i = measuredEvent_ -> bjetLeptonIdxs[i];
     const MeasuredLepton & lept_i = measuredEvent_ -> leptons[leptIdx_i];
 //--- set the lepton energy equal to its momentum, thus setting it massless
     const double leptEnergy_i = lept_i.p();

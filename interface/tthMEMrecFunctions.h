@@ -4,6 +4,8 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // LorentzVector
 
 #include <TMatrixDSym.h> // TMatrixDSym
+#include <TMatrixD.h> // TMatrixD
+#include <TVectorD.h> // TVectorD
 
 namespace tthMEM
 {
@@ -160,27 +162,25 @@ namespace tthMEM
 
     /**
      * @brief Finds the neutrino 4-momentum originating from tau decay
-     * @param nuTheta  Polar angle of neutrino 3-momentum
-     * @param nuPhi    Azimuthal angle of neutrino 3-momentum
-     * @param nuEnergy Energy of the neutrino
-     * @param nuP      Magnitude of the neutrino 3-momentum
-     * @param eX       Unit x-vector of local tau decay system in lab coordinates
-     * @param eY       Unit y-vector of local tau decay system in lab coordinates
-     * @param eZ       Unit z-vector of local tau decay system in lab coordinates
+     * @param nuTheta          Polar angle of neutrino 3-momentum
+     * @param nuPhi            Azimuthal angle of neutrino 3-momentum
+     * @param nuEnergy         Energy of the neutrino
+     * @param nuP              Magnitude of the neutrino 3-momentum
+     * @param nuTauLocalSystem Local tau decay system in lab coordinates
      * @return Tau neutrino 4-momentum
      *
      * @note nuP and nuEnergy are equal for hadronic tau decays; for leptonic tau
      *       decays the di-neutrino system has non-zero mass in general, thus
-     *       these values are not necessarily equal
+     *       these values are not necessarily equal. Also, the nuTauLocalSystem
+     *       matrix should be constructed so that the 1st/2nd/3rd row corresponds to
+     *       the x/y/z-coordinate axis in the local neutrino system.
      */
     LorentzVector
     nuP4(double nuTheta,
          double nuPhi,
          double nuEnergy,
-         double nuP,         /* (bind) */
-         const Vector & eX,  /* bind */
-         const Vector & eY,  /* bind */
-         const Vector & eZ); /* bind */
+         double nuP,                         /* (bind) */
+         const TMatrixD & nuTauLocalSystem); /* bind */
 
     /**
      * @brief Calculates lepton neutrino energy originating from W decay:
@@ -245,6 +245,18 @@ namespace tthMEM
     double
     cosTheta(const LorentzVector & vis,
              const LorentzVector & inv);
+
+    /**
+     * @brief Calculate local neutrino coordinate system arising from tau decay
+     * @param beamAxis   3-vector defining the beam axis
+     * @param leptP3unit Unit 3-momentum of associated lepton in the tau decay
+     * @param str        Optional string for printout
+     * @return Matrix where 0,1,2 rows correspond to the local x,y,z coordinate axis
+     */
+    TMatrixD
+    nuLocalSystem(const Vector & beamAxis,
+                  const Vector & leptP3unit,
+                  const std::string & str = "");
   }
 }
 

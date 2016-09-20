@@ -193,14 +193,12 @@ namespace tthMEM
          double nuPhi,
          double nuEnergy,
          double nuP,
-         const Vector & eX,
-         const Vector & eY,
-         const Vector & eZ)
+         const TMatrixD & nuTauLocalSystem)
     {
       const VectorSpherical nuHtau_loc(nuP, nuTheta, nuPhi);
-      const double nu_px = nuHtau_loc.Dot(eX);
-      const double nu_py = nuHtau_loc.Dot(eY);
-      const double nu_pz = nuHtau_loc.Dot(eZ);
+      const double nu_px = nuHtau_loc.Dot(getVector(nuTauLocalSystem[0]));
+      const double nu_py = nuHtau_loc.Dot(getVector(nuTauLocalSystem[1]));
+      const double nu_pz = nuHtau_loc.Dot(getVector(nuTauLocalSystem[2]));
       return LorentzVector(nu_px, nu_py, nu_pz, nuEnergy);
     }
 
@@ -263,6 +261,33 @@ namespace tthMEM
       const Vector vis3 = getVector(vis);
       const Vector inv3 = getVector(inv);
       return vis3.Dot(inv3) / (vis3.R() * inv3.R());
+    }
+
+    TMatrixD
+    nuLocalSystem(const Vector & beamAxis,
+                  const Vector & leptP3unit,
+                  const std::string & str)
+    {
+      const Vector & eZ = leptP3unit;
+      const Vector eY = eZ.Cross(beamAxis).unit();
+      const Vector eX = eY.Cross(eZ).unit();
+      // eX should already be unit vector by construction
+      if(! str.empty())
+      {
+        LOGVRB << svrap(str + " eX", eX);
+        LOGVRB << svrap(str + " eY", eY);
+        LOGVRB << svrap(str + " eZ", eZ);
+        LOGVRB << "eX x eY = " << eX.Cross(eY).r() << " ; "
+               << "eX x eZ = " << eX.Cross(eZ).r() << " ; "
+               << "eY x eZ = " << eY.Cross(eZ).r();
+      }
+      TMatrixD localSystem(3, 3);
+      localSystem[0] = getVector(eX);
+      localSystem[1] = getVector(eY);
+      localSystem[2] = getVector(eZ);
+      // the API doesn't make absolutely NO sense...
+      localSystem = localSystem.Transpose(localSystem);
+      return localSystem;
     }
   }
 }

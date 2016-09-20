@@ -2,6 +2,7 @@
 
 #include <cmath> // std::max()
 #include <iomanip> // std::setw()
+#include <vector> // std::vector<>
 
 namespace tthMEM
 {
@@ -122,5 +123,24 @@ namespace tthMEM
   getVector(const LorentzVector & v)
   {
     return Vector(v.x(), v.y(), v.z());
+  }
+
+  TVectorD
+  getVector(const Vector & v)
+  {
+    const std::vector<double> v_({ v.x(), v.y(), v.z() });
+    return TVectorD(3, v_.data());
+  }
+
+  Vector
+  getVector(const TVectorD & v)
+  {
+    return Vector(v(0), v(1), v(2));
+  }
+
+  Vector
+  getVector(const TMatrixDRow & row)
+  {
+    return Vector(row(0), row(1), row(2));
   }
 }
