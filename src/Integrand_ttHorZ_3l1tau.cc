@@ -112,7 +112,7 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
   mgMomentaIdxs_.clear();
 
 //--- set the variables related to the hadronic tau
-  const MeasuredHadronicTau & htau = measuredEvent_ -> htau1;
+  const MeasuredHadronicTau & htau = measuredEvent_ -> htau;
   recoEvent.hTauLepton = htau.p4();
   LOGVRB << lvrap("htau p4", recoEvent.hTauLepton);
   const TMatrixD nuHtauLocalSystem = functions::nuLocalSystem(

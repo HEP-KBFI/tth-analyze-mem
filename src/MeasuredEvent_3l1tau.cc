@@ -20,7 +20,7 @@ MeasuredEvent_3l1tau::initialize()
   for(std::size_t i = 0; i < 2; ++i)
     jets[i].initialize();
 
-  htau1.initialize();
+  htau.initialize();
 
 //--- check whether the sum of lepton charges is +-1
   const int leptonChargeSum = std::accumulate(
@@ -61,7 +61,7 @@ MeasuredEvent_3l1tau::initialize()
 
 //--- use the first lepton index in the default representation that
 //--- has opposite sign w.r.t the tau lepton
-  if((leptonChargeSum + htau1.charge()) != 0)
+  if((leptonChargeSum + htau.charge()) != 0)
     throw_line("runtime error")
       << "The sum of charges of leptonic products is not zero";
   complLeptonIdx = leptonIdx1;
@@ -85,7 +85,7 @@ MeasuredEvent_3l1tau::setBranches(TChain * t)
   for(std::size_t i = 0; i < 2; ++i)
     jets[i].setBranches(t, Form("jet%lu", (i + 1)));
 
-  htau1.setBranches(t, "htau1");
+  htau.setBranches(t, "htau");
 
   mvaVariables.setBranches(t);
 }
@@ -105,7 +105,7 @@ MeasuredEvent_3l1tau::initNewBranches(TTree * t)
   for(std::size_t i = 0; i < 2; ++i)
     jets[i].initNewBranches(t, Form("jet%lu", (i + 1)));
 
-  htau1.initNewBranches(t, "htau1");
+  htau.initNewBranches(t, "htau");
 
   mvaVariables.initNewBranches(t);
 }
@@ -148,7 +148,7 @@ namespace tthMEM
       os << "\tLepton " << (i + 1) << ": " << event.leptons[i] << '\n';
     for(std::size_t i = 0; i < 2; ++i)
       os << "\tJet "    << (i + 1) << ": " << event.jets[i]    << '\n';
-    os << "\tTau: " << event.htau1 << '\n';
+    os << "\tTau: " << event.htau << '\n';
     os << "\tMET: " << event.met   << '\n';
     return os;
   }

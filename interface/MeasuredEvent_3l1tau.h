@@ -36,7 +36,7 @@ namespace tthMEM
     MeasuredMET met;
     IndexWrapper<MeasuredLepton, 3> leptons;
     IndexWrapper<MeasuredJet, 2> jets;
-    MeasuredHadronicTau htau1;
+    MeasuredHadronicTau htau;
 
     MVAVariables mvaVariables;
 

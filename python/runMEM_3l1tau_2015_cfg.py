@@ -5,7 +5,9 @@ process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
   fileNames = cms.vstring(os.path.join(os.getenv("CMSSW_BASE"), "src", "tthAnalysis", "tthMEM", \
-                                       "data", "out_3l_1tau_ttHJetToNonbb_M125_Tight_central.root")),
+                                       "data", "out_3l_1tau_ttHJetToNonbb_M125_Tight_Tight_dR03mvaTight_1t0e0m0j_OS_central.root")),
+  # or use:
+  # out_3l_1tau_TTZToLLNuNu_Tight_Tight_dR03mvaTight_1t0e0m0j_OS_central.root
   maxEvents = cms.int32(3),        # test with only three events
   outputEvery = cms.uint32(10000)  # never used
 )
@@ -22,6 +24,7 @@ process.logging = cms.PSet(
 
 process.tthMEM = cms.PSet(
   isMC                = cms.bool(True),
+  is2016              = cms.bool(False),
   treeName            = cms.string("tree"),
   pdfName             = cms.string("MSTW2008lo68cl"),
   madgraphFileName    = cms.string("tthAnalysis/tthMEM/data/param_card.dat"),
