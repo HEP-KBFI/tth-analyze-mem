@@ -63,6 +63,10 @@ namespace tthMEM
     double px_; ///< x-component of measured momentum in the lab frame
     double py_; ///< y-component of measured momentum in the lab frame
 
+    double covMET_XX_; ///< (0, 0) component of MET covariance matrix
+    double covMET_XY_; ///< (0, 1) and (1, 0) component of MET covariance matrix
+    double covMET_YY_; ///< (1, 1) component of MET covariance matrix
+
     TMatrixDSym covMET_; ///< soon we'll have a separate branch for it in our Ntuples
                          ///< the covariance matrix is symmetric by construction
     TMatrixD    covMET_eigenVectors_; ///< eigenvectors of covMET_
@@ -73,6 +77,10 @@ namespace tthMEM
 
     void
     calculateEigenVectorsValues();
+
+    bool
+    branchExists(TChain * tree,
+                 const std::string & branchName) const;
   };
 }
 

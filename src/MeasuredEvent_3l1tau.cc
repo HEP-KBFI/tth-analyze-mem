@@ -83,7 +83,7 @@ MeasuredEvent_3l1tau::setBranches(TChain * t)
     leptons[i].setBranches(t, Form("lepton%lu", (i + 1)));
 
   for(std::size_t i = 0; i < 2; ++i)
-    jets[i].setBranches(t, Form("jet%lu", (i + 1)));
+    jets[i].setBranches(t, Form("jets%lu", (i + 1)));
 
   htau.setBranches(t, "htau");
 

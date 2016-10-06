@@ -66,10 +66,10 @@ MeasuredMET::initialize()
   pt_   = roundToNdigits(pt_);
   phi_  = roundToNdigits(phi_);
 
-  covMET_(0,0) = roundToNdigits(100.0); // in GeV
-  covMET_(0,1) = roundToNdigits(0.0);
-  covMET_(1,0) = roundToNdigits(0.0);
-  covMET_(1,1) = roundToNdigits(100.0);
+  covMET_(0,0) = roundToNdigits(covMET_XX_); // in GeV
+  covMET_(0,1) = roundToNdigits(covMET_XY_);
+  covMET_(1,0) = roundToNdigits(covMET_XY_);
+  covMET_(1,1) = roundToNdigits(covMET_YY_);
   calculateEigenVectorsValues();
 
   px_ = pt_ * std::cos(phi_);
@@ -81,6 +81,19 @@ MeasuredMET::setBranches(TChain * t)
 {
   t -> SetBranchAddress("met_pt",  &pt_);
   t -> SetBranchAddress("met_phi", &phi_);
+
+  if(branchExists(t, "met_covXX"))
+    t -> SetBranchAddress("met_covXX", &covMET_XX_);
+  else
+    covMET_XX_ = 100;
+  if(branchExists(t, "met_covXY"))
+    t -> SetBranchAddress("met_covXY", &covMET_XY_);
+  else
+    covMET_XY_ = 0;
+  if(branchExists(t, "met_covYY"))
+    t -> SetBranchAddress("met_covYY", &covMET_YY_);
+  else
+    covMET_YY_ = 100;
 }
 
 void
@@ -99,6 +112,18 @@ MeasuredMET::calculateEigenVectorsValues()
 //--- eigenvalues of a symmetric positive (semi-)definite matrix are always real and positive
   covMET_eigenValues_(0) = std::sqrt(covMET_eigenValues_(0));
   covMET_eigenValues_(1) = std::sqrt(covMET_eigenValues_(1));
+}
+
+bool
+MeasuredMET::branchExists(TChain * tree,
+                          const std::string & branchName) const
+{
+  TObjArray * arr = tree -> GetListOfBranches();
+  TIter obj(arr);
+  bool hasBranch = false;
+  while(TObject * o = obj())
+    hasBranch |= (std::string(o -> GetName()) == branchName);
+  return hasBranch;
 }
 
 namespace tthMEM
