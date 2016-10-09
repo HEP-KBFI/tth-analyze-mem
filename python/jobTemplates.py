@@ -172,8 +172,12 @@ run:
 {{ outFileNameLocalResult }}: {{ outFileNameLocals|join(' ') }}
 \thadd -f {{ outFileNameLocalResult }} {{ outFileNameLocals|join(' ') }} {% endfor %}
 
+{% for bkgParent, bkgArray in inputBkgFiles.iteritems() %}{% if bkgArray|length > 1 %}
+{{ bkgParent }}: {{ bkgArray|join(' ') }}
+\thadd -f {{ bkgParent }} {{ bkgArray|join(' ') }}{% endif %}{% endfor %}
+
 {% for outFileName in rocOutFileNames %}
-{{ outFileName }}: {{ outFileNameLocalArray.keys()|join(' ') }}
+{{ outFileName }}: {{ inputBkgFiles.keys()|join(' ') }} {{ inputSignalFile }}
 \t{{ rocCmd }} {{ rocCfg }}
 {% endfor %}
 
@@ -246,11 +250,13 @@ def createSbatch(bashScript, logFile):
     zippedScriptLog = zip(bashScript, logFile))
 
 def createMakefile(waitingScript, outFileNameLocalArray, scratchDir,
-                   rocOutFileNames, rocCmd, rocCfg):
+                   rocOutFileNames, rocCmd, rocCfg, inputBkgFiles, inputSignalFile):
   return jinja2.Template(makefileTemplate).render(
     waitingScript = waitingScript,
     outFileNameLocalArray = outFileNameLocalArray,
     scratchDir = scratchDir,
     rocOutFileNames = rocOutFileNames,
     rocCmd = rocCmd,
-    rocCfg = rocCfg)
+    rocCfg = rocCfg,
+    inputBkgFiles = inputBkgFiles,
+    inputSignalFile = inputSignalFile)
