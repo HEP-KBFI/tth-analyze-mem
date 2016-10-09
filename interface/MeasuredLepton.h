@@ -17,14 +17,23 @@ namespace tthMEM
   {
   public:
     MeasuredLepton();
+    MeasuredLepton(const MeasuredObject & object,
+                   int charge);
     MeasuredLepton(double pt,
                    double eta,
                    double phi,
                    double mass,
                    int charge);
     MeasuredLepton(const MeasuredLepton & other);
-    MeasuredLepton & operator=(const MeasuredLepton & other);
+
+    MeasuredLepton &
+    operator=(const MeasuredLepton & other);
+
     ~MeasuredLepton();
+
+    friend MeasuredLepton
+    operator+(const MeasuredLepton & lhs,
+              const MeasuredLepton & rhs);
 
     int charge() const;
 
@@ -40,6 +49,18 @@ namespace tthMEM
     operator<<(std::ostream & os,
                const MeasuredLepton & o);
     ///< prints the pt, eta, phi, mass and charge to ostream
+
+    /**
+     * @brief Sets the lepton's charge to zero
+     */
+    void
+    setNeutral();
+
+    /**
+     * @brief Inverts the leptont's charge
+     */
+    void
+    flipCharge();
 
   protected:
     int charge_; ///< charge of electron or muon

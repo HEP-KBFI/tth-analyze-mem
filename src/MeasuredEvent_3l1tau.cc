@@ -22,6 +22,8 @@ MeasuredEvent_3l1tau::initialize()
 
   htau.initialize();
 
+  if(generatorLevel) generatorLevel -> initialize();
+
 //--- check whether the sum of lepton charges is +-1
   const int leptonChargeSum = std::accumulate(
     leptons.begin(), leptons.end(), 0,
@@ -88,6 +90,8 @@ MeasuredEvent_3l1tau::setBranches(TChain * t)
   htau.setBranches(t, "htau");
 
   mvaVariables.setBranches(t);
+
+  if(generatorLevel) generatorLevel -> setBranches(t);
 }
 
 void
@@ -108,7 +112,17 @@ MeasuredEvent_3l1tau::initNewBranches(TTree * t)
   htau.initNewBranches(t, "htau");
 
   mvaVariables.initNewBranches(t);
+
+  if(generatorLevel) generatorLevel -> initNewBranches(t);
 }
+
+void
+MeasuredEvent_3l1tau::includeGeneratorLevel(bool include)
+{
+  if(include)
+    generatorLevel = std::make_shared<typename decltype(generatorLevel)::element_type>();
+}
+
 
 bool
 MeasuredEvent_3l1tau::hasNextPermutation() const

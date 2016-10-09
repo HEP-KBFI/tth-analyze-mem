@@ -189,6 +189,14 @@ MeasuredObject::initialize()
 
 namespace tthMEM
 {
+  MeasuredObject
+  operator+(const MeasuredObject & lhs,
+            const MeasuredObject & rhs)
+  {
+    LorentzVector p4 = lhs.p4_ + rhs.p4_;
+    return MeasuredObject(p4.pt(), p4.eta(), p4.phi(), p4.mass());
+  }
+
   std::ostream &
   operator<<(std::ostream & os,
                      const MeasuredObject & o)

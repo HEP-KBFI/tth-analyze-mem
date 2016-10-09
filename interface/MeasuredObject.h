@@ -47,8 +47,14 @@ namespace tthMEM
      * @return Reference to the current object
      * @see initialize()
      */
-    MeasuredObject & operator=(const MeasuredObject & other);
+    MeasuredObject &
+    operator=(const MeasuredObject & other);
+
     ~MeasuredObject();
+
+    friend MeasuredObject
+    operator+(const MeasuredObject & lhs,
+              const MeasuredObject & rhs);
 
     /* simple getters */
     double pt() const;

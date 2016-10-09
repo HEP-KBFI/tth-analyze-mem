@@ -13,9 +13,11 @@
 #include "tthAnalysis/tthMEM/interface/MVAVariables.h" // tthMEM::MVAVariables
 #include "tthAnalysis/tthMEM/interface/IndexWrapper.h" // tthMEM::IndexWrapper<,>
 #include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
+#include "tthAnalysis/tthMEM/interface/GeneratorLevelEvent_3l1tau.h" // GeneratorLevelEvent_3l1tau
 
 #include <ostream> // std::ostream
 #include <vector> // std::vector<>
+#include <memory> // std::shared_ptr<>
 
 namespace tthMEM
 {
@@ -54,6 +56,9 @@ namespace tthMEM
     void
     initNewBranches(TTree * t);
 
+    void
+    includeGeneratorLevel(bool include);
+
     bool
     hasNextPermutation() const;
 
@@ -74,6 +79,7 @@ namespace tthMEM
     mutable unsigned currentPermutation_;
     std::vector<std::vector<unsigned>> leptonPermIdxs;
     std::vector<std::vector<unsigned>> jetPermIdxs;
+    std::shared_ptr<GeneratorLevelEvent_3l1tau> generatorLevel;
   };
 }
 

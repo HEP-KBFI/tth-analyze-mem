@@ -72,8 +72,11 @@ namespace tthMEM
     TMatrixD    covMET_eigenVectors_; ///< eigenvectors of covMET_
     TVectorD    covMET_eigenValues_;  ///< eigenvalues of covMET_
 
-    TBranch * branch_pt = 0;  ///< output branch for pt
-    TBranch * branch_phi = 0; ///< output branch for phi
+    TBranch * branch_pt = 0;        ///< output branch for pt
+    TBranch * branch_phi = 0;       ///< output branch for phi
+    TBranch * branch_covMET_XX = 0; ///< output branch for (0, 0) component of MET covariance matrix
+    TBranch * branch_covMET_XY = 0; ///< output branch for (0, 1) and (1, 0) component of MET covariance matrix
+    TBranch * branch_covMET_YY = 0; ///< output branch for (1, 1) component of MET covariance matrix
 
     void
     calculateEigenVectorsValues();

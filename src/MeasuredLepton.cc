@@ -7,6 +7,12 @@ MeasuredLepton::MeasuredLepton()
   , charge_(0)
 {}
 
+MeasuredLepton::MeasuredLepton(const MeasuredObject & object,
+                               int charge)
+  : MeasuredObject(object)
+  , charge_(charge)
+{}
+
 MeasuredLepton::MeasuredLepton(double pt,
                                double eta,
                                double phi,
@@ -56,8 +62,28 @@ MeasuredLepton::initNewBranches(TTree * t,
               Form("%s_charge/I", branchName.c_str()));
 }
 
+void
+MeasuredLepton::setNeutral()
+{
+  charge_ = 0;
+}
+
+void
+MeasuredLepton::flipCharge()
+{
+  charge_ *= -1;
+}
+
 namespace tthMEM
 {
+  MeasuredLepton
+  operator+(const MeasuredLepton & lhs,
+            const MeasuredLepton & rhs)
+  {
+    return MeasuredLepton(static_cast<MeasuredObject>(lhs) + static_cast<MeasuredObject>(rhs),
+                          lhs.charge_ + rhs.charge_);
+  }
+
   std::ostream &
   operator<<(std::ostream & os,
              const MeasuredLepton & o)

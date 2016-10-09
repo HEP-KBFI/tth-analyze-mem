@@ -80,9 +80,11 @@ main(int argc,
   const Long64_t startingFromEntry = cfg_tthMEM.getParameter<Long64_t>("startingFromEntry");
   const unsigned debugPlots = cfg_tthMEM.getParameter<unsigned>("debugPlots");
   const double higgsWidth = cfg_tthMEM.getParameter<double>("higgsWidth");
+  const bool is2016 = cfg_tthMEM.getParameter<bool>("is2016");
 
 //--- clamp the variables if needed
   VariableManager_3l1tau vm;
+  bool includeGeneratorLevel = false;
   const vPSet clampVariables = cfg_tthMEM.getParameter<vPSet>("clampVariables");
   for(const auto & cfg_clamp: clampVariables)
   {
@@ -95,6 +97,11 @@ main(int argc,
     {
       LOGERR << "Generator level not accessible for variable '" << clampStr << "' "
              << "as the sample is not a Monte Carlo simulation but a data sample";
+      return EXIT_FAILURE;
+    }
+    if(useGen && ! is2016)
+    {
+      LOGERR << "Generator level not available for MC samples produced earlier than 2016\n";
       return EXIT_FAILURE;
     }
     if(useGen && useCfg)
@@ -111,6 +118,7 @@ main(int argc,
     else if(useGen)
     {
       if(vm.clamp(clampStr)) return EXIT_FAILURE;
+      includeGeneratorLevel |= true;
     }
   }
   LOGINFO << vm;
@@ -163,6 +171,7 @@ main(int argc,
   TTree * newTree = new TTree("tree", Form("Tree created by %s", argv[0]));
 
   MeasuredEvent_3l1tau measuredEvent;
+  measuredEvent.includeGeneratorLevel(includeGeneratorLevel);
   measuredEvent.setBranches(inputTree);
   measuredEvent.initNewBranches(newTree);
   if(debugPlots)

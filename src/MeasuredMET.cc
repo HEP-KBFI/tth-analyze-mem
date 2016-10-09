@@ -101,6 +101,9 @@ MeasuredMET::initNewBranches(TTree * t)
 {
   branch_pt  = t -> Branch("met_pt",  &pt_,  "met_pt/D");
   branch_phi = t -> Branch("met_phi", &phi_, "met_phi/D");
+  branch_covMET_XX = t -> Branch("covMET_XX", &covMET_XX_, "covMET_XX/D");
+  branch_covMET_XY = t -> Branch("covMET_XY", &covMET_XY_, "covMET_XY/D");
+  branch_covMET_YY = t -> Branch("covMET_YY", &covMET_YY_, "covMET_YY/D");
 }
 
 void
