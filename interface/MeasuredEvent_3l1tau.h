@@ -46,6 +46,7 @@ namespace tthMEM
     std::vector<unsigned> bjetLeptonIdxs;
 
     mutable DebugPlotter_ttHorZ_3l1tau * debugPlotter = 0;
+    std::shared_ptr<GeneratorLevelEvent_3l1tau> generatorLevel;
 
     void
     initialize();
@@ -79,7 +80,6 @@ namespace tthMEM
     mutable unsigned currentPermutation_;
     std::vector<std::vector<unsigned>> leptonPermIdxs;
     std::vector<std::vector<unsigned>> jetPermIdxs;
-    std::shared_ptr<GeneratorLevelEvent_3l1tau> generatorLevel;
   };
 }
 

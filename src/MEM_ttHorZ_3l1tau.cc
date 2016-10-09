@@ -215,6 +215,10 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   clock_ -> Reset();
   clock_ -> Start(__PRETTY_FUNCTION__);
 
+//--- calculate the integration variables
+  if(ev.generatorLevel)
+    ev.generatorLevel -> setIntegrationVariables(vm_);
+
 //--- set the integrand
   (*integrand_).setEvent               (ev)
                .setCurrentME           (currentME)

@@ -1,4 +1,6 @@
 #include "tthAnalysis/tthMEM/interface/GeneratorLevelEvent_3l1tau.h"
+#include "tthAnalysis/tthMEM/interface/tthMEMrecFunctions.h" // functions::
+#include "tthAnalysis/tthMEM/interface/Logger.h" // LOGTRC
 
 #include <TString.h> // Form()
 
@@ -93,5 +95,21 @@ GeneratorLevelEvent_3l1tau::initNewBranches(TTree * t)
 
   genHorZ.initNewBranches(t, "genHorZ");
   genDiNuFromLtau.initNewBranches(t, "genDiNuFromLtau");
+}
+
+void
+GeneratorLevelEvent_3l1tau::setIntegrationVariables(VariableManager_3l1tau & vm) const
+{
+#pragma GCC diagnostic ignored "-Wswitch"
+  for(const Var_3l1tau & var: vm.generatorLevels)
+  {
+    switch(var)
+    {
+      case Var_3l1tau::kZ1:
+        vm.set(var, functions::z(genTau[hadronicTauDecayIdx].p4(), genHtau.p4()));
+        break;
+    }
+  }
+#pragma GCC diagnostic pop
 }
 

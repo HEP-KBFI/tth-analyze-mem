@@ -130,7 +130,7 @@ main(int argc,
 
 //--- initialize the MEM instance
   LOGINFO << "Initializing the tth&z MEM instance";
-  MEM_ttHorZ_3l1tau mem_tt_HandZ(pdfName, findFile(madgraphFileName), std::move(vm));
+  MEM_ttHorZ_3l1tau mem_tt_HandZ(pdfName, findFile(madgraphFileName), vm);
   mem_tt_HandZ.setIntegrationMode(integrationMode);
   mem_tt_HandZ.setMaxObjFunctionCalls(maxObjFunctionCalls);
   mem_tt_HandZ.setBJetTransferFunction(true);

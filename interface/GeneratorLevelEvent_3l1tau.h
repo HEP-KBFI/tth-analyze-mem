@@ -2,6 +2,7 @@
 #define GENERATORLEVELEVENT_3L1TAU_H
 
 #include "tthAnalysis/tthMEM/interface/MeasuredLepton.h" // MeasuredLepton
+#include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 
 #include <array> // std::array<>
 
@@ -45,6 +46,15 @@ namespace tthMEM
 
     void
     initNewBranches(TTree * t);
+
+    /**
+     * @brief Calculates the generator level integration variables
+     * @param vm The variable manager
+     *
+     * @todo Add the computation of missing variables
+     */
+    void
+    setIntegrationVariables(VariableManager_3l1tau & vm) const;
 
   private:
     std::size_t leptonicTauDecayIdx; ///< index of genTau corresponding to leptonic tau decay

@@ -93,16 +93,10 @@ VariableManager_3l1tau::VariableManager_3l1tau()
 }
 
 VariableManager_3l1tau::VariableManager_3l1tau(const VariableManager_3l1tau & vm) noexcept
-  : variables_(vm.variables_)
+  : generatorLevels(vm.generatorLevels)
+  , variables_(vm.variables_)
   , xl_(vm.xl_)
   , xu_(vm.xu_)
-  , numDimensions_(vm.numDimensions_)
-{}
-
-VariableManager_3l1tau::VariableManager_3l1tau(VariableManager_3l1tau && vm) noexcept
-  : variables_(std::move(vm.variables_))
-  , xl_(std::move(vm.xl_))
-  , xu_(std::move(vm.xu_))
   , numDimensions_(vm.numDimensions_)
 {}
 
@@ -115,6 +109,7 @@ VariableManager_3l1tau::clamp(const std::string & varName)
     variables_[var].mode_ = VarMode_3l1tau::kGenerator;
     variables_[var].idx_ = -1;
     updateIndices();
+    generatorLevels.push_back(var);
   }
   else
   {

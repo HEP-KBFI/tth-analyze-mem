@@ -64,13 +64,6 @@ namespace tthMEM
      * Copies all non-static member variables over to the this class
      */
     VariableManager_3l1tau(const VariableManager_3l1tau & vm) noexcept;
-    /**
-     * @brief Simple move constructor
-     * @param vm Variable manager the members of which are moved over
-     *
-     * Moves all non-static member variables over to the this class
-     */
-    VariableManager_3l1tau(VariableManager_3l1tau && vm) noexcept;
 
     /**
      * @brief Clamps a given variable to kGenerator mode
@@ -187,6 +180,8 @@ namespace tthMEM
      */
     const double * const
     getXL() const;
+
+    std::vector<Var_3l1tau> generatorLevels;
 
   private:
     /**
