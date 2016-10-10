@@ -32,6 +32,7 @@ process.tthMEM = cms.PSet(
   maxObjFunctionCalls = cms.uint32(150), # just for testing; proper figure: 100k+
   startingFromEntry   = cms.int64(0),
   debugPlots          = cms.uint32(16),  # use 0 if no debug plots needed
+  forceGenLevel       = cms.bool(True),  # True = dumps gen lvl info regardless of clamping
   higgsWidth          = cms.double(-1.), # use negative number in case of default H width
   clampVariables      = cms.VPSet(
     cms.PSet( var = cms.string("bCosTheta1"),     useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),

@@ -161,7 +161,7 @@ VariableManager_3l1tau::get(Var_3l1tau var,
                      x[variables_.at(var).idx_] : variables_.at(var).value_;
   if(! varLimits_.at(var).isWithin(val))
   {
-    const std::string varName = varNames_.right.find(var) -> second;
+    const std::string varName = getVarName(var);
     throw_line("runtime error")
       << "Fetched value '" << varName << "' = " << val << ' '
       << "is not within expected limits: " << varLimits_.at(var);
@@ -180,7 +180,7 @@ VariableManager_3l1tau::getArrayString(const double * const x) const
 }
 
 std::string
-VariableManager_3l1tau::getVarName(Var_3l1tau var) const
+VariableManager_3l1tau::getVarName(Var_3l1tau var)
 {
   return varNames_.right.find(var) -> second;
 }

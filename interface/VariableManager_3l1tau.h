@@ -130,8 +130,8 @@ namespace tthMEM
      * @param var Variable enum
      * @return The variable name
      */
-    std::string
-    getVarName(Var_3l1tau var) const;
+    static std::string
+    getVarName(Var_3l1tau var);
 
     /**
      * @brief Returns the integration limits of a variable

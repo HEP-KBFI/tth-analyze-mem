@@ -98,6 +98,8 @@ namespace tthMEM
     mutable RecoTrueEvent_ttHorZ_3l1tau recoEvent;
     ///< reconstructed event in the lab frame
 
+    const Vector beamAxis_; ///< defines the z-coordinate in the lab frame
+
   protected:
     LHAPDF::PDF * pdf_;
     ///< pointer to the parton distribution function (PDF)
@@ -107,7 +109,6 @@ namespace tthMEM
     ///< two sets of MadGraph matrix elements: one for tth, the other for ttz
 
     double Q_;              ///< the resolution scale needed by the PDF
-    const Vector beamAxis_; ///< defines the z-coordinate in the lab frame
 
     const MeasuredEvent_3l1tau * measuredEvent_;
     ///< pointer to the measured event

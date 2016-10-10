@@ -217,7 +217,10 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
 
 //--- calculate the integration variables
   if(ev.generatorLevel)
+  {
+    ev.generatorLevel -> setBeamAxis(integrand_ -> beamAxis_);
     ev.generatorLevel -> setIntegrationVariables(vm_);
+  }
 
 //--- set the integrand
   (*integrand_).setEvent               (ev)

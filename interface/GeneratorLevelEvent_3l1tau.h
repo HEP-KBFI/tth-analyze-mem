@@ -5,6 +5,7 @@
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 
 #include <array> // std::array<>
+#include <unordered_map> // std::unordered_map<,,>
 
 namespace tthMEM
 {
@@ -18,7 +19,7 @@ namespace tthMEM
   class GeneratorLevelEvent_3l1tau
   {
   public:
-    GeneratorLevelEvent_3l1tau() = default;
+    GeneratorLevelEvent_3l1tau();
 
     GeneratorParticle genNuFromLtau;   ///< tau neutrino from tau decaying leptonically
     GeneratorParticle genNuLepFromTau; ///< lepton neutrino from tau decaying leptonically
@@ -56,9 +57,20 @@ namespace tthMEM
     void
     setIntegrationVariables(VariableManager_3l1tau & vm) const;
 
+    /**
+     * @brief Sets the beam axis (needed in the calculation of the integration variables)
+     * @param beamAxis The beam axis
+     */
+    void
+    setBeamAxis(const Vector & beamAxis);
+
   private:
-    std::size_t leptonicTauDecayIdx; ///< index of genTau corresponding to leptonic tau decay
-    std::size_t hadronicTauDecayIdx; ///< index of genTau corresponding to hadronic tau decay
+    std::size_t leptonicTauDecayIdx_; ///< index of genTau corresponding to leptonic tau decay
+    std::size_t hadronicTauDecayIdx_; ///< index of genTau corresponding to hadronic tau decay
+
+    Vector beamAxis_; ///< beam axis in the lab
+
+    std::unordered_map<Var_3l1tau, double, EnumClassHash> genIntVariables;
   };
 }
 

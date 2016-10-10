@@ -81,10 +81,15 @@ main(int argc,
   const unsigned debugPlots = cfg_tthMEM.getParameter<unsigned>("debugPlots");
   const double higgsWidth = cfg_tthMEM.getParameter<double>("higgsWidth");
   const bool is2016 = cfg_tthMEM.getParameter<bool>("is2016");
+  bool includeGeneratorLevel = [&]() -> bool
+  {
+    if(cfg_tthMEM.exists("forceGenLevel"))
+      return cfg_tthMEM.getParameter<bool>("forceGenLevel") && is2016 && isMC;
+    return false;
+  }();
 
 //--- clamp the variables if needed
   VariableManager_3l1tau vm;
-  bool includeGeneratorLevel = false;
   const vPSet clampVariables = cfg_tthMEM.getParameter<vPSet>("clampVariables");
   for(const auto & cfg_clamp: clampVariables)
   {
