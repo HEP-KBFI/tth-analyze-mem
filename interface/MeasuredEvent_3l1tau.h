@@ -72,6 +72,12 @@ namespace tthMEM
     std::string
     str() const;
 
+    void
+    addFilter(const std::string & rleSelectionFileName);
+
+    bool
+    isFiltered() const;
+
     friend std::ostream &
     operator<<(std::ostream & os,
                const MeasuredEvent_3l1tau & event);
@@ -80,6 +86,7 @@ namespace tthMEM
     mutable unsigned currentPermutation_;
     std::vector<std::vector<unsigned>> leptonPermIdxs;
     std::vector<std::vector<unsigned>> jetPermIdxs;
+    std::vector<std::string> rleSelection;
   };
 }
 

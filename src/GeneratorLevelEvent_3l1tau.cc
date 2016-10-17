@@ -144,3 +144,30 @@ GeneratorLevelEvent_3l1tau::setBeamAxis(const Vector & beamAxis)
   beamAxis_ = beamAxis;
 }
 
+namespace tthMEM
+{
+  std::ostream &
+  operator<<(std::ostream & os,
+             const GeneratorLevelEvent_3l1tau & event)
+  {
+    const std::size_t & lIdx = event.leptonicTauDecayIdx_;
+    const std::size_t & hIdx = event.hadronicTauDecayIdx_;
+    os << "\tgenNuFromLtau:           " << event.genNuFromLtau   << '\n'
+       << "\tgenNuLepFromTau:         " << event.genNuLepFromTau << '\n'
+       << "\tgenLepFromTau:           " << event.genLepFromTau   << '\n'
+       << "\tgenNuFromHtau:           " << event.genNuFromHtau   << '\n'
+       << "\tgenHtau:                 " << event.genHtau         << '\n'
+       << "\tgenTau (leptonic decay): " << event.genTau[lIdx]    << '\n'
+       << "\tgenTau (hadronic decay): " << event.genTau[hIdx]    << '\n'
+       << "\tgenHorZ:                 " << event.genHorZ         << '\n'
+       << "\tgenDiNuFromLtau:         " << event.genDiNuFromLtau << '\n';
+    for(std::size_t i = 0; i < 2; ++i)
+      os << "\tgenBQuarkFromTop[" << (i + 1) << "]:     " << event.genBQuarkFromTop[i] << '\n'
+         << "\tgenNuFromTop[" << (i + 1) << "]:         " << event.genNuFromTop[i]     << '\n'
+         << "\tgenLepFromTop[" << (i + 1) << "]:        " << event.genLepFromTop[i]    << '\n'
+         << "\tgenWBoson[" << (i + 1) << "]:            " << event.genWBoson[i]        << '\n'
+         << "\tgenTop[" << (i + 1) << "]:               " << event.genTop[i]           << '\n';
+    return os;
+  }
+}
+

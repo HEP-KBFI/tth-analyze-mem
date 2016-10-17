@@ -3,9 +3,9 @@ from tthAnalysis.tthMEM.jobTemplates import getNofEntries, \
   createPythonCfg, createBashCfg, createSbatch, createMakefile, createPythonROCcfg
 
 def createJobs(samples, channel, year, version, central_or_shifts, charge_selections, lepton_selections,
-               hadTau_selections, hadTau_genMatches, execName, treeName, integrationMode,
+               hadTau_selections, hadTau_genMatches, execName, treeName, rleSelectionFile, integrationMode,
                maxObjFunctionCalls, nofIntegrationsPerJob, lhRatioBranchName, rocLegendPosition,
-               debugPlots, higgsWidth, clampVariables, markovChainParams):
+               debugPlots, forceGenLevel, higgsWidth, clampVariables, markovChainParams):
   '''
   TODO: - make the file names of roc curve plots channel and version specific
   '''
@@ -48,6 +48,7 @@ def createJobs(samples, channel, year, version, central_or_shifts, charge_select
       rocLabels.append(process_name)
 
     isMC = (sampleValue["type"] == "mc")
+    is2016 = (year == "2016")
 
     for lepton_selection in lepton_selections:
       for hadTau_selection in hadTau_selections:
@@ -114,9 +115,9 @@ def createJobs(samples, channel, year, version, central_or_shifts, charge_select
                   nofEventsToProcess = nofIntegrationsPerJob if i != nofJobs - 1 else -1
 
                   pythonCfg = createPythonCfg(
-                    isMC, fileNameScratch_i, nofEventsToProcess, outFileNameScratch_i, treeName,
-                    integrationMode, maxObjFunctionCalls, startingPoint, debugPlots, higgsWidth,
-                    clampVariables, markovChainParams
+                    isMC, is2016, fileNameScratch_i, nofEventsToProcess, outFileNameScratch_i, treeName,
+                    rleSelectionFile, integrationMode, maxObjFunctionCalls, startingPoint, debugPlots,
+                    forceGenLevel, higgsWidth, clampVariables, markovChainParams
                   )
                   bashCfg = createBashCfg(
                     fileNameLocal, outFileNameLocal_i, fileNameScratch_i, outFileNameScratch_i,

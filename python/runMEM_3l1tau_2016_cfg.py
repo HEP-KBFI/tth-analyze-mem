@@ -26,6 +26,7 @@ process.tthMEM = cms.PSet(
   isMC                = cms.bool(True),
   is2016              = cms.bool(True),
   treeName            = cms.string("tree"),
+  rleSelectionFile    = cms.string(""),  # run:lumi:evt numbers (one per line)
   pdfName             = cms.string("MSTW2008lo68cl"),
   madgraphFileName    = cms.string("tthAnalysis/tthMEM/data/param_card.dat"),
   integrationMode     = cms.string("VEGAS"),

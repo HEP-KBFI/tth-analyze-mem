@@ -26,13 +26,16 @@ process.logging = cms.PSet(
 
 process.tthMEM = cms.PSet(
   isMC                = cms.bool({{ isMC }}),
+  is2016              = cms.bool({{ is2016 }}),
   treeName            = cms.string("{{ treeName }}"),
+  rleSelectionFile    = cms.string("{{ rleSelectionFile  }}"),
   pdfName             = cms.string("MSTW2008lo68cl"),
   madgraphFileName    = cms.string("tthAnalysis/tthMEM/data/param_card.dat"),
   integrationMode     = cms.string("{{ integrationMode }}"),
   maxObjFunctionCalls = cms.uint32({{ maxObjFunctionCalls }}),
   startingFromEntry   = cms.int64({{startingFromEntry }}),
   debugPlots          = cms.uint32({{ debugPlots }}),
+  forceGenLevel       = cms.bool({{ forceGenLevel }}),
   higgsWidth          = cms.double({{ higgsWidth }}),
   clampVariables      = cms.VPSet({% for it in clampVariables %}
     cms.PSet( var = cms.string("{{ it.0 }}"), useGen = cms.bool({{ it.1 }}), useCfg = cms.bool({{ it.2 }}), val = cms.double({{ it.3 }})),{% endfor %}
@@ -206,19 +209,23 @@ def getNofEntries(fileName, treeName):
   if counterStderr != "": raise ValueError(counterStderr)
   return int(counterStdout)
 
-def createPythonCfg(isMC, inFileName, maxEvents, outFileName, treeName,
+def createPythonCfg(isMC, is2016, inFileName, maxEvents, outFileName, treeName,
                     integrationMode, maxObjFunctionCalls, startingFromEntry,
-                    debugPlots, higgsWidth, clampVariables, markovChainParams):
+                    debugPlots, higgsWidth, clampVariables, markovChainParams,
+                    rleSelectionFile, forceGenLevel):
   return jinja2.Template(pythonCfgTemplate).render(
     isMC = isMC,
+    is2016 = is2016,
     inFileName = inFileName,
     maxEvents = maxEvents,
     outFileName = outFileName,
     treeName = treeName,
+    rleSelectionFile = rleSelectionFile,
     integrationMode = integrationMode,
     maxObjFunctionCalls = maxObjFunctionCalls,
     startingFromEntry = startingFromEntry,
     debugPlots = debugPlots,
+    forceGenLevel = forceGenLevel,
     higgsWidth = higgsWidth,
     clampVariables = clampVariables,
     markovChainParams = markovChainParams)

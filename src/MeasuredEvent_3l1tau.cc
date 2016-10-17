@@ -4,8 +4,9 @@
 
 #include <TString.h> // Form()
 
-#include <algorithm> // std::swap(), std::accumulate()
+#include <algorithm> // std::swap(), std::accumulate(), std::find()
 #include <cmath> // std::abs()
+#include <fstream> // std::ifstream
 
 using namespace tthMEM;
 
@@ -148,6 +149,29 @@ MeasuredEvent_3l1tau::str() const
   return std::string(Form("%u_%u_%llu_%u", run, lumi, evt, currentPermutation_));
 }
 
+void
+MeasuredEvent_3l1tau::addFilter(const std::string & rleSelectionFileName)
+{
+  if(! rleSelectionFileName.empty())
+  {
+    LOGINFO << "Adding filter file '" << rleSelectionFileName << '\'';
+    std::ifstream rleSelectionFile(rleSelectionFileName);
+    for(std::string line; std::getline(rleSelectionFile, line);)
+    {
+      LOGINFO << "Selecting event = '" << line << '\'';
+      rleSelection.push_back(line);
+    }
+  }
+}
+
+bool
+MeasuredEvent_3l1tau::isFiltered() const
+{
+  const std::string rle(Form("%u:%u:%llu", run, lumi, evt));
+  return rleSelection.size() &&
+         std::find(rleSelection.begin(), rleSelection.end(), rle) == rleSelection.end();
+}
+
 namespace tthMEM
 {
   std::ostream &
@@ -164,6 +188,8 @@ namespace tthMEM
       os << "\tJet "    << (i + 1) << ": " << event.jets[i]    << '\n';
     os << "\tTau: " << event.htau << '\n';
     os << "\tMET: " << event.met   << '\n';
+    if(event.generatorLevel)
+      os << event.generatorLevel;
     return os;
   }
 }

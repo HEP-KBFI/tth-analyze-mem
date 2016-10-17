@@ -40,12 +40,14 @@ if __name__ == '__main__':
              hadTau_genMatches     = ["1t0e0m0j"],
              execName              = "runMEM_3l1tau",
              treeName              = "tree",
+             rleSelectionFile      = "",                      # run:lumi:evt selection (one per line)
              integrationMode       = "markovchain",
              maxObjFunctionCalls   = 100000,                  # 25k per permutation
              nofIntegrationsPerJob = 25,
              lhRatioBranchName     = "lhRatioNP",
              rocLegendPosition     = [0.15, 0.78, 0.3, 0.88],
              debugPlots            = 80,                      # every 10th event is dumped to TH1D
+             forceGenLevel         = True,                    # dump gen lvl info regardless of clamping (ignored if !is(MC&2016))
              higgsWidth            = -1.,                     # use negative number in case of default H width
              clampVariables        = clampVariables,
              markovChainParams     = markovChainParams)

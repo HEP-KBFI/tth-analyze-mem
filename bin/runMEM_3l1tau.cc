@@ -4,6 +4,8 @@
 #include <algorithm> // std::inner_product()
 #include <csignal> // std::signal(), SIG*
 
+#include <boost/filesystem/operations.hpp> // boost::filesystem::exists()
+
 #include <Rtypes.h> // Long64_t
 #include <TFile.h> // TFile
 #include <TChain.h> // TChain
@@ -73,6 +75,7 @@ main(int argc,
   const PSet cfg_tthMEM = cfg.getParameter<PSet>("tthMEM");
   const bool isMC = cfg_tthMEM.getParameter<bool>("isMC");
   const std::string treeName = cfg_tthMEM.getParameter<std::string>("treeName");
+  const std::string rleSelectionFileName = cfg_tthMEM.getParameter<std::string>("rleSelectionFile");
   const std::string pdfName = cfg_tthMEM.getParameter<std::string>("pdfName");
   const std::string madgraphFileName = cfg_tthMEM.getParameter<std::string>("madgraphFileName");
   const std::string integrationMode = cfg_tthMEM.getParameter<std::string>("integrationMode");
@@ -83,10 +86,13 @@ main(int argc,
   const bool is2016 = cfg_tthMEM.getParameter<bool>("is2016");
   bool includeGeneratorLevel = [&]() -> bool
   {
-    if(cfg_tthMEM.exists("forceGenLevel"))
-      return cfg_tthMEM.getParameter<bool>("forceGenLevel") && is2016 && isMC;
-    return false;
+    return cfg_tthMEM.getParameter<bool>("forceGenLevel") && is2016 && isMC;
   }();
+  if(! rleSelectionFileName.empty() && ! boost::filesystem::exists(rleSelectionFileName))
+  {
+    LOGERR << "File '" << rleSelectionFileName << "' does not exists";
+    return EXIT_FAILURE;
+  }
 
 //--- clamp the variables if needed
   VariableManager_3l1tau vm;
@@ -166,6 +172,11 @@ main(int argc,
   TChain * inputTree = new TChain(treeName.c_str());
   for(const std::string & inputFile: inputFiles.files())
   {
+    if(! boost::filesystem::exists(inputFile))
+    {
+      LOGERR << "Input file '" << inputFile << "' does not exist";
+      return EXIT_FAILURE;
+    }
     inputTree -> AddFile(inputFile.c_str());
     LOGINFO << "Chained file = " << inputFile;
   }
@@ -176,6 +187,7 @@ main(int argc,
   TTree * newTree = new TTree("tree", Form("Tree created by %s", argv[0]));
 
   MeasuredEvent_3l1tau measuredEvent;
+  measuredEvent.addFilter(rleSelectionFileName);
   measuredEvent.includeGeneratorLevel(includeGeneratorLevel);
   measuredEvent.setBranches(inputTree);
   measuredEvent.initNewBranches(newTree);
@@ -226,6 +238,7 @@ main(int argc,
 
     inputTree -> GetEntry(i);
     measuredEvent.initialize();
+    if(measuredEvent.isFiltered()) continue;
 
     probSignal = 0.;
     probBackground_ttz = 0.;

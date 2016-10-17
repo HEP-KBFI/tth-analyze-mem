@@ -26,12 +26,14 @@ process.tthMEM = cms.PSet(
   isMC                = cms.bool(True),
   is2016              = cms.bool(False),
   treeName            = cms.string("tree"),
+  rleSelectionFile    = cms.string(""),  # run:lumi:evt numbers (one per line)
   pdfName             = cms.string("MSTW2008lo68cl"),
   madgraphFileName    = cms.string("tthAnalysis/tthMEM/data/param_card.dat"),
   integrationMode     = cms.string("VEGAS"),
   maxObjFunctionCalls = cms.uint32(150), # just for testing; proper figure: 100k+
   startingFromEntry   = cms.int64(0),
   debugPlots          = cms.uint32(16),  # use 0 if no debug plots needed
+  forceGenLevel       = cms.bool(False), # no effect in 2015 samples
   higgsWidth          = cms.double(-1.), # use negative number in case of default H width
   clampVariables      = cms.VPSet(
     cms.PSet( var = cms.string("bCosTheta1"),     useGen = cms.bool(False), useCfg = cms.bool(False), val = cms.double(0.0)),

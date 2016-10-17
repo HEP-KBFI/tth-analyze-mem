@@ -64,6 +64,10 @@ namespace tthMEM
     void
     setBeamAxis(const Vector & beamAxis);
 
+    friend std::ostream &
+    operator<<(std::ostream & os,
+               const GeneratorLevelEvent_3l1tau & event);
+
   private:
     std::size_t leptonicTauDecayIdx_; ///< index of genTau corresponding to leptonic tau decay
     std::size_t hadronicTauDecayIdx_; ///< index of genTau corresponding to hadronic tau decay
