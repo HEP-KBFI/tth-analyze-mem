@@ -212,21 +212,21 @@ namespace tthMEM
     }
 
     double
-    MET_TF(double nuSumX,
-           double nuSumY,
+    MET_TF(double METx_,
+           double METy_,
            double METx,
            double METy,
            double MET_TF_denom,
            const TMatrixDSym & invCovMET)
     {
       TVectorD hadRecDiff(2);
-      hadRecDiff(0) = METx - nuSumX;
-      hadRecDiff(1) = METy - nuSumY;
+      hadRecDiff(0) = METx - METx_;
+      hadRecDiff(1) = METy - METy_;
       const double MET_pull = (invCovMET * hadRecDiff) * hadRecDiff;
       const double MET_TF_value = MET_TF_denom * std::exp(-MET_pull / 2.);
 
-      LOGTRC << "MET_x = "   << METx   << "; MET_y = "   << METy << "; "
-             << "nuSum_x = " << nuSumX << "; nuSum_y = " << nuSumY;
+      LOGTRC << "MET_x             = " << METx   << "; MET_y             = " << METy;
+      LOGTRC << "MET_x (reco true) = " << METx_  << "; MET_y (reco true) = " << METy_;
       LOGTRC_S << "=> MET_pull = " << MET_pull << " => MET_TF = " << MET_TF_value;
 
       return MET_TF_value;

@@ -161,10 +161,10 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
     const double MET_TF_denom = 1. / (2. * pi() * std::sqrt(invCovMET.Determinant()));
     LOGVRB << "MET TF denominator = " << MET_TF_denom;
     MET_TF_ = [MET_x, MET_y, MET_TF_denom, invCovMET]
-              (double nuSumX, double nuSumY) -> double
+              (double MET_x_, double MET_y_) -> double
     {
       return functions::MET_TF(
-        nuSumX, nuSumY, MET_x, MET_y, MET_TF_denom, invCovMET
+        MET_x_, MET_y_, MET_x, MET_y, MET_TF_denom, invCovMET
       );
     };
   }
@@ -426,7 +426,15 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 //--- leptons are assumed to be measured perfectly whereas the pT of jets/quarks
 //--- introduces uncertainties difficult to handle here
   const LorentzVector nuSum = recoEvent.getNuSum();
-  const double MET_TF = MET_TF_(nuSum.x(), nuSum.y());
+  const LorentzVector bJetDifference = [this]() -> LorentzVector
+  {
+    LorentzVector result(0., 0., 0., 0.);
+    for(unsigned i = 0; i < 2; ++i)
+      result += recoEvent.b[i] - (measuredEvent_ -> jets[i]).p4();
+    return result;
+  }();
+  const double MET_TF = MET_TF_(nuSum.x() + bJetDifference.x(),
+                                nuSum.y() + bJetDifference.y());
 
 //--- compute Bjorken x variables
 //--- assume that hadronic recoil has only transverse component
@@ -455,9 +463,9 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const Vector boost(-tthOrZ.px() / tthOrZ.e(), -tthOrZ.py() / tthOrZ.e(), 0.);
   LOGTRC << cvrap("boost vector", boost);
   recoEvent.g[0] = LorentzVector(0., 0., +0.5 * xa * constants::sqrtS,
-                                           0.5 * xa * constants::sqrtS);
+                                          0.5 * xa * constants::sqrtS);
   recoEvent.g[1] = LorentzVector(0., 0., -0.5 * xb * constants::sqrtS,
-                                           0.5 * xb * constants::sqrtS);
+                                          0.5 * xb * constants::sqrtS);
   const RecoTrueEvent_ttHorZ_3l1tau recoEventmem = recoEvent.boost(boost);
   const LorentzVector tthOrZ_mem = recoEventmem.getTTHorZ();
   if(isTTH) LOGTRC << lvrap("tth mem", tthOrZ_mem);
@@ -520,16 +528,19 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 
 //--- for debugging purposes plot some variables
   if(DebugPlotter_ttHorZ_3l1tau * dPlotter = measuredEvent_ -> debugPlotter)
-    (*dPlotter).fill(hVar_3l1tau::kZ2,       z2)
-               .fill(hVar_3l1tau::kMassHorZ, recoEvent.higgsOrZ.mass())
-               .fill(hVar_3l1tau::kMassHtau, recoEvent.hTau.mass())
-               .fill(hVar_3l1tau::kMassLtau, recoEvent.lTau.mass())
-               .fill(hVar_3l1tau::kB1en,     recoEvent.b[0].e())
-               .fill(hVar_3l1tau::kB2en,     recoEvent.b[1].e())
-               .fill(hVar_3l1tau::kB1RecoEn, measuredEvent_ -> jets[0].energy())
-               .fill(hVar_3l1tau::kB2RecoEn, measuredEvent_ -> jets[1].energy())
-               .fill(hVar_3l1tau::kMsquared, prob_ME_mg)
-               .fill(hVar_3l1tau::kProb,     p)
+    (*dPlotter).fill(hVar_3l1tau::kZ2,         z2)
+               .fill(hVar_3l1tau::kMassHorZ,   recoEvent.higgsOrZ.mass())
+               .fill(hVar_3l1tau::kMassHtau,   recoEvent.hTau.mass())
+               .fill(hVar_3l1tau::kMassLtau,   recoEvent.lTau.mass())
+               .fill(hVar_3l1tau::kB1en,       recoEvent.b[0].e())
+               .fill(hVar_3l1tau::kB2en,       recoEvent.b[1].e())
+               .fill(hVar_3l1tau::kB1RecoEn,   measuredEvent_ -> jets[0].energy())
+               .fill(hVar_3l1tau::kB2RecoEn,   measuredEvent_ -> jets[1].energy())
+               .fill(hVar_3l1tau::kMETtf,      MET_TF)
+               .fill(hVar_3l1tau::kB1energyTF, bEnergyTF[0])
+               .fill(hVar_3l1tau::kB2energyTF, bEnergyTF[1])
+               .fill(hVar_3l1tau::kMsquared,   prob_ME_mg)
+               .fill(hVar_3l1tau::kProb,       p)
                .fill(vm_, x)
                .fill();
 

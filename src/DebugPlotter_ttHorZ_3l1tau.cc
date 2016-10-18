@@ -9,16 +9,19 @@ using namespace tthMEM;
 const decltype(DebugPlotter_ttHorZ_3l1tau::hVarMap_)
 DebugPlotter_ttHorZ_3l1tau::hVarMap_ =
 {
-  { hVar_3l1tau::kZ2,        "z2",      },
-  { hVar_3l1tau::kMassHorZ,  "massHorZ" },
-  { hVar_3l1tau::kMassHtau,  "massHtau" },
-  { hVar_3l1tau::kMassLtau,  "massLtau" },
-  { hVar_3l1tau::kB1en,      "B1en"     },
-  { hVar_3l1tau::kB2en,      "B2en"     },
-  { hVar_3l1tau::kB1RecoEn,  "B1RecoEn" },
-  { hVar_3l1tau::kB2RecoEn,  "B2RecoEn" },
-  { hVar_3l1tau::kMsquared,  "Msquared" },
-  { hVar_3l1tau::kProb,      "prob"     }
+  { hVar_3l1tau::kZ2,         "z2",        },
+  { hVar_3l1tau::kMassHorZ,   "massHorZ"   },
+  { hVar_3l1tau::kMassHtau,   "massHtau"   },
+  { hVar_3l1tau::kMassLtau,   "massLtau"   },
+  { hVar_3l1tau::kB1en,       "B1en"       },
+  { hVar_3l1tau::kB2en,       "B2en"       },
+  { hVar_3l1tau::kB1RecoEn,   "B1RecoEn"   },
+  { hVar_3l1tau::kB2RecoEn,   "B2RecoEn"   },
+  { hVar_3l1tau::kB1energyTF, "B1energyTF" },
+  { hVar_3l1tau::kB2energyTF, "B2energyTF" },
+  { hVar_3l1tau::kMETtf,      "METtf"      },
+  { hVar_3l1tau::kMsquared,   "Msquared"   },
+  { hVar_3l1tau::kProb,       "prob"       }
 };
 
 DebugPlotter_ttHorZ_3l1tau::DebugPlotter_ttHorZ_3l1tau(TFile * file,

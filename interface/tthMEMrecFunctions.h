@@ -197,8 +197,8 @@ namespace tthMEM
 
     /**
      * @brief Calculates the value of MET/hadronic recoil transfer function (TF)
-     * @param nuSumX       Sum of x-component of all neutrino momenta
-     * @param nuSumY       Sum of y-component of all neutrino momenta
+     * @param METx_        ,,Reconstructed true'' MET x-component
+     * @param METy_        ,,Reconstructed true'' MET y-component
      * @param METx         MET x-component
      * @param METy         MET y-component
      * @param MET_TF_denom Denominator of this TF ( = 1 / sqrt(2 * pi * det(invConvMET)))
@@ -206,8 +206,8 @@ namespace tthMEM
      * @return Value of the MET/hadronic recoil TF
      */
     double
-    MET_TF(double nuSumX,
-           double nuSumY,
+    MET_TF(double METx_,
+           double METy_,
            double METx,                    /* bind */
            double METy,                    /* bind */
            double MET_TF_denom,            /* bind */

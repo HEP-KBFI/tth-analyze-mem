@@ -19,16 +19,19 @@ namespace tthMEM
    */
   enum class hVar_3l1tau
   {
-    kZ2,       // energy fraction of leptonic tau decay products
-    kMassHtau, // mass of hadronic tau lepton
-    kMassLtau, // mass of leptonic tau lepton
-    kMassHorZ, // mass of Higgs or Z
-    kB1en,     // energy of the 1st b-quark
-    kB2en,     // energy of the 2nd b-quark
-    kB1RecoEn, // energy of the 1st b-jet
-    kB2RecoEn, // energy of the 2nd b-jet
-    kMsquared, // squared matrix element amplitude
-    kProb,     // overall probability in the integrand
+    kZ2,         // energy fraction of leptonic tau decay products
+    kMassHtau,   // mass of hadronic tau lepton
+    kMassLtau,   // mass of leptonic tau lepton
+    kMassHorZ,   // mass of Higgs or Z
+    kB1en,       // energy of the 1st b-quark
+    kB2en,       // energy of the 2nd b-quark
+    kB1RecoEn,   // energy of the 1st b-jet
+    kB2RecoEn,   // energy of the 2nd b-jet
+    kB1energyTF, // TF value for the 1st b-jet energy
+    kB2energyTF, // TF value for the 2nd b-jet energy
+    kMETtf,      // value returned by the MET transfer function
+    kMsquared,   // squared matrix element amplitude
+    kProb,       // overall probability in the integrand
 //--- for iteration
     First = kZ2,
     Last = kProb
