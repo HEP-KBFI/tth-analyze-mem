@@ -38,27 +38,27 @@ namespace tthMEM
     const double massVisTauMin = 0.3;
     const double massVisTauMax = 1.5;
     const double massChargedPion = 0.139570; ///< taken from PDG booklet (2014, p 25)
-    const double massTau = 1.77682; ///< taken from PDG booklet (2014, p 15)
+    const double massTau = 1.777000e+00;   ///< MG value (MTA)
     const double massTauSquared = pow2(massTau);
-    const double massHiggs = 125.7; ///< taken from PDG booklet (2014, p 11)
+    const double massHiggs = 1.250000e+02; ///< MG value (MH)
     const double massHiggsSquared = pow2(massHiggs);
-    const double massZ = 91.1876; ///< taken from PDG booklet (2014, p 9)
+    const double massZ = 9.118800e+01;     ///< MG value (MZ)
     const double massZSquared = pow2(massZ);
-    const double massW = 80.385; ///< taken from PDG booklet (2014, p 8)
+    const double massW = 8.02673592E+01;   ///< MG value (MW)
     const double massWSquared = pow2(massW);
-    const double massB = 4.18; ///< MS scheme; taken from PDG booklet (2014, p 23)
+    const double massB = 4.700000e+00;     ///< MG value (MB)
     const double massBSquared = pow2(massB);
-    const double massT = 173.21; ///< taken from PDG booklet (2014, p 23)
+    const double massT = 1.74300000E+02;   ///< MG value (MT)
     const double massTSquared = pow2(massT);
 
     const double cTau = 87.03e+9; // in originally in um (10^-6), converted to fm (10^-15)
     ///< mean life, taken from PDG booklet (2014, p 15)
     const double gammaTau = cTimesHbar / cTau;
     const double gammaTau2hadrons = gammaTau * brTau2hadrons;
-    const double gammaT = 2.0; ///< taken from PDG booklet (2014, p 23)
-    const double gammaW = 2.085; ///< taken from PDG booklet (2014, p 8)
-    const double gammaZ = 2.4952; ///< taken from PDG booklet (2014, p 9)
-    const double gammaHiggs = 1.e-3 * massHiggs; ///< taken from thin air
+    const double gammaT = 1.491500e+00;     ///< MG value (WT)
+    const double gammaW = 2.047600e+00;     ///< MG value (WW)
+    const double gammaZ = 2.441404e+00;     ///< MG value (WZ)
+    const double gammaHiggs = 6.382339e-03; ///< MG value (WH)
 
     const double DeltaFactor = (massTSquared - massWSquared - massBSquared) / 2.;
     const double resolutionScaleTTH = massT + massHiggs / 2.;

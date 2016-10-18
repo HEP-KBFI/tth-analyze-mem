@@ -119,6 +119,12 @@ namespace tthMEM
     return LorentzVector(v.x(), v.y(), v.z(), e);
   }
 
+  LorentzVector
+  getLorentzVector(const math::PtEtaPhiMLorentzVector & v)
+  {
+    return LorentzVector(v.x(), v.y(), v.z(), v.e());
+  }
+
   Vector
   getVector(const LorentzVector & v)
   {

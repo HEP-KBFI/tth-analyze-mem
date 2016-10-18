@@ -82,6 +82,14 @@ namespace tthMEM
                    double e);
 
   /**
+   * @brief Constructs Minkowskian LorentzVector from pT, eta, phi & mass
+   * @param v The version of the LorentzVector in pT, eta, phi & mass representation
+   * @return The Minkowskian LorentzVector
+   */
+  LorentzVector
+  getLorentzVector(const math::PtEtaPhiMLorentzVector & v);
+
+  /**
    * @brief Returns Vector from LorentzVector
    * @param v The LorentzVector
    * @return The Vector
