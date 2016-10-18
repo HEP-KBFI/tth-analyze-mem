@@ -2,42 +2,35 @@
 
 #include <TString.h> // Form()
 
-using namespace tthMEM;
+#define PLACEHOLDER_DEBUGPLOTTER -9999
 
-const unsigned DebugPlotter_ttHorZ_3l1tau::nofBins_ = 200;
+using namespace tthMEM;
 
 const decltype(DebugPlotter_ttHorZ_3l1tau::hVarMap_)
 DebugPlotter_ttHorZ_3l1tau::hVarMap_ =
 {
-  { hVar_3l1tau::kZ2,       { "z2",       0.,  1.     } },
-  { hVar_3l1tau::kMassHorZ, { "massHorZ", 70., 140.   } },
-  { hVar_3l1tau::kMassHtau, { "massHtau", 0.,  3.     } },
-  { hVar_3l1tau::kMassLtau, { "massLtau", 0.,  3.     } },
-  { hVar_3l1tau::kB1en,     { "B1en",     0.,  600.   } },
-  { hVar_3l1tau::kB2en,     { "B2en",     0.,  600.   } },
-  { hVar_3l1tau::kB1RecoEn, { "B1RecoEn", 0.,  600.   } },
-  { hVar_3l1tau::kB2RecoEn, { "B2RecoEn", 0.,  600.   } },
-  { hVar_3l1tau::kMsquared, { "Msquared", 0.,  1.e-6  } },
-  { hVar_3l1tau::kProb,     { "prob",     0.,  1.e-45 } }
+  { hVar_3l1tau::kZ2,        "z2",      },
+  { hVar_3l1tau::kMassHorZ,  "massHorZ" },
+  { hVar_3l1tau::kMassHtau,  "massHtau" },
+  { hVar_3l1tau::kMassLtau,  "massLtau" },
+  { hVar_3l1tau::kB1en,      "B1en"     },
+  { hVar_3l1tau::kB2en,      "B2en"     },
+  { hVar_3l1tau::kB1RecoEn,  "B1RecoEn" },
+  { hVar_3l1tau::kB2RecoEn,  "B2RecoEn" },
+  { hVar_3l1tau::kMsquared,  "Msquared" },
+  { hVar_3l1tau::kProb,      "prob"     }
 };
-
-DebugPlotter_ttHorZ_3l1tau::HVarHolder::HVarHolder(const std::string & hVarName,
-                                                   double begin,
-                                                   double end)
-  : hVarName_(hVarName)
-  , limits_(begin, end)
-{}
 
 DebugPlotter_ttHorZ_3l1tau::DebugPlotter_ttHorZ_3l1tau(TFile * file,
                                                        unsigned debugFrequency)
   : file_(file)
+  , tree_(0)
   , debugFrequency_(debugFrequency)
   , debugRange_(8)
   , logCounter_(0)
   , log_(false)
 {
-  for(auto e: Enum<hVar_3l1tau>()) histRecod_[e] = 0;
-  for(auto e: Enum<Var_3l1tau>())  histSampled_[e] = 0;
+  reset();
 }
 
 DebugPlotter_ttHorZ_3l1tau::DebugPlotter_ttHorZ_3l1tau(TFile * file)
@@ -62,22 +55,20 @@ DebugPlotter_ttHorZ_3l1tau::initialize(const std::string & dirName,
   {
     file_ -> mkdir(dirName.c_str());
     file_ -> cd(dirName.c_str());
+    tree_ = new TTree("tree", dirName.c_str());
 
+//--- variables declared in this file
     for(auto var: Enum<hVar_3l1tau>())
     {
-      const TString varName(hVarMap_.at(var).hVarName_.c_str());
-      const Limits & limits = hVarMap_.at(var).limits_;
-      histRecod_[var] = new TH1D(varName, varName, nofBins_,
-                                 limits.begin_, limits.end_);
+      const std::string varName(hVarMap_.at(var));
+      tree_ -> Branch(varName.c_str(), &(histRecod_[var]), Form("%s/D", varName.c_str()));
     }
 
 //--- input/sampled variables
     for(auto var: Enum<Var_3l1tau>())
     {
-      const TString varName = Form("%s_sampled", vm.getVarName(var).c_str());
-      const Limits & limits = vm.getVarLimits(var);
-      histSampled_[var] = new TH1D(varName, varName, nofBins_,
-                                   limits.begin_, limits.end_);
+      const std::string varName(Form("%s_sampled", vm.getVarName(var).c_str()));
+      tree_ -> Branch(varName.c_str(), &(histSampled_[var]), Form("%s/D", varName.c_str()));
     }
   }
 }
@@ -86,34 +77,44 @@ DebugPlotter_ttHorZ_3l1tau &
 DebugPlotter_ttHorZ_3l1tau::fill(hVar_3l1tau var,
                                  double value)
 {
-  if(log_ && histRecod_[var]) histRecod_[var] -> Fill(value);
+  if(log_)
+    histRecod_[var] = value;
   return *this;
 }
 
-DebugPlotter_ttHorZ_3l1tau&
+DebugPlotter_ttHorZ_3l1tau &
 DebugPlotter_ttHorZ_3l1tau::fill(const VariableManager_3l1tau & vm,
                                  const double * const x)
 {
   for(auto var: Enum<Var_3l1tau>())
-    if(log_ && histSampled_[var]) histSampled_[var] -> Fill(vm.get(var, x));
+    if(log_)
+      histSampled_[var] = vm.get(var, x);
+  return *this;
+}
+
+DebugPlotter_ttHorZ_3l1tau &
+DebugPlotter_ttHorZ_3l1tau::fill()
+{
+  if(tree_)
+    tree_ -> Fill();
   return *this;
 }
 
 void
 DebugPlotter_ttHorZ_3l1tau::write()
 {
-  for(auto & kv: histRecod_)
-    if(kv.second)
-    {
-      kv.second -> Write();
-      delete kv.second;
-      kv.second = 0;
-    }
-  for(auto & kv: histSampled_)
-    if(kv.second)
-    {
-      kv.second -> Write();
-      delete kv.second;
-      kv.second = 0;
-    }
+  if(tree_)
+  {
+    tree_ -> Write();
+    delete tree_;
+    tree_ = 0;
+    reset();
+  }
+}
+
+void
+DebugPlotter_ttHorZ_3l1tau::reset()
+{
+  for(auto e: Enum<hVar_3l1tau>()) histRecod_[e]   = PLACEHOLDER_DEBUGPLOTTER;
+  for(auto e: Enum<Var_3l1tau>())  histSampled_[e] = PLACEHOLDER_DEBUGPLOTTER;
 }

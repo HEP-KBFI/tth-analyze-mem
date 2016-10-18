@@ -1,5 +1,5 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredObject.h" // MeasuredObject, roundToNdigits()
-
+#include "tthAnalysis/tthMEM/interface/Logger.h"
 #include <cmath> // std::cos(), std::sin(), std::cosh(), std::sinh(), std::sqrt()
 
 #include <TString.h> // Form()
@@ -142,6 +142,12 @@ MeasuredObject::p3() const
   return p3_;
 }
 
+double
+MeasuredObject::dR(const MeasuredObject & other) const
+{
+  return std::sqrt(pow2(eta_ - other.eta_) + pow2(phi_ - other.phi_));
+}
+
 void
 MeasuredObject::setBranches(TChain * t,
                             const std::string & branchName)
@@ -199,11 +205,11 @@ namespace tthMEM
 
   std::ostream &
   operator<<(std::ostream & os,
-                     const MeasuredObject & o)
+             const MeasuredObject & o)
   {
-    os << "pt = " << o.pt_
-       << "; eta = " << o.eta_
-       << "; phi = " << o.phi_
+    os << "pt = "     << o.pt_
+       << "; eta = "  << o.eta_
+       << "; phi = "  << o.phi_
        << "; mass = " << o.mass_;
     return os;
   }

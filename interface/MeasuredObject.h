@@ -76,6 +76,8 @@ namespace tthMEM
     const LorentzVector & p4() const;
     const Vector & p3() const;
 
+    double dR(const MeasuredObject & other) const;
+
     virtual void
     initialize(); ///< sets all momentum components but pt_, eta_, phi_, mass_
 

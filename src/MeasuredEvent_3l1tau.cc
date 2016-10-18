@@ -131,6 +131,20 @@ MeasuredEvent_3l1tau::hasNextPermutation() const
   return currentPermutation_ < 4;
 }
 
+bool
+MeasuredEvent_3l1tau::isCorrectPermutation() const
+{
+  if(! generatorLevel)
+    return true;
+  else if((generatorLevel -> genLepFromTau).dR(leptons[complLeptonIdx]) < 0.5       &&
+          (generatorLevel -> genLepFromTop[0]).dR(leptons[bjetLeptonIdxs[0]]) < 0.5 &&
+          (generatorLevel -> genLepFromTop[1]).dR(leptons[bjetLeptonIdxs[1]]) < 0.5 &&
+          (generatorLevel -> genBQuarkFromTop[0]).dR(jets[0]) < 0.5                 &&
+          (generatorLevel -> genBQuarkFromTop[1]).dR(jets[1]) < 0.5)
+    return true;
+  return false;
+}
+
 void
 MeasuredEvent_3l1tau::nextPermutation() const
 {
@@ -189,7 +203,7 @@ namespace tthMEM
     os << "\tTau: " << event.htau << '\n';
     os << "\tMET: " << event.met   << '\n';
     if(event.generatorLevel)
-      os << event.generatorLevel;
+      os << *event.generatorLevel;
     return os;
   }
 }

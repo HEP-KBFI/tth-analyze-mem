@@ -261,8 +261,11 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
 
 //--- loop over different permutations of same-sign leptons and b-jets
 ///< @note consider moving the permutation part inside integrate()
-  do
+  for(; ev.hasNextPermutation(); ev.nextPermutation())
   {
+    if(! ev.isCorrectPermutation())
+      continue;
+
     LOGDBG << ev;
     integrand_ -> renewInputs();
 
@@ -283,10 +286,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
     LOGINFO_S << "p = " << p << "; pErr = " << pErr;
     pSum += p;
     pSumErr += pErr;
-
-    ev.nextPermutation();
   }
-  while(ev.hasNextPermutation());
   ev.resetPermutation();
 
 //--- divide by the process cross section (in GeV, i.e. natural units)

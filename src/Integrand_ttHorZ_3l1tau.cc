@@ -530,7 +530,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
                .fill(hVar_3l1tau::kB2RecoEn, measuredEvent_ -> jets[1].energy())
                .fill(hVar_3l1tau::kMsquared, prob_ME_mg)
                .fill(hVar_3l1tau::kProb,     p)
-               .fill(vm_, x);
+               .fill(vm_, x)
+               .fill();
 
   return p;
 }

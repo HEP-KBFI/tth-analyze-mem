@@ -8,13 +8,14 @@
 #include <unordered_map> // std::unordered_map<,>
 #include <functional> // std::hash<>
 
+#include <Rtypes.h> // Double_t
 #include <TFile.h> // TFile
-#include <TH1D.h> // TH1D
+#include <TTree.h> // TTree
 
 namespace tthMEM
 {
   /**
-   * @brief Histogram variable for debugging purposes
+   * @brief Tree variables for debugging purposes
    */
   enum class hVar_3l1tau
   {
@@ -41,19 +42,19 @@ namespace tthMEM
   {
   public:
     /**
-     * @brief Default constructor; doesn't write the histograms anywhere
+     * @brief Default constructor; doesn't write the trees anywhere
      */
     DebugPlotter_ttHorZ_3l1tau();
     /**
      * @brief Default constructor; creates a file and logs all events
      *        and its permutations
-     * @param file The file where the histograms will be written
+     * @param file The file where the trees will be written
      */
     DebugPlotter_ttHorZ_3l1tau(TFile * file);
     /**
      * @brief Default constructor; create a file and logs every n-th
      *        event and its permutations
-     * @param file           The file where the histograms will be written
+     * @param file           The file where the trees will be written
      * @param debugFrequency Specifies how often every event is logged
      *
      * Let's say that the debugFrequency is n. In this case all events
@@ -65,12 +66,12 @@ namespace tthMEM
                                unsigned debugFrequency);
 
     /**
-     * @brief Creates a new subdirectory for the set of histograms
-     *        and initializes the histograms under the directory
+     * @brief Creates a new subdirectory for the current tree
+     *        and initializes the branches under the tree
      * @param dirName Directory name
      * @param vm      Variable manager (holds sampled values)
      *
-     * Also explicitly points the histograms to readily created subdirectory.
+     * Also explicitly points the current tree to readily created subdirectory.
      *
      * The user is expected to specify a unique dirName which e.g.
      * holds information about the run, lumi, event, permutation and
@@ -83,8 +84,8 @@ namespace tthMEM
 
     /**
      * @brief Fills a given variable
-     * @param var   The variable pointing to the corresponding histogram
-     * @param value The value used to filled the histogram (nominal weight)
+     * @param var   The variable pointing to the corresponding branch
+     * @param value The value used to fill the branch
      * @return Reference to this instance
      */
     DebugPlotter_ttHorZ_3l1tau &
@@ -92,7 +93,7 @@ namespace tthMEM
          double value);
 
     /**
-     * @brief Fills historgrams for the sampled values
+     * @brief Sets a tree branches to their sampled values
      * @param x The sampled values
      * @return Reference to this instance
      */
@@ -101,35 +102,37 @@ namespace tthMEM
          const double * const x);
 
     /**
-     * @brief Writes the histograms to the file and resets them to 0
+     * @brief Fill the underlying tree
+     * @return Reference to this instance
+     */
+    DebugPlotter_ttHorZ_3l1tau &
+    fill();
+
+    /**
+     * @brief Writes the current tree to the file and resets it to 0
      */
     void
     write();
 
   private:
-    struct HVarHolder
-    {
-      HVarHolder(const std::string & hVarName,
-                 double begin,
-                 double end);
-
-      const std::string hVarName_;
-      const Limits limits_;
-    };
-
-    static const unsigned nofBins_;
-    ///< number of bins
-    static const std::unordered_map<hVar_3l1tau, HVarHolder, EnumClassHash> hVarMap_;
+    static const std::unordered_map<hVar_3l1tau, std::string, EnumClassHash> hVarMap_;
     ///< table for additional variables
-    std::unordered_map<Var_3l1tau, TH1D *, EnumClassHash> histSampled_;
-    ///< map of histograms for the sampled values
-    std::unordered_map<hVar_3l1tau, TH1D *, EnumClassHash> histRecod_;
-    ///< map of additional histograms
-    TFile * const file_; ///< pointer to the file
+    std::unordered_map<Var_3l1tau, Double_t, EnumClassHash> histSampled_;
+    ///< map of sampled values
+    std::unordered_map<hVar_3l1tau, Double_t, EnumClassHash> histRecod_;
+    ///< map of additional variables (listed in the implementation file)
+    TFile * const file_;            ///< pointer to the file
+    TTree * tree_;                  ///< pointer to the current tree
     const unsigned debugFrequency_; ///< debugging frequency (see constructor)
-    const unsigned debugRange_; ///< debugging range (== 8; see constructor)
-    unsigned logCounter_; ///< counter incremented every time initialise() is called
-    bool log_; ///< shorthand boolean variable which tells whether to fill or not
+    const unsigned debugRange_;     ///< debugging range (== 8; see constructor)
+    unsigned logCounter_;           ///< counter incremented every time initialise() is called
+    bool log_;                      ///< shorthand bool variable which tells whether to fill or not
+
+    /**
+     * @brief Reset the maps holding current values to the placeholder value
+     */
+    void
+    reset();
   };
 }
 

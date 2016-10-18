@@ -63,6 +63,9 @@ namespace tthMEM
     bool
     hasNextPermutation() const;
 
+    bool
+    isCorrectPermutation() const;
+
     void
     nextPermutation() const;
 
