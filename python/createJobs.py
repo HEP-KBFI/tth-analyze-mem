@@ -116,8 +116,8 @@ def createJobs(samples, channel, year, version, central_or_shifts, charge_select
 
                   pythonCfg = createPythonCfg(
                     isMC, is2016, fileNameScratch_i, nofEventsToProcess, outFileNameScratch_i, treeName,
-                    rleSelectionFile, integrationMode, maxObjFunctionCalls, startingPoint, debugPlots,
-                    forceGenLevel, higgsWidth, clampVariables, markovChainParams
+                    integrationMode, maxObjFunctionCalls, startingPoint, debugPlots,
+                    forceGenLevel, higgsWidth, clampVariables, markovChainParams, rleSelectionFile
                   )
                   bashCfg = createBashCfg(
                     fileNameLocal, outFileNameLocal_i, fileNameScratch_i, outFileNameScratch_i,

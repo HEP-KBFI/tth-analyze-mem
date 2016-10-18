@@ -211,8 +211,8 @@ def getNofEntries(fileName, treeName):
 
 def createPythonCfg(isMC, is2016, inFileName, maxEvents, outFileName, treeName,
                     integrationMode, maxObjFunctionCalls, startingFromEntry,
-                    debugPlots, higgsWidth, clampVariables, markovChainParams,
-                    rleSelectionFile, forceGenLevel):
+                    debugPlots, forceGenLevel, higgsWidth, clampVariables,
+                    markovChainParams, rleSelectionFile):
   return jinja2.Template(pythonCfgTemplate).render(
     isMC = isMC,
     is2016 = is2016,
