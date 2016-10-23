@@ -18,3 +18,10 @@
   <use name="FWCore/Utilities" />
   <use name="tthAnalysis/tthMEM" />
 </bin>
+<bin file="evalMGME_3l1tau.cc" name="evalMGME_3l1tau">
+  <use name="FWCore/ParameterSet" />
+  <use name="FWCore/PythonParameterSet" />
+  <use name="FWCore/Utilities" />
+  <use name="tthAnalysis/tthMEM" />
+  <use name="boost" />
+</bin>
