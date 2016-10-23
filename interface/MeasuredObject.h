@@ -4,7 +4,6 @@
 #include <string> // std::string
 #include <ostream> // std::ostream
 
-#include <TChain.h> // TChain
 #include <TTree.h> // TTree
 #include <TBranch.h> // TBranch
 
@@ -82,7 +81,7 @@ namespace tthMEM
     initialize(); ///< sets all momentum components but pt_, eta_, phi_, mass_
 
     virtual void
-    setBranches(TChain * t,
+    setBranches(TTree * t,
                 const std::string & branchName);
     ///< associates the pt, eta, phi and mass with an old input tree
 

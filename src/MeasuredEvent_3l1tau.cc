@@ -74,7 +74,7 @@ MeasuredEvent_3l1tau::initialize()
 }
 
 void
-MeasuredEvent_3l1tau::setBranches(TChain * t)
+MeasuredEvent_3l1tau::setBranches(TTree * t)
 {
   t -> SetBranchAddress("run",  &run);
   t -> SetBranchAddress("lumi", &lumi);

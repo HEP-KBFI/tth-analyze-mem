@@ -79,7 +79,7 @@ GeneratorLevelEvent_3l1tau::initialize()
 }
 
 void
-GeneratorLevelEvent_3l1tau::setBranches(TChain * t)
+GeneratorLevelEvent_3l1tau::setBranches(TTree * t)
 {
   genNuFromLtau.setBranches(t, "genNuFromLtau");
   genNuLepFromTau.setBranches(t, "genNuLepFromTau");

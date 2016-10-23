@@ -3,7 +3,6 @@
 
 #include <Rtypes.h> // Double_t
 #include <TBranch.h> // TBranch
-#include <TChain.h> // TChain
 #include <TTree.h> // TTree
 
 namespace tthMEM
@@ -23,7 +22,7 @@ namespace tthMEM
     MVAVariables() = default;
 
     void
-    setBranches(TChain * t);
+    setBranches(TTree * t);
 
     void
     initNewBranches(TTree * t);

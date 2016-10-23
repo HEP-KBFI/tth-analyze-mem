@@ -3,7 +3,6 @@
 
 #include <Rtypes.h> // UInt_t, ULong64_t, Float_t, Long64_t
 #include <TTree.h> // TTree
-#include <TChain.h> // TChain
 #include <TBranch.h> // TBranch
 #include <TMatrixD.h> // TMatrixD
 #include <TMatrixDSym.h> // TMatrixDSym
@@ -44,7 +43,7 @@ namespace tthMEM
     initialize(); ///< truncates trailing numbers; sets px_ and py_
 
     void
-    setBranches(TChain * t);
+    setBranches(TTree * t);
     ///< associates the pt and phi with an old input tree
 
     void
@@ -82,7 +81,7 @@ namespace tthMEM
     calculateEigenVectorsValues();
 
     bool
-    branchExists(TChain * tree,
+    branchExists(TTree * tree,
                  const std::string & branchName) const;
   };
 }

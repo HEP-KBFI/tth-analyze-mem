@@ -78,7 +78,7 @@ MeasuredHadronicTau::initialize()
 }
 
 void
-MeasuredHadronicTau::setBranches(TChain * t,
+MeasuredHadronicTau::setBranches(TTree * t,
                                  const std::string & branchName)
 {
   MeasuredLepton::setBranches(t, branchName);

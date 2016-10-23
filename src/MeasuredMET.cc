@@ -77,7 +77,7 @@ MeasuredMET::initialize()
 }
 
 void
-MeasuredMET::setBranches(TChain * t)
+MeasuredMET::setBranches(TTree * t)
 {
   t -> SetBranchAddress("met_pt",  &pt_);
   t -> SetBranchAddress("met_phi", &phi_);
@@ -118,7 +118,7 @@ MeasuredMET::calculateEigenVectorsValues()
 }
 
 bool
-MeasuredMET::branchExists(TChain * tree,
+MeasuredMET::branchExists(TTree * tree,
                           const std::string & branchName) const
 {
   TObjArray * arr = tree -> GetListOfBranches();

@@ -3,7 +3,7 @@
 using namespace tthMEM;
 
 void
-MVAVariables::setBranches(TChain * t)
+MVAVariables::setBranches(TTree * t)
 {
   t -> SetBranchAddress("max2LeptonEta",      &max2LeptonEta);
   t -> SetBranchAddress("MT_met_lep1",        &MT_met_lep1);

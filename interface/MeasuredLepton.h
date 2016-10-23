@@ -38,7 +38,7 @@ namespace tthMEM
     int charge() const;
 
     virtual void
-    setBranches(TChain * t,
+    setBranches(TTree * t,
                 const std::string & branchName) override;
 
     virtual void

@@ -3,7 +3,6 @@
 
 #include <Rtypes.h> // UInt_t, ULong64_t, Float_t, Long64_t
 #include <TTree.h> // TTree
-#include <TChain.h> // TChain
 #include <TBranch.h> // TBranch
 
 #include "tthAnalysis/tthMEM/interface/MeasuredMET.h" // tthMEM::MeasuredMET
@@ -52,7 +51,7 @@ namespace tthMEM
     initialize();
 
     void
-    setBranches(TChain * t);
+    setBranches(TTree * t);
 
     void
     initNewBranches(TTree * t);

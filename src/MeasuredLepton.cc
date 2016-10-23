@@ -46,7 +46,7 @@ MeasuredLepton::charge() const
 }
 
 void
-MeasuredLepton::setBranches(TChain * t,
+MeasuredLepton::setBranches(TTree * t,
                             const std::string & branchName)
 {
   MeasuredObject::setBranches(t, branchName);

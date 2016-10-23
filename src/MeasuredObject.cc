@@ -149,7 +149,7 @@ MeasuredObject::dR(const MeasuredObject & other) const
 }
 
 void
-MeasuredObject::setBranches(TChain * t,
+MeasuredObject::setBranches(TTree * t,
                             const std::string & branchName)
 {
   t -> SetBranchAddress(Form("%s_pt",   branchName.c_str()), &pt_);

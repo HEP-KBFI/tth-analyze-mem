@@ -43,7 +43,7 @@ namespace tthMEM
     initialize();
 
     void
-    setBranches(TChain * t);
+    setBranches(TTree * t);
 
     void
     initNewBranches(TTree * t);
