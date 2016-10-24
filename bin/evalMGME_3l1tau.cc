@@ -19,6 +19,7 @@
 
 #include <boost/filesystem/operations.hpp> // boost::filesystem::
 
+#include <Rtypes.h> // UInt_t, ULong64_t
 #include <TString.h> // Form()
 #include <TFile.h> // TFile
 #include <TTree.h> // TTree
@@ -127,6 +128,13 @@ main(int argc,
     }
     LOGINFO << "Read in file '" << fileName << "' and using tree '" << treeName << '\'';
 
+    UInt_t run;
+    UInt_t lumi;
+    ULong64_t event;
+    tree -> SetBranchAddress("run",  &run);
+    tree -> SetBranchAddress("lumi", &lumi);
+    tree -> SetBranchAddress("evt",  &event);
+
     GeneratorLevelEvent_3l1tau evt;
     evt.setBranches(tree);
     LOGINFO << "Associated the input branches";
@@ -227,11 +235,14 @@ main(int argc,
       prob_ttz = ttz_me.getMatrixElements()[0];
       outTree -> Fill();
 
-      LOGDBG_S << "Evaluating tth ME for " << i << "th event: p = " << prob_tth;
-      LOGDBG_S << "Evaluating ttz ME for " << i << "th event: p = " << prob_ttz;
+      LOGDBG_S << "Evaluating tth ME for " << i << "th event ("
+               << run << ':' << lumi << ':' << event << ") : p = " << prob_tth;
+      LOGDBG_S << "Evaluating ttz ME for " << i << "th event ("
+               << run << ':' << lumi << ':' << event << ") : p = " << prob_ttz;
 
       if(dumpToText)
-        outTxtFile << std::scientific << std::setprecision(6)
+        outTxtFile << run << ':' << lumi << ':' << event << ','
+                   << std::scientific << std::setprecision(6)
                    << prob_tth << ',' << prob_ttz << '\n';
     }
 
