@@ -34,6 +34,13 @@ namespace tthMEM
                    double eta,
                    double phi,
                    double mass);
+
+    /**
+     * @brief Default constructor which initializes the variables to their actual value
+     * @param lv The Lorentz 4-momentum
+     */
+    MeasuredObject(const LorentzVector & lv);
+
     /**
      * @brief Copy constructor
      * @param other Other object to copy pt_, eta_, phi_, mass_ from

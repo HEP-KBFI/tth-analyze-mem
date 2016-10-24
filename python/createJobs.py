@@ -133,7 +133,6 @@ def createJobs(samples, channel, year, version, central_or_shifts, charge_select
                   outFileNameLocalArray[outFileNameLocalResult].append(outFileNameLocal_i)
 
   if not outFileNameLocalArray: sys.exit(0)
-  print(inputBkgFiles)
 
   for i in range(1, len(rocLabels)):
     rocOutFileNames.append(os.path.join(rocPlotDir, "roc_%s_%s.pdf" % (rocLabels[0], rocLabels[i])))

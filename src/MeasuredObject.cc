@@ -27,6 +27,15 @@ MeasuredObject::MeasuredObject(double pt,
   initialize();
 }
 
+MeasuredObject::MeasuredObject(const LorentzVector & lv)
+  : pt_(lv.pt())
+  , eta_(lv.eta())
+  , phi_(lv.phi())
+  , mass_(lv.mass())
+{
+  initialize();
+}
+
 MeasuredObject::MeasuredObject(const MeasuredObject & other)
   : pt_(other.pt_)
   , eta_(other.eta_)

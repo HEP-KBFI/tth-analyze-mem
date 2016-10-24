@@ -17,6 +17,7 @@ evalMEMG.tthMEM = cms.PSet(
   ),
   madgraphFilename = cms.string(os.path.join(baseDir, 'param_card.dat')),
   higgsWidth       = cms.double(-1.),
+  forceTauPairMass = cms.double(-1.),
   logLevel         = cms.string('info'),
   outputFileName   = cms.string(os.path.expanduser('~/sandbox/evalMEMG/out.root')),
   dumpToText       = cms.bool(True)

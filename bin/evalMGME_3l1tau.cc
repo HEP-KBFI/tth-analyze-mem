@@ -50,6 +50,7 @@ main(int argc,
   const edm::VParameterSet fileSet = cfg_tthMEM.getParameter<edm::VParameterSet>("fileSet");
   const std::string madgraphFilename = cfg_tthMEM.getParameter<std::string>("madgraphFilename");
   const double higgsWidth = cfg_tthMEM.getParameter<double>("higgsWidth");
+  const double forceTauPairMass = cfg_tthMEM.getParameter<double>("forceTauPairMass");
   const std::string logLevel = cfg_tthMEM.getParameter<std::string>("logLevel");
   const std::string outputFileName = cfg_tthMEM.getParameter<std::string>("outputFileName");
   const bool dumpToText = cfg_tthMEM.getParameter<bool>("dumpToText");
@@ -150,6 +151,21 @@ main(int argc,
     {
       tree -> GetEntry(i);
       evt.initialize();
+
+      if(forceTauPairMass > 0)
+      {
+//--- Force the mass of the tau pair to a value specified in the configuration file.
+//--- Since the old mass is
+//---   m = sqrt(E^2 - |p|^2), where E = E_1 + E_2 and p = p_1 + p_2, and the new mass is
+//---   m' = alpha * m = alpha * sqrt(E^2 - |p|^2) = sqrt((alpha * E)^2 - |alpha * p|^2),
+//--- it follows that the 4-momentum of both tau leptons are multiplied by alpha, which is
+//--- the ratio of new mass (m') over the original mass (m). Since we only change the mass,
+//--- the 3-momentum itself remains the same for the H/Z particle.
+        const double alpha = forceTauPairMass / evt.genHorZ.mass();
+        for(std::size_t j = 0; j < 2; ++j)
+          evt.genTau[j] = MeasuredLepton(alpha * evt.genTau[j].p4(), evt.genTau[j].charge());
+        evt.genHorZ = evt.genTau[0] + evt.genTau[1];
+      }
 
       const LorentzVector ttHorZ = (evt.genHorZ + evt.genTop[0] + evt.genTop[1]).p4();
       const double xa = (ttHorZ.e() + ttHorZ.pz()) * constants::invSqrtS;

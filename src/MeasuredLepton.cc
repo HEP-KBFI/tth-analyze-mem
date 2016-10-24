@@ -22,6 +22,12 @@ MeasuredLepton::MeasuredLepton(double pt,
   , charge_(charge)
 {}
 
+MeasuredLepton::MeasuredLepton(const LorentzVector & lv,
+                               int charge)
+  : MeasuredObject(lv)
+  , charge_(charge)
+{}
+
 MeasuredLepton::MeasuredLepton(const MeasuredLepton & other)
   : MeasuredObject(other)
   , charge_(other.charge_)

@@ -24,6 +24,8 @@ namespace tthMEM
                    double phi,
                    double mass,
                    int charge);
+    MeasuredLepton(const LorentzVector & lv,
+                   int charge);
     MeasuredLepton(const MeasuredLepton & other);
 
     MeasuredLepton &
