@@ -239,13 +239,25 @@ main(int argc,
     inputTree -> GetEntry(i);
     measuredEvent.initialize();
     if(measuredEvent.isFiltered()) continue;
+    LOGINFO << "run:lumi:event = " << measuredEvent.str(false);
 
     probSignal = 0.;
     probBackground_ttz = 0.;
 //    probBackground_th2ww = 0.;
 
-    probSignal = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTH);
-    probBackground_ttz = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTZ);
+    bool err = false;
+    probSignal = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTH, err);
+    if(err)
+    {
+      LOGWARN << "Skipping the event because of errors";
+      continue;
+    }
+    probBackground_ttz = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTZ, err);
+    if(err)
+    {
+      LOGWARN << "Skipping the event because of errors";
+      continue;
+    }
 
     const std::vector<double> probs = {
       probSignal, probBackground_ttz//, probBackground_th2ww

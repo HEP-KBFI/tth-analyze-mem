@@ -8,6 +8,8 @@ def createJobs(samples, channel, year, version, central_or_shifts, charge_select
                debugPlots, forceGenLevel, higgsWidth, clampVariables, markovChainParams):
   '''
   TODO: - make the file names of roc curve plots channel and version specific
+  TODO: - revise the paths again (b/c someone ninja-commited to tth-htt)
+  TODO: - add a separate folder for 2016 samples not containing gen level info and make it the default
   '''
 
   if os.environ.get('CMSSW_BASE') is None:

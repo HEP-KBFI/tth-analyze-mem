@@ -4,7 +4,7 @@
 
 #include <TString.h> // Form()
 
-#include <algorithm> // std::swap(), std::accumulate(), std::find()
+#include <algorithm> // std::swap(), std::accumulate(), std::find(), std::rotate()
 #include <cmath> // std::abs()
 #include <fstream> // std::ifstream
 
@@ -13,6 +13,10 @@ using namespace tthMEM;
 void
 MeasuredEvent_3l1tau::initialize()
 {
+//--- remove any references to the previous permutations
+  leptons.reset();
+  jets.reset();
+
   met.initialize();
 
   for(std::size_t i = 0; i < 3; ++i)
@@ -37,40 +41,82 @@ MeasuredEvent_3l1tau::initialize()
     throw_line("runtime error")
       << "Something's off: the abs of sum of lepton charges is not 1";
 
-//--- retrieve the indices of leptons that have the same charge
-  int leptonIdx1 = -1,
-      leptonIdx2 = -1;
-  for(unsigned i = 0; i < 3; ++i)
-    for(unsigned j = i + 1; j < 3; ++j)
-      if(leptons[i].charge() == leptons[j].charge())
-      {
-        leptonIdx1 = i;
-        leptonIdx2 = j;
-      }
-  if(leptonIdx1 < 0 || leptonIdx2 < 0)
-    throw_line("runtime error")
-      << "Something's off: there were no leptons with equal signs";
-
-//--- determine the four index permutations the event can possibly have
+//--- Determine the four index permutations the event can possibly have.
+//--- The idea here is that we want to retain some kind of consistency in
+//--- the signs of the leptons: we require that the first lepton coming from
+//--- top decay has always positive sign. If we do not require that, we might
+//--- never hit the right kinematic configuration at all. For example, if
+//--- hadronic tau has a negative sign, the complementary lepton must have
+//--- a positive sign. This leaves a positive-negative lepton pair which must
+//--- be associated with the jets. However, we want to permute only the jets
+//--- and same-sign leptons. This means that we fix one lepton and permute
+//--- the other two. However, if the fixed lepton is associated with a jet
+//--- that should not actually be together, none of the permutations would
+//--- be a valid kinematic configuration.
+//---
+//--- The solution is to keep the sign of the first lepton coming from top decay
+//--- always positive (we permute the jets anyways, so the association will always
+//--- be right). The additional advantage here is that we have to check only two
+//--- possible cases in filling the MadGraph matrix element: which signs the tau
+//--- leptons have (the first tau lepton must have a positive sign).
+//---
+//--- The scenario is thus the following:
+//---   * rotate the lepton signs until all the positive signs are pushed to the left:
+//---       + + -  =>  + + -                 - - + => + - -
+//---       + - +  =>  + + -       and       - + - => + - -
+//---       - + +  =>  + + -                 + - - => + - -
+//---   * if the sum of the signs is +1, we need to permute the first two leptons,
+//---     from which follows that the complementary lepton index is either 0 or 1,
+//---     and that we have to permute the first two leptons
+//---   * if the sum of the signs is -1, we need to permute the last two leptons,
+//---     from which follows that the complementary lepton index is either 1 or 2,
+//---     and that we have to permute the last two leptons
+//---   * since the complementary lepton index must be consitent across one integration,
+//---     we choose it to be 1 b/c it would be valid for both cases (sum is +1 or -1)
+//---   * therefore the lepton indexes associated with the top decay are 0 and 2
+//---   * the permutation pattern for the leptons is thus
+//---       (AB) (BA) (AB) (BA)
+//---     and for the jets
+//---       (CD) (CD) (DC) (DC)
+//---     which ensures that all possible lepton-to-jet combinations are considered.
   currentPermutation_ = 0;
-  leptonPermIdxs = { { 0, 1, 2 }, { 0, 1, 2 }, { 0, 1, 2 }, { 0, 1, 2 } };
-  jetPermIdxs    = {    { 0, 1 },    { 0, 1 },    { 1, 0 },    { 1, 0 } };
-  for(unsigned i = 1; i < 4; i += 2)
-    std::swap(leptonPermIdxs[i][leptonIdx1], leptonPermIdxs[i][leptonIdx2]);
+  complLeptonIdx = 1;
+  bjetLeptonIdxs = std::vector<unsigned>{{0, 2}};
+  std::vector<unsigned> permutationUnit{0, 1, 2};
+  if(leptonChargeSum == -1)
+//--- rotate until we have: + - -
+  {
+    while(leptons[permutationUnit[0]].charge() != +1)
+      std::rotate(
+        permutationUnit.begin(), permutationUnit.begin() + 1, permutationUnit.end()
+      );
+  }
+  else // sum of lepton charges is +1
+//--- rotate until we have: + + -
+  {
+    while(leptons[permutationUnit[2]].charge() != -1)
+      std::rotate(
+        permutationUnit.begin(), permutationUnit.begin() + 1, permutationUnit.end()
+      );
+  }
+  leptonPermIdxs = std::vector<std::vector<unsigned>>(4, permutationUnit );
+  jetPermIdxs = std::vector<std::vector<unsigned>>(4, { 0, 1 });
+  for(unsigned i = 0; i < 4; ++i)
+  {
+    if(i % 2 == 0)
+    {
+      if(leptonChargeSum == -1)
+        std::swap(leptonPermIdxs[i][1], leptonPermIdxs[i][2]);
+      else
+        std::swap(leptonPermIdxs[i][0], leptonPermIdxs[i][1]);
+    }
+    if(i < 2)
+      std::swap(jetPermIdxs[i][0], jetPermIdxs[i][1]);
+  }
 
 //--- set the permutations and their pointers
   leptons.setPermutationPtrs(leptonPermIdxs, &currentPermutation_, 4);
   jets.setPermutationPtrs(jetPermIdxs, &currentPermutation_, 4);
-
-//--- use the first lepton index in the default representation that
-//--- has opposite sign w.r.t the tau lepton
-  if((leptonChargeSum + htau.charge()) != 0)
-    throw_line("runtime error")
-      << "The sum of charges of leptonic products is not zero";
-  complLeptonIdx = leptonIdx1;
-  bjetLeptonIdxs = (complLeptonIdx == 0) ? std::vector<unsigned>{{1, 2}} : (
-                   (complLeptonIdx == 1) ? std::vector<unsigned>{{0, 2}} :
-                                           std::vector<unsigned>{{1, 2}});
 }
 
 void
@@ -157,10 +203,57 @@ MeasuredEvent_3l1tau::resetPermutation() const
   currentPermutation_ = 0;
 }
 
-std::string
-MeasuredEvent_3l1tau::str() const
+unsigned
+MeasuredEvent_3l1tau::getPermutationNumber() const
 {
-  return std::string(Form("%u_%u_%llu_%u", run, lumi, evt, currentPermutation_));
+  return currentPermutation_;
+}
+
+void
+MeasuredEvent_3l1tau::printPermutation() const
+{
+  if(generatorLevel)
+  {
+    const double dRlepFromTau  = (generatorLevel -> genLepFromTau).dR(leptons[complLeptonIdx]);
+    const double dRlepFromTop1 = (generatorLevel -> genLepFromTop[0]).dR(leptons[bjetLeptonIdxs[0]]);
+    const double dRlepFromTop2 = (generatorLevel -> genLepFromTop[1]).dR(leptons[bjetLeptonIdxs[1]]);
+    const double dRbQuark1     = (generatorLevel -> genBQuarkFromTop[0]).dR(jets[0]);
+    const double dRbQuark2     = (generatorLevel -> genBQuarkFromTop[1]).dR(jets[1]);
+    LOGTRC << "Testing lepton from tau";
+    LOGTRC << "genLepFromTau:        " << (generatorLevel -> genLepFromTau);
+    LOGTRC << "complementary lepton: " << leptons[complLeptonIdx];
+    LOGTRC << "\tdR = " << dRlepFromTau << (dRlepFromTau < 0.5 ? " < " : " >= ") << 0.5
+           << " => " << (dRlepFromTau < 0.5 ? "PASS" : "FAIL");
+    LOGTRC << "Testing lepton from top (0)";
+    LOGTRC << "genLepFromTop[0]: " << (generatorLevel -> genLepFromTop[0]);
+    LOGTRC << "b-jet lepton[0]:  " << leptons[bjetLeptonIdxs[0]];
+    LOGTRC << "\tdR = " << dRlepFromTop1 << (dRlepFromTop1 < 0.5 ? " < " : " >= ") << 0.5
+           << " => " << (dRlepFromTop1 < 0.5 ? "PASS" : "FAIL");
+    LOGTRC << "Testing lepton from top (1)";
+    LOGTRC << "genLepFromTop[1]: " << (generatorLevel -> genLepFromTop[1]);
+    LOGTRC << "b-jet lepton[1]:  " << leptons[bjetLeptonIdxs[1]];
+    LOGTRC << "\tdR = " << dRlepFromTop2 << (dRlepFromTop2 < 0.5 ? " < " : " >= ") << 0.5
+           << " => " << (dRlepFromTop2 < 0.5 ? "PASS" : "FAIL");
+    LOGTRC << "Testing b-jet (0)";
+    LOGTRC << "genBQuarkFromTop[0]: " << (generatorLevel -> genBQuarkFromTop[0]);
+    LOGTRC << "b-jet[0]:            " << jets[0];
+    LOGTRC << "\tdR = " << dRbQuark1 << (dRbQuark1 < 0.5 ? " < " : " >= ") << 0.5
+           << " => " << (dRbQuark1 < 0.5 ? "PASS" : "FAIL");
+    LOGTRC << "Testing b-jet (1)";
+    LOGTRC << "genBQuarkFromTop[1]: " << (generatorLevel -> genBQuarkFromTop[1]);
+    LOGTRC << "b-jet[1]:            " << jets[1];
+    LOGTRC << "\tdR = " << dRbQuark2 << (dRbQuark2 < 0.5 ? " < " : " >= ") << 0.5
+           << " => " << (dRbQuark2 < 0.5 ? "PASS" : "FAIL");
+  }
+}
+
+std::string
+MeasuredEvent_3l1tau::str(bool includePermutation) const
+{
+  if(includePermutation)
+    return std::string(Form("%u_%u_%llu_%u", run, lumi, evt, currentPermutation_));
+  else
+    return std::string(Form("%u:%u:%llu", run, lumi, evt));
 }
 
 void

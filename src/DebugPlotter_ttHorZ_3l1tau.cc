@@ -19,6 +19,15 @@ DebugPlotter_ttHorZ_3l1tau::hVarMap_ =
   { hVar_3l1tau::kB2RecoEn,   "B2RecoEn"   },
   { hVar_3l1tau::kB1energyTF, "B1energyTF" },
   { hVar_3l1tau::kB2energyTF, "B2energyTF" },
+  { hVar_3l1tau::kXa,         "xa"         },
+  { hVar_3l1tau::kXb,         "xb"         },
+  { hVar_3l1tau::kFlux,       "flux"       },
+  { hVar_3l1tau::kHtauPSF,    "hTauPSF"    },
+  { hVar_3l1tau::kLtauPSF,    "lTauPSF"    },
+  { hVar_3l1tau::kProbPDF,    "probPDF"    },
+  { hVar_3l1tau::kTdecayJF1,  "tDecayJF1"  },
+  { hVar_3l1tau::kTdecayJF2,  "tDecayJF2"  },
+  { hVar_3l1tau::kJacobiF,    "jacobiF"    },
   { hVar_3l1tau::kMETtf,      "METtf"      },
   { hVar_3l1tau::kMsquared,   "Msquared"   },
   { hVar_3l1tau::kProb,       "prob"       }
@@ -49,9 +58,10 @@ DebugPlotter_ttHorZ_3l1tau::initialize(const std::string & dirName,
                                        const VariableManager_3l1tau & vm)
 {
   ++logCounter_;
-  log_ = debugFrequency_ > 0 &&
-         logCounter_ % debugFrequency_ >= 1 &&
-         logCounter_ % debugFrequency_ <= debugRange_;
+  log_ = (debugFrequency_ == 1) ||
+         (debugFrequency_ > 0 &&
+          logCounter_ % debugFrequency_ >= 1 &&
+          logCounter_ % debugFrequency_ <= debugRange_);
   if(! log_) return;
 
   if(file_)

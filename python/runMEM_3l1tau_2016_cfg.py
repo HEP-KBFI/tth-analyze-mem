@@ -3,11 +3,12 @@ import os
 
 process = cms.PSet()
 
+baseDir = os.path.join(os.getenv("CMSSW_BASE"), "src/tthAnalysis/tthMEM/data/2016")
+
 process.fwliteInput = cms.PSet(
-  fileNames = cms.vstring(os.path.join(os.getenv("CMSSW_BASE"), "src", "tthAnalysis", "tthMEM", "data", "2016",
-                                       "out_3l_1tau_ttHToNonbb_M125_Tight_Tight_dR03mvaTight_1t0e0m0j_OS_central.root")),
+  fileNames = cms.vstring(os.path.join(baseDir, "out_3l_1tau_ttHToNonbb_M125_Tight_OS_central.root")),
   # or use:
-  # out_3l_1tau_TTZToLLNuNu_Tight_Tight_dR03mvaTight_1t0e0m0j_OS_central.root
+  # out_3l_1tau_TTZToLLNuNu_Tight_OS_central.root
   maxEvents = cms.int32(3),        # test with only three events
   outputEvery = cms.uint32(10000)  # never used
 )

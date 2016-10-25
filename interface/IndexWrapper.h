@@ -78,6 +78,13 @@ struct IndexWrapper
     return &objects[defaultPermutation[NofObjects - 1] + 1];
   }
 
+  void
+  reset()
+  {
+    currentPermutation_ = 0;
+    maxCurrentPermutation_ = 0;
+  }
+
   T objects[NofObjects];
   unsigned defaultPermutation[NofObjects];
   unsigned * currentPermutation_;

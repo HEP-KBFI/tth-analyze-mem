@@ -167,6 +167,12 @@ namespace tthMEM
          << "\tgenLepFromTop[" << (i + 1) << "]:        " << event.genLepFromTop[i]    << '\n'
          << "\tgenWBoson[" << (i + 1) << "]:            " << event.genWBoson[i]        << '\n'
          << "\tgenTop[" << (i + 1) << "]:               " << event.genTop[i]           << '\n';
+    for(auto var: Enum<Var_3l1tau>())
+    {
+      const std::string varName = VariableManager_3l1tau::getVarName(var);
+      os << "\tgen_" << varName
+         << " = " << std::string(14 - varName.size(), ' ') << event.genIntVariables.at(var) << '\n';
+    }
     return os;
   }
 }

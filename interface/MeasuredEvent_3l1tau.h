@@ -71,8 +71,14 @@ namespace tthMEM
     void
     resetPermutation() const;
 
+    unsigned
+    getPermutationNumber() const;
+
+    void
+    printPermutation() const;
+
     std::string
-    str() const;
+    str(bool includePermutation = true) const;
 
     void
     addFilter(const std::string & rleSelectionFileName);

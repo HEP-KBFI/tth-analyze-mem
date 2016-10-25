@@ -348,7 +348,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double mInvSquared = vm_.get(Var_3l1tau::kTauMinvSquared, x);
 
 //--- confirm that the energy fraction carried by the tau is indeed in (0,1)
-  const double z2 = z2_(z1);
+  const double z2 = roundToNdigits(z2_(z1));
   if(! (z2 >= 1.e-5 && z2 <= 1.))
   {
     LOGVRB << "z2 = " << z2 << " not in (0, 1) => p = 0";
@@ -358,7 +358,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 
 //--- compute the neutrino and tau lepton 4-vector from hadronic tau
   const double nuHtau_en = nuHtauEnergy_(z1);
-  const double nuHtau_cosTheta = nuHtauCosTheta_(nuHtau_en);
+  const double nuHtau_cosTheta = roundToNdigits(nuHtauCosTheta_(nuHtau_en));
   if(! (nuHtau_cosTheta >= -1. && nuHtau_cosTheta <= +1.))
   {
     LOGVRB << "nuHtau_cosTheta = " << nuHtau_cosTheta << " not in (-1, 1) => p = 0";
@@ -373,11 +373,14 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 //--- compute the neutrino and tau lepton 4-vector from leptonic tau
   const double nuLTau_en = nuLTauEnergy_(z2);
   const double nuLTau_p = std::sqrt(std::max(0., pow2(nuLTau_en) - mInvSquared));
-  const double nuLTau_cosTheta = nuLeptTauCosTheta_(nuLTau_en, mInvSquared, nuLTau_p);
+  const double nuLTau_cosTheta = roundToNdigits(nuLeptTauCosTheta_(nuLTau_en, mInvSquared, nuLTau_p));
   if(! (nuLTau_cosTheta >= -1. && nuLTau_cosTheta <= +1.))
   {
-    LOGVRB << "nuLTau_cosTheta = " << nuLTau_cosTheta << " not in (-1, 1) "
-           << "=> p = 0";
+    LOGVRB << "nuLTau_en = "  << nuLTau_en   << ", "
+           << "nuLTau_p = "   << nuLTau_p    << ", "
+           << "nuLTau_phi = " << nuLTau_phi  << " and "
+           << "nuLTau_m = "   << std::sqrt(mInvSquared) << "; but";
+    LOGVRB << "nuLTau_cosTheta = " << nuLTau_cosTheta << " not in (-1, 1) => p = 0";
     return 0.;
   }
   recoEvent.nuLtau = nuLTau_(std::acos(nuLTau_cosTheta), nuLTau_phi, nuLTau_en, nuLTau_p);
@@ -402,7 +405,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
     LOGTRC << lvrap("W nu " + i_str, recoEvent.nuW[i]);
     LOGTRC << lvrap("W "    + i_str, recoEvent.W[i]);
 
-    const double bEnergy_i = bQuarkEnergy_[i](recoEvent.W[i]);
+    const double bEnergy_i = roundToNdigits(bQuarkEnergy_[i](recoEvent.W[i]));
     if(bEnergy_i == 0.) return 0.;
     const MeasuredJet & bJet_i = measuredEvent_ -> jets[i];
     const Vector bP3_i = std::sqrt(pow2(bEnergy_i) - constants::massBSquared) *
@@ -441,10 +444,10 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double hadRecE = 0.;
   const double hadRecPz = 0.;
   const LorentzVector tthOrZ = recoEvent.getTTHorZ();
-  const double xa = (hadRecE + tthOrZ.e() + hadRecPz + tthOrZ.pz()) *
-                    constants::invSqrtS;
-  const double xb = (hadRecE + tthOrZ.e() - hadRecPz - tthOrZ.pz()) *
-                    constants::invSqrtS;
+  const double xa = roundToNdigits((hadRecE + tthOrZ.e() + hadRecPz + tthOrZ.pz()) *
+                    constants::invSqrtS);
+  const double xb = roundToNdigits((hadRecE + tthOrZ.e() - hadRecPz - tthOrZ.pz()) *
+                    constants::invSqrtS);
   LOGTRC << "xa = " << xa << "; xb = " << xb;
   if(xa <= 0. || xa >= 1. || xb <= 0. || xb >= 1.)
   {
@@ -471,8 +474,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   if(isTTH) LOGTRC << lvrap("tth mem", tthOrZ_mem);
   else      LOGTRC << lvrap("ttz mem", tthOrZ_mem);
 
-  const double z1_mem = recoEventmem.hTauLepton.e() / recoEventmem.hTau.e();
-  const double z2_mem = recoEventmem.lTauLepton.e() / recoEventmem.lTau.e();
+  const double z1_mem = roundToNdigits(recoEventmem.hTauLepton.e() / recoEventmem.hTau.e());
+  const double z2_mem = roundToNdigits(recoEventmem.lTauLepton.e() / recoEventmem.lTau.e());
   LOGTRC << "z1_mem = " << z1_mem << "; z2_mem = " << z2_mem;
   if(! (z1_mem >= 1.e-5 && z1_mem <= 1.) ||
      ! (z2_mem >= 1.e-5 && z2_mem <= 1.))
@@ -539,6 +542,15 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
                .fill(hVar_3l1tau::kMETtf,      MET_TF)
                .fill(hVar_3l1tau::kB1energyTF, bEnergyTF[0])
                .fill(hVar_3l1tau::kB2energyTF, bEnergyTF[1])
+               .fill(hVar_3l1tau::kTdecayJF1,  tDecayJacobiFactors[0])
+               .fill(hVar_3l1tau::kTdecayJF2,  tDecayJacobiFactors[1])
+               .fill(hVar_3l1tau::kHtauPSF,    hTauPSJacobiFactor)
+               .fill(hVar_3l1tau::kLtauPSF,    lTauPSJacobiFactor)
+               .fill(hVar_3l1tau::kJacobiF,    jacobiFactor)
+               .fill(hVar_3l1tau::kXa,         xa)
+               .fill(hVar_3l1tau::kXb,         xb)
+               .fill(hVar_3l1tau::kFlux,       flux)
+               .fill(hVar_3l1tau::kProbPDF,    probPDF)
                .fill(hVar_3l1tau::kMsquared,   prob_ME_mg)
                .fill(hVar_3l1tau::kProb,       p)
                .fill(vm_, x)

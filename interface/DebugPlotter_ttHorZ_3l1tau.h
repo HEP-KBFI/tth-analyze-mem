@@ -29,8 +29,17 @@ namespace tthMEM
     kB2RecoEn,   // energy of the 2nd b-jet
     kB1energyTF, // TF value for the 1st b-jet energy
     kB2energyTF, // TF value for the 2nd b-jet energy
+    kTdecayJF1,  // top decay Jacobi factor for the 1st top decay branch
+    kTdecayJF2,  // top decay Jacobi factor for the 2nd top decay branch
+    kHtauPSF,    // phase space factor of the tau decaying hadronically
+    kLtauPSF,    // phase space factor of the tau decaying leptonically
+    kJacobiF,    // overall Jacobi factor
     kMETtf,      // value returned by the MET transfer function
     kMsquared,   // squared matrix element amplitude
+    kXa,         // 1st Bjorken fraction
+    kXb,         // 2nd Bjorken fraction
+    kFlux,       // flux factor
+    kProbPDF,    // probability returned by parton distribution fraction
     kProb,       // overall probability in the integrand
 //--- for iteration
     First = kZ2,

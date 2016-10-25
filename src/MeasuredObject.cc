@@ -219,7 +219,12 @@ namespace tthMEM
     os << "pt = "     << o.pt_
        << "; eta = "  << o.eta_
        << "; phi = "  << o.phi_
-       << "; mass = " << o.mass_;
+       << "; mass = " << o.mass_
+       << "; en = " << o.energy_
+       << "; px = " << o.px_
+       << "; py = " << o.py_
+       << "; pz = " << o.pz_
+       << "; |p| = " << o.p_;
     return os;
   }
 }

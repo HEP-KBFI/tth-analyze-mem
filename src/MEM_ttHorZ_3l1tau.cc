@@ -204,7 +204,8 @@ MEM_ttHorZ_3l1tau::getAverageComputingTime_real() const
 
 double
 MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
-                             ME_mg5_3l1tau currentME)
+                             ME_mg5_3l1tau currentME,
+                             bool & err)
 {
   LOGTRC;
   if(integrationMode_ == IntegrationMode::kUndefined)
@@ -261,10 +262,18 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
 
 //--- loop over different permutations of same-sign leptons and b-jets
 ///< @note consider moving the permutation part inside integrate()
+  bool hasFoundPermutation = false;
   for(; ev.hasNextPermutation(); ev.nextPermutation())
   {
+    ev.printPermutation();
     if(! ev.isCorrectPermutation())
+    {
+      LOGTRC << "Skipping permutation #" << (ev.getPermutationNumber() + 1);
       continue;
+    }
+
+    LOGTRC << "Found correct permutation";
+    hasFoundPermutation = true;
 
     LOGDBG << ev;
     integrand_ -> renewInputs();
@@ -288,6 +297,13 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
     pSumErr += pErr;
   }
   ev.resetPermutation();
+
+  if(! hasFoundPermutation)
+  {
+    LOGWARN << "NB! Event was skipped altogether b/c there was no correct permutation found";
+    err = true;
+    return 0.;
+  }
 
 //--- divide by the process cross section (in GeV, i.e. natural units)
 //--- and adjust the uncertainty accordingly

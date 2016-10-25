@@ -18,7 +18,7 @@ namespace tthMEM
    */
   double
   roundToNdigits(double x,
-                 int n = 3);
+                 int n = 5);
 
   /**
    * @brief Rounds a given floating point number to the nearest unsigned integer
