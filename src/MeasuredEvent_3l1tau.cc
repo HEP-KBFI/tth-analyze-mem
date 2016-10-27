@@ -117,6 +117,9 @@ MeasuredEvent_3l1tau::initialize()
 //--- set the permutations and their pointers
   leptons.setPermutationPtrs(leptonPermIdxs, &currentPermutation_, 4);
   jets.setPermutationPtrs(jetPermIdxs, &currentPermutation_, 4);
+
+//--- set dR for permutation checking
+  dR = 0.1;
 }
 
 void
@@ -182,11 +185,11 @@ MeasuredEvent_3l1tau::isCorrectPermutation() const
 {
   if(! generatorLevel)
     return true;
-  else if((generatorLevel -> genLepFromTau).dR(leptons[complLeptonIdx]) < 0.5       &&
-          (generatorLevel -> genLepFromTop[0]).dR(leptons[bjetLeptonIdxs[0]]) < 0.5 &&
-          (generatorLevel -> genLepFromTop[1]).dR(leptons[bjetLeptonIdxs[1]]) < 0.5 &&
-          (generatorLevel -> genBQuarkFromTop[0]).dR(jets[0]) < 0.5                 &&
-          (generatorLevel -> genBQuarkFromTop[1]).dR(jets[1]) < 0.5)
+  else if((generatorLevel -> genLepFromTau).dR(leptons[complLeptonIdx]) < dR       &&
+          (generatorLevel -> genLepFromTop[0]).dR(leptons[bjetLeptonIdxs[0]]) < dR &&
+          (generatorLevel -> genLepFromTop[1]).dR(leptons[bjetLeptonIdxs[1]]) < dR &&
+          (generatorLevel -> genBQuarkFromTop[0]).dR(jets[0]) < dR                 &&
+          (generatorLevel -> genBQuarkFromTop[1]).dR(jets[1]) < dR)
     return true;
   return false;
 }
@@ -222,28 +225,28 @@ MeasuredEvent_3l1tau::printPermutation() const
     LOGTRC << "Testing lepton from tau";
     LOGTRC << "genLepFromTau:        " << (generatorLevel -> genLepFromTau);
     LOGTRC << "complementary lepton: " << leptons[complLeptonIdx];
-    LOGTRC << "\tdR = " << dRlepFromTau << (dRlepFromTau < 0.5 ? " < " : " >= ") << 0.5
-           << " => " << (dRlepFromTau < 0.5 ? "PASS" : "FAIL");
+    LOGTRC << "\tdR = " << dRlepFromTau << (dRlepFromTau < dR ? " < " : " >= ") << dR
+           << " => " << (dRlepFromTau < dR ? "PASS" : "FAIL");
     LOGTRC << "Testing lepton from top (0)";
     LOGTRC << "genLepFromTop[0]: " << (generatorLevel -> genLepFromTop[0]);
     LOGTRC << "b-jet lepton[0]:  " << leptons[bjetLeptonIdxs[0]];
-    LOGTRC << "\tdR = " << dRlepFromTop1 << (dRlepFromTop1 < 0.5 ? " < " : " >= ") << 0.5
-           << " => " << (dRlepFromTop1 < 0.5 ? "PASS" : "FAIL");
+    LOGTRC << "\tdR = " << dRlepFromTop1 << (dRlepFromTop1 < dR ? " < " : " >= ") << dR
+           << " => " << (dRlepFromTop1 < dR ? "PASS" : "FAIL");
     LOGTRC << "Testing lepton from top (1)";
     LOGTRC << "genLepFromTop[1]: " << (generatorLevel -> genLepFromTop[1]);
     LOGTRC << "b-jet lepton[1]:  " << leptons[bjetLeptonIdxs[1]];
-    LOGTRC << "\tdR = " << dRlepFromTop2 << (dRlepFromTop2 < 0.5 ? " < " : " >= ") << 0.5
-           << " => " << (dRlepFromTop2 < 0.5 ? "PASS" : "FAIL");
+    LOGTRC << "\tdR = " << dRlepFromTop2 << (dRlepFromTop2 < dR ? " < " : " >= ") << dR
+           << " => " << (dRlepFromTop2 < dR ? "PASS" : "FAIL");
     LOGTRC << "Testing b-jet (0)";
     LOGTRC << "genBQuarkFromTop[0]: " << (generatorLevel -> genBQuarkFromTop[0]);
     LOGTRC << "b-jet[0]:            " << jets[0];
-    LOGTRC << "\tdR = " << dRbQuark1 << (dRbQuark1 < 0.5 ? " < " : " >= ") << 0.5
-           << " => " << (dRbQuark1 < 0.5 ? "PASS" : "FAIL");
+    LOGTRC << "\tdR = " << dRbQuark1 << (dRbQuark1 < dR ? " < " : " >= ") << dR
+           << " => " << (dRbQuark1 < dR ? "PASS" : "FAIL");
     LOGTRC << "Testing b-jet (1)";
     LOGTRC << "genBQuarkFromTop[1]: " << (generatorLevel -> genBQuarkFromTop[1]);
     LOGTRC << "b-jet[1]:            " << jets[1];
-    LOGTRC << "\tdR = " << dRbQuark2 << (dRbQuark2 < 0.5 ? " < " : " >= ") << 0.5
-           << " => " << (dRbQuark2 < 0.5 ? "PASS" : "FAIL");
+    LOGTRC << "\tdR = " << dRbQuark2 << (dRbQuark2 < dR ? " < " : " >= ") << dR
+           << " => " << (dRbQuark2 < dR ? "PASS" : "FAIL");
   }
 }
 

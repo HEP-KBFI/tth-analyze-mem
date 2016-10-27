@@ -296,11 +296,7 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   if(lept1Charge == +1 && complLeptCharge == -1)
     mgMomentaIdxs_ = { 0, 1, 2, 3, 4, 5, 6, 7, 9, 8 };
   else
-  if(lept1Charge == -1 && complLeptCharge == +1)
-    mgMomentaIdxs_ = { 0, 1, 5, 6, 7, 2, 3, 4, 8, 9 };
-  else
-  if(lept1Charge == -1 && complLeptCharge == -1)
-    mgMomentaIdxs_ = { 0, 1, 5, 6, 7, 2, 3, 4, 9, 8 };
+    throw_line("integrand") << "This permutation shouldn't happen";
 
 //--- for debugging purposes plot some variables
   if(DebugPlotter_ttHorZ_3l1tau * dPlotter = measuredEvent_ -> debugPlotter)

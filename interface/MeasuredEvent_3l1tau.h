@@ -95,6 +95,7 @@ namespace tthMEM
     std::vector<std::vector<unsigned>> leptonPermIdxs;
     std::vector<std::vector<unsigned>> jetPermIdxs;
     std::vector<std::string> rleSelection;
+    double dR;
   };
 }
 
