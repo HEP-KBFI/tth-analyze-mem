@@ -5,6 +5,8 @@
 #include <array> // std::array<,>
 #include <fstream> // std::ofstream::, std::scientific
 #include <iomanip> // std::setprecision()
+#include <algorithm> // std::for_each()
+#include <utility> // std::pair<,>
 
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR, LOGINFO
@@ -18,6 +20,7 @@
 #include <FWCore/Utilities/interface/Exception.h> // cms::Exception
 
 #include <boost/filesystem/operations.hpp> // boost::filesystem::
+#include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
 #include <Rtypes.h> // UInt_t, ULong64_t
 #include <TString.h> // Form()
@@ -36,6 +39,92 @@
 using namespace tthMEM;
 namespace VectorUtil = ROOT::Math::VectorUtil;
 
+struct PermutationLogger
+{
+  PermutationLogger()
+    : worst{+1.e+10, default_str}
+    , best{-1., default_str}
+    , def{0., default_str}
+  {}
+
+  void
+  process(double prob,
+          unsigned bIdx,
+          unsigned lIdx,
+          unsigned nIdx)
+  {
+    const std::string curr_str = get_str(bIdx, lIdx, nIdx);
+    if(is_default(curr_str))
+      def = std::make_pair(prob, curr_str);
+
+    if(prob < worst.first) worst = std::make_pair(prob, curr_str);
+    if(prob > best.first)  best  = std::make_pair(prob, curr_str);
+  }
+
+  double
+  get_default() const
+  {
+    return def.first;
+  }
+
+  double
+  get_best() const
+  {
+    return best.first;
+  }
+
+  std::string
+  get_best_str() const
+  {
+    return best.second;
+  }
+
+  static bool
+  is_default(unsigned bIdx,
+             unsigned lIdx,
+             unsigned nIdx)
+  {
+    const std::string curr_str = get_str(bIdx, lIdx, nIdx);
+    return is_default(curr_str);
+  }
+
+  static bool
+  is_default(const std::string & curr_str)
+  {
+    return curr_str == default_str;
+  }
+
+  static std::string
+  get_str(unsigned bIdx,
+          unsigned lIdx,
+          unsigned nIdx)
+  {
+    std::string curr_str = default_str;
+    if(bIdx != 0) std::swap(curr_str[0], curr_str[3]);
+    if(lIdx != 0) std::swap(curr_str[1], curr_str[4]);
+    if(nIdx != 0) std::swap(curr_str[2], curr_str[5]);
+    return curr_str;
+  }
+
+  friend std::ostream &
+  operator<<(std::ostream & os,
+             const PermutationLogger & logger)
+  {
+    os << "\tDEFAULT: ME = " << logger.def.first   << ", (" << logger.def.second   << ")\n"
+       << "\tBEST:    ME = " << logger.best.first  << ", (" << logger.best.second  << ")\n"
+       << "\tWORST:   ME = " << logger.worst.first << ", (" << logger.worst.second << ')';
+    return os;
+  }
+
+private:
+  static const std::string default_str;
+  std::pair<double, std::string> worst;
+  std::pair<double, std::string> best;
+  std::pair<double, std::string> def;
+};
+
+const std::string PermutationLogger::default_str = "123456";
+
 int
 main(int argc,
      char * argv[])
@@ -53,11 +142,13 @@ main(int argc,
   const double higgsWidth = cfg_tthMEM.getParameter<double>("higgsWidth");
   const double forceTauPairMass = cfg_tthMEM.getParameter<double>("forceTauPairMass");
   const std::string logLevel = cfg_tthMEM.getParameter<std::string>("logLevel");
+  const unsigned logPrecision = cfg_tthMEM.getParameter<unsigned>("logPrecision");
   const std::string outputFileName = cfg_tthMEM.getParameter<std::string>("outputFileName");
   const bool dumpToText = cfg_tthMEM.getParameter<bool>("dumpToText");
   const boost::filesystem::path outputFilePath(outputFileName);
 
   Logger::setLogLevel(logLevel);
+  Logger::setFloatPrecision(logPrecision);
 
   if(! boost::filesystem::is_regular_file(madgraphFilename))
   {
@@ -93,6 +184,12 @@ main(int argc,
     LOGINFO_S << "Setting Higgs width to " << higgsWidth;
   }
   LOGINFO << "Declared the MG MEs";
+
+  const auto oIdx = [](unsigned idx) -> unsigned { return 1 - idx; };
+  std::map<std::string, std::map<std::string, unsigned>> best_perms = {
+    { "tth", { } },
+    { "ttz", { } }
+  };
 
   TFile * outFile = new TFile(outputFileName.c_str(), "recreate");
   const std::string prob_tth_str = "prob_tth";
@@ -145,8 +242,12 @@ main(int argc,
 
     double prob_tth = 0;
     double prob_ttz = 0;
+    double prob_tth_best = 0;
+    double prob_ttz_best = 0;
     outTree -> Branch(prob_tth_str.c_str(), &prob_tth, Form("%s/D", prob_tth_str.c_str()));
     outTree -> Branch(prob_ttz_str.c_str(), &prob_ttz, Form("%s/D", prob_ttz_str.c_str()));
+    outTree -> Branch(Form("%s_best", prob_tth_str.c_str()), &prob_tth_best, Form("%s_best/D", prob_tth_str.c_str()));
+    outTree -> Branch(Form("%s_best", prob_ttz_str.c_str()), &prob_ttz_best, Form("%s_best/D", prob_ttz_str.c_str()));
     LOGINFO << "Associated the output branches";
 
     std::ofstream outTxtFile;
@@ -175,7 +276,7 @@ main(int argc,
         evt.genHorZ = evt.genTau[0] + evt.genTau[1];
       }
 
-      const LorentzVector ttHorZ = (evt.genHorZ + evt.genTop[0] + evt.genTop[1]).p4();
+      const LorentzVector ttHorZ = (evt.genHorZ + evt.genTop[0] + evt.genTop[1]).p4(); // check
       const double xa = (ttHorZ.e() + ttHorZ.pz()) * constants::invSqrtS;
       const double xb = (ttHorZ.e() - ttHorZ.pz()) * constants::invSqrtS;
       LOGDBG << "xa = " << xa << "; xb = " << xb;
@@ -204,41 +305,79 @@ main(int argc,
       // 7, ve~, associated W- => associated lepton -
       // 8, ta+ => associated lepton +
       // 9, ta- => associated lepton -
-      const std::array<LorentzVector, 10> boosted
-      {{
-        VectorUtil::boost(g[0],                         boost),
-        VectorUtil::boost(g[1],                         boost),
-        VectorUtil::boost(evt.genBQuarkFromTop[0].p4(), boost),
-        VectorUtil::boost(evt.genLepFromTop[0].p4(),    boost),
-        VectorUtil::boost(evt.genNuFromTop[0].p4(),     boost),
-        VectorUtil::boost(evt.genBQuarkFromTop[1].p4(), boost),
-        VectorUtil::boost(evt.genLepFromTop[1].p4(),    boost),
-        VectorUtil::boost(evt.genNuFromTop[1].p4(),     boost),
-        VectorUtil::boost(evt.genTau[0].p4(),           boost),
-        VectorUtil::boost(evt.genTau[1].p4(),           boost)
-      }};
-      std::vector<double *> mgMomenta;
-      for(const LorentzVector & lv: boosted)
-      {
-        double * d = new double[4];
-        d[0] = lv.e();
-        d[1] = lv.px();
-        d[2] = lv.py();
-        d[3] = lv.pz();
-        mgMomenta.push_back(d);
-      }
-      tth_me.setMomenta(mgMomenta);
-      tth_me.sigmaKin();
-      ttz_me.setMomenta(mgMomenta);
-      ttz_me.sigmaKin();
-      prob_tth = tth_me.getMatrixElements()[0];
-      prob_ttz = ttz_me.getMatrixElements()[0];
+
+      PermutationLogger tth_logger;
+      PermutationLogger ttz_logger;
+      for(unsigned bIdx = 0; bIdx < 2; ++bIdx)
+        for(unsigned lIdx = 0; lIdx < 2; ++lIdx)
+          for(unsigned nIdx = 0; nIdx < 2; ++nIdx)
+          {
+            if(PermutationLogger::is_default(bIdx, lIdx, nIdx))
+            {
+              if(evt.genLepFromTop[lIdx].charge()       != +1)
+                throw_line(argv[0]) << "First lepton sign is not correct";
+              if(evt.genLepFromTop[oIdx(lIdx)].charge() != -1)
+                throw_line(argv[0]) << "Second lepton sign is not correct";
+            }
+
+            const std::array<LorentzVector, 10> boosted
+            {{
+              VectorUtil::boost(g[0],                                  boost),
+              VectorUtil::boost(g[1],                                  boost),
+              VectorUtil::boost(evt.genBQuarkFromTop[bIdx].p4(),       boost),
+              VectorUtil::boost(evt.genLepFromTop[lIdx].p4(),          boost),
+              VectorUtil::boost(evt.genNuFromTop[nIdx].p4(),           boost),
+              VectorUtil::boost(evt.genBQuarkFromTop[oIdx(bIdx)].p4(), boost),
+              VectorUtil::boost(evt.genLepFromTop[oIdx(lIdx)].p4(),    boost),
+              VectorUtil::boost(evt.genNuFromTop[oIdx(nIdx)].p4(),     boost),
+              VectorUtil::boost(evt.genTau[0].p4(),                    boost),
+              VectorUtil::boost(evt.genTau[1].p4(),                    boost)
+            }};
+            std::vector<double *> mgMomenta;
+            for(const LorentzVector & lv: boosted)
+            {
+              double * d = new double[4];
+              d[0] = lv.e();
+              d[1] = lv.px();
+              d[2] = lv.py();
+              d[3] = lv.pz();
+              mgMomenta.push_back(d);
+            }
+            tth_me.setMomenta(mgMomenta);
+            tth_me.sigmaKin();
+            ttz_me.setMomenta(mgMomenta);
+            ttz_me.sigmaKin();
+
+            const double curr_prob_tth = tth_me.getMatrixElements()[0];
+            const double curr_prob_ttz = ttz_me.getMatrixElements()[0];
+            tth_logger.process(curr_prob_tth, bIdx, lIdx, nIdx);
+            ttz_logger.process(curr_prob_ttz, bIdx, lIdx, nIdx);
+
+            std::for_each(mgMomenta.begin(), mgMomenta.end(),
+              [](double * & d) { delete d; d = 0; });
+          }
+      prob_tth = tth_logger.get_default();
+      prob_ttz = ttz_logger.get_default();
+      prob_tth_best = tth_logger.get_best();
+      prob_ttz_best = ttz_logger.get_best();
       outTree -> Fill();
 
+      const std::map<std::string, std::string> best_perm_str = {
+        { "tth", Form("%s/%s", id.c_str(), tth_logger.get_best_str().c_str()) },
+        { "ttz", Form("%s/%s", id.c_str(), ttz_logger.get_best_str().c_str()) }
+      };
+      for(const auto & kv: best_perm_str)
+        if(best_perms[kv.first].count(kv.second))
+          ++best_perms[kv.first][kv.second];
+        else
+          best_perms[kv.first][kv.second] = 1;
+
       LOGDBG_S << "Evaluating tth ME for " << i << "th event ("
-               << run << ':' << lumi << ':' << event << ") : p = " << prob_tth;
+               << run << ':' << lumi << ':' << event << ")\n"
+               << tth_logger;
       LOGDBG_S << "Evaluating ttz ME for " << i << "th event ("
-               << run << ':' << lumi << ':' << event << ") : p = " << prob_ttz;
+               << run << ':' << lumi << ':' << event << ")\n"
+               << ttz_logger;
 
       if(dumpToText)
         outTxtFile << run << ':' << lumi << ':' << event << ','
@@ -259,6 +398,19 @@ main(int argc,
     if(outTree)
       delete outTree;
   }
+
+  const auto strmtov = [](const std::map<std::string, unsigned> & m)
+    -> std::vector<std::string>
+  {
+    std::vector<std::string> v;
+    for(const auto & kv: m)
+      v.push_back(Form("%s (%u)", kv.first.c_str(), kv.second));
+    return v;
+  };
+
+  LOGDBG << "Best permutations: ";
+  LOGDBG << "TTH: " << boost::algorithm::join(strmtov(best_perms["tth"]), ", ");
+  LOGDBG << "TTZ: " << boost::algorithm::join(strmtov(best_perms["ttz"]), ", ");
 
   outFile -> Write();
   LOGINFO << "Wrote output file: " << outputFileName;

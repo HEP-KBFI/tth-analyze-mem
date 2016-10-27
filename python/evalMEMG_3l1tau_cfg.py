@@ -8,17 +8,18 @@ evalMEMG.tthMEM = cms.PSet(
   fileSet          = cms.VPSet(
     cms.PSet(
       identifier = cms.string('tth'),
-      fileName   = cms.string(os.path.join(baseDir, '2016/out_3l_1tau_ttHToNonbb_M125_Tight_Tight_dR03mvaTight_1t0e0m0j_OS_central.root'))
+      fileName   = cms.string(os.path.join(baseDir, '2016/out_3l_1tau_ttHToNonbb_M125_Tight_OS_central.root'))
     ),
     cms.PSet(
       identifier = cms.string('ttz'),
-      fileName   = cms.string(os.path.join(baseDir, '2016/out_3l_1tau_TTZToLLNuNu_Tight_Tight_dR03mvaTight_1t0e0m0j_OS_central.root'))
+      fileName   = cms.string(os.path.join(baseDir, '2016/out_3l_1tau_TTZToLLNuNu_Tight_OS_central.root'))
     )
   ),
   madgraphFilename = cms.string(os.path.join(baseDir, 'param_card.dat')),
   higgsWidth       = cms.double(-1.),
   forceTauPairMass = cms.double(-1.),
-  logLevel         = cms.string('info'),
+  logLevel         = cms.string('trace'),
+  logPrecision     = cms.uint32(10),
   outputFileName   = cms.string(os.path.expanduser('~/sandbox/evalMEMG/out.root')),
   dumpToText       = cms.bool(True)
 )
