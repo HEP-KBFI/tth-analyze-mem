@@ -4,6 +4,8 @@
 
 #include <TString.h> // Form()
 
+#define _SPACE std::setw(10) << std::right
+
 using namespace tthMEM;
 
 MeasuredObject::MeasuredObject()
@@ -216,15 +218,15 @@ namespace tthMEM
   operator<<(std::ostream & os,
              const MeasuredObject & o)
   {
-    os << "pt = "     << o.pt_
-       << "; eta = "  << o.eta_
-       << "; phi = "  << o.phi_
-       << "; mass = " << o.mass_
-       << "; en = " << o.energy_
-       << "; px = " << o.px_
-       << "; py = " << o.py_
-       << "; pz = " << o.pz_
-       << "; |p| = " << o.p_;
+    os <<   "pt = "   << _SPACE << o.pt_
+       << "; eta = "  << _SPACE << o.eta_
+       << "; phi = "  << _SPACE << o.phi_
+       << "; mass = " << _SPACE << o.mass_
+       << "; en = "   << _SPACE << o.energy_
+       << "; |p| = "  << _SPACE << o.p_
+       << "; px = "   << _SPACE << o.px_
+       << "; py = "   << _SPACE << o.py_
+       << "; pz = "   << _SPACE << o.pz_;
     return os;
   }
 }

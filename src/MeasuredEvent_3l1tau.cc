@@ -27,7 +27,24 @@ MeasuredEvent_3l1tau::initialize()
 
   htau.initialize();
 
-  if(generatorLevel) generatorLevel -> initialize();
+  if(generatorLevel)
+  {
+    LOGTRC << "Redirecting reconstructed particles to their underlying "
+           << "generator level particles";
+    generatorLevel -> initialize();
+    for(std::size_t i = 0; i < 2; ++i)
+      leptons[i] = generatorLevel -> genLepFromTop[i];
+    leptons[2] = generatorLevel -> genLepFromTau;
+    for(std::size_t i = 0; i < 2; ++i)
+    {
+      const GeneratorParticle & jet = generatorLevel -> genBQuarkFromTop[i];
+      jets[i] = MeasuredJet(jet.pt(), jet.eta(), jet.phi(), jet.mass());
+    }
+    const GeneratorParticle & gHtau = generatorLevel -> genHtau;
+    const int htauDecayMode = htau.decayMode(); // use reco decayMode for now
+    htau = MeasuredHadronicTau(gHtau.pt(), gHtau.eta(), gHtau.phi(), gHtau.mass(),
+                               gHtau.charge(), htauDecayMode);
+  }
 
 //--- check whether the sum of lepton charges is +-1
   const int leptonChargeSum = std::accumulate(
@@ -295,9 +312,9 @@ namespace tthMEM
     for(std::size_t i = 0; i < 3; ++i)
       os << "\tLepton " << (i + 1) << ": " << event.leptons[i] << '\n';
     for(std::size_t i = 0; i < 2; ++i)
-      os << "\tJet "    << (i + 1) << ": " << event.jets[i]    << '\n';
-    os << "\tTau: " << event.htau << '\n';
-    os << "\tMET: " << event.met   << '\n';
+      os << "\tJet "    << (i + 1) << ":    " << event.jets[i]    << '\n';
+    os << "\tTau:      " << event.htau << '\n';
+    os << "\tMET:      " << event.met   << '\n';
     if(event.generatorLevel)
       os << *event.generatorLevel;
     return os;
