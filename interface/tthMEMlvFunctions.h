@@ -15,61 +15,42 @@ namespace tthMEM
   typedef math::XYZVectorD         Vector;
   typedef math::RThetaPhiVectorD   VectorSpherical;
 
-  typedef struct LorentzVectorWrap
+  enum class LVRepresentation { Cartesian, Cylindrical, Spherical, Extensive };
+
+  template<typename VectorObject,
+           LVRepresentation Representation>
+  struct AnyVectorWrap
   {
-    LorentzVectorWrap(const LorentzVector & v);
-    LorentzVectorWrap(const std::string & name,
-                      const LorentzVector & v);
-    const std::string name_;
-    const LorentzVector & v_;
-    std::size_t textFieldWidth_ = 15;
+    AnyVectorWrap(const VectorObject & v)
+      : AnyVectorWrap("", v)
+    {}
+    AnyVectorWrap(const std::string & name,
+                  const VectorObject & v)
+      : name_(name)
+      , v_(v)
+    {
+      textFieldWidth_ = std::max(textFieldWidth_, name_.size()) + 2;
+    }
 
     friend std::ostream &
     operator<<(std::ostream & os,
-               const LorentzVectorWrap & v);
-  } lvrap;
+               const AnyVectorWrap<VectorObject, Representation> & v);
 
-  typedef struct LorentzMinkowskiWrap
-  {
-    LorentzMinkowskiWrap(const LorentzVector & v);
-    LorentzMinkowskiWrap(const std::string & name,
-                         const LorentzVector & v);
     const std::string name_;
-    const LorentzVector & v_;
+    const VectorObject & v_;
     std::size_t textFieldWidth_ = 15;
+  };
 
-    friend std::ostream &
-    operator<<(std::ostream & os,
-               const LorentzMinkowskiWrap & v);
-  } lmvrap;
-
-  typedef struct VectorCartesianWrap
-  {
-    VectorCartesianWrap(const Vector & v);
-    VectorCartesianWrap(const std::string & name,
-                        const Vector & v);
-    const std::string name_;
-    const Vector & v_;
-    std::size_t textFieldWidth_ = 15;
-
-    friend std::ostream &
-    operator<<(std::ostream & os,
-               const VectorCartesianWrap & v);
-  } cvrap;
-
-  typedef struct VectorSphericalWrap
-  {
-    VectorSphericalWrap(const std::string & name,
-                        const Vector & v);
-    VectorSphericalWrap(const Vector & v);
-    const std::string name_;
-    const Vector & v_;
-    std::size_t textFieldWidth_ = 15;
-
-    friend std::ostream &
-    operator<<(std::ostream & os,
-               const VectorSphericalWrap & v);
-  } svrap;
+  typedef AnyVectorWrap<LorentzVector, LVRepresentation::Cylindrical> LorentzVectorWrap;
+  typedef LorentzVectorWrap                                           lvrap;
+  typedef AnyVectorWrap<LorentzVector, LVRepresentation::Cartesian> LorentzMinkowskiWrap;
+  typedef LorentzMinkowskiWrap                                      lmvrap;
+  typedef AnyVectorWrap<LorentzVector, LVRepresentation::Extensive> LorentzVectorExtWrap;
+  typedef LorentzVectorExtWrap                                      lextvrap;
+  typedef AnyVectorWrap<Vector, LVRepresentation::Cartesian> VectorCartesianWrap;
+  typedef VectorCartesianWrap                                cvrap;
+  typedef AnyVectorWrap<Vector, LVRepresentation::Spherical> VectorSphericalWrap;
+  typedef VectorSphericalWrap                                svrap;
 
   /**
    * @brief Constructs LorentzVector from Vector and energy
