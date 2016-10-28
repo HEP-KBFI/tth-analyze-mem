@@ -46,7 +46,7 @@ namespace tthMEM
     const double massZSquared = pow2(massZ);
     const double massW = 8.02673592E+01;   ///< MG value (MW)
     const double massWSquared = pow2(massW);
-    const double massB = 4.700000e+00;     ///< MG value (MB)
+    const double massB = 4.750000e+00;     ///< taken from MC samples containing generator level info
     const double massBSquared = pow2(massB);
     const double massT = 1.74300000E+02;   ///< MG value (MT)
     const double massTSquared = pow2(massT);
