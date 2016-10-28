@@ -139,8 +139,8 @@ main(int argc,
   const std::string treeName = cfg_tthMEM.getParameter<std::string>("treeName");
   const edm::VParameterSet fileSet = cfg_tthMEM.getParameter<edm::VParameterSet>("fileSet");
   const std::string madgraphFilename = cfg_tthMEM.getParameter<std::string>("madgraphFilename");
-  const double higgsWidth = cfg_tthMEM.getParameter<double>("higgsWidth");
-  const double forceTauPairMass = cfg_tthMEM.getParameter<double>("forceTauPairMass");
+  const std::vector<double> higgsWidthVector = cfg_tthMEM.getParameter<std::vector<double>>("higgsWidth");
+  const std::vector<double> forceTauPairMassVector = cfg_tthMEM.getParameter<std::vector<double>>("forceTauPairMass");
   const std::string logLevel = cfg_tthMEM.getParameter<std::string>("logLevel");
   const unsigned logPrecision = cfg_tthMEM.getParameter<unsigned>("logPrecision");
   const std::string outputFileName = cfg_tthMEM.getParameter<std::string>("outputFileName");
@@ -178,91 +178,102 @@ main(int argc,
   me_ttz_3l1tau_mg5 ttz_me;
   tth_me.initProc(madgraphFilename);
   ttz_me.initProc(madgraphFilename);
-  if(higgsWidth > 0.)
-  {
-    tth_me.setHiggsWidth(higgsWidth);
-    LOGINFO_S << "Setting Higgs width to " << higgsWidth;
-  }
   LOGINFO << "Declared the MG MEs";
-
-  const auto oIdx = [](unsigned idx) -> unsigned { return 1 - idx; };
-  std::map<std::string, std::map<std::string, unsigned>> best_perms = {
-    { "tth", { } },
-    { "ttz", { } }
-  };
 
   TFile * outFile = new TFile(outputFileName.c_str(), "recreate");
   const std::string prob_tth_str = "prob_tth";
   const std::string prob_ttz_str = "prob_ttz";
 
-  for(const edm::ParameterSet & pset: fileSet)
+  for(double higgsWidth: higgsWidthVector)
   {
-    const std::string fileName = pset.getParameter<std::string>("fileName");
-    const std::string id = pset.getParameter<std::string>("identifier");
-    LOGINFO << "Processing " << id;
-
-    TFile * const file = [&]()
+    for(double forceTauPairMass: forceTauPairMassVector)
     {
-      if(! boost::filesystem::is_regular_file(fileName))
-        return static_cast<TFile *>(0);
-      return new TFile(fileName.c_str(), "read");
-    }();
-    if(! file)
-    {
-      LOGERR << "File '" << fileName << "' does not exist or isn't a root file";
-      return EXIT_FAILURE;
-    }
-    TTree * const tree = [&]()
-    {
-      if(! file -> GetListOfKeys() -> Contains(treeName.c_str()))
-        return static_cast<TTree *>(0);
-      return static_cast<TTree *>(file -> Get(treeName.c_str()));
-    }();
-    if(! tree)
-    {
-      LOGERR << "Tree '" << treeName << "' does not exist in file '" << fileName << '\'';
-      return EXIT_FAILURE;
-    }
-    LOGINFO << "Read in file '" << fileName << "' and using tree '" << treeName << '\'';
-
-    UInt_t run;
-    UInt_t lumi;
-    ULong64_t event;
-    tree -> SetBranchAddress("run",  &run);
-    tree -> SetBranchAddress("lumi", &lumi);
-    tree -> SetBranchAddress("evt",  &event);
-
-    GeneratorLevelEvent_3l1tau evt;
-    evt.setBranches(tree);
-    LOGINFO << "Associated the input branches";
-
-    outFile -> mkdir(id.c_str());
-    outFile -> cd(id.c_str());
-    TTree * outTree = new TTree(treeName.c_str(), id.c_str());
-
-    double prob_tth = 0;
-    double prob_ttz = 0;
-    double prob_tth_best = 0;
-    double prob_ttz_best = 0;
-    outTree -> Branch(prob_tth_str.c_str(), &prob_tth, Form("%s/D", prob_tth_str.c_str()));
-    outTree -> Branch(prob_ttz_str.c_str(), &prob_ttz, Form("%s/D", prob_ttz_str.c_str()));
-    outTree -> Branch(Form("%s_best", prob_tth_str.c_str()), &prob_tth_best, Form("%s_best/D", prob_tth_str.c_str()));
-    outTree -> Branch(Form("%s_best", prob_ttz_str.c_str()), &prob_ttz_best, Form("%s_best/D", prob_ttz_str.c_str()));
-    LOGINFO << "Associated the output branches";
-
-    std::ofstream outTxtFile;
-    const std::string outTxtFileName = (outputFileParentPath / boost::filesystem::path(id)).string() + ".csv";
-    if(dumpToText)
-      outTxtFile.open(outTxtFileName, std::ofstream::out);
-
-    const unsigned long nofEvents = tree -> GetEntries();
-    for(unsigned long i = 0; i < nofEvents; ++i)
-    {
-      tree -> GetEntry(i);
-      evt.initialize();
-
-      if(forceTauPairMass > 0)
+      LOGINFO << "Higgs width = " << higgsWidth << "; tau pair mass = " << forceTauPairMass;
+      if(higgsWidth > 0.)
       {
+        tth_me.setHiggsWidth(higgsWidth);
+        LOGINFO_S << "Setting Higgs width to " << higgsWidth;
+      }
+
+      const auto oIdx = [](unsigned idx) -> unsigned { return 1 - idx; };
+      std::map<std::string, std::map<std::string, unsigned>> best_perms = {
+        { "tth", { } },
+        { "ttz", { } }
+      };
+
+      for(const edm::ParameterSet & pset: fileSet)
+      {
+        const std::string fileName = pset.getParameter<std::string>("fileName");
+        const std::vector<std::string> id_vector = {
+          pset.getParameter<std::string>("identifier"),
+          (higgsWidth > 0. ? std::to_string(higgsWidth) : "original"),
+          (forceTauPairMass > 0. ? std::to_string(forceTauPairMass) : "original")
+        };
+        const std::string id = boost::algorithm::join(id_vector, "_");
+        LOGINFO << "Processing " << id;
+
+        TFile * const file = [&]()
+        {
+          if(! boost::filesystem::is_regular_file(fileName))
+            return static_cast<TFile *>(0);
+          return new TFile(fileName.c_str(), "read");
+        }();
+        if(! file)
+        {
+          LOGERR << "File '" << fileName << "' does not exist or isn't a root file";
+          return EXIT_FAILURE;
+        }
+        TTree * const tree = [&]()
+        {
+          if(! file -> GetListOfKeys() -> Contains(treeName.c_str()))
+            return static_cast<TTree *>(0);
+          return static_cast<TTree *>(file -> Get(treeName.c_str()));
+        }();
+        if(! tree)
+        {
+          LOGERR << "Tree '" << treeName << "' does not exist in file '" << fileName << '\'';
+          return EXIT_FAILURE;
+        }
+        LOGINFO << "Read in file '" << fileName << "' and using tree '" << treeName << '\'';
+
+        UInt_t run;
+        UInt_t lumi;
+        ULong64_t event;
+        tree -> SetBranchAddress("run",  &run);
+        tree -> SetBranchAddress("lumi", &lumi);
+        tree -> SetBranchAddress("evt",  &event);
+
+        GeneratorLevelEvent_3l1tau evt;
+        evt.setBranches(tree);
+        LOGINFO << "Associated the input branches";
+
+        outFile -> mkdir(id.c_str());
+        outFile -> cd(id.c_str());
+        TTree * outTree = new TTree(treeName.c_str(), id.c_str());
+
+        double prob_tth = 0;
+        double prob_ttz = 0;
+        double prob_tth_best = 0;
+        double prob_ttz_best = 0;
+        outTree -> Branch(prob_tth_str.c_str(), &prob_tth, Form("%s/D", prob_tth_str.c_str()));
+        outTree -> Branch(prob_ttz_str.c_str(), &prob_ttz, Form("%s/D", prob_ttz_str.c_str()));
+        outTree -> Branch(Form("%s_best", prob_tth_str.c_str()), &prob_tth_best, Form("%s_best/D", prob_tth_str.c_str()));
+        outTree -> Branch(Form("%s_best", prob_ttz_str.c_str()), &prob_ttz_best, Form("%s_best/D", prob_ttz_str.c_str()));
+        LOGINFO << "Associated the output branches";
+
+        std::ofstream outTxtFile;
+        const std::string outTxtFileName = (outputFileParentPath / boost::filesystem::path(id)).string() + ".csv";
+        if(dumpToText)
+          outTxtFile.open(outTxtFileName, std::ofstream::out);
+
+        const unsigned long nofEvents = tree -> GetEntries();
+        for(unsigned long i = 0; i < nofEvents; ++i)
+        {
+          tree -> GetEntry(i);
+          evt.initialize();
+
+          if(forceTauPairMass > 0.)
+          {
 //--- Force the mass of the tau pair to a value specified in the configuration file.
 //--- Since the old mass is
 //---   m = sqrt(E^2 - |p|^2), where E = E_1 + E_2 and p = p_1 + p_2, and the new mass is
@@ -270,147 +281,149 @@ main(int argc,
 //--- it follows that the 4-momentum of both tau leptons are multiplied by alpha, which is
 //--- the ratio of new mass (m') over the original mass (m). Since we only change the mass,
 //--- the 3-momentum itself remains the same for the H/Z particle.
-        const double alpha = forceTauPairMass / evt.genHorZ.mass();
-        for(std::size_t j = 0; j < 2; ++j)
-          evt.genTau[j] = MeasuredLepton(alpha * evt.genTau[j].p4(), evt.genTau[j].charge());
-        evt.genHorZ = evt.genTau[0] + evt.genTau[1];
-      }
-
-      const LorentzVector ttHorZ = (evt.genHorZ + evt.genTop[0] + evt.genTop[1]).p4(); // check
-      const double xa = (ttHorZ.e() + ttHorZ.pz()) * constants::invSqrtS;
-      const double xb = (ttHorZ.e() - ttHorZ.pz()) * constants::invSqrtS;
-      LOGDBG << "xa = " << xa << "; xb = " << xb;
-      if(xa <= 0. || xa >= 1. || xb <= 0. || xb >= 1.)
-      {
-        LOGWARN << "xa or xb have unphysical values";
-        prob_tth = -1.;
-        prob_ttz = -1.;
-        outTree -> Fill();
-        continue;
-      }
-      const std::array<LorentzVector, 2> g
-      {{
-        {0., 0., +0.5 * xa * constants::sqrtS, 0.5 * xa * constants::sqrtS},
-        {0., 0., -0.5 * xb * constants::sqrtS, 0.5 * xb * constants::sqrtS}
-      }};
-      const Vector boost(-ttHorZ.px() / ttHorZ.e(), -ttHorZ.py() / ttHorZ.e(), 0.);
-
-      // 0, g
-      // 1, g
-      // 2, b, associated W+ => associated lepton +
-      // 3, e+, associated W+ => associated lepton +
-      // 4, ve, associated W+ => associated lepton +
-      // 5, b~, associated W- => associated lepton -
-      // 6, e-, associated W- => associated lepton -
-      // 7, ve~, associated W- => associated lepton -
-      // 8, ta+ => associated lepton +
-      // 9, ta- => associated lepton -
-
-      PermutationLogger tth_logger;
-      PermutationLogger ttz_logger;
-      for(unsigned bIdx = 0; bIdx < 2; ++bIdx)
-        for(unsigned lIdx = 0; lIdx < 2; ++lIdx)
-          for(unsigned nIdx = 0; nIdx < 2; ++nIdx)
-          {
-            if(PermutationLogger::is_default(bIdx, lIdx, nIdx))
-            {
-              if(evt.genLepFromTop[lIdx].charge()       != +1)
-                throw_line(argv[0]) << "First lepton sign is not correct";
-              if(evt.genLepFromTop[oIdx(lIdx)].charge() != -1)
-                throw_line(argv[0]) << "Second lepton sign is not correct";
-            }
-
-            const std::array<LorentzVector, 10> boosted
-            {{
-              VectorUtil::boost(g[0],                                  boost),
-              VectorUtil::boost(g[1],                                  boost),
-              VectorUtil::boost(evt.genBQuarkFromTop[bIdx].p4(),       boost),
-              VectorUtil::boost(evt.genLepFromTop[lIdx].p4(),          boost),
-              VectorUtil::boost(evt.genNuFromTop[nIdx].p4(),           boost),
-              VectorUtil::boost(evt.genBQuarkFromTop[oIdx(bIdx)].p4(), boost),
-              VectorUtil::boost(evt.genLepFromTop[oIdx(lIdx)].p4(),    boost),
-              VectorUtil::boost(evt.genNuFromTop[oIdx(nIdx)].p4(),     boost),
-              VectorUtil::boost(evt.genTau[0].p4(),                    boost),
-              VectorUtil::boost(evt.genTau[1].p4(),                    boost)
-            }};
-            std::vector<double *> mgMomenta;
-            for(const LorentzVector & lv: boosted)
-            {
-              double * d = new double[4];
-              d[0] = lv.e();
-              d[1] = lv.px();
-              d[2] = lv.py();
-              d[3] = lv.pz();
-              mgMomenta.push_back(d);
-            }
-            tth_me.setMomenta(mgMomenta);
-            tth_me.sigmaKin();
-            ttz_me.setMomenta(mgMomenta);
-            ttz_me.sigmaKin();
-
-            const double curr_prob_tth = tth_me.getMatrixElements()[0];
-            const double curr_prob_ttz = ttz_me.getMatrixElements()[0];
-            tth_logger.process(curr_prob_tth, bIdx, lIdx, nIdx);
-            ttz_logger.process(curr_prob_ttz, bIdx, lIdx, nIdx);
-
-            std::for_each(mgMomenta.begin(), mgMomenta.end(),
-              [](double * & d) { delete d; d = 0; });
+            const double alpha = forceTauPairMass / evt.genHorZ.mass();
+            for(std::size_t j = 0; j < 2; ++j)
+              evt.genTau[j] = MeasuredLepton(alpha * evt.genTau[j].p4(), evt.genTau[j].charge());
+            evt.genHorZ = evt.genTau[0] + evt.genTau[1];
           }
-      prob_tth = tth_logger.get_default();
-      prob_ttz = ttz_logger.get_default();
-      prob_tth_best = tth_logger.get_best();
-      prob_ttz_best = ttz_logger.get_best();
-      outTree -> Fill();
 
-      const std::map<std::string, std::string> best_perm_str = {
-        { "tth", Form("%s/%s", id.c_str(), tth_logger.get_best_str().c_str()) },
-        { "ttz", Form("%s/%s", id.c_str(), ttz_logger.get_best_str().c_str()) }
+          const LorentzVector ttHorZ = (evt.genHorZ + evt.genTop[0] + evt.genTop[1]).p4(); // check
+          const double xa = (ttHorZ.e() + ttHorZ.pz()) * constants::invSqrtS;
+          const double xb = (ttHorZ.e() - ttHorZ.pz()) * constants::invSqrtS;
+          LOGDBG << "xa = " << xa << "; xb = " << xb;
+          if(xa <= 0. || xa >= 1. || xb <= 0. || xb >= 1.)
+          {
+            LOGWARN << "xa or xb have unphysical values";
+            prob_tth = -1.;
+            prob_ttz = -1.;
+            outTree -> Fill();
+            continue;
+          }
+          const std::array<LorentzVector, 2> g
+          {{
+            {0., 0., +0.5 * xa * constants::sqrtS, 0.5 * xa * constants::sqrtS},
+            {0., 0., -0.5 * xb * constants::sqrtS, 0.5 * xb * constants::sqrtS}
+          }};
+          const Vector boost(-ttHorZ.px() / ttHorZ.e(), -ttHorZ.py() / ttHorZ.e(), 0.);
+
+          // 0, g
+          // 1, g
+          // 2, b, associated W+ => associated lepton +
+          // 3, e+, associated W+ => associated lepton +
+          // 4, ve, associated W+ => associated lepton +
+          // 5, b~, associated W- => associated lepton -
+          // 6, e-, associated W- => associated lepton -
+          // 7, ve~, associated W- => associated lepton -
+          // 8, ta+ => associated lepton +
+          // 9, ta- => associated lepton -
+
+          PermutationLogger tth_logger;
+          PermutationLogger ttz_logger;
+          for(unsigned bIdx = 0; bIdx < 2; ++bIdx)
+            for(unsigned lIdx = 0; lIdx < 2; ++lIdx)
+              for(unsigned nIdx = 0; nIdx < 2; ++nIdx)
+              {
+                if(PermutationLogger::is_default(bIdx, lIdx, nIdx))
+                {
+                  if(evt.genLepFromTop[lIdx].charge()       != +1)
+                    throw_line(argv[0]) << "First lepton sign is not correct";
+                  if(evt.genLepFromTop[oIdx(lIdx)].charge() != -1)
+                    throw_line(argv[0]) << "Second lepton sign is not correct";
+                }
+
+                const std::array<LorentzVector, 10> boosted
+                {{
+                  VectorUtil::boost(g[0],                                  boost),
+                  VectorUtil::boost(g[1],                                  boost),
+                  VectorUtil::boost(evt.genBQuarkFromTop[bIdx].p4(),       boost),
+                  VectorUtil::boost(evt.genLepFromTop[lIdx].p4(),          boost),
+                  VectorUtil::boost(evt.genNuFromTop[nIdx].p4(),           boost),
+                  VectorUtil::boost(evt.genBQuarkFromTop[oIdx(bIdx)].p4(), boost),
+                  VectorUtil::boost(evt.genLepFromTop[oIdx(lIdx)].p4(),    boost),
+                  VectorUtil::boost(evt.genNuFromTop[oIdx(nIdx)].p4(),     boost),
+                  VectorUtil::boost(evt.genTau[0].p4(),                    boost),
+                  VectorUtil::boost(evt.genTau[1].p4(),                    boost)
+                }};
+                std::vector<double *> mgMomenta;
+                for(const LorentzVector & lv: boosted)
+                {
+                  double * d = new double[4];
+                  d[0] = lv.e();
+                  d[1] = lv.px();
+                  d[2] = lv.py();
+                  d[3] = lv.pz();
+                  mgMomenta.push_back(d);
+                }
+                tth_me.setMomenta(mgMomenta);
+                tth_me.sigmaKin();
+                ttz_me.setMomenta(mgMomenta);
+                ttz_me.sigmaKin();
+
+                const double curr_prob_tth = tth_me.getMatrixElements()[0];
+                const double curr_prob_ttz = ttz_me.getMatrixElements()[0];
+                tth_logger.process(curr_prob_tth, bIdx, lIdx, nIdx);
+                ttz_logger.process(curr_prob_ttz, bIdx, lIdx, nIdx);
+
+                std::for_each(mgMomenta.begin(), mgMomenta.end(),
+                  [](double * & d) { delete d; d = 0; });
+              }
+          prob_tth = tth_logger.get_default();
+          prob_ttz = ttz_logger.get_default();
+          prob_tth_best = tth_logger.get_best();
+          prob_ttz_best = ttz_logger.get_best();
+          outTree -> Fill();
+
+          const std::map<std::string, std::string> best_perm_str = {
+            { "tth", Form("%s/%s", id.c_str(), tth_logger.get_best_str().c_str()) },
+            { "ttz", Form("%s/%s", id.c_str(), ttz_logger.get_best_str().c_str()) }
+          };
+          for(const auto & kv: best_perm_str)
+            if(best_perms[kv.first].count(kv.second))
+              ++best_perms[kv.first][kv.second];
+            else
+              best_perms[kv.first][kv.second] = 1;
+
+          LOGDBG_S << "Evaluating tth ME for " << i << "th event ("
+                   << run << ':' << lumi << ':' << event << ")\n"
+                   << tth_logger;
+          LOGDBG_S << "Evaluating ttz ME for " << i << "th event ("
+                   << run << ':' << lumi << ':' << event << ")\n"
+                   << ttz_logger;
+
+          if(dumpToText)
+            outTxtFile << run << ':' << lumi << ':' << event << ','
+                       << std::scientific << std::setprecision(6)
+                       << prob_tth << ',' << prob_ttz << '\n';
+        }
+
+        outTree -> Write();
+        if(dumpToText)
+        {
+          outTxtFile.flush();
+          outTxtFile.close();
+          LOGINFO << "Wrote file: " << outTxtFileName;
+        }
+
+        if(file)
+          delete file;
+        if(outTree)
+          delete outTree;
+      }
+
+      const auto strmtov = [](const std::map<std::string, unsigned> & m)
+        -> std::vector<std::string>
+      {
+        std::vector<std::string> v;
+        for(const auto & kv: m)
+          v.push_back(Form("%s (%u)", kv.first.c_str(), kv.second));
+        return v;
       };
-      for(const auto & kv: best_perm_str)
-        if(best_perms[kv.first].count(kv.second))
-          ++best_perms[kv.first][kv.second];
-        else
-          best_perms[kv.first][kv.second] = 1;
 
-      LOGDBG_S << "Evaluating tth ME for " << i << "th event ("
-               << run << ':' << lumi << ':' << event << ")\n"
-               << tth_logger;
-      LOGDBG_S << "Evaluating ttz ME for " << i << "th event ("
-               << run << ':' << lumi << ':' << event << ")\n"
-               << ttz_logger;
-
-      if(dumpToText)
-        outTxtFile << run << ':' << lumi << ':' << event << ','
-                   << std::scientific << std::setprecision(6)
-                   << prob_tth << ',' << prob_ttz << '\n';
+      LOGDBG << "Best permutations: ";
+      LOGDBG << "TTH: " << boost::algorithm::join(strmtov(best_perms["tth"]), ", ");
+      LOGDBG << "TTZ: " << boost::algorithm::join(strmtov(best_perms["ttz"]), ", ");
     }
-
-    outTree -> Write();
-    if(dumpToText)
-    {
-      outTxtFile.flush();
-      outTxtFile.close();
-      LOGINFO << "Wrote file: " << outTxtFileName;
-    }
-
-    if(file)
-      delete file;
-    if(outTree)
-      delete outTree;
   }
-
-  const auto strmtov = [](const std::map<std::string, unsigned> & m)
-    -> std::vector<std::string>
-  {
-    std::vector<std::string> v;
-    for(const auto & kv: m)
-      v.push_back(Form("%s (%u)", kv.first.c_str(), kv.second));
-    return v;
-  };
-
-  LOGDBG << "Best permutations: ";
-  LOGDBG << "TTH: " << boost::algorithm::join(strmtov(best_perms["tth"]), ", ");
-  LOGDBG << "TTZ: " << boost::algorithm::join(strmtov(best_perms["ttz"]), ", ");
 
   outFile -> Write();
   LOGINFO << "Wrote output file: " << outputFileName;
