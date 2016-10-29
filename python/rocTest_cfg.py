@@ -2,8 +2,8 @@ import FWCore.ParameterSet.Config as cms, os
 
 roc = cms.PSet()
 
-baseDir = os.path.join(os.getenv("CMSSW_BASE"), "src/tthAnalysis/tthMEM")
-rocBaseDir = os.path.join(baseDir, 'data/roc_test')
+baseDir = os.path.join(os.getenv("CMSSW_BASE"), "src/tthAnalysis/tthMEM/data")
+rocBaseDir = os.path.join(baseDir, 'roc_test')
 
 roc.tthMEM = cms.PSet(
   signalFile = cms.string(os.path.join(rocBaseDir, 'testSignal.root')),

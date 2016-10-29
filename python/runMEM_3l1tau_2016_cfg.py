@@ -1,9 +1,12 @@
-import FWCore.ParameterSet.Config as cms
-import os
+import FWCore.ParameterSet.Config as cms, os
+
+useGen = True
 
 process = cms.PSet()
 
 baseDir = os.path.join(os.getenv("CMSSW_BASE"), "src/tthAnalysis/tthMEM/data/2016")
+if useGen:
+  baseDir = os.path.join(baseDir, "gen")
 
 process.fwliteInput = cms.PSet(
   fileNames = cms.vstring(os.path.join(baseDir, "out_3l_1tau_ttHToNonbb_M125_Tight_OS_central.root")),
