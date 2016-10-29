@@ -51,13 +51,13 @@ GeneratorLevelEvent_3l1tau::initialize()
 //--- the association between tau decay mode and genTau ourselves
   if(genLepFromTau.charge() == genTau[0].charge())
   {
-    leptonicTauDecayIdx_ = 0;
-    hadronicTauDecayIdx_ = 1;
+    leptonicTauDecayIdx = 0;
+    hadronicTauDecayIdx = 1;
   }
   else
   {
-    leptonicTauDecayIdx_ = 1;
-    hadronicTauDecayIdx_ = 0;
+    leptonicTauDecayIdx = 1;
+    hadronicTauDecayIdx = 0;
   }
 
 //--- calculate the integration variables in advance (we need to fill the TTree)
@@ -67,13 +67,13 @@ GeneratorLevelEvent_3l1tau::initialize()
   genIntVariables[Var_3l1tau::kBcosTheta2]     = std::cos(genNuFromTop[1].p3().theta());
   genIntVariables[Var_3l1tau::kBphi2]          = genNuFromTop[1].phi();
   genIntVariables[Var_3l1tau::kZ1]             = functions::z(
-    genTau[hadronicTauDecayIdx_].p4(), genHtau.p4()
+    genTau[hadronicTauDecayIdx].p4(), genHtau.p4()
   );
   genIntVariables[Var_3l1tau::kTauPhi]         = functions::phiFromLabMomenta(
-    genTau[hadronicTauDecayIdx_].p4(), genHtau.p4(), beamAxis_
+    genTau[hadronicTauDecayIdx].p4(), genHtau.p4(), beamAxis_
   );
   genIntVariables[Var_3l1tau::kTauPhiInv]      = functions::phiFromLabMomenta(
-    genTau[leptonicTauDecayIdx_].p4(), genLepFromTau.p4(), beamAxis_
+    genTau[leptonicTauDecayIdx].p4(), genLepFromTau.p4(), beamAxis_
   );
   genIntVariables[Var_3l1tau::kTauMinvSquared] = pow2(genDiNuFromLtau.mass());
 }
@@ -150,8 +150,8 @@ namespace tthMEM
   operator<<(std::ostream & os,
              const GeneratorLevelEvent_3l1tau & event)
   {
-    const std::size_t & lIdx = event.leptonicTauDecayIdx_;
-    const std::size_t & hIdx = event.hadronicTauDecayIdx_;
+    const std::size_t & lIdx = event.leptonicTauDecayIdx;
+    const std::size_t & hIdx = event.hadronicTauDecayIdx;
     os << "\tgenNuFromLtau:           " << event.genNuFromLtau   << '\n'
        << "\tgenNuLepFromTau:         " << event.genNuLepFromTau << '\n'
        << "\tgenLepFromTau:           " << event.genLepFromTau   << '\n'

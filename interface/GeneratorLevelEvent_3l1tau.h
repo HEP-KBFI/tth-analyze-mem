@@ -39,6 +39,9 @@ namespace tthMEM
     GeneratorParticle genHorZ;                  ///< Higgs or Z boson
     GeneratorParticle genDiNuFromLtau;          ///< di-neutrino from tau decaying leptonically
 
+    std::size_t leptonicTauDecayIdx; ///< index of genTau corresponding to leptonic tau decay
+    std::size_t hadronicTauDecayIdx; ///< index of genTau corresponding to hadronic tau decay
+
     void
     initialize();
 
@@ -69,9 +72,6 @@ namespace tthMEM
                const GeneratorLevelEvent_3l1tau & event);
 
   private:
-    std::size_t leptonicTauDecayIdx_; ///< index of genTau corresponding to leptonic tau decay
-    std::size_t hadronicTauDecayIdx_; ///< index of genTau corresponding to hadronic tau decay
-
     Vector beamAxis_; ///< beam axis in the lab
 
     std::unordered_map<Var_3l1tau, double, EnumClassHash> genIntVariables;
