@@ -54,9 +54,11 @@ ROC::ROC(const std::string & signalFileName,
     }
   );
 
+  LOGTRC << "Getting " << labels_[0] << " efficiencies";
   getROCcoords(signal, x);
   for(unsigned i = 0; i < bkgs.size(); ++i)
   {
+    LOGTRC << "Getting " << labels_[i + 1] << " efficiencies";
     std::vector<double> y;
     getROCcoords(bkgs[i], y);
     ys.push_back(y);
@@ -143,7 +145,7 @@ ROC::readInput(const std::string & fileName,
   }
   t.reset();
   f -> Close();
-  std::sort(values.begin(), values.end(), std::less<double>());
+  std::sort(values.begin(), values.end(), std::less<double>()); // ascending order
 }
 
 void
@@ -151,14 +153,25 @@ ROC::getROCcoords(const std::vector<double> & values,
                   std::vector<double> & coords)
 {
   const double nofEvents = static_cast<double>(values.size());
+//--- Loop over the working points (equally spaced in 0..1) and
+//--- decide how many values are smaller than the working point.
   for(unsigned i = 0; i < wp.size(); ++i)
   {
     unsigned j = 0;
+//--- Loop over values that are sorted in ascending order.
+//--- If the n-th value is greater than or equal to the working point,
+//--- stop there. Then there are n / N values smaller than the wp,
+//--- which means that there are 1 - n / N values greater than the wp,
+//--- (N being the total number of values considered), which in turn is
+//--- equal to the efficiency (i.e. the percentage of values out of all
+//--- values passing the working point).
     for(; j < values.size(); ++j)
       if(values[j] >= wp[i]) break;
-    coords.push_back(j / nofEvents);
+    const double eff = 1. - j / nofEvents;
+    LOGTRC << "Efficiency corresponding to WP = " << wp[i] << " is: " << eff;
+    coords.push_back(eff);
   }
-  coords.push_back(1.);
+  coords.push_back(0.);
 }
 
 int
