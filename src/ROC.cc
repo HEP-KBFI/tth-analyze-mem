@@ -268,14 +268,14 @@ ROC::getOptimalCutoff(unsigned idx)
   int currWPidx = -1.;
   const std::vector<double> & y = ys[idx];
   for(unsigned i = 0; i < x.size(); ++i)
+  {
+    const double d = std::sqrt(pow2(x[i] - 1) + pow2(y[i]));
+    if(d < dmin)
     {
-      const double d = std::sqrt(pow2(x[i] - 1) + pow2(y[i]));
-      if(d < dmin)
-      {
-        dmin = d;
-        currWPidx = i;
-      }
+      dmin = d;
+      currWPidx = i;
     }
+  }
   LOGDBG << "Minimum distance = " << dmin << " at ("
          << x[currWPidx] << ';' << y[currWPidx] << ')';
   return wp[currWPidx];
