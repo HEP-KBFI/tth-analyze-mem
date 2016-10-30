@@ -45,12 +45,26 @@ namespace tthMEM
     /**
      * @brief Calculates area under ROC curve (ROC AUC)
      * @param idx Index of background sample
-     * @return ROC AUC (or 0, if not enough input given)
+     * @return ROC AUC (or -1, if not enough input given)
      *
      * Plots no title nor axis labels if the title_, xAxisTitle_ or yAxisTitle not set
      */
     double
     getAUC(unsigned idx);
+
+    /**
+     * @brief Calculates optimal cutoff point in the ROC curve
+     * @param idx Index of background sample
+     * @return The cutoff point (or -1, if not enough input given)
+     *
+     * There are various ways to calculate the optimal cutoff point, but the easiest
+     * to understand is the method in which we find the point on the ROC curve closest
+     * to the ideal working point (i.e. signal efficiency is 1 and background efficiency
+     * is 0). Therefore we find the cutoff point (x, y) on ROC curve which minimizes
+     * the distance function sqrt((x - 1)^2 + y^2).
+     */
+    double
+    getOptimalCutoff(unsigned idx);
 
   private:
     std::string signalFileName_;            ///< signal file name

@@ -1,5 +1,6 @@
 #include "tthAnalysis/tthMEM/interface/ROC.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR, LOGINFO
+#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // pow2()
 
 #include <cstdlib> // EXIT_FAILURE, EXIT_SUCCESS
 #include <memory> // std::shared_ptr<>
@@ -250,11 +251,33 @@ ROC::plotROC()
 double
 ROC::getAUC(unsigned idx)
 {
-  if(! checkIfReady()) return 0.;
+  if(! checkIfReady()) return -1.;
   double auc = 0.;
   const std::vector<double> & y = ys[idx];
   for(unsigned i = 0; i < x.size() - 1; ++i)
     auc += (x[i + 1] - x[i]) * (y[i] + y[i + 1]) / 2.;
-  return auc;
+//--- x-coordinates are sorted in descending order (@see getROCcoords())
+  return -auc;
+}
+
+double
+ROC::getOptimalCutoff(unsigned idx)
+{
+  if(! checkIfReady()) return -1.;
+  double dmin = +1.e3;
+  int currWPidx = -1.;
+  const std::vector<double> & y = ys[idx];
+  for(unsigned i = 0; i < x.size(); ++i)
+    {
+      const double d = std::sqrt(pow2(x[i] - 1) + pow2(y[i]));
+      if(d < dmin)
+      {
+        dmin = d;
+        currWPidx = i;
+      }
+    }
+  LOGDBG << "Minimum distance = " << dmin << " at ("
+         << x[currWPidx] << ';' << y[currWPidx] << ')';
+  return wp[currWPidx];
 }
 

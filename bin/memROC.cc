@@ -67,8 +67,13 @@ main(int argc,
     return EXIT_FAILURE;
   }
   for(unsigned i = 1; i < labels.size(); ++i)
+  {
     LOGINFO << "MEM ROC AUC (" << labels[0] << " vs "
             << labels[i] << ") = " << roc.getAUC(i - 1);
+    const double cp = roc.getOptimalCutoff(i - 1);
+    LOGINFO << "MEM ROC optimal cutoff point (" << labels[0] << " vs "
+            << labels[i] << ") = " << cp;
+  }
 
   return EXIT_SUCCESS;
 }
