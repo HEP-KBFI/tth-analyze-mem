@@ -9,8 +9,8 @@ pythonCfgTemplate = r"""import FWCore.ParameterSet.Config as cms
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-  fileNames = cms.vstring('{{ inFileName }}'),
-  maxEvents = cms.int32({{ maxEvents }}),
+  fileNames   = cms.vstring('{{ inFileName }}'),
+  maxEvents   = cms.int32({{ maxEvents }}),
   outputEvery = cms.uint32(50)
 )
 
@@ -18,10 +18,10 @@ process.fwliteOutput = cms.PSet(
   fileName = cms.string('{{ outFileName }}')
 )
 
-process.logging = cms.PSet(
-  logLevel = cms.string("info"),
+process.logging   = cms.PSet(
+  logLevel        = cms.string("info"),
   enableTimeStamp = cms.bool(True),
-  enableLogging = cms.bool(True)
+  enableLogging   = cms.bool(True)
 )
 
 process.tthMEM = cms.PSet(
@@ -58,18 +58,21 @@ pythonROCcfgTemplate = r"""import FWCore.ParameterSet.Config as cms
 roc = cms.PSet()
 
 roc.tthMEM = cms.PSet(
-  signalFile = cms.string('{{ signalFile }}'),
-  bkgFiles = cms.vstring('{{ bkgFiles|join('\', \'') }}'),
-  outFolder = cms.string('{{ outFolder }}'),
-  treeName = cms.string('{{ treeName }}'),
-  branchName = cms.string('{{ branchName }}'),
-  labels = cms.vstring('{{ labels|join('\', \'') }}'),
+  signalFile     = cms.string('{{ signalFile }}'),
+  bkgFiles       = cms.vstring('{{ bkgFiles|join('\', \'') }}'),
+  outFolder      = cms.string('{{ outFolder }}'),
+  csvOutFolder   = cms.string('{{ csvOutFolder }}'),
+  treeName       = cms.string('{{ treeName }}'),
+  branchName     = cms.string('{{ branchName }}'),
+  labels         = cms.vstring('{{ labels|join('\', \'') }}'),
   legendPosition = cms.vdouble({{ legendPosition|join(', ') }})
 )
 
 """
 
-jobTemplate = r"""#!/bin/bash
+jobTemplate = r"""#!/bin/bash -l
+
+set -v
 
 echo -n "Current time: "
 date
@@ -78,27 +81,20 @@ hostname
 
 echo -e "\n\nInitializing CMSSW run-time environment"
 
-echo "shopt -s expand_aliases"
 shopt -s expand_aliases
-
-echo "source /cvmfs/cms.cern.ch/cmsset_default.sh"
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 
 echo -e "\n\nGoing to directory {{ cmsswSrcDir }} and calling cmsenv there"
-echo "cd {{ cmsswSrcDir }}"
 cd {{ cmsswSrcDir }}
 cmsenv
 
 echo -e "\n\nCreating folder $(dirname {{ inFileNameScratch }})"
-echo "mkdir -p $(dirname {{ inFileNameScratch }})"
 mkdir -p $(dirname {{ inFileNameScratch }})
 
 echo -e "\n\nCreating folder $(dirname {{ outFileNameScratch }})"
-echo "mkdir -p $(dirname {{ outFileNameScratch }})"
 mkdir -p $(dirname {{ outFileNameScratch }})
 
 echo -e "\n\nCopying {{ inFileNameLocal }} to {{ inFileNameScratch }}"
-echo "cp {{ inFileNameLocal }} {{ inFileNameScratch }}"
 cp {{ inFileNameLocal }} {{ inFileNameScratch }}
 
 echo -e "\n\nRunning {{ execName }}"
@@ -112,19 +108,12 @@ echo -n -e "\n\nFinished at "
 date
 
 echo -e "\n\nCreating directory $(dirname {{ outFileNameLocal }})"
-echo "mkdir -p $(dirname {{ outFileNameLocal }})"
 mkdir -p $(dirname {{ outFileNameLocal }})
 
 echo -e "\n\nMoving {{ outFileNameScratch }} to {{ outFileNameLocal }}"
-
-echo "mkdir -p $(dirname {{ outFileNameLocal }})"
-mkdir -p $(dirname {{ outFileNameLocal }})
-
-echo "mv {{ outFileNameScratch }} {{ outFileNameLocal }}"
 mv {{ outFileNameScratch }} {{ outFileNameLocal }}
 
 echo -e "\n\nCleaning up"
-echo "rm -rf $(dirname {{ inFileNameScratch }})"
 rm -rf $(dirname {{ inFileNameScratch }})
 
 echo -e "\n\nDone"
@@ -214,43 +203,44 @@ def createPythonCfg(isMC, is2016, inFileName, maxEvents, outFileName, treeName,
                     debugPlots, forceGenLevel, higgsWidth, clampVariables,
                     markovChainParams, rleSelectionFile):
   return jinja2.Template(pythonCfgTemplate).render(
-    isMC = isMC,
-    is2016 = is2016,
-    inFileName = inFileName,
-    maxEvents = maxEvents,
-    outFileName = outFileName,
-    treeName = treeName,
-    rleSelectionFile = rleSelectionFile,
-    integrationMode = integrationMode,
+    isMC                = isMC,
+    is2016              = is2016,
+    inFileName          = inFileName,
+    maxEvents           = maxEvents,
+    outFileName         = outFileName,
+    treeName            = treeName,
+    rleSelectionFile    = rleSelectionFile,
+    integrationMode     = integrationMode,
     maxObjFunctionCalls = maxObjFunctionCalls,
-    startingFromEntry = startingFromEntry,
-    debugPlots = debugPlots,
-    forceGenLevel = forceGenLevel,
-    higgsWidth = higgsWidth,
-    clampVariables = clampVariables,
-    markovChainParams = markovChainParams)
+    startingFromEntry   = startingFromEntry,
+    debugPlots          = debugPlots,
+    forceGenLevel       = forceGenLevel,
+    higgsWidth          = higgsWidth,
+    clampVariables      = clampVariables,
+    markovChainParams   = markovChainParams)
 
-def createPythonROCcfg(signalFile, bkgFiles, outFolder, treeName,
+def createPythonROCcfg(signalFile, bkgFiles, outFolder, csvOutFolder, treeName,
                        branchName, labels, legendPosition):
   return jinja2.Template(pythonROCcfgTemplate).render(
-    signalFile = signalFile,
-    bkgFiles = bkgFiles,
-    outFolder = outFolder,
-    treeName = treeName,
-    branchName = branchName,
-    labels = labels,
+    signalFile     = signalFile,
+    bkgFiles       = bkgFiles,
+    outFolder      = outFolder,
+    csvOutFolder   = csvOutFolder,
+    treeName       = treeName,
+    branchName     = branchName,
+    labels         = labels,
     legendPosition = legendPosition)
 
 def createBashCfg(inFileNameLocal, outFileNameLocal, inFileNameScratch,
                   outFileNameScratch, execName, pythonCfg, cmsswSrcDir):
   return jinja2.Template(jobTemplate).render(
-    inFileNameLocal = inFileNameLocal,
-    outFileNameLocal = outFileNameLocal,
-    inFileNameScratch = inFileNameScratch,
+    inFileNameLocal    = inFileNameLocal,
+    outFileNameLocal   = outFileNameLocal,
+    inFileNameScratch  = inFileNameScratch,
     outFileNameScratch = outFileNameScratch,
-    execName = execName,
-    pythonCfg = pythonCfg,
-    cmsswSrcDir = cmsswSrcDir)
+    execName           = execName,
+    pythonCfg          = pythonCfg,
+    cmsswSrcDir        = cmsswSrcDir)
 
 def createSbatch(bashScript, logFile):
   return jinja2.Template(sbatchTemplate).render(
@@ -259,11 +249,11 @@ def createSbatch(bashScript, logFile):
 def createMakefile(waitingScript, outFileNameLocalArray, scratchDir,
                    rocOutFileNames, rocCmd, rocCfg, inputBkgFiles, inputSignalFile):
   return jinja2.Template(makefileTemplate).render(
-    waitingScript = waitingScript,
+    waitingScript         = waitingScript,
     outFileNameLocalArray = outFileNameLocalArray,
-    scratchDir = scratchDir,
-    rocOutFileNames = rocOutFileNames,
-    rocCmd = rocCmd,
-    rocCfg = rocCfg,
-    inputBkgFiles = inputBkgFiles,
-    inputSignalFile = inputSignalFile)
+    scratchDir            = scratchDir,
+    rocOutFileNames       = rocOutFileNames,
+    rocCmd                = rocCmd,
+    rocCfg                = rocCfg,
+    inputBkgFiles         = inputBkgFiles,
+    inputSignalFile       = inputSignalFile)

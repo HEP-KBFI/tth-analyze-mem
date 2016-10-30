@@ -49,6 +49,7 @@ main(int argc,
     return EXIT_FAILURE;
   }
   const std::string outputFolderName = cfg_tthMEM.getParameter<std::string>("outFolder");
+  const std::string csvOutputFolderName = cfg_tthMEM.getParameter<std::string>("csvOutFolder");
   const vstring labels = cfg_tthMEM.getParameter<vstring>("labels");
   if(labels.size() != bkgFileNames.size() + 1)
   {
@@ -57,7 +58,7 @@ main(int argc,
   }
 
   tthMEM::ROC roc(
-   signalFileName,  bkgFileNames, outputFolderName,
+   signalFileName,  bkgFileNames, outputFolderName, csvOutputFolderName,
    treeName, branchName, labels
   );
   if(legPos.size()) roc.setLegendPosition(legPos);

@@ -32,11 +32,12 @@ def createJobs(samples, channel, year, version, central_or_shifts, charge_select
 
   rocDir      = os.path.join(memDir, "roc")
   rocPlotDir  = os.path.join(rocDir, "plots")
+  rocCSVDir   = os.path.join(rocDir, "csvs")
   rocCmd = "memROC"
 
   sbatchBashFiles, sbatchLogFiles = [], []
   outFileNameLocalArray = {}
-  rocLabels, rocOutFileNames = [], []
+  rocLabels, rocOutFileNames, rocCSVOutFileNames = [], [], []
   inputSignalFile = ""
   inputBkgFiles = {}
 
@@ -145,8 +146,8 @@ def createJobs(samples, channel, year, version, central_or_shifts, charge_select
   rocCfgFile = os.path.join(rocDir, "cfg.py")
   if not os.path.exists(rocDir):
     os.makedirs(rocDir)
-  rocCfgContents = createPythonROCcfg(inputSignalFile, inputBkgFiles.keys(), rocPlotDir, treeName,
-                                      lhRatioBranchName, rocLabels, rocLegendPosition)
+  rocCfgContents = createPythonROCcfg(inputSignalFile, inputBkgFiles.keys(), rocPlotDir, rocCSVDir,
+                                      treeName, lhRatioBranchName, rocLabels, rocLegendPosition)
   with codecs.open(rocCfgFile, 'w', 'utf-8') as f: f.write(rocCfgContents)
 
   makeFile = os.path.join(baseDir, "_".join(["Makefile", channel, "mem"]))

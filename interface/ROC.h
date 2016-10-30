@@ -18,6 +18,7 @@ namespace tthMEM
     ROC(const std::string & signalFileName,
         const std::vector<std::string> & bkgFileNames,
         const std::string & outFolderName,
+        const std::string & csvOutFolderName,
         const std::string & treeName,
         const std::string & branchName,
         const std::vector<std::string> & labels);
@@ -69,7 +70,8 @@ namespace tthMEM
   private:
     std::string signalFileName_;            ///< signal file name
     std::vector<std::string> bkgFileNames_; ///< list of background file names
-    std::string outFolderName_;             ///< output folder name
+    std::string outFolderName_;             ///< output folder name for plots (pdf's)
+    std::string csvOutFolderName_;          ///< output folder name for csv files
     std::string treeName_;                  ///< input tree name
     std::string branchName_;
     ///< branch name in which Neyman-Pearson scores are stored

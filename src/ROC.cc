@@ -6,6 +6,7 @@
 #include <memory> // std::shared_ptr<>
 #include <functional> // std::less<>
 #include <algorithm> // std::generate()
+#include <fstream> // std::ofstream
 
 #include <boost/filesystem/path.hpp> // boost::filesystem::path
 #include <boost/filesystem/operations.hpp> // boost::filesystem::exists(), ...
@@ -26,12 +27,14 @@ using namespace tthMEM;
 ROC::ROC(const std::string & signalFileName,
          const std::vector<std::string> & bkgFileNames,
          const std::string & outFolderName,
+         const std::string & csvOutFolderName,
          const std::string & treeName,
          const std::string & branchName,
          const std::vector<std::string> & labels)
   : signalFileName_(signalFileName)
   , bkgFileNames_(bkgFileNames)
   , outFolderName_(outFolderName)
+  , csvOutFolderName_(csvOutFolderName)
   , treeName_(treeName)
   , branchName_(branchName)
   , labels_(labels)
@@ -112,10 +115,30 @@ ROC::checkIfReady() const
     LOGERR << "Output file name empty";
     return false;
   }
-  else if(! boost::filesystem::exists(outFolderName_))
+  else if(! boost::filesystem::is_directory(outFolderName_))
   {
+    if(boost::filesystem::exists(outFolderName_))
+    {
+      LOGERR << "File '" << outFolderName_ << "' exists, thus cannot create the folder";
+      return false;
+    }
     LOGWARN << "Folder '" << outFolderName_ << "' does not exist -> creating one";
     boost::filesystem::create_directories(outFolderName_);
+  }
+  if(csvOutFolderName_ == "")
+  {
+    LOGERR << "CSV output folder name empty";
+    return false;
+  }
+  else if(! boost::filesystem::is_directory(csvOutFolderName_))
+  {
+    if(boost::filesystem::exists(csvOutFolderName_))
+    {
+      LOGERR << "File '" << csvOutFolderName_ << "' exists, thus cannot create the folder";
+      return false;
+    }
+    LOGWARN << "Folder '" << csvOutFolderName_ << "' does not exist -> creating one";
+    boost::filesystem::create_directories(csvOutFolderName_);
   }
 
   std::vector<std::string> fileNames = bkgFileNames_;
@@ -209,12 +232,24 @@ ROC::plotROC()
     g -> SetMinimum(0.);
     g -> SetMaximum(1.);
 
+//--- save the plot to a pdf
     const path outFileName(
       path(outFolderName_) /
       path(std::string(Form("roc_%s_%s.pdf", labels_[0].c_str(), labels_[i + 1].c_str())))
     );
     c -> SaveAs(outFileName.c_str());
     grs.push_back(g);
+
+//--- dump the coordinates of the ROC curve to a CSV file
+    const path outCSVFileName(
+      path(csvOutFolderName_) /
+      path(std::string(Form("roc_%s_%s.csv", labels_[0].c_str(), labels_[i + 1].c_str())))
+    );
+    std::ofstream outCSV(outCSVFileName.string());
+    for(unsigned j = 0; j < x.size() - 1; ++j)
+      outCSV << x[j] << ',' << y[j] << ',' << wp[j] << '\n';
+    outCSV << 0. << ',' << 0. << ',' << 1. << '\n';
+    LOGINFO << "Created file = " << outCSVFileName.string();
   }
 
 //--- if there is only one background, there is no need to create a combined plot of

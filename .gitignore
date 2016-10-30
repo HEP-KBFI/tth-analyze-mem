@@ -6,3 +6,4 @@
 *.user
 __init__.py
 *.pyc
+*.csv
