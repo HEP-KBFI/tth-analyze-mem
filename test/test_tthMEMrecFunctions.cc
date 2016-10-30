@@ -12,7 +12,56 @@ class Test_tthMEMrecFunctions
   : public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE(Test_tthMEMrecFunctions);
+//-------------------------------------------------------------------------------------------------
+  CPPUNIT_TEST(testHtauMass);
+  CPPUNIT_TEST(testLtauMass);
   CPPUNIT_TEST(testHmass);
+  CPPUNIT_TEST(testW1mass);
+  CPPUNIT_TEST(testW2mass);
+  CPPUNIT_TEST(testTop1mass);
+  CPPUNIT_TEST(testTop2mass);
+//-------------------------------------------------------------------------------------------------
+  CPPUNIT_TEST(testDiNeutrinoSystem_e);
+  CPPUNIT_TEST(testDiNeutrinoSystem_m);
+  CPPUNIT_TEST(testDiNeutrinoSystem_px);
+  CPPUNIT_TEST(testDiNeutrinoSystem_py);
+  CPPUNIT_TEST(testDiNeutrinoSystem_pz);
+  CPPUNIT_TEST(testLeptonicTauBranch_e);
+  CPPUNIT_TEST(testLeptonicTauBranch_m);
+  CPPUNIT_TEST(testLeptonicTauBranch_px);
+  CPPUNIT_TEST(testLeptonicTauBranch_py);
+  CPPUNIT_TEST(testLeptonicTauBranch_pz);
+  CPPUNIT_TEST(testHadronicTauBranch_e);
+  CPPUNIT_TEST(testHadronicTauBranch_m);
+  CPPUNIT_TEST(testHadronicTauBranch_px);
+  CPPUNIT_TEST(testHadronicTauBranch_py);
+  CPPUNIT_TEST(testHadronicTauBranch_pz);
+  CPPUNIT_TEST(testHiggsReconstruction_e);
+  CPPUNIT_TEST(testHiggsReconstruction_m);
+  CPPUNIT_TEST(testHiggsReconstruction_px);
+  CPPUNIT_TEST(testHiggsReconstruction_py);
+  CPPUNIT_TEST(testHiggsReconstruction_pz);
+  CPPUNIT_TEST(testW1reconstruction_e);
+  CPPUNIT_TEST(testW1reconstruction_m);
+  CPPUNIT_TEST(testW1reconstruction_px);
+  CPPUNIT_TEST(testW1reconstruction_py);
+  CPPUNIT_TEST(testW1reconstruction_pz);
+  CPPUNIT_TEST(testW2reconstruction_e);
+  CPPUNIT_TEST(testW2reconstruction_m);
+  CPPUNIT_TEST(testW2reconstruction_px);
+  CPPUNIT_TEST(testW2reconstruction_py);
+  CPPUNIT_TEST(testW2reconstruction_pz);
+  CPPUNIT_TEST(testTop1Reconstruction_e);
+  CPPUNIT_TEST(testTop1Reconstruction_m);
+  CPPUNIT_TEST(testTop1Reconstruction_px);
+  CPPUNIT_TEST(testTop1Reconstruction_py);
+  CPPUNIT_TEST(testTop1Reconstruction_pz);
+  CPPUNIT_TEST(testTop2Reconstruction_e);
+  CPPUNIT_TEST(testTop2Reconstruction_m);
+  CPPUNIT_TEST(testTop2Reconstruction_px);
+  CPPUNIT_TEST(testTop2Reconstruction_py);
+  CPPUNIT_TEST(testTop2Reconstruction_pz);
+//-------------------------------------------------------------------------------------------------
   CPPUNIT_TEST(testZ2);
   CPPUNIT_TEST(testNuHTauEnergy);
   CPPUNIT_TEST(testNuLTauEnergy);
@@ -31,31 +80,40 @@ class Test_tthMEMrecFunctions
 
 public:
 
-  /* Test event: 1:13167:2616317 from the sample
+  /* Test event: 1:3347:665066 from the sample
    * /ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM
    */
   const Vector beamAxis{0., 0., 1.};
-  const LorentzVector hTauLepton = getLorentzVector(LV{107.000, -0.828, -1.700,   0.739}); // lepton          from tau decaying hadronically (aka hadronic tau)
-  const LorentzVector hTauNu     = getLorentzVector(LV{ 39.100, -0.813, -1.690,   0.000}); // neutrino        from tau decaying hadronically
-  const LorentzVector hTau       = getLorentzVector(LV{146.000, -0.824, -1.700,   1.780}); // tau decaying hadronically
-  const LorentzVector lTauLepton = getLorentzVector(LV{ 40.000, -0.092, -2.290,   0.106}); // lepton             from tau decaying leptonically
-  const LorentzVector lTauLeptNu = getLorentzVector(LV{ 45.900, -0.097, -2.280,   0.000}); // lepton neutrino    from tau decaying leptonically
-  const LorentzVector lTauTauNu  = getLorentzVector(LV{ 36.700, -0.116, -2.260,   0.000}); // tau neutrino       from tau decaying leptonically
-  const LorentzVector lTauDiNu   = getLorentzVector(LV{ 82.600, -0.106, -2.270,   1.130}); // di-neutrino system from tau decaying leptonically
-  const LorentzVector lTau       = getLorentzVector(LV{123.000, -0.101, -2.280,   1.780}); // tau decaying leptonically
-  const LorentzVector H          = getLorentzVector(LV{258.000, -0.542, -1.960, 125.000}); // Higgs
-  const LorentzVector lW0        = getLorentzVector(LV{100.000, -0.416,  0.971,   0.106}); // lepton   from W boson decay (1)
-  const LorentzVector nuW0       = getLorentzVector(LV{ 18.200, -1.590, -0.605,   0.000}); // neutrino from W boson decay (1)
-  const LorentzVector b0         = getLorentzVector(LV{207.000, -0.380,  1.500,   4.750}); // b quark  from t quark decay (1)
-  const LorentzVector W0         = getLorentzVector(LV{102.000, -0.766,  0.791,  80.400}); // W boson  from t quark decay (1)
-  const LorentzVector t0         = getLorentzVector(LV{292.000, -0.543,  1.270, 173.000}); // t quark                     (1)
-  const LorentzVector lW1        = getLorentzVector(LV{ 13.900, -0.198,  2.240,   0.106}); // lepton   from W boson decay (2)
-  const LorentzVector nuW1       = getLorentzVector(LV{125.000, -0.494, -1.560,   0.000}); // neutrino from W boson decay (2)
-  const LorentzVector b1         = getLorentzVector(LV{ 43.900, -1.250,  0.753,   4.750}); // b quark  from t quark decay (2)
-  const LorentzVector W1         = getLorentzVector(LV{114.000, -0.557, -1.630,  79.900}); // W boson  from t quark decay (2)
-  const LorentzVector t1         = getLorentzVector(LV{ 87.500, -1.230, -1.280, 173.000}); // t quark                     (2)
+  const LorentzVector hTauLepton = getLorentzVector(LV{ 77.240, -0.818, -2.835,   0.623}); // lepton          from tau decaying hadronically (aka hadronic tau)
+  const LorentzVector hTauNu     = getLorentzVector(LV{352.600, -0.812, -2.834,   0.000}); // neutrino        from tau decaying hadronically
+  const LorentzVector hTau       = getLorentzVector(LV{429.900, -0.813, -2.834,   1.777}); // tau decaying hadronically
+  const LorentzVector lTauLepton = getLorentzVector(LV{ 70.060, -1.228, -2.661,   0.106}); // lepton             from tau decaying leptonically
+  const LorentzVector lTauLeptNu = getLorentzVector(LV{ 77.080, -1.216, -2.655,   0.000}); // lepton neutrino    from tau decaying leptonically
+  const LorentzVector lTauTauNu  = getLorentzVector(LV{ 34.030, -1.214, -2.641,   0.000}); // tau neutrino       from tau decaying leptonically
+  const LorentzVector lTauDiNu   = getLorentzVector(LV{111.100, -1.215, -2.651,   0.724}); // di-neutrino system from tau decaying leptonically
+  const LorentzVector lTau       = getLorentzVector(LV{181.200, -1.220, -2.655,   1.777}); // tau decaying leptonically
+  const LorentzVector H          = getLorentzVector(LV{609.100, -0.950, -2.781, 124.900}); // Higgs
+  const LorentzVector lW0        = getLorentzVector(LV{ 67.670, -0.107, -3.006,   0.001}); // lepton   from W boson decay (1)
+  const LorentzVector nuW0       = getLorentzVector(LV{ 94.340, -0.699, -2.198,   0.000}); // neutrino from W boson decay (1)
+  const LorentzVector b0         = getLorentzVector(LV{124.900, -0.708,  2.777,   4.750}); // b quark  from t quark decay (1)
+  const LorentzVector W0         = getLorentzVector(LV{149.300, -0.505, -2.532,  79.070}); // W boson  from t quark decay (1)
+  const LorentzVector t0         = getLorentzVector(LV{242.600, -0.669, -2.972, 170.200}); // t quark                     (1)
+  const LorentzVector lW1        = getLorentzVector(LV{137.000, -0.204,  0.520,   0.106}); // lepton   from W boson decay (2)
+  const LorentzVector nuW1       = getLorentzVector(LV{366.000,  0.087,  0.302,   0.000}); // neutrino from W boson decay (2)
+  const LorentzVector b1         = getLorentzVector(LV{305.200, -0.249,  0.112,   4.750}); // b quark  from t quark decay (2)
+  const LorentzVector W1         = getLorentzVector(LV{500.600,  0.007,  0.361,  81.530}); // W boson  from t quark decay (2)
+  const LorentzVector t1         = getLorentzVector(LV{799.900, -0.092,  0.267, 174.400}); // t quark                     (2)
   const double measuredVisMassSquared = (hTauLepton + lTauLepton).mass2();
-
+//-----------------------------------------------------------------------------------------------------------------
+  const LorentzVector lTauDiNuReco = lTauLeptNu + lTauTauNu;
+  const LorentzVector lTauReco     = lTauDiNuReco + lTauLepton;
+  const LorentzVector hTauReco     = hTauNu + hTauLepton;
+  const LorentzVector hReco        = lTauReco + hTauReco;
+  const LorentzVector W0reco       = lW0 + nuW0;
+  const LorentzVector W1reco       = lW1 + nuW1;
+  const LorentzVector T0reco       = W0reco + b0;
+  const LorentzVector T1reco       = W1reco + b1;
+//-----------------------------------------------------------------------------------------------------------------
   double z1, z2;
   double cosThetaH, cosThetaL;
   double thetaH, thetaL;
@@ -108,13 +166,431 @@ public:
   }
 
   /**
+   * @brief Test whether reconstructed tau mass decaying hadronically is good enough for the unit tests
+   */
+  void
+  testHtauMass()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(hTauReco.mass(), constants::massTau, constants::gammaTau);
+  }
+
+  /**
+   * @brief Test whether reconstructed tau mass decaying leptonically is good enough for the unit tests
+   */
+  void
+  testLtauMass()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lTauReco.mass(), constants::massTau, constants::gammaTau);
+  }
+
+  /**
    * @brief Test whether reconstructed H mass is good enough for the unit tests
    */
   void
   testHmass()
   {
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(H.mass(), constants::massHiggs, constants::gammaHiggs);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(hReco.mass(), constants::massHiggs, constants::gammaHiggs);
   }
+
+  /**
+   * @brief Test whether reconstructed W mass in the 1st leg is good enough for the unit tests
+   */
+  void
+  testW1mass()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(W0reco.mass(), constants::massW, constants::gammaW);
+  }
+
+  /**
+   * @brief Test whether reconstructed W mass in the 2nd leg is good enough for the unit tests
+   */
+  void
+  testW2mass()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(W1reco.mass(), constants::massW, constants::gammaW);
+  }
+
+  /**
+   * @brief Test whether reconstructed top mass in the 1st leg is good enough for the unit tests
+   */
+  void
+  testTop1mass()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(T0reco.mass(), constants::massT, constants::gammaT);
+  }
+
+  /**
+   * @brief Test whether reconstructed top mass in the 2nd leg is good enough for the unit tests
+   */
+  void
+  testTop2mass()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(T1reco.mass(), constants::massT, constants::gammaT);
+  }
+
+//-------------------------------------------------------------------------------------------------
+
+  /**
+   * @brief Test whether hardcoded and reconstructed di-neutrino system have the same energy
+   */
+  void
+  testDiNeutrinoSystem_e()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lTauDiNu.e(), lTauDiNuReco.e(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed di-neutrino system have the same mass
+   */
+  void
+  testDiNeutrinoSystem_m()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lTauDiNu.mass(), lTauDiNuReco.mass(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed di-neutrino system have the same px
+   */
+  void
+  testDiNeutrinoSystem_px()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lTauDiNu.px(), lTauDiNuReco.px(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed di-neutrino system have the same py
+   */
+  void
+  testDiNeutrinoSystem_py()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lTauDiNu.py(), lTauDiNuReco.py(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed di-neutrino system have the same pz
+   */
+  void
+  testDiNeutrinoSystem_pz()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lTauDiNu.pz(), lTauDiNuReco.pz(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed tau decaying leptonically have the same energy
+   */
+  void
+  testLeptonicTauBranch_e()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lTau.e(), lTauReco.e(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed tau decaying leptonically have the same mass
+   */
+  void
+  testLeptonicTauBranch_m()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lTau.mass(), lTauReco.mass(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed tau decaying leptonically have the same px
+   */
+  void
+  testLeptonicTauBranch_px()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lTau.px(), lTauReco.px(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed tau decaying leptonically have the same py
+   */
+  void
+  testLeptonicTauBranch_py()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lTau.py(), lTauReco.py(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed tau decaying leptonically have the same pz
+   */
+  void
+  testLeptonicTauBranch_pz()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lTau.pz(), lTauReco.pz(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed tau decaying hadronically have the same energy
+   */
+  void
+  testHadronicTauBranch_e()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(hTau.e(), hTauReco.e(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed tau decaying hadronically have the same mass
+   */
+  void
+  testHadronicTauBranch_m()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(hTau.mass(), hTauReco.mass(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed tau decaying hadronically have the same px
+   */
+  void
+  testHadronicTauBranch_px()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(hTau.px(), hTauReco.px(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed tau decaying hadronically have the same py
+   */
+  void
+  testHadronicTauBranch_py()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(hTau.py(), hTauReco.py(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed tau decaying hadronically have the same pz
+   */
+  void
+  testHadronicTauBranch_pz()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(hTau.pz(), hTauReco.pz(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed Higgs have the same energy
+   */
+  void
+  testHiggsReconstruction_e()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(H.e(), hReco.e(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed Higgs have the same mass
+   */
+  void
+  testHiggsReconstruction_m()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(H.mass(), hReco.mass(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed Higgs have the same px
+   */
+  void
+  testHiggsReconstruction_px()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(H.px(), hReco.px(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed Higgs have the same py
+   */
+  void
+  testHiggsReconstruction_py()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(H.py(), hReco.py(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed Higgs have the same pz
+   */
+  void
+  testHiggsReconstruction_pz()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(H.pz(), hReco.pz(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed W in the 1st leg have the same energy
+   */
+  void
+  testW1reconstruction_e()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(W0.e(), W0reco.e(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed W in the 1st leg have the same mass
+   */
+  void
+  testW1reconstruction_m()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(W0.mass(), W0reco.mass(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed W in the 1st leg have the same px
+   */
+  void
+  testW1reconstruction_px()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(W0.px(), W0reco.px(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed W in the 1st leg have the same py
+   */
+  void
+  testW1reconstruction_py()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(W0.py(), W0reco.py(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed W in the 1st leg have the same pz
+   */
+  void
+  testW1reconstruction_pz()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(W0.pz(), W0reco.pz(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed W in the 2nd leg have the same energy
+   */
+  void
+  testW2reconstruction_e()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(W1.e(), W1reco.e(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed W in the 2nd leg have the same mass
+   */
+  void
+  testW2reconstruction_m()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(W1.mass(), W1reco.mass(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed W in the 2nd leg have the same px
+   */
+  void
+  testW2reconstruction_px()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(W1.px(), W1reco.px(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed W in the 2nd leg have the same py
+   */
+  void
+  testW2reconstruction_py()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(W1.py(), W1reco.py(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed W in the 2nd leg have the same pz
+   */
+  void
+  testW2reconstruction_pz()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(W1.pz(), W1reco.pz(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed top in the 1st leg have the same energy
+   */
+  void
+  testTop1Reconstruction_e()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(t0.e(), T0reco.e(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed top in the 1st leg have the same mass
+   */
+  void
+  testTop1Reconstruction_m()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(t0.mass(), T0reco.mass(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed top in the 1st leg have the same px
+   */
+  void
+  testTop1Reconstruction_px()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(t0.px(), T0reco.px(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed top in the 1st leg have the same py
+   */
+  void
+  testTop1Reconstruction_py()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(t0.py(), T0reco.py(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed top in the 1st leg have the same pz
+   */
+  void
+  testTop1Reconstruction_pz()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(t0.pz(), T0reco.pz(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed top in the 2nd leg have the same energy
+   */
+  void
+  testTop2Reconstruction_e()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(t1.e(), T1reco.e(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed top in the 2nd leg have the same mass
+   */
+  void
+  testTop2Reconstruction_m()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(t1.mass(), T1reco.mass(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed top in the 2nd leg have the same px
+   */
+  void
+  testTop2Reconstruction_px()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(t1.px(), T1reco.px(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed top in the 2nd leg have the same py
+   */
+  void
+  testTop2Reconstruction_py()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(t1.py(), T1reco.py(), +1e-3);
+  }
+
+  /**
+   * @brief Test whether hardcoded and reconstructed top in the 2nd leg have the same pz
+   */
+  void
+  testTop2Reconstruction_pz()
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(t1.pz(), T1reco.pz(), +1e-3);
+  }
+
+//-------------------------------------------------------------------------------------------------
 
   /**
    * @brief Test energy fraction for letponic branch in tau decay system
