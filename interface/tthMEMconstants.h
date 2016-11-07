@@ -36,7 +36,7 @@ namespace tthMEM
     const double xSectionTTZinGeV2 = xSectionTTZ * conversionFactor;
 
     const double massVisTauMin = 0.3;
-    const double massVisTauMax = 1.5;
+    const double massVisTauMax = 1.65;
     const double massChargedPion = 0.139570; ///< taken from PDG booklet (2014, p 25)
     const double massTau = 1.777000e+00;   ///< MG value (MTA)
     const double massTauSquared = pow2(massTau);

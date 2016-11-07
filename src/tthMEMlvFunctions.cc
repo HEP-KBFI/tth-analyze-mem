@@ -45,7 +45,8 @@ namespace tthMEM
        << "phi ="  << _SPACE << v.v_.phi()    << "; "
        << "mass =" << _SPACE << v.v_.mass()   << "; "
        << "en = "  << _SPACE << v.v_.energy() << "; "
-       << "|p| = " << _SPACE << v.v_.P();
+       << "|p| = " << _SPACE << v.v_.P()      << "; "
+       << "theta = " << _SPACE << v.v_.theta();
     return os;
   }
 

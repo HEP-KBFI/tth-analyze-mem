@@ -73,8 +73,9 @@ MeasuredHadronicTau::initialize()
   if(preciseVisMass_ < minVisMass) preciseVisMass_ = minVisMass;
   if(preciseVisMass_ > maxVisMass) preciseVisMass_ = maxVisMass;
 
-  energy_ = std::sqrt(p_ * p_ + preciseVisMass_ * preciseVisMass_);
-  p4_ = LorentzVector(px_, py_, pz_, energy_);
+  // recompute the momenta
+  mass_ = preciseVisMass_;
+  MeasuredLepton::initialize();
 }
 
 void
