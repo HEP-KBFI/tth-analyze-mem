@@ -362,10 +362,6 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   }
   else LOGTRC << "nuHtau_cosTheta = " << nuHtau_cosTheta;
   recoEvent.nuHtau = nuHTau_(std::acos(nuHtau_cosTheta), nuHtau_phi, nuHtau_en);
-//--- rescale the 4-momenta
-  const double nuHtau_mScale = constants::massTau / (recoEvent.hTauLepton + recoEvent.nuHtau).mass();
-  recoEvent.hTauLepton *= nuHtau_mScale;
-  recoEvent.nuHtau *= nuHtau_mScale;
   recoEvent.hTau = recoEvent.hTauLepton + recoEvent.nuHtau;
   LOGTRC << lextvrap("htau nu", recoEvent.nuHtau);
   if(measuredEvent_ -> generatorLevel)
@@ -398,9 +394,6 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
     return 0.;
   }
   recoEvent.nuLtau = nuLTau_(std::acos(nuLTau_cosTheta), nuLTau_phi, nuLTau_en, nuLTau_p);
-  const double nuLtau_mScale = constants::massTau / (recoEvent.lTauLepton + recoEvent.nuLtau).mass();
-  recoEvent.lTauLepton *= nuLtau_mScale;
-  recoEvent.nuLtau *= nuLtau_mScale;
   recoEvent.lTau = recoEvent.lTauLepton + recoEvent.nuLtau;
   LOGTRC << lextvrap("lept tau di nu",  recoEvent.nuLtau);
   if(measuredEvent_ -> generatorLevel)
@@ -461,6 +454,9 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
     recoEvent.b[i] = getLorentzVector(bP3_i, bEnergy_i);
     recoEvent.t[i] = recoEvent.b[i] + recoEvent.W[i];
 
+    if(measuredEvent_ -> generatorLevel)
+      LOGALL << lextvrap("gen b " + i_str,
+                         measuredEvent_ -> generatorLevel -> genBQuarkFromTop[i].p4());
     LOGTRC << lextvrap("b " + i_str,           recoEvent.b[i]);
     LOGTRC << lextvrap("b " + i_str + " reco", bJet_i.p4());
     if(measuredEvent_ -> generatorLevel) LOGALL << std::string(20, '-');

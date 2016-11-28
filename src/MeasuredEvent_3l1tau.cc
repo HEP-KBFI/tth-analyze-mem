@@ -68,7 +68,17 @@ MeasuredEvent_3l1tau::initialize()
     for(std::size_t i = 0; i < 2; ++i)
     {
       const GeneratorParticle & jet = generatorLevel -> genBQuarkFromTop[i];
-      jets[i] = MeasuredJet(jet.pt(), jet.eta(), jet.phi(), jet.mass());
+//--- the first combination must include a permutation which passes gen lvl matching
+      jetCombinations_[0][i] = MeasuredJet(jet.pt(), jet.eta(), jet.phi(), jet.mass());
+    }
+//--- remove the rest permutations
+    if(jetCombinations_.size() > 1)
+    {
+      LOGTRC << "Erasing rest of the jet combinations";
+      jetCombinations_.erase(jetCombinations_.begin() + 1, jetCombinations_.end());
+      LOGTRC << "Forcing only " << jetCombinations_.size() << " jet combination";
+      LOGTRC << "Forced gen b 1: " << jetCombinations_[0][0];
+      LOGTRC << "Forced gen b 2: " << jetCombinations_[0][1];
     }
     const GeneratorParticle & gHtau = generatorLevel -> genHtau;
     const int htauDecayMode = htau.decayMode(); // use reco decayMode for now
