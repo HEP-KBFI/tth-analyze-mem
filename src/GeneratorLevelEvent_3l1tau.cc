@@ -20,9 +20,20 @@ GeneratorLevelEvent_3l1tau::initialize()
   genNuFromLtau.initialize();
   genNuLepFromTau.initialize();
   genLepFromTau.initialize();
+  leptonicTauDecayIdx = 0;
+  genTau[leptonicTauDecayIdx] = genNuFromLtau + genNuLepFromTau + genLepFromTau;
 
   genNuFromHtau.initialize();
   genHtau.initialize();
+  hadronicTauDecayIdx = 1;
+  genTau[hadronicTauDecayIdx] = genHtau + genNuFromHtau;
+
+  if(genLepFromTau.charge() < 0)
+  {
+    leptonicTauDecayIdx = 1;
+    hadronicTauDecayIdx = 0;
+    std::swap(genTau[0], genTau[1]);
+  }
 
 //--- make sure that the neutrinos are actually neutral
 //--- by default the ,,charge'' here is actually opposite sign of signum(pdgId)
@@ -46,19 +57,6 @@ GeneratorLevelEvent_3l1tau::initialize()
 
   genHorZ = genTau[0] + genTau[1];
   genDiNuFromLtau = genNuFromLtau + genNuLepFromTau;
-
-//--- since by construction the first genTau has positive sign, we have to find
-//--- the association between tau decay mode and genTau ourselves
-  if(genLepFromTau.charge() == genTau[0].charge())
-  {
-    leptonicTauDecayIdx = 0;
-    hadronicTauDecayIdx = 1;
-  }
-  else
-  {
-    leptonicTauDecayIdx = 1;
-    hadronicTauDecayIdx = 0;
-  }
 
 //--- calculate the integration variables in advance (we need to fill the TTree)
 //--- should the top decay related variables be found w.r.t the beam axis?
