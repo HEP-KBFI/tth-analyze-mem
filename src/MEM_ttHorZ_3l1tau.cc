@@ -274,13 +274,14 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   {
     LOGTRC << "Picking jet combination #" << (ev.getJetCombinationNumber() + 1);
     ev.getJetCombination();
+    bool hasFoundLocalPermutation = false;
 
     double pSum_perJc = 0.;
     double pSumErr_perJc = 0;
     for(; ev.hasNextPermutation(); ev.nextPermutation())
     {
 //--- do not evaluate the same permutation twice
-      if(hasFoundPermutation && ev.generatorLevel) break;
+      if(hasFoundLocalPermutation && ev.generatorLevel) break;
 
       ev.printPermutation();
       if(! ev.isCorrectPermutation())
@@ -290,6 +291,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
       }
 
       LOGTRC << "Found correct permutation";
+      hasFoundLocalPermutation = true;
       hasFoundPermutation = true;
 
       LOGDBG << ev;

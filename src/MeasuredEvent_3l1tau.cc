@@ -167,7 +167,7 @@ MeasuredEvent_3l1tau::initialize()
     jetCombination.setPermutationPtrs(jetPermIdxs, &currentPermutation_, 4);
 
 //--- set dR for permutation checking
-  dR = 0.3;
+  dR = 0.5;
 }
 
 void

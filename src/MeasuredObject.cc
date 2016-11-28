@@ -1,5 +1,7 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredObject.h" // MeasuredObject, roundToNdigits()
 #include "tthAnalysis/tthMEM/interface/Logger.h"
+
+#define _USE_MATH_DEFINES // M_PI from cmath
 #include <cmath> // std::cos(), std::sin(), std::cosh(), std::sinh(), std::sqrt()
 
 #include <TString.h> // Form()
@@ -156,7 +158,10 @@ MeasuredObject::p3() const
 double
 MeasuredObject::dR(const MeasuredObject & other) const
 {
-  return std::sqrt(pow2(eta_ - other.eta_) + pow2(phi_ - other.phi_));
+  double dPhi = std::fabs(phi_ - other.phi_);
+  if(dPhi > M_PI)
+    dPhi -= 2 * M_PI;
+  return std::sqrt(pow2(eta_ - other.eta_) + pow2(dPhi));
 }
 
 void
