@@ -145,6 +145,7 @@ main(int argc,
   mem_tt_HandZ.setIntegrationMode(integrationMode);
   mem_tt_HandZ.setMaxObjFunctionCalls(maxObjFunctionCalls);
   mem_tt_HandZ.setBJetTransferFunction(true);
+  mem_tt_HandZ.useAvgBjetCombo(true);
   if(mem_tt_HandZ.isMarkovChainIntegrator())
   {
 //--- retrieve the parameters for Markov Chain integrator

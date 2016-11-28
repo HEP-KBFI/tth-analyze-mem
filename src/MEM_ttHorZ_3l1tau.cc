@@ -6,6 +6,7 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // ...
   // ... roundToNearestUInt(), pi()
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::
+#include "tthAnalysis/tthMEM/interface/tthMEMvecFunctions.h" // vec::
 
 #include <cmath> // std::round()
 
@@ -59,6 +60,7 @@ MEM_ttHorZ_3l1tau::initialize(const std::string & pdfName,
   intAlgo_ = 0;
   numDimensions_ = vm_.getCurrentDim();
   setTF_ = false;
+  useAvgB_ = false;
   clock_ = new TBenchmark();
   numSeconds_cpu_ = 0.;
   numSeconds_real_ = 0.;
@@ -121,6 +123,13 @@ MEM_ttHorZ_3l1tau &
 MEM_ttHorZ_3l1tau::setBJetTransferFunction(bool setTF)
 {
   setTF_ = setTF;
+  return *this;
+}
+
+MEM_ttHorZ_3l1tau &
+MEM_ttHorZ_3l1tau::useAvgBjetCombo(bool useAvgB)
+{
+  useAvgB_ = useAvgB;
   return *this;
 }
 
@@ -235,10 +244,6 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   const double * const xl = vm_.getXL();
   const double * const xu = vm_.getXU();
 
-//--- create probability and corresponding error (uncertainty) variable
-  double pSum = 0.;
-  double pSumErr = 0;
-
 //--- integration settings
   if(numDimensions_)
   {
@@ -263,40 +268,56 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
 //--- loop over different permutations of same-sign leptons and b-jets
 ///< @note consider moving the permutation part inside integrate()
   bool hasFoundPermutation = false;
-  for(; ev.hasNextPermutation(); ev.nextPermutation())
+//--- collect the results for different jet combinations and aggregate them (use max or average)
+  std::vector<double> pSum_allJc, pSumErr_allJc;
+  for(; ev.hasNextJetCombination(); ev.nextJetCombination())
   {
-    ev.printPermutation();
-    if(! ev.isCorrectPermutation())
+    LOGTRC << "Picking jet combination #" << (ev.getJetCombinationNumber() + 1);
+    ev.getJetCombination();
+
+    double pSum_perJc = 0.;
+    double pSumErr_perJc = 0;
+    for(; ev.hasNextPermutation(); ev.nextPermutation())
     {
-      LOGTRC << "Skipping permutation #" << (ev.getPermutationNumber() + 1);
-      continue;
+//--- do not evaluate the same permutation twice
+      if(hasFoundPermutation && ev.generatorLevel) break;
+
+      ev.printPermutation();
+      if(! ev.isCorrectPermutation())
+      {
+        LOGTRC << "Skipping permutation #" << (ev.getPermutationNumber() + 1);
+        continue;
+      }
+
+      LOGTRC << "Found correct permutation";
+      hasFoundPermutation = true;
+
+      LOGDBG << ev;
+      integrand_ -> renewInputs();
+
+      double p = 0.;
+      double pErr = 0.;
+
+      if(numDimensions_)
+      {
+        if(integrationMode_ == IntegrationMode::kVEGAS ||
+           integrationMode_ == IntegrationMode::kMarkovChain)
+          intAlgo_ -> integrate(&g_C, xl, xu, numDimensions_, p, pErr);
+        else if(integrationMode_ == IntegrationMode::kVAMP)
+          intAlgo_ -> integrate(&g_Fortran, xl, xu, numDimensions_, p, pErr);
+      }
+      else
+        p = integrand_ -> eval(0);
+
+      LOGINFO_S << "p = " << p << "; pErr = " << pErr;
+      pSum_perJc += p;
+      pSumErr_perJc += pErr;
     }
-
-    LOGTRC << "Found correct permutation";
-    hasFoundPermutation = true;
-
-    LOGDBG << ev;
-    integrand_ -> renewInputs();
-
-    double p = 0.;
-    double pErr = 0.;
-
-    if(numDimensions_)
-    {
-      if(integrationMode_ == IntegrationMode::kVEGAS ||
-         integrationMode_ == IntegrationMode::kMarkovChain)
-        intAlgo_ -> integrate(&g_C, xl, xu, numDimensions_, p, pErr);
-      else if(integrationMode_ == IntegrationMode::kVAMP)
-        intAlgo_ -> integrate(&g_Fortran, xl, xu, numDimensions_, p, pErr);
-    }
-    else
-      p = integrand_ -> eval(0);
-
-    LOGINFO_S << "p = " << p << "; pErr = " << pErr;
-    pSum += p;
-    pSumErr += pErr;
+    ev.resetPermutation();
+    pSum_allJc.push_back(pSum_perJc);
+    pSumErr_allJc.push_back(pSumErr_perJc);
   }
-  ev.resetPermutation();
+  ev.resetJetCombination();
 
   if(! hasFoundPermutation)
   {
@@ -304,6 +325,20 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
     err = true;
     return 0.;
   }
+
+//--- aggregate probability and corresponding error (uncertainty) variable
+  LOGTRC_S << "p    (jet combinations) = " << pSum_allJc;
+  LOGTRC_S << "pErr (jet combinations) = " << pSumErr_allJc;
+  const unsigned pSum_maxIdx = vec::maxIdx(pSum_allJc);
+  const double pSum_max    = pSum_allJc[pSum_maxIdx];
+  const double pSumErr_max = pSumErr_allJc[pSum_maxIdx];
+  const double pSum_avg    = vec::avg(pSum_allJc);
+  const double pSumErr_avg = vec::avg(pSumErr_allJc);
+  LOGTRC_S << "avg p = " << pSum_avg << " (" << pSumErr_avg << ')';
+  LOGTRC_S << "max p = " << pSum_max << " (" << pSumErr_max << ')';
+
+  double pSum    = useAvgB_ ? pSum_avg    : pSum_max;
+  double pSumErr = useAvgB_ ? pSumErr_avg : pSumErr_max;
 
 //--- divide by the process cross section (in GeV, i.e. natural units)
 //--- and adjust the uncertainty accordingly

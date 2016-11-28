@@ -63,6 +63,9 @@ namespace tthMEM
     MEM_ttHorZ_3l1tau &
     setHiggsWidth(double higgsWidth);
 
+    MEM_ttHorZ_3l1tau &
+    useAvgBjetCombo(bool useAvgB);
+
     bool
     isMarkovChainIntegrator() const;
 
@@ -117,6 +120,7 @@ namespace tthMEM
 
     unsigned numDimensions_;
     bool setTF_;
+    bool useAvgB_;
 
     TBenchmark * clock_;
     double numSeconds_cpu_;

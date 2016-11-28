@@ -17,6 +17,9 @@
 #include <ostream> // std::ostream
 #include <vector> // std::vector<>
 #include <memory> // std::shared_ptr<>
+#include <array> // std::array<,>
+
+#define NOF_RECO_JETS 4
 
 namespace tthMEM
 {
@@ -29,14 +32,17 @@ namespace tthMEM
     UInt_t run;
     UInt_t lumi;
     ULong64_t evt;
+    Int_t njets;
 
     TBranch * branch_run = 0;
     TBranch * branch_lumi = 0;
     TBranch * branch_evt = 0;
+    TBranch * branch_njets = 0;
 
     MeasuredMET met;
     IndexWrapper<MeasuredLepton, 3> leptons;
-    IndexWrapper<MeasuredJet, 2> jets;
+    std::array<MeasuredJet, NOF_RECO_JETS> allJets;
+    mutable IndexWrapper<MeasuredJet, 2> jets;
     MeasuredHadronicTau htau;
 
     MVAVariables mvaVariables;
@@ -75,6 +81,21 @@ namespace tthMEM
     getPermutationNumber() const;
 
     void
+    nextJetCombination() const;
+
+    bool
+    hasNextJetCombination() const;
+
+    void
+    getJetCombination() const;
+
+    void
+    resetJetCombination() const;
+
+    unsigned
+    getJetCombinationNumber() const;
+
+    void
     printPermutation() const;
 
     std::string
@@ -92,6 +113,8 @@ namespace tthMEM
 
   private:
     mutable unsigned currentPermutation_;
+    mutable unsigned currentJetCombination_;
+    std::vector<IndexWrapper<MeasuredJet, 2>> jetCombinations_;
     std::vector<std::vector<unsigned>> leptonPermIdxs;
     std::vector<std::vector<unsigned>> jetPermIdxs;
     std::vector<std::string> rleSelection;

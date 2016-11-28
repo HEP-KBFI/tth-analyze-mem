@@ -22,8 +22,38 @@ MeasuredEvent_3l1tau::initialize()
   for(std::size_t i = 0; i < 3; ++i)
     leptons[i].initialize();
 
-  for(std::size_t i = 0; i < 2; ++i)
-    jets[i].initialize();
+//--- let's read in all jets and print them
+  LOGTRC << "All jets";
+  for(std::size_t i = 0; i < NOF_RECO_JETS; ++i)
+  {
+    allJets[i].initialize();
+    LOGTRC << "All jet " << (i + 1) << ": " << allJets[i];
+  }
+
+//--- let's build all combinations of 2s out of N valid jets
+//--- (the multicplicity varies from event to event)
+//--- also, print the combinations just for a quick check
+  LOGTRC << "Found " << njets << " jets in total";
+  const std::vector<std::array<unsigned, 2>> jetCombinationIndexes = tthMEM::combination<2>(njets);
+  if(! jetCombinationIndexes.size())
+    throw_line("MeasuredEvent_3l1tau") << "No combinations built";
+  jetCombinations_.clear();
+  for(std::size_t i = 0; i < jetCombinationIndexes.size(); ++i)
+  {
+    const std::array<unsigned, 2> & iPair = jetCombinationIndexes[i];
+    IndexWrapper<MeasuredJet, 2> jetCombination;
+    jetCombination[0] = allJets[iPair[0]];
+    jetCombination[1] = allJets[iPair[1]];
+    jetCombinations_.push_back(jetCombination);
+
+    LOGTRC << "Jet combination #" << (i + 1);
+    LOGTRC << "jet 1: " << jetCombination[0];
+    LOGTRC << "jet 2: " << jetCombination[1];
+  }
+  LOGTRC << "Got " << jetCombinations_.size() << " jet pair combinations in total";
+  currentJetCombination_ = 0;
+//--- select the first combination
+  jets = jetCombinations_[currentJetCombination_];
 
   htau.initialize();
 
@@ -133,10 +163,11 @@ MeasuredEvent_3l1tau::initialize()
 
 //--- set the permutations and their pointers
   leptons.setPermutationPtrs(leptonPermIdxs, &currentPermutation_, 4);
-  jets.setPermutationPtrs(jetPermIdxs, &currentPermutation_, 4);
+  for(IndexWrapper<MeasuredJet, 2> & jetCombination: jetCombinations_)
+    jetCombination.setPermutationPtrs(jetPermIdxs, &currentPermutation_, 4);
 
 //--- set dR for permutation checking
-  dR = 0.1;
+  dR = 0.3;
 }
 
 void
@@ -145,14 +176,15 @@ MeasuredEvent_3l1tau::setBranches(TTree * t)
   t -> SetBranchAddress("run",  &run);
   t -> SetBranchAddress("lumi", &lumi);
   t -> SetBranchAddress("evt",  &evt);
+  t -> SetBranchAddress("njets", &njets);
 
   met.setBranches(t);
 
   for(std::size_t i = 0; i < 3; ++i)
     leptons[i].setBranches(t, Form("lepton%lu", (i + 1)));
 
-  for(std::size_t i = 0; i < 2; ++i)
-    jets[i].setBranches(t, Form("jets%lu", (i + 1)));
+  for(std::size_t i = 0; i < NOF_RECO_JETS; ++i)
+    allJets[i].setBranches(t, Form("jets%lu", (i + 1)));
 
   htau.setBranches(t, "htau");
 
@@ -164,17 +196,18 @@ MeasuredEvent_3l1tau::setBranches(TTree * t)
 void
 MeasuredEvent_3l1tau::initNewBranches(TTree * t)
 {
-  branch_run  = t -> Branch("run",  &run,  "run/i");
-  branch_lumi = t -> Branch("lumi", &lumi, "lumi/i");
-  branch_evt  = t -> Branch("evt",  &evt,  "evt/l");
+  branch_run   = t -> Branch("run",   &run,   "run/i");
+  branch_lumi  = t -> Branch("lumi",  &lumi,  "lumi/i");
+  branch_evt   = t -> Branch("evt",   &evt,   "evt/l");
+  branch_njets = t -> Branch("njets", &njets, "njets/I");
 
   met.initNewBranches(t);
 
   for(std::size_t i = 0; i < 3; ++i)
     leptons[i].initNewBranches(t, Form("lepton%lu", (i + 1)));
 
-  for(std::size_t i = 0; i < 2; ++i)
-    jets[i].initNewBranches(t, Form("jet%lu", (i + 1)));
+  for(std::size_t i = 0; i < NOF_RECO_JETS; ++i)
+    allJets[i].initNewBranches(t, Form("jets%lu", (i + 1)));
 
   htau.initNewBranches(t, "htau");
 
@@ -189,7 +222,6 @@ MeasuredEvent_3l1tau::includeGeneratorLevel(bool include)
   if(include)
     generatorLevel = std::make_shared<typename decltype(generatorLevel)::element_type>();
 }
-
 
 bool
 MeasuredEvent_3l1tau::hasNextPermutation() const
@@ -230,10 +262,42 @@ MeasuredEvent_3l1tau::getPermutationNumber() const
 }
 
 void
+MeasuredEvent_3l1tau::nextJetCombination() const
+{
+  ++currentJetCombination_;
+}
+
+bool
+MeasuredEvent_3l1tau::hasNextJetCombination() const
+{
+  return currentJetCombination_ < jetCombinations_.size();
+}
+
+void
+MeasuredEvent_3l1tau::getJetCombination() const
+{
+  jets = jetCombinations_[currentJetCombination_];
+}
+
+void
+MeasuredEvent_3l1tau::resetJetCombination() const
+{
+  currentJetCombination_ = 0;
+  jets = jetCombinations_[currentJetCombination_];
+}
+
+unsigned
+MeasuredEvent_3l1tau::getJetCombinationNumber() const
+{
+  return currentJetCombination_;
+}
+
+void
 MeasuredEvent_3l1tau::printPermutation() const
 {
   if(generatorLevel)
   {
+    LOGTRC << "Printing permutation #" << (currentPermutation_ + 1);
     const double dRlepFromTau  = (generatorLevel -> genLepFromTau).dR(leptons[complLeptonIdx]);
     const double dRlepFromTop1 = (generatorLevel -> genLepFromTop[0]).dR(leptons[bjetLeptonIdxs[0]]);
     const double dRlepFromTop2 = (generatorLevel -> genLepFromTop[1]).dR(leptons[bjetLeptonIdxs[1]]);

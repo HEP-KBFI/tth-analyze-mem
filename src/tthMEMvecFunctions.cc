@@ -106,5 +106,37 @@ namespace tthMEM
       return l2(vec, shiftFromBegin_begin, shiftFromBegin_end, -average) /
              std::sqrt(range >= 2 ? range * (range - 1) : 1.);
     }
+
+    unsigned
+    maxIdx(const std::vector<double> & vec,
+           unsigned shiftFromBegin_begin,
+           unsigned shiftFromBegin_end)
+    {
+      if(! (shiftFromBegin_begin <= shiftFromBegin_end &&
+            shiftFromBegin_begin <= vec.size() &&
+            shiftFromBegin_end <= vec.size()))
+        throw_line("range error")
+          << "Invalid arguments: "
+          << "'shiftFromBegin_begin' = " << shiftFromBegin_begin << "; "
+          << "'shiftFromBegin_end' = " << shiftFromBegin_end << "; "
+          << "vector size = " << vec.size();
+      return std::distance(
+        vec.begin() + shiftFromBegin_begin,
+        std::max_element(vec.begin() + shiftFromBegin_begin, vec.begin() + shiftFromBegin_end
+      ));
+    }
+
+    unsigned
+    maxIdx(const std::vector<double> & vec,
+           unsigned shiftFromBegin)
+    {
+      return maxIdx(vec, 0, shiftFromBegin);
+    }
+
+    unsigned
+    maxIdx(const std::vector<double> & vec)
+    {
+      return maxIdx(vec, vec.size());
+    }
   }
 }

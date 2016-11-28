@@ -129,6 +129,40 @@ namespace tthMEM
           double average);
 
     /**
+     * @brief Finds index of maximum element in a given vector
+     * @param vec                  The vector
+     * @param shiftFromBegin_begin The starting point from which the maximum
+     *                             element is searched
+     * @param shiftFromBegin_end   The ending point up to which the maximum
+     *                             element is searched
+     * @return The index of maximum element in the subvector
+     *         [shiftFromBegin_begin, shiftFromBegin_end)
+     */
+    unsigned
+    maxIdx(const std::vector<double> & vec,
+           unsigned shiftFromBegin_begin,
+           unsigned shiftFromBegin_end);
+
+    /**
+     * @brief Finds index of maximum element in a given vector
+     * @param vec            The vector
+     * @param shiftFromBegin The starting point from which the maximum
+     *                       element is searched
+     * @return The index of maximum element in the subvector [0, shiftFromBegin)
+     */
+    unsigned
+    maxIdx(const std::vector<double> & vec,
+           unsigned shiftFromBegin);
+
+    /**
+     * @brief Finds index of maximum element in a given vector
+     * @param vec The vector
+     * @return The index of maximum element in the vector
+     */
+    unsigned
+    maxIdx(const std::vector<double> & vec);
+
+    /**
      * @brief Returns a subvector
      * @param vec                  The vector the subvector of which is taken
      * @param shiftFromBegin_begin The first element of the subvector
