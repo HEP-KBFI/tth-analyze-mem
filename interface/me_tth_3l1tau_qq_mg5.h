@@ -5,42 +5,90 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#ifndef me_tth_3l1tau_mg5_h
-#define me_tth_3l1tau_mg5_h
+#ifndef me_tth_3l1tau_qq_mg5_h
+#define me_tth_3l1tau_qq_mg5_h
 
 #include "tthAnalysis/tthMEM/interface/me_ttHorZ_3l1tau_mg5.h"
 #include "Parameters_sm_tth_3l1tau.h"
 
 //==========================================================================
 // A class for calculating the matrix elements for
-// Process: g g > t t~ h WEIGHTED<=4 @1
+// Process: u u~ > t t~ h WEIGHTED<=4 @1
 // *   Decay: t > b e+ ve WEIGHTED<=4
 // *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
 // *   Decay: h > ta+ ta- WEIGHTED<=2
-// Process: g g > t t~ h WEIGHTED<=4 @1
+// Process: c c~ > t t~ h WEIGHTED<=4 @1
+// *   Decay: t > b e+ ve WEIGHTED<=4
+// *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: d d~ > t t~ h WEIGHTED<=4 @1
+// *   Decay: t > b e+ ve WEIGHTED<=4
+// *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: s s~ > t t~ h WEIGHTED<=4 @1
+// *   Decay: t > b e+ ve WEIGHTED<=4
+// *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: u u~ > t t~ h WEIGHTED<=4 @1
 // *   Decay: t > b mu+ vm WEIGHTED<=4
 // *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
 // *   Decay: h > ta+ ta- WEIGHTED<=2
-// Process: g g > t t~ h WEIGHTED<=4 @1
+// Process: c c~ > t t~ h WEIGHTED<=4 @1
+// *   Decay: t > b mu+ vm WEIGHTED<=4
+// *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: d d~ > t t~ h WEIGHTED<=4 @1
+// *   Decay: t > b mu+ vm WEIGHTED<=4
+// *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: s s~ > t t~ h WEIGHTED<=4 @1
+// *   Decay: t > b mu+ vm WEIGHTED<=4
+// *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: u u~ > t t~ h WEIGHTED<=4 @1
 // *   Decay: t > b e+ ve WEIGHTED<=4
 // *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
 // *   Decay: h > ta+ ta- WEIGHTED<=2
-// Process: g g > t t~ h WEIGHTED<=4 @1
+// Process: c c~ > t t~ h WEIGHTED<=4 @1
+// *   Decay: t > b e+ ve WEIGHTED<=4
+// *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: d d~ > t t~ h WEIGHTED<=4 @1
+// *   Decay: t > b e+ ve WEIGHTED<=4
+// *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: s s~ > t t~ h WEIGHTED<=4 @1
+// *   Decay: t > b e+ ve WEIGHTED<=4
+// *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: u u~ > t t~ h WEIGHTED<=4 @1
+// *   Decay: t > b mu+ vm WEIGHTED<=4
+// *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: c c~ > t t~ h WEIGHTED<=4 @1
+// *   Decay: t > b mu+ vm WEIGHTED<=4
+// *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: d d~ > t t~ h WEIGHTED<=4 @1
+// *   Decay: t > b mu+ vm WEIGHTED<=4
+// *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: s s~ > t t~ h WEIGHTED<=4 @1
 // *   Decay: t > b mu+ vm WEIGHTED<=4
 // *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
 // *   Decay: h > ta+ ta- WEIGHTED<=2
 //--------------------------------------------------------------------------
 
-class me_tth_3l1tau_mg5
+class me_tth_3l1tau_qq_mg5
   : public me_ttHorZ_3l1tau_mg5
 {
   public:
 
     // Constructor.
-    me_tth_3l1tau_mg5() = default;
+    me_tth_3l1tau_qq_mg5() = default;
 
     // Destructor.
-    virtual ~me_tth_3l1tau_mg5() override
+    virtual ~me_tth_3l1tau_qq_mg5() override
     {
       for(std::size_t i = 0; i < nprocesses; ++i)
         if(jamp2[i])
@@ -66,7 +114,7 @@ class me_tth_3l1tau_mg5
     virtual std::string
     name() const override
     {
-      return "[TTH] g g > b e+ ve b~ e- ve~ ta+ ta- (sm)";
+      return "[TTH] u u~ > b e+ ve b~ e- ve~ ta+ ta- (sm)";
     }
 
     // Set Higgs width
@@ -80,7 +128,7 @@ class me_tth_3l1tau_mg5
       return matrix_element;
     }
 
-    static const int nprocesses = 1;
+    static const int nprocesses = 2;
 
   private:
 
@@ -96,17 +144,17 @@ class me_tth_3l1tau_mg5
     // Color flows, used when selecting color
     double * jamp2[nprocesses];
 
-    static const int nwavefuncs = 22;
+    static const int nwavefuncs = 18;
     std::complex<double> w[nwavefuncs][18];
-    static const int namplitudes = 8;
+    static const int namplitudes = 2;
     std::complex<double> amp[namplitudes];
 
     double
-    matrix_1_gg_ttxh_t_bepve_tx_bxemvex_h_taptam();
+    matrix_1_uux_ttxh_t_bepve_tx_bxemvex_h_taptam();
 
     // Pointer to the model parameters
     Parameters_sm_tth_3l1tau * pars;
 }; 
 
 
-#endif  // me_tth_3l1tau_mg5_h
+#endif  // me_tth_3l1tau_qq_mg5_h

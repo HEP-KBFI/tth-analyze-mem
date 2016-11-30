@@ -344,7 +344,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double mInvSquared = vm_.get(Var_3l1tau::kTauMinvSquared, x);
 
 //--- confirm that the energy fraction carried by the tau is indeed in (0,1)
-  const double z2 = roundToNdigits(z2_(z1));
+  const double z2 = z2_(z1);
   if(! (z2 >= 1.e-5 && z2 <= 1.))
   {
     LOGVRB << "z2 = " << z2 << " not in (0, 1) => p = 0";
@@ -446,7 +446,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
       LOGALL << std::string(20, '-');
     }
 
-    const double bEnergy_i = roundToNdigits(bQuarkEnergy_[i](recoEvent.W[i]));
+    const double bEnergy_i = bQuarkEnergy_[i](recoEvent.W[i]);
     if(bEnergy_i == 0.) return 0.;
     const MeasuredJet & bJet_i = measuredEvent_ -> jets[i];
     const Vector bP3_i = std::sqrt(pow2(bEnergy_i) - constants::massBSquared) *
@@ -495,10 +495,10 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   const double hadRecE = 0.;
   const double hadRecPz = 0.;
   const LorentzVector tthOrZ = recoEvent.getTTHorZ();
-  const double xa = roundToNdigits((hadRecE + tthOrZ.e() + hadRecPz + tthOrZ.pz()) *
-                    constants::invSqrtS);
-  const double xb = roundToNdigits((hadRecE + tthOrZ.e() - hadRecPz - tthOrZ.pz()) *
-                    constants::invSqrtS);
+  const double xa = (hadRecE + tthOrZ.e() + hadRecPz + tthOrZ.pz()) *
+                    constants::invSqrtS;
+  const double xb = (hadRecE + tthOrZ.e() - hadRecPz - tthOrZ.pz()) *
+                    constants::invSqrtS;
   LOGTRC << "xa = " << xa << "; xb = " << xb;
   if(xa <= 0. || xa >= 1. || xb <= 0. || xb >= 1.)
   {
@@ -525,8 +525,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   if(isTTH) LOGTRC << lmvrap("tth mem", tthOrZ_mem);
   else      LOGTRC << lmvrap("ttz mem", tthOrZ_mem);
 
-  const double z1_mem = roundToNdigits(recoEventmem.hTauLepton.e() / recoEventmem.hTau.e());
-  const double z2_mem = roundToNdigits(recoEventmem.lTauLepton.e() / recoEventmem.lTau.e());
+  const double z1_mem = recoEventmem.hTauLepton.e() / recoEventmem.hTau.e();
+  const double z2_mem = recoEventmem.lTauLepton.e() / recoEventmem.lTau.e();
   LOGTRC << "z1_mem = " << z1_mem << "; z2_mem = " << z2_mem;
   if(! (z1_mem >= 1.e-5 && z1_mem <= 1.) ||
      ! (z2_mem >= 1.e-5 && z2_mem <= 1.))

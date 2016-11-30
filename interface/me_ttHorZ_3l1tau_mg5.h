@@ -5,19 +5,15 @@
 #include <vector> // std::vector<>
 #include <complex> // std::complex<>
 
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+
 class me_ttHorZ_3l1tau_mg5
 {
 public:
   me_ttHorZ_3l1tau_mg5() = default;
 
   virtual ~me_ttHorZ_3l1tau_mg5()
-  {
-    if(jamp2[0])
-    {
-      delete jamp2[0];
-      jamp2[0] = 0;
-    }
-  }
+  { }
 
   // Initialize process.
   virtual void
@@ -57,6 +53,7 @@ public:
   {
     p = momenta;
   }
+
   void
   setInitial(int inid1,
              int inid2)
@@ -66,31 +63,22 @@ public:
   }
 
   // Get matrix element vector
-  const double *
+  virtual const double *
   getMatrixElements() const
   {
-    return matrix_element;
+    throw_line("me_ttHorZ_3l1tau_mg5")
+      << "Function getMatrixElements() undefined for the base class!";
+    return 0;
   }
 
   // Constants for array limits
   static const int ninitial = 2;
   static const int nexternal = 10;
-  static const int nprocesses = 1;
 
 protected:
   virtual void
   calculate_wavefunctions(const int perm[],
                           const int hel[]) = 0;
-  static const int nwavefuncs = 22;
-  std::complex<double> w[nwavefuncs][18];
-  static const int namplitudes = 8;
-  std::complex<double> amp[namplitudes];
-
-  // Store the matrix element value from sigmaKin
-  double matrix_element[nprocesses];
-
-  // Color flows, used when selecting color
-  double * jamp2[nprocesses];
 
   // vector with external particle masses
   std::vector<double> mME;

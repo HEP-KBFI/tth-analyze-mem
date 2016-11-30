@@ -40,7 +40,15 @@ class me_ttz_3l1tau_mg5
     me_ttz_3l1tau_mg5() = default;
 
     // Destructor.
-    virtual ~me_ttz_3l1tau_mg5() override {}
+    virtual ~me_ttz_3l1tau_mg5() override
+    {
+      for(std::size_t i = 0; i < nprocesses; ++i)
+        if(jamp2[i])
+        {
+          delete jamp2[i];
+          jamp2[i] = 0;
+        }
+    }
 
     // Initialize process.
     virtual void
@@ -65,6 +73,15 @@ class me_ttz_3l1tau_mg5
     virtual void
     setHiggsWidth(double higgsWidth) override;
 
+    // Get matrix element vector
+    const double *
+    getMatrixElements() const override
+    {
+      return matrix_element;
+    }
+
+    static const int nprocesses = 1;
+
   private:
 
     // Private functions to calculate the matrix element for all subprocesses
@@ -72,6 +89,17 @@ class me_ttz_3l1tau_mg5
     virtual void
     calculate_wavefunctions(const int perm[],
                             const int hel[]) override;
+
+    // Store the matrix element value from sigmaKin
+    double matrix_element[nprocesses];
+
+    // Color flows, used when selecting color
+    double * jamp2[nprocesses];
+
+    static const int nwavefuncs = 22;
+    std::complex<double> w[nwavefuncs][18];
+    static const int namplitudes = 8;
+    std::complex<double> amp[namplitudes];
 
     double
     matrix_1_gg_ttxz_t_bepve_tx_bxemvex_z_taptam();
