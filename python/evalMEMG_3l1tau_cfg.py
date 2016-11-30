@@ -7,12 +7,14 @@ evalMEMG.tthMEM = cms.PSet(
   treeName         = cms.string('tree'),
   fileSet          = cms.VPSet(
     cms.PSet(
-      identifier = cms.string('tth'),
-      fileName   = cms.string(os.path.join(baseDir, '2016/gen/out_3l_1tau_ttHToNonbb_M125_Tight_OS_central.root'))
+      identifier   = cms.string('tth'),
+      fileName     = cms.string(os.path.join(baseDir, '2016/gen/out_3l_1tau_ttHJetToNonbb_M125_Tight_OS_central.root')),
+      rleSelection = cms.string(os.path.expanduser('')),
     ),
     cms.PSet(
-      identifier = cms.string('ttz'),
-      fileName   = cms.string(os.path.join(baseDir, '2016/gen/out_3l_1tau_TTZToLLNuNu_Tight_OS_central.root'))
+      identifier   = cms.string('ttz'),
+      fileName     = cms.string(os.path.join(baseDir, '2016/gen/out_3l_1tau_TTZToLLNuNu_Tight_OS_central.root')),
+      rleSelection = cms.string(os.path.expanduser('')),
     )
   ),
   madgraphFilename = cms.string(os.path.join(baseDir, 'param_card.dat')),

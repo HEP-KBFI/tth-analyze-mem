@@ -37,7 +37,11 @@ class me_tth_3l1tau_mg5
   public:
 
     // Constructor.
-    me_tth_3l1tau_mg5() = default;
+    me_tth_3l1tau_mg5()
+    {
+      for(std::size_t i = 0; i < nprocesses; ++i)
+        jamp2[i] = nullptr;
+    }
 
     // Destructor.
     virtual ~me_tth_3l1tau_mg5() override
@@ -46,7 +50,7 @@ class me_tth_3l1tau_mg5
         if(jamp2[i])
         {
           delete jamp2[i];
-          jamp2[i] = 0;
+          jamp2[i] = nullptr;
         }
     }
 

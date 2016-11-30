@@ -1,15 +1,17 @@
 #include <cstdlib> // EXIT_FAILURE, EXIT_SUCCESS
-#include <string> // std::string
+#include <string> // std::string, std::getline()
 #include <cstring> // std::memset()
 #include <vector> // std::vector<>
 #include <array> // std::array<,>
-#include <fstream> // std::ofstream::, std::scientific
+#include <fstream> // std::ofstream::, std::scientific, std::ifstream
 #include <iomanip> // std::setprecision()
 #include <algorithm> // std::for_each()
 #include <utility> // std::pair<,>
+#include <sstream> // std::stringstream
 
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR, LOGINFO
+#include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_qq_mg5.h" // me_tth_3l1tau_qq_mg5
 #include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_mg5.h" // me_tth_3l1tau_mg5
 #include "tthAnalysis/tthMEM/interface/me_ttz_3l1tau_mg5.h" // me_ttz_3l1tau_mg5
 #include "tthAnalysis/tthMEM/interface/GeneratorLevelEvent_3l1tau.h" // tthMEM::GeneratorLevelEvent_3l1tau
@@ -28,6 +30,10 @@
 #include <TTree.h> // TTree
 #include <TBenchmark.h> // TBenchmark
 #include <Math/VectorUtil.h> // ROOT::Math::VectorUtil::boost()
+
+#define KEY_TTH_QQ "tth_qq"
+#define KEY_TTH    "tth"
+#define KEY_TTZ    "ttz"
 
 /**
  * @file
@@ -129,10 +135,13 @@ int
 main(int argc,
      char * argv[])
 {
+  if(argc != 2)
+    throw_line(argv[0]) << "Usage: " << argv[0] << " <python config file>";
+
   const std::string evalMEMG = "evalMEMG";
   if(! edm::readPSetsFrom(argv[1]) -> existsAs<edm::ParameterSet>(evalMEMG.c_str()))
-    throw_line("tthMEM") << "No ParameterSet '" << evalMEMG << "' found in "
-                         << "configuration file = " << argv[1];
+    throw_line(argv[0]) << "No ParameterSet '" << evalMEMG << "' found in "
+                        << "configuration file = " << argv[1];
   const edm::ParameterSet cfg = edm::readPSetsFrom(argv[1]) -> getParameter<edm::ParameterSet>(evalMEMG.c_str());
 
   const edm::ParameterSet cfg_tthMEM = cfg.getParameter<edm::ParameterSet>("tthMEM");
@@ -174,15 +183,18 @@ main(int argc,
   clock.Reset();
   clock.Start(evalMEMG.c_str());
 
-  me_tth_3l1tau_mg5 tth_me;
-  me_ttz_3l1tau_mg5 ttz_me;
+  me_tth_3l1tau_qq_mg5 tth_qq_me;
+  me_tth_3l1tau_mg5    tth_me;
+  me_ttz_3l1tau_mg5    ttz_me;
+  tth_qq_me.initProc(madgraphFilename);
   tth_me.initProc(madgraphFilename);
   ttz_me.initProc(madgraphFilename);
   LOGINFO << "Declared the MG MEs";
 
   TFile * outFile = new TFile(outputFileName.c_str(), "recreate");
-  const std::string prob_tth_str = "prob_tth";
-  const std::string prob_ttz_str = "prob_ttz";
+  const std::string prob_tth_qq_str = "prob_tth_qq";
+  const std::string prob_tth_str    = "prob_tth";
+  const std::string prob_ttz_str    = "prob_ttz";
 
   for(double higgsWidth: higgsWidthVector)
   {
@@ -191,14 +203,16 @@ main(int argc,
       LOGINFO << "Higgs width = " << higgsWidth << "; tau pair mass = " << forceTauPairMass;
       if(higgsWidth > 0.)
       {
+        tth_qq_me.setHiggsWidth(higgsWidth);
         tth_me.setHiggsWidth(higgsWidth);
         LOGINFO_S << "Setting Higgs width to " << higgsWidth;
       }
 
       const auto oIdx = [](unsigned idx) -> unsigned { return 1 - idx; };
       std::map<std::string, std::map<std::string, unsigned>> best_perms = {
-        { "tth", { } },
-        { "ttz", { } }
+        { KEY_TTH_QQ, { } },
+        { KEY_TTH,    { } },
+        { KEY_TTZ,    { } }
       };
 
       for(const edm::ParameterSet & pset: fileSet)
@@ -210,6 +224,22 @@ main(int argc,
           (forceTauPairMass > 0. ? std::to_string(forceTauPairMass) : "original")
         };
         const std::string id = boost::algorithm::join(id_vector, "_");
+
+        const std::string rleSelectionFileName = pset.getParameter<std::string>("rleSelection");
+        std::vector<std::string> rles;
+        if(! rleSelectionFileName.empty())
+        {
+          if(! boost::filesystem::exists(rleSelectionFileName) ||
+             ! boost::filesystem::is_regular_file(rleSelectionFileName))
+          {
+            LOGERR << "File '" << rleSelectionFileName << "' does not exist or isn't a regular file";
+            return EXIT_FAILURE;
+          }
+          std::ifstream rleSelectionFile(rleSelectionFileName);
+          for(std::string line; std::getline(rleSelectionFile, line); )
+            rles.push_back(line);
+        }
+
         LOGINFO << "Processing " << id;
 
         TFile * const file = [&]()
@@ -251,14 +281,18 @@ main(int argc,
         outFile -> cd(id.c_str());
         TTree * outTree = new TTree(treeName.c_str(), id.c_str());
 
-        double prob_tth = 0;
-        double prob_ttz = 0;
-        double prob_tth_best = 0;
-        double prob_ttz_best = 0;
-        outTree -> Branch(prob_tth_str.c_str(), &prob_tth, Form("%s/D", prob_tth_str.c_str()));
-        outTree -> Branch(prob_ttz_str.c_str(), &prob_ttz, Form("%s/D", prob_ttz_str.c_str()));
-        outTree -> Branch(Form("%s_best", prob_tth_str.c_str()), &prob_tth_best, Form("%s_best/D", prob_tth_str.c_str()));
-        outTree -> Branch(Form("%s_best", prob_ttz_str.c_str()), &prob_ttz_best, Form("%s_best/D", prob_ttz_str.c_str()));
+        double prob_tth_qq = 0.;
+        double prob_tth    = 0.;
+        double prob_ttz    = 0.;
+        double prob_tth_qq_best = 0.;
+        double prob_tth_best    = 0.;
+        double prob_ttz_best    = 0.;
+        outTree -> Branch(prob_tth_qq_str.c_str(), &prob_tth_qq, Form("%s/D", prob_tth_qq_str.c_str()));
+        outTree -> Branch(prob_tth_str.c_str(),    &prob_tth,    Form("%s/D", prob_tth_str.c_str()));
+        outTree -> Branch(prob_ttz_str.c_str(),    &prob_ttz,    Form("%s/D", prob_ttz_str.c_str()));
+        outTree -> Branch(Form("%s_best", prob_tth_qq_str.c_str()), &prob_tth_qq_best, Form("%s_best/D", prob_tth_qq_str.c_str()));
+        outTree -> Branch(Form("%s_best", prob_tth_str.c_str()),    &prob_tth_best,    Form("%s_best/D", prob_tth_str.c_str()));
+        outTree -> Branch(Form("%s_best", prob_ttz_str.c_str()),    &prob_ttz_best,    Form("%s_best/D", prob_ttz_str.c_str()));
         LOGINFO << "Associated the output branches";
 
         std::ofstream outTxtFile;
@@ -271,6 +305,11 @@ main(int argc,
         {
           tree -> GetEntry(i);
           evt.initialize();
+
+          std::stringstream ss;
+          ss << run << ':' << lumi << ':' << event;
+          const std::string rle_str = ss.str();
+          if(rles.size() && std::find(rles.begin(), rles.end(), rle_str) == rles.end()) continue;
 
           if(forceTauPairMass > 0.)
           {
@@ -317,6 +356,7 @@ main(int argc,
           // 8, ta+ => associated lepton +
           // 9, ta- => associated lepton -
 
+          PermutationLogger tth_qq_logger;
           PermutationLogger tth_logger;
           PermutationLogger ttz_logger;
           for(unsigned bIdx = 0; bIdx < 2; ++bIdx)
@@ -354,28 +394,37 @@ main(int argc,
                   d[3] = lv.pz();
                   mgMomenta.push_back(d);
                 }
+
+                tth_qq_me.setMomenta(mgMomenta);
+                tth_qq_me.sigmaKin();
                 tth_me.setMomenta(mgMomenta);
                 tth_me.sigmaKin();
                 ttz_me.setMomenta(mgMomenta);
                 ttz_me.sigmaKin();
 
-                const double curr_prob_tth = tth_me.getMatrixElements()[0];
-                const double curr_prob_ttz = ttz_me.getMatrixElements()[0];
+                // there are two qq MEs
+                const double curr_prob_tth_qq = tth_qq_me.getMatrixElements()[0];
+                const double curr_prob_tth    = tth_me.getMatrixElements()[0];
+                const double curr_prob_ttz    = ttz_me.getMatrixElements()[0];
+                tth_qq_logger.process(curr_prob_tth_qq, bIdx, lIdx, nIdx);
                 tth_logger.process(curr_prob_tth, bIdx, lIdx, nIdx);
                 ttz_logger.process(curr_prob_ttz, bIdx, lIdx, nIdx);
 
                 std::for_each(mgMomenta.begin(), mgMomenta.end(),
                   [](double * & d) { delete d; d = 0; });
               }
+          prob_tth_qq = tth_qq_logger.get_default();
           prob_tth = tth_logger.get_default();
           prob_ttz = ttz_logger.get_default();
           prob_tth_best = tth_logger.get_best();
           prob_ttz_best = ttz_logger.get_best();
+          prob_tth_qq_best = tth_qq_logger.get_best();
           outTree -> Fill();
 
           const std::map<std::string, std::string> best_perm_str = {
-            { "tth", Form("%s/%s", id.c_str(), tth_logger.get_best_str().c_str()) },
-            { "ttz", Form("%s/%s", id.c_str(), ttz_logger.get_best_str().c_str()) }
+            { KEY_TTH_QQ, Form("%s/%s", id.c_str(), tth_qq_logger.get_best_str().c_str()) },
+            { KEY_TTH,    Form("%s/%s", id.c_str(), tth_logger.get_best_str().c_str())    },
+            { KEY_TTZ,    Form("%s/%s", id.c_str(), ttz_logger.get_best_str().c_str())    }
           };
           for(const auto & kv: best_perm_str)
             if(best_perms[kv.first].count(kv.second))
@@ -383,17 +432,22 @@ main(int argc,
             else
               best_perms[kv.first][kv.second] = 1;
 
-          LOGDBG_S << "Evaluating tth ME for " << i << "th event ("
-                   << run << ':' << lumi << ':' << event << ")\n"
+          LOGDBG_S << "Evaluated tth qq ME for " << i << "th event (" << rle_str << ")\n"
+                   << tth_qq_logger;
+          LOGDBG_S << "Evaluated tth ME for " << i << "th event (" << rle_str << ")\n"
                    << tth_logger;
-          LOGDBG_S << "Evaluating ttz ME for " << i << "th event ("
-                   << run << ':' << lumi << ':' << event << ")\n"
+          LOGDBG_S << "Evaluated ttz ME for " << i << "th event (" << rle_str << ")\n"
                    << ttz_logger;
 
           if(dumpToText)
-            outTxtFile << run << ':' << lumi << ':' << event << ','
-                       << std::scientific << std::setprecision(6)
-                       << prob_tth << ',' << prob_ttz << '\n';
+          {
+            const std::vector<double> probs = {
+              prob_tth_qq, prob_tth, prob_ttz
+            };
+            outTxtFile << rle_str << std::scientific << std::setprecision(6); // those are ,,sticky''
+            for(std::size_t i = 0; i < probs.size(); ++i)
+              outTxtFile << ',' << probs[i] << (i == probs.size() - 1 ? "\n" : "");
+          }
         }
 
         outTree -> Write();
@@ -420,8 +474,9 @@ main(int argc,
       };
 
       LOGDBG << "Best permutations: ";
-      LOGDBG << "TTH: " << boost::algorithm::join(strmtov(best_perms["tth"]), ", ");
-      LOGDBG << "TTZ: " << boost::algorithm::join(strmtov(best_perms["ttz"]), ", ");
+      LOGDBG << "TTH qq: " << boost::algorithm::join(strmtov(best_perms[KEY_TTH_QQ]), ", ");
+      LOGDBG << "TTH:    " << boost::algorithm::join(strmtov(best_perms[KEY_TTH]),    ", ");
+      LOGDBG << "TTZ:    " << boost::algorithm::join(strmtov(best_perms[KEY_TTZ]),    ", ");
     }
   }
 
