@@ -196,26 +196,44 @@ main(int argc,
     measuredEvent.debugPlotter = new DebugPlotter_ttHorZ_3l1tau(newFile, debugPlots);
 
 //--- set up the probability variables
-  double probSignal;
-  double probBackground_ttz;
-//  double probBackground_th2ww;
-  double lhRatioNP;
+  double probSignal,         probSignalErr;
+//  double probSignal_th2ww,   probSignalErr_th2ww;
+  double probBackground_ttz, probBackgroundErr_ttz;
+  double lhRatioNP, lhRatioNP_up, lhRatioNP_down;
 
-  TBranch * probSignalBranch           __attribute__((unused)) =
-    newTree -> Branch("probSignal",            &probSignal,           "probSignal/D");
-  TBranch * probBackgroundBranch_ttz   __attribute__((unused)) =
-    newTree -> Branch("probBackground_ttz",    &probBackground_ttz,   "probBackground_ttz/D");
-//  TBranch * probBackgroundBranch_th2ww __attribute__((unused)) =
-//    newTree -> Branch("probBackground_tth2ww", &probBackground_th2ww, "probBackground_tth2ww/D");
-  TBranch * lhRatioNPBranch            __attribute__((unused)) =
-    newTree -> Branch("lhRatioNP",             &lhRatioNP,            "lhRatioNP/D");
+  TBranch * probSignalBranch             __attribute__((unused)) =
+    newTree -> Branch("probSignal",             &probSignal,            "probSignal/D");
+  TBranch * probSignalBranch_err         __attribute__((unused)) =
+    newTree -> Branch("probSignal_err",         &probSignalErr,         "probSignal_err/D");
+  TBranch * probBackgroundBranch_ttz     __attribute__((unused)) =
+    newTree -> Branch("probBackground_ttz",     &probBackground_ttz,    "probBackground_ttz/D");
+  TBranch * probBackgroundBranch_ttz_err __attribute__((unused)) =
+    newTree -> Branch("probBackground_ttz_err", &probBackgroundErr_ttz, "probBackground_ttz_err/D");
+//  TBranch * probSignalBranch_th2ww       __attribute__((unused)) =
+//    newTree -> Branch("probSignal_tth2ww",      &probSignal_th2ww,      "probSignal_tth2ww/D");
+//  TBranch * probSignalBranch_th2ww_err   __attribute__((unused)) =
+//    newTree -> Branch("probSignal_tth2ww_err", &probSignalErr_th2ww,    "probSignal_tth2ww_err/D");
+  TBranch * lhRatioNPBranch              __attribute__((unused)) =
+    newTree -> Branch("lhRatioNP",              &lhRatioNP,             "lhRatioNP/D");
+  TBranch * lhRatioNPBranch_up           __attribute__((unused)) =
+    newTree -> Branch("lhRatioNP_up",           &lhRatioNP_up,          "lhRatioNP_up/D");
+  TBranch * lhRatioNPBranch_down         __attribute__((unused)) =
+    newTree -> Branch("lhRatioNP_down",         &lhRatioNP_down,        "lhRatioNP_down/D");
 
 //--- set up the weights in the denominator of Neyman-Pearson likelihood ratio
-//  const double bkgWeightDenom = 1. / (constants::xSectionTTZ + constants::xSectionTTH2diW);
-  const double bkgWeightDenom = 1. / constants::xSectionTTZ;
-  const std::vector<double> denomWeights = {
-    1., constants::xSectionTTZ * bkgWeightDenom//, constants::xSectionTTH2diW * bkgWeightDenom
-  };
+  const std::vector<double> bkgWeightNumerator{ constants::xSectionTTZ };
+  const std::vector<double> sigWeightNumerator{ constants::xSectionTTH /*, constants::xSectionTTH2diW */ };
+  const double bkgWeightDenom = 1. / std::accumulate(bkgWeightNumerator.begin(), bkgWeightNumerator.end(), 0.);
+  const double sigWeightDenom = 1. / std::accumulate(sigWeightNumerator.begin(), sigWeightNumerator.end(), 0.);
+  std::vector<double> bkgWeights, sigWeights;
+  std::transform(
+    bkgWeightNumerator.begin(), bkgWeightNumerator.end(), std::back_inserter(bkgWeights),
+    [bkgWeightDenom](double weightNumerator) -> double { return weightNumerator * bkgWeightDenom; }
+  );
+  std::transform(
+    sigWeightNumerator.begin(), sigWeightNumerator.end(), std::back_inserter(sigWeights),
+    [sigWeightDenom](double weightNumerator) -> double { return weightNumerator * sigWeightDenom; }
+  );
 
 //--- start looping over the events
   const Long64_t nof_tree_entries = inputTree -> GetEntries();
@@ -247,26 +265,64 @@ main(int argc,
 //    probBackground_th2ww = 0.;
 
     bool err = false;
-    probSignal = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTH, err);
+    std::array<double, 2> probSignalResult, probBackgroundResult_ttz;
+    probSignalResult = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTH, err);
     if(err)
     {
       LOGWARN << "Skipping the event because of errors";
       continue;
     }
-    probBackground_ttz = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTZ, err);
+    probBackgroundResult_ttz = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTZ, err);
     if(err)
     {
       LOGWARN << "Skipping the event because of errors";
       continue;
     }
+//    probSignalResult_th2ww = ...
 
-    const std::vector<double> probs = {
-      probSignal, probBackground_ttz//, probBackground_th2ww
+    probSignal            = probSignalResult[0];
+    probSignalErr         = probSignalResult[1];
+//    probSignal_th2ww      = probSignalResult_th2ww[0];
+//    probSignalErr_th2ww   = probSignalResult_th2ww[1];
+    probBackground_ttz    = probBackgroundResult_ttz[0];
+    probBackgroundErr_ttz = probBackgroundResult_ttz[1];
+
+    const std::vector<double> probs_signal{
+      probSignal//, probSignal_th2ww
     };
-    const double denom = std::inner_product(
-          probs.begin(), probs.end(), denomWeights.begin(), 0.
+    const std::vector<double> probs_signal_err{
+      probSignalErr//, probSignalErr_th2ww
+    };
+    const std::vector<double> prob_background{
+      probBackground_ttz
+    };
+    const std::vector<double> prob_background_err{
+      probBackgroundErr_ttz
+    };
+
+    const double signal_weighted = std::inner_product(
+      probs_signal.begin(), probs_signal.end(), sigWeights.begin(), 0.
     );
-    lhRatioNP = denom != 0. ? probSignal / denom : 0.;
+    const double signal_weighted_err = std::inner_product(
+      probs_signal_err.begin(), probs_signal_err.end(), sigWeights.begin(), 0.
+    );
+    const double background_weighted = std::inner_product(
+      prob_background.begin(), prob_background.end(), bkgWeights.begin(), 0.
+    );
+    const double background_weighted_err = std::inner_product(
+      prob_background_err.begin(), prob_background_err.end(), bkgWeights.begin(), 0.
+    );
+
+    const double sig      = signal_weighted;
+    const double sig_up   = sig + signal_weighted_err;
+    const double sig_down = sig - signal_weighted_err;
+    const double bkg      = background_weighted;
+    const double bkg_up   = bkg + background_weighted_err;
+    const double bkg_down = bkg - background_weighted_err;
+
+    lhRatioNP      = (sig      + bkg)      != 0. ? sig / (sig + bkg)              : 0.;
+    lhRatioNP_up   = (sig_up   + bkg_down) != 0. ? sig_up / (sig_up + bkg_down)   : 0.;
+    lhRatioNP_down = (sig_down + bkg_up)   != 0. ? sig_down / (sig_down + bkg_up) : 0.;
 
     newTree -> Fill();
   }

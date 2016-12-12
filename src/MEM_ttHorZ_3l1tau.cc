@@ -211,7 +211,7 @@ MEM_ttHorZ_3l1tau::getAverageComputingTime_real() const
   return nof_calls_ != 0 ? numSecondsAccumul_real_ / nof_calls_ : 0.;
 }
 
-double
+std::array<double, 2>
 MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
                              ME_mg5_3l1tau currentME,
                              bool & err)
@@ -325,7 +325,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   {
     LOGWARN << "NB! Event was skipped altogether b/c there was no correct permutation found";
     err = true;
-    return 0.;
+    return {{ 0., 0. }};
   }
 
 //--- aggregate probability and corresponding error (uncertainty) variable
@@ -367,6 +367,6 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   numSecondsAccumul_real_ += numSeconds_real_;
   ++nof_calls_;
 
-  return pSum;
+  return {{ pSum, pSumErr }};
 }
 

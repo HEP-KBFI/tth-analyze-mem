@@ -2,6 +2,7 @@
 #define MEM_TTH_3L1TAU_H
 
 #include <string> // std::string
+#include <array> // std::array<,>
 
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/Integrand_ttHorZ_3l1tau.h"
@@ -81,7 +82,7 @@ namespace tthMEM
     double
     getAverageComputingTime_real() const;
 
-    double
+    std::array<double, 2>
     integrate(const MeasuredEvent_3l1tau & ev,
               ME_mg5_3l1tau currentME,
               bool & err);
