@@ -23,12 +23,27 @@ namespace tthMEM
     MeasuredMET();
 
     /**
-     * @brief Default constructor which initializes pt and phi to their actual value
+     * @brief Default constructor which initializes pt and phi to their actual values
      * @param pt  pT of MET
      * @param phi phi of MET
      */
     MeasuredMET(double pt,
                 double phi);
+
+    /**
+     * @brief Default constructor which initializes MET pt, phi and covariance matrix
+     *        to their actual values
+     * @param pt        MET pT
+     * @param phi       MET phi
+     * @param covMET_XX (0, 0) component of the MET covariance matrix
+     * @param covMET_XY (0, 1) and (1, 0) component of the MET covariance matrix
+     * @param covMET_YY (1, 1) component of the MET covariance matrix
+     */
+    MeasuredMET(double pt,
+                double phi,
+                double covMET_XX,
+                double covMET_XY,
+                double covMET_YY);
 
     /* simple getters */
     double pt() const;
@@ -66,8 +81,7 @@ namespace tthMEM
     double covMET_XY_; ///< (0, 1) and (1, 0) component of MET covariance matrix
     double covMET_YY_; ///< (1, 1) component of MET covariance matrix
 
-    TMatrixDSym covMET_; ///< soon we'll have a separate branch for it in our Ntuples
-                         ///< the covariance matrix is symmetric by construction
+    TMatrixDSym covMET_; ///< the covariance matrix is symmetric by construction
     TMatrixD    covMET_eigenVectors_; ///< eigenvectors of covMET_
     TVectorD    covMET_eigenValues_;  ///< eigenvalues of covMET_
 

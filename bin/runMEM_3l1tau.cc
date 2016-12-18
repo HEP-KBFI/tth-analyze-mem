@@ -21,6 +21,7 @@
 #include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/LikelihoodRatio_3l1tau.h" // LikelihoodRatio_3l1tau, MEMOutput_3l1tau
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 #include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
@@ -28,6 +29,10 @@
 #include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles
 
 // JFC!!! fwlite:: doesn't include "FWCore/Utilities/interface/Exception.h"
+
+#define MEM_ERR_OK  0x00
+#define MEM_ERR_TTH 0x01 << 0
+#define MEM_ERR_TTZ 0x01 << 1
 
 using namespace tthMEM;
 
@@ -197,9 +202,9 @@ main(int argc,
 
 //--- set up the probability variables
   double probSignal,         probSignalErr;
-//  double probSignal_th2ww,   probSignalErr_th2ww;
+  double probSignal_th2ww,   probSignalErr_th2ww;
   double probBackground_ttz, probBackgroundErr_ttz;
-  double lhRatioNP, lhRatioNP_up, lhRatioNP_down;
+  double lhRatioNP, lhRatioNP_err, lhRatioNP_up, lhRatioNP_down;
 
   TBranch * probSignalBranch             __attribute__((unused)) =
     newTree -> Branch("probSignal",             &probSignal,            "probSignal/D");
@@ -209,30 +214,44 @@ main(int argc,
     newTree -> Branch("probBackground_ttz",     &probBackground_ttz,    "probBackground_ttz/D");
   TBranch * probBackgroundBranch_ttz_err __attribute__((unused)) =
     newTree -> Branch("probBackground_ttz_err", &probBackgroundErr_ttz, "probBackground_ttz_err/D");
-//  TBranch * probSignalBranch_th2ww       __attribute__((unused)) =
-//    newTree -> Branch("probSignal_tth2ww",      &probSignal_th2ww,      "probSignal_tth2ww/D");
-//  TBranch * probSignalBranch_th2ww_err   __attribute__((unused)) =
-//    newTree -> Branch("probSignal_tth2ww_err", &probSignalErr_th2ww,    "probSignal_tth2ww_err/D");
+  TBranch * probSignalBranch_th2ww       __attribute__((unused)) =
+    newTree -> Branch("probSignal_tth2ww",      &probSignal_th2ww,      "probSignal_tth2ww/D");
+  TBranch * probSignalBranch_th2ww_err   __attribute__((unused)) =
+    newTree -> Branch("probSignal_tth2ww_err", &probSignalErr_th2ww,    "probSignal_tth2ww_err/D");
   TBranch * lhRatioNPBranch              __attribute__((unused)) =
     newTree -> Branch("lhRatioNP",              &lhRatioNP,             "lhRatioNP/D");
+  TBranch * lhRatioNPBranch_err          __attribute__((unused)) =
+    newTree -> Branch("lhRatioNP_err",          &lhRatioNP_err,         "lhRatioNP_err/D");
   TBranch * lhRatioNPBranch_up           __attribute__((unused)) =
     newTree -> Branch("lhRatioNP_up",           &lhRatioNP_up,          "lhRatioNP_up/D");
   TBranch * lhRatioNPBranch_down         __attribute__((unused)) =
     newTree -> Branch("lhRatioNP_down",         &lhRatioNP_down,        "lhRatioNP_down/D");
 
-//--- set up the weights in the denominator of Neyman-Pearson likelihood ratio
-  const std::vector<double> bkgWeightNumerator{ constants::xSectionTTZ };
-  const std::vector<double> sigWeightNumerator{ constants::xSectionTTH /*, constants::xSectionTTH2diW */ };
-  const double bkgWeightDenom = 1. / std::accumulate(bkgWeightNumerator.begin(), bkgWeightNumerator.end(), 0.);
-  const double sigWeightDenom = 1. / std::accumulate(sigWeightNumerator.begin(), sigWeightNumerator.end(), 0.);
-  std::vector<double> bkgWeights, sigWeights;
-  std::transform(
-    bkgWeightNumerator.begin(), bkgWeightNumerator.end(), std::back_inserter(bkgWeights),
-    [bkgWeightDenom](double weightNumerator) -> double { return weightNumerator * bkgWeightDenom; }
-  );
-  std::transform(
-    sigWeightNumerator.begin(), sigWeightNumerator.end(), std::back_inserter(sigWeights),
-    [sigWeightDenom](double weightNumerator) -> double { return weightNumerator * sigWeightDenom; }
+//--- log also time and Markov Chain calls before integration
+  double realTime_tth, cpuTime_tth,
+         realTime_ttz, cpuTime_ttz;
+  long long nofMXMCTries_tth, nofMXMCTries_ttz;
+  TBranch * realTimeBranch_tth           __attribute__((unused)) =
+    newTree -> Branch("realTime_tth",           &realTime_tth,          "realTime_tth/D");
+  TBranch * cpuTimeBranch_tth            __attribute__((unused)) =
+    newTree -> Branch("cpuTime_tth",            &cpuTime_tth,           "cpuTime_tth/D");
+  TBranch * realTimeBranch_ttz           __attribute__((unused)) =
+    newTree -> Branch("realTime_ttz",           &realTime_ttz,          "realTime_ttz/D");
+  TBranch * cpuTimeBranch_ttz            __attribute__((unused)) =
+    newTree -> Branch("cpuTime_ttz",            &cpuTime_ttz,           "cpuTime_ttz/D");
+  TBranch * nofTriesBranch_tth           __attribute__((unused)) =
+    newTree -> Branch("nofMXMCTries_tth",       &nofMXMCTries_tth,      "nofMXMCTries_tth/L");
+  TBranch * nofTriesBranch_ttz           __attribute__((unused)) =
+    newTree -> Branch("nofMXMCTries_ttz",       &nofMXMCTries_ttz,      "nofMXMCTries_ttz/L");
+
+//--- log error code
+  Int_t errCode;
+  TBranch * errCodeBranch                __attribute__((unused)) =
+    newTree -> Branch("errCode",                &errCode,               "errCode/I");
+
+  LikelihoodRatio_3l1tau lr_computation(
+    { LikelihoodRatio_3l1tau::Hypothesis::tth }, // signal hypotheses
+    { LikelihoodRatio_3l1tau::Hypothesis::ttz }  // background hypotheses
   );
 
 //--- start looping over the events
@@ -254,75 +273,68 @@ main(int argc,
   for(Long64_t i = startingFromEntry; i < nof_max_entries; ++i)
   {
     LOGINFO << "Processing " << i << "th event";
+    errCode = MEM_ERR_OK;
 
     inputTree -> GetEntry(i);
     measuredEvent.initialize();
     if(measuredEvent.isFiltered()) continue;
     LOGINFO << "run:lumi:event = " << measuredEvent.str(false);
 
-    probSignal = 0.;
-    probBackground_ttz = 0.;
-//    probBackground_th2ww = 0.;
-
     bool err = false;
-    std::array<double, 2> probSignalResult, probBackgroundResult_ttz;
+    std::array<double, 2> probSignalResult;
     probSignalResult = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTH, err);
+    realTime_tth     = mem_tt_HandZ.getComputingTime_real();
+    cpuTime_tth      = mem_tt_HandZ.getComputingTime_cpu();
+    nofMXMCTries_tth = mem_tt_HandZ.getNofMXMCTries();
+
+    std::array<double, 2> probBackgroundResult_ttz;
+    if(err) // skip the computation and save time
+    {
+      LOGWARN << "Evaluating the MEM score to -1 because of errors";
+      errCode = MEM_ERR_TTH;
+
+      realTime_tth     = -1.;
+      cpuTime_tth      = -1.;
+      nofMXMCTries_tth = -1;
+    }
+    else
+    {
+      probBackgroundResult_ttz = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTZ, err);
+      realTime_ttz     = mem_tt_HandZ.getComputingTime_real();
+      cpuTime_ttz      = mem_tt_HandZ.getComputingTime_cpu();
+      nofMXMCTries_ttz = mem_tt_HandZ.getNofMXMCTries();
+    }
     if(err)
     {
-      LOGWARN << "Skipping the event because of errors";
-      continue;
+      LOGWARN << "Evaluating the MEM score to -1 because of errors";
+      errCode = MEM_ERR_TTZ;
+
+      realTime_ttz     = -1.;
+      cpuTime_ttz      = -1.;
+      nofMXMCTries_ttz = -1;
     }
-    probBackgroundResult_ttz = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTZ, err);
-    if(err)
+
+    const MEMOutput_3l1tau result =
+      [err, &lr_computation, &probSignalResult, &probBackgroundResult_ttz]()
     {
-      LOGWARN << "Skipping the event because of errors";
-      continue;
-    }
-//    probSignalResult_th2ww = ...
+      if(err)
+        return MEMOutput_3l1tau(); // filled with -1's
+      return lr_computation.compute(
+        { { LikelihoodRatio_3l1tau::Hypothesis::tth, probSignalResult         } },
+        { { LikelihoodRatio_3l1tau::Hypothesis::ttz, probBackgroundResult_ttz } }
+      );
+    }();
 
-    probSignal            = probSignalResult[0];
-    probSignalErr         = probSignalResult[1];
-//    probSignal_th2ww      = probSignalResult_th2ww[0];
-//    probSignalErr_th2ww   = probSignalResult_th2ww[1];
-    probBackground_ttz    = probBackgroundResult_ttz[0];
-    probBackgroundErr_ttz = probBackgroundResult_ttz[1];
-
-    const std::vector<double> probs_signal{
-      probSignal//, probSignal_th2ww
-    };
-    const std::vector<double> probs_signal_err{
-      probSignalErr//, probSignalErr_th2ww
-    };
-    const std::vector<double> prob_background{
-      probBackground_ttz
-    };
-    const std::vector<double> prob_background_err{
-      probBackgroundErr_ttz
-    };
-
-    const double signal_weighted = std::inner_product(
-      probs_signal.begin(), probs_signal.end(), sigWeights.begin(), 0.
-    );
-    const double signal_weighted_err = std::inner_product(
-      probs_signal_err.begin(), probs_signal_err.end(), sigWeights.begin(), 0.
-    );
-    const double background_weighted = std::inner_product(
-      prob_background.begin(), prob_background.end(), bkgWeights.begin(), 0.
-    );
-    const double background_weighted_err = std::inner_product(
-      prob_background_err.begin(), prob_background_err.end(), bkgWeights.begin(), 0.
-    );
-
-    const double sig      = signal_weighted;
-    const double sig_up   = sig + signal_weighted_err;
-    const double sig_down = sig - signal_weighted_err;
-    const double bkg      = background_weighted;
-    const double bkg_up   = bkg + background_weighted_err;
-    const double bkg_down = bkg - background_weighted_err;
-
-    lhRatioNP      = (sig      + bkg)      != 0. ? sig / (sig + bkg)              : 0.;
-    lhRatioNP_up   = (sig_up   + bkg_down) != 0. ? sig_up / (sig_up + bkg_down)   : 0.;
-    lhRatioNP_down = (sig_down + bkg_up)   != 0. ? sig_down / (sig_down + bkg_up) : 0.;
+    probSignal            = result.prob_tth;
+    probSignalErr         = result.prob_tth_err;
+    probSignal_th2ww      = result.prob_tth_h2ww;
+    probSignalErr_th2ww   = result.prob_tth_h2ww_err;
+    probBackground_ttz    = result.prob_ttz;
+    probBackgroundErr_ttz = result.prob_ttz_err;
+    lhRatioNP             = result.lr;
+    lhRatioNP_err         = result.lr_err;
+    lhRatioNP_up          = result.lr_up;
+    lhRatioNP_down        = result.lr_down;
 
     newTree -> Fill();
   }

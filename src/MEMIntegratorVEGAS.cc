@@ -109,3 +109,9 @@ MEMIntegratorVEGAS::integrate(MEMIntegratorBase::gPtr_C integrand,
   vegasRnd_ = 0;
 }
 
+void *
+MEMIntegratorVEGAS::metadata()
+{
+  return nullptr;
+}
+

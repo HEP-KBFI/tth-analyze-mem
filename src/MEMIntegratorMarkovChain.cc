@@ -190,6 +190,7 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
   nofMoves_rejected_ = 0;
 
 //--- loop over MX
+  nofTries_ = 0;
   for(unsigned iChain = 0; iChain < nofChains_; ++iChain)
   {
     bool isValidStartPos = false;
@@ -231,6 +232,7 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
                << "start position, yet";
       ++nofTries;
     } // ! isValidStartPos && nofTries < maxCallsStartingPos_
+    nofTries_ += nofTries;
     if(! isValidStartPos) continue;
 
 //--- propose MX transition to a new, randomly chosen point
@@ -376,6 +378,12 @@ MEMIntegratorMarkovChain::evalProb(const std::vector<double> & q)
 {
   update_x(q);
   return (*integrand_)(x_.data(), nofDimensions_, 0);
+}
+
+void *
+MEMIntegratorMarkovChain::metadata()
+{
+  return &nofTries_;
 }
 
 namespace tthMEM

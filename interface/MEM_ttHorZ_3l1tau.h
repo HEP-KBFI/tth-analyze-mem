@@ -32,6 +32,8 @@ namespace tthMEM
       kMarkovChain = 3
     };
 
+    MEM_ttHorZ_3l1tau() = default;
+
     MEM_ttHorZ_3l1tau(const std::string & pdfName,
                       const std::string & madgraphFileName,
                       const VariableManager_3l1tau & vm);
@@ -82,6 +84,9 @@ namespace tthMEM
     double
     getAverageComputingTime_real() const;
 
+    unsigned
+    getNofMXMCTries() const;
+
     std::array<double, 2>
     integrate(const MeasuredEvent_3l1tau & ev,
               ME_mg5_3l1tau currentME,
@@ -115,6 +120,7 @@ namespace tthMEM
     double alpha_;
     double epsilon0_;
     double nu_;
+    long long nofMXMCTries; // counter variable
 
     double higgsWidth_;
     ///< use custom Higgs width in case the phase space is too narrow

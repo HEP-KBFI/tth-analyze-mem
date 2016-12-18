@@ -1,0 +1,22 @@
+#include "tthAnalysis/tthMEM/interface/MEMOutput_3l1tau.h"
+
+MEMOutput_3l1tau::MEMOutput_3l1tau()
+  : prob_tth(-1.)
+  , prob_tth_err(-1.)
+  , prob_ttz(-1.)
+  , prob_ttz_err(-1.)
+  , prob_tth_h2ww(-1.)
+  , prob_tth_h2ww_err(-1.)
+  , sig(-1.)
+  , sig_err(-1.)
+  , sig_up(-1.)
+  , sig_down(-1.)
+  , bkg(-1.)
+  , bkg_err(-1.)
+  , bkg_up(-1.)
+  , bkg_down(-1.)
+  , lr(-1.)
+  , lr_err(-1.)
+  , lr_up(-1.)
+  , lr_down(-1.)
+{}

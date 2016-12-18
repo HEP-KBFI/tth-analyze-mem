@@ -50,6 +50,9 @@ namespace tthMEM
               unsigned dimension,
               double & integral,
               double & integralErr) = 0;
+
+    virtual void *
+    metadata() = 0;
   };
 }
 

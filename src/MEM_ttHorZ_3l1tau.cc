@@ -19,8 +19,7 @@ g_C(double * x,
     std::size_t dimension,
     void * additionalParameters)
 {
-  const double returnValue = Integrand_ttHorZ_3l1tau::gIntegrand -> eval(x);
-  return returnValue;
+  return Integrand_ttHorZ_3l1tau::gIntegrand -> eval(x);
 }
 
 double
@@ -28,8 +27,7 @@ g_Fortran(double ** x,
           std::size_t dimension,
           void ** additionalParameters)
 {
-  const double returnValue = Integrand_ttHorZ_3l1tau::gIntegrand -> eval(*x);
-  return returnValue;
+  return Integrand_ttHorZ_3l1tau::gIntegrand -> eval(*x);
 }
 
 MEM_ttHorZ_3l1tau::MEM_ttHorZ_3l1tau(const std::string & pdfName,
@@ -211,6 +209,12 @@ MEM_ttHorZ_3l1tau::getAverageComputingTime_real() const
   return nof_calls_ != 0 ? numSecondsAccumul_real_ / nof_calls_ : 0.;
 }
 
+unsigned
+MEM_ttHorZ_3l1tau::getNofMXMCTries() const
+{
+  return nofMXMCTries;
+}
+
 std::array<double, 2>
 MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
                              ME_mg5_3l1tau currentME,
@@ -314,6 +318,11 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
       LOGINFO_S << "p = " << p << "; pErr = " << pErr;
       pSum_perJc += p;
       pSumErr_perJc += pErr;
+
+      if(integrationMode_ == IntegrationMode::kMarkovChain)
+        nofMXMCTries = *static_cast<unsigned *>(intAlgo_ -> metadata());
+      else
+        nofMXMCTries = -1;
     }
     ev.resetPermutation();
     pSum_allJc.push_back(pSum_perJc);

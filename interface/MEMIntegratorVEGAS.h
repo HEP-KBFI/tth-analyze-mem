@@ -49,6 +49,9 @@ namespace tthMEM
         << "You must use integrate(gPtr_C, ...) not this one";
     }
 
+    void *
+    metadata() override;
+
   private:
     void
     setIntegrand(MEMIntegratorBase::gPtr_C integrand,

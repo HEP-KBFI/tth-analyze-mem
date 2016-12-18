@@ -73,3 +73,9 @@ MEMIntegratorVAMP::integrate(MEMIntegratorBase::gPtr_Fortran integrand,
     xu_ = 0;
   }
 }
+
+void *
+MEMIntegratorVAMP::metadata()
+{
+  return nullptr;
+}

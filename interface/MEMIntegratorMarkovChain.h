@@ -73,6 +73,9 @@ namespace tthMEM
         << "You must use integrate(gPtr_C, ...) not this one";
     }
 
+    void *
+    metadata() override;
+
     friend std::ostream &
     operator<<(std::ostream & os,
                const MEMIntegratorMarkovChain & mx);
@@ -164,6 +167,8 @@ namespace tthMEM
     unsigned long nofMoves_accepted_,      nofMoves_rejected_,
                   nofMoves_acceptedTotal_, nofMoves_rejectedTotal_,
                   nofIntegrationCalls_;
+    unsigned nofTries_;
+    ///< number of calls made until positive probability has been found (summed over chains)
 
     TRandom3 prng_;
     ///< PRNG (Mersenne Twister)
