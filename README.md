@@ -10,7 +10,7 @@ In order to build the whole project, you first need to install numerical integra
 
 ```bash
 mkdir $CMSSW_BASE/VAMP
-wget http://www.hepforge.org/archive/whizard/vamp-2.3.0.tar.gz -P $CMSSW_BASE/VAMP
+wget http://whizard.hepforge.org/oldsrc/vamp-2.3.0.tar.gz -P $CMSSW_BASE/VAMP
 tar zxvf $CMSSW_BASE/VAMP/vamp-2.3.0.tar.gz -C $CMSSW_BASE/VAMP
 mkdir -p $CMSSW_BASE/VAMP/vamp-2.3.0/prefix/share/doc/vamp
 cd $CMSSW_BASE/VAMP/vamp-2.3.0
@@ -54,7 +54,7 @@ LIBDIR=.../VAMP/vamp-2.3.0/prefix/lib
 INCLUDE=.../VAMP/vamp-2.3.0/prefix/include/vamp
 USE=f77compiler
 ```
-You can check other versions of VAMP [here](https://www.hepforge.org/downloads/whizard) (scroll down).
+You can check other versions of VAMP [here](http://whizard.hepforge.org/vamp.html).
 
 ### The library itself
 
