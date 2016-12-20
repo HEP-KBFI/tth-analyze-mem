@@ -126,6 +126,7 @@ Likelihood ratio              = 0.248612 (0.061820)
 //--- in a loop over the events
 //--- Individual values can be obtained by inspecting member variables in MEMOutput_3l1tau struct
 //--- The P(tth,h->WW) scores are currently set to -1, b/c it's not implemented, yet.
+//--- If any other values in the struct have evaluated to -1, then there were
   return EXIT_SUCCESS;
 }
 

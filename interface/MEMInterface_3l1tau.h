@@ -85,6 +85,9 @@ struct MEMInterface_3l1tau
   double T0;
   double nu;
 
+  /* for tracking errors */
+  bool err;
+
 private:
   VariableManager_3l1tau vm;
   MEM_ttHorZ_3l1tau mem_tt_HandZ;

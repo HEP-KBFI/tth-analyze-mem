@@ -16,25 +16,32 @@ MEMInterface_3l1tau::MEMInterface_3l1tau()
   , epsilon0               (1.e-2)
   , T0                     (15.)
   , nu                     (0.71)
+  , err                    (false)
   , mem_tt_HandZ           (pdfName, findFile(madgraphFileName), vm)
 {}
 
 void
 MEMInterface_3l1tau::initialize()
 {
-  mem_tt_HandZ.setIntegrationMode(integrationMode);
-  mem_tt_HandZ.setMaxObjFunctionCalls(maxObjFunctionCalls);
-  mem_tt_HandZ.setBJetTransferFunction(useBJetTransferFunction);
-  mem_tt_HandZ.useAvgBjetCombo(useAvgBjetCombo);
-  if(mem_tt_HandZ.isMarkovChainIntegrator())
-     mem_tt_HandZ.setMarkovChainParams(mxMode, nofBatches, nofChains,
-                                       maxCallsStartingPos, epsilon0, T0, nu);
-  if(higgsWidth > 0.)
-    mem_tt_HandZ.setHiggsWidth(higgsWidth);
-  lr_computation = LikelihoodRatio_3l1tau(
-    { LikelihoodRatio_3l1tau::Hypothesis::tth }, // signal hypotheses
-    { LikelihoodRatio_3l1tau::Hypothesis::ttz }  // background hypotheses
-  );
+  try
+  {
+    mem_tt_HandZ.setIntegrationMode(integrationMode);
+    mem_tt_HandZ.setMaxObjFunctionCalls(maxObjFunctionCalls);
+    mem_tt_HandZ.setBJetTransferFunction(useBJetTransferFunction);
+    mem_tt_HandZ.useAvgBjetCombo(useAvgBjetCombo);
+    if(mem_tt_HandZ.isMarkovChainIntegrator())
+       mem_tt_HandZ.setMarkovChainParams(mxMode, nofBatches, nofChains,
+                                         maxCallsStartingPos, epsilon0, T0, nu);
+    if(higgsWidth > 0.)
+      mem_tt_HandZ.setHiggsWidth(higgsWidth);
+    lr_computation = LikelihoodRatio_3l1tau(
+      { LikelihoodRatio_3l1tau::Hypothesis::tth }, // signal hypotheses
+      { LikelihoodRatio_3l1tau::Hypothesis::ttz }  // background hypotheses
+    );
+  } catch(...)
+  {
+    err = true;
+  }
 }
 
 MEMOutput_3l1tau
@@ -45,49 +52,72 @@ MEMInterface_3l1tau::operator()(const std::vector<MeasuredJet> & selectedJets,
                                 const MeasuredHadronicTau      & selectedHadronicTau,
                                 const MeasuredMET              & measuredMET)
 {
-  if(! (selectedJets.size() >= MIN_NOF_RECO_JETS &&
-        selectedJets.size() <= MAX_NOF_RECO_JETS))
-    throw_line("MEMInterface_3l1tau")
-      << "Invalid number of selected jets passed: " << selectedJets.size()
-      << " (should be between " << MIN_NOF_RECO_JETS << " and " << MAX_NOF_RECO_JETS << ')';
-
   MeasuredEvent_3l1tau event;
-  event.leptons[0] = leadingLepton;
-  event.leptons[1] = subLeadingLepton;
-  event.leptons[2] = thirdLepton;
-  for(unsigned i = 0; i < selectedJets.size(); ++i)
-    event.allJets[i] = selectedJets[i];
-  event.njets = selectedJets.size();
-  event.htau = selectedHadronicTau;
-  event.met  = measuredMET;
-  event.run  = 0;
-  event.lumi = 0;
-  event.evt  = 0;
-  event.initialize();
 
-  bool err = false;
-  const std::array<double, 2> probSignalResult = mem_tt_HandZ.integrate(
-    event, ME_mg5_3l1tau::kTTH, err
-  );
-  const std::array<double, 2> probBackgroundResult_ttz = [&err, &event, this]()
+  if(! err)
+  {
+    try
+    {
+      if(! (selectedJets.size() >= MIN_NOF_RECO_JETS &&
+            selectedJets.size() <= MAX_NOF_RECO_JETS))
+        throw_line("MEMInterface_3l1tau")
+          << "Invalid number of selected jets passed: " << selectedJets.size()
+          << " (should be between " << MIN_NOF_RECO_JETS << " and " << MAX_NOF_RECO_JETS << ')';
+
+      event.leptons[0] = leadingLepton;
+      event.leptons[1] = subLeadingLepton;
+      event.leptons[2] = thirdLepton;
+      for(unsigned i = 0; i < selectedJets.size(); ++i)
+        event.allJets[i] = selectedJets[i];
+      event.njets = selectedJets.size();
+      event.htau = selectedHadronicTau;
+      event.met  = measuredMET;
+      event.run  = 0;
+      event.lumi = 0;
+      event.evt  = 0;
+      event.initialize();
+    } catch(...)
+    {
+      err = true;
+    }
+  }
+
+  const std::array<double, 2> probSignalResult = [&event, this]()
     -> std::array<double, 2>
   {
     if(! err)
-      return mem_tt_HandZ.integrate(
-        event, ME_mg5_3l1tau::kTTZ, err
-      );
+      try
+      {
+        return mem_tt_HandZ.integrate(event, ME_mg5_3l1tau::kTTH, err);
+      } catch(...)
+      {
+        err = true;
+      }
+    return {{0., 0.}}; // never used (see below)
+  }();
+  const std::array<double, 2> probBackgroundResult_ttz = [&event, this]()
+    -> std::array<double, 2>
+  {
+    if(! err)
+      try
+      {
+        return mem_tt_HandZ.integrate(event, ME_mg5_3l1tau::kTTZ, err);
+      } catch(...)
+      {
+        err = true;
+      }
     return {{0., 0.}}; // never used (see below)
   }();
 
   const MEMOutput_3l1tau result =
-    [err, &probSignalResult, &probBackgroundResult_ttz, this]()
+    [&probSignalResult, &probBackgroundResult_ttz, this]()
   {
     if(! err)
       return lr_computation.compute(
         { { LikelihoodRatio_3l1tau::Hypothesis::tth, probSignalResult         } },
         { { LikelihoodRatio_3l1tau::Hypothesis::ttz, probBackgroundResult_ttz } }
       );
-    return MEMOutput_3l1tau(); // filled with -1's
+    return MEMOutput_3l1tau(1); // filled with -1's, error code set to 1
   }();
 
   return result;

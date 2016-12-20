@@ -63,13 +63,14 @@ public:
     // set MEM environment variables
     mem.maxCallsStartingPos = 100;
     mem.maxObjFunctionCalls = 1000;
+
     // initialize the MEM environment
     mem.initialize();
 
     // compute the MEM score
     const MEMOutput_3l1tau result = mem(jets, leadingLepton, subLeadingLepton, thirdLepton, tau, met);
 
-    // assert the results (check if positive; take log 10)
+    // assert
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.prob_tth,           5.8570e-55, 1.e-59);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.prob_tth_err,       1.7339e-55, 1.e-59);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.prob_tth_h2ww,     -1.0000e+00, 0.    );
@@ -82,6 +83,7 @@ public:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.bkg_err,            2.2831e-52, 1.e-56);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.lr,                 0.000330,   1.e-6 );
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.lr_err,             0.128623,   1.e-6 );
+    CPPUNIT_ASSERT_EQUAL(result.err, 0);
   }
 
   void
@@ -90,12 +92,14 @@ public:
     // set MEM environment variables
     mem.maxCallsStartingPos = 5000;
     mem.maxObjFunctionCalls = 2000;
+
     // initialize the MEM environment
     mem.initialize();
 
     // compute the MEM score
     const MEMOutput_3l1tau result = mem(jets, leadingLepton, subLeadingLepton, thirdLepton, tau, met);
 
+    // assert
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.prob_tth,           8.4016e-53, 1.e-57);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.prob_tth_err,       1.6246e-53, 1.e-57);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.prob_tth_h2ww,     -1.0000e+00, 0.    );
@@ -108,6 +112,7 @@ public:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.bkg_err,            1.0005e-51, 1.e-55);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.lr,                 0.012554,   1.e-6 );
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.lr_err,             0.147621,   1.e-6 );
+    CPPUNIT_ASSERT_EQUAL(result.err, 0);
   }
 
   void
@@ -116,12 +121,14 @@ public:
     // set MEM environment variables
     mem.maxCallsStartingPos = 5000;
     mem.maxObjFunctionCalls = 10000;
+
     // initialize the MEM environment
     mem.initialize();
 
     // compute the MEM score
     const MEMOutput_3l1tau result = mem(jets, leadingLepton, subLeadingLepton, thirdLepton, tau, met);
 
+    // assert
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.prob_tth,           1.6883e-51, 1.e-55);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.prob_tth_err,       2.6524e-52, 1.e-56);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.prob_tth_h2ww,     -1.0000e+00, 0.    );
@@ -134,6 +141,7 @@ public:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.bkg_err,            1.3602e-51, 1.e-55);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.lr,                 0.202628,   1.e-6 );
     CPPUNIT_ASSERT_DOUBLES_EQUAL(result.lr_err,             0.130335,   1.e-6 );
+    CPPUNIT_ASSERT_EQUAL(result.err, 0);
   }
 
   void
@@ -148,10 +156,11 @@ public:
     // initialize the MEM environment
     mem.initialize();
 
-    CPPUNIT_ASSERT_THROW(
-      mem(jets, leadingLepton, subLeadingLepton_flip, thirdLepton, tau, met),
-      cms::Exception
-    );
+    // compute the MEM score
+    const MEMOutput_3l1tau result = mem(jets, leadingLepton, subLeadingLepton_flip, thirdLepton, tau, met);
+
+    // assert
+    CPPUNIT_ASSERT_EQUAL(result.err, 1);
   }
 
   void
@@ -164,13 +173,15 @@ public:
     // set MEM environment variables
     mem.maxCallsStartingPos = 100;
     mem.maxObjFunctionCalls = 1000;
+
     // initialize the MEM environment
     mem.initialize();
 
-    CPPUNIT_ASSERT_THROW(
-      mem(jets_4, leadingLepton, subLeadingLepton, thirdLepton, tau, met),
-      cms::Exception
-    );
+    // compute the MEM score
+    const MEMOutput_3l1tau result = mem(jets_4, leadingLepton, subLeadingLepton, thirdLepton, tau, met);
+
+    // assert
+    CPPUNIT_ASSERT_EQUAL(result.err, 1);
   }
 
   void
@@ -182,13 +193,15 @@ public:
     // set MEM environment variables
     mem.maxCallsStartingPos = 100;
     mem.maxObjFunctionCalls = 1000;
+
     // initialize the MEM environment
     mem.initialize();
 
-    CPPUNIT_ASSERT_THROW(
-      mem(jets_1, leadingLepton, subLeadingLepton, thirdLepton, tau, met),
-      cms::Exception
-    );
+    // compute the MEM score
+    const MEMOutput_3l1tau result = mem(jets_1, leadingLepton, subLeadingLepton, thirdLepton, tau, met);
+
+    // assert
+    CPPUNIT_ASSERT_EQUAL(result.err, 1);
   }
 };
 

@@ -5,7 +5,7 @@
 
 struct MEMOutput_3l1tau
 {
-  MEMOutput_3l1tau();
+  MEMOutput_3l1tau(int err = 0);
   MEMOutput_3l1tau &
   operator=(const MEMOutput_3l1tau &) = default;
 
@@ -29,6 +29,8 @@ struct MEMOutput_3l1tau
   double lr_err;
   double lr_up;
   double lr_down;
+
+  int err;
 
   friend std::ostream &
   operator<<(std::ostream & os,

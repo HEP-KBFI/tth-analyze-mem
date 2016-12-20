@@ -2,7 +2,7 @@
 
 #include <iomanip> // std::setprecision()
 
-MEMOutput_3l1tau::MEMOutput_3l1tau()
+MEMOutput_3l1tau::MEMOutput_3l1tau(int err)
   : prob_tth(-1.)
   , prob_tth_err(-1.)
   , prob_ttz(-1.)
@@ -21,6 +21,7 @@ MEMOutput_3l1tau::MEMOutput_3l1tau()
   , lr_err(-1.)
   , lr_up(-1.)
   , lr_down(-1.)
+  , err(err)
 {}
 
 std::ostream &
@@ -35,7 +36,8 @@ operator<<(std::ostream & os,
      << "P(signal hypothesis) weighted = " << output.sig           << " (" << output.sig_err           << ")\n"
      << "P(bkg hypothesis) weighted    = " << output.bkg           << " (" << output.bkg_err           << ")\n"
      << std::fixed << std::setprecision(6)
-     << "Likelihood ratio              = " << output.lr            << " (" << output.lr_err            << ")\n";
+     << "Likelihood ratio              = " << output.lr            << " (" << output.lr_err            << ")\n"
+     << (output.err != 0 ? "There were errors\n" : "");
   os.flags(prev_flags);
   return os;
 }
