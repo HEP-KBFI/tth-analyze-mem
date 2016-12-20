@@ -6,6 +6,7 @@
 <use name="vamp" />
 <use name="boost" />
 <!-- <Flags CXXFLAGS="-g3 -Og -ggdb3" /> -->
+<Flags CXXFLAGS="-g0 -O3 -ggdb0" />
 <export>
   <lib name="1" />
 </export>

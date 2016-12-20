@@ -2,14 +2,22 @@
   <use name="DataFormats/Math" />
   <use name="tthAnalysis/tthMEM" />
   <use name="cppunit" />
+  <Flags CXXFLAGS="-g0 -O3 -ggdb0" />
 </bin>
 <bin file="CppUnit_testdriver.cc,test_tthMEMvecFunctions.cc" name="testMEMvec">
   <use name="DataFormats/Math" />
   <use name="tthAnalysis/tthMEM" />
   <use name="cppunit" />
+  <Flags CXXFLAGS="-g0 -O3 -ggdb0" />
 </bin>
 <bin file="CppUnit_testdriver.cc,test_tthMEMrecFunctions.cc" name="testMEMrec">
   <use name="DataFormats/Math" />
   <use name="tthAnalysis/tthMEM" />
   <use name="cppunit" />
+  <Flags CXXFLAGS="-g0 -O3 -ggdb0" />
+</bin>
+<bin file="CppUnit_testdriver.cc,test_MEMInterface_3l1tau.cc" name="testMEMInterface_3l1tau">
+  <use name="tthAnalysis/tthMEM" />
+  <use name="cppunit" />
+  <Flags CXXFLAGS="-g0 -O3 -ggdb0" />
 </bin>

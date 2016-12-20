@@ -65,10 +65,7 @@ struct MEMInterface_3l1tau
              const MeasuredLepton           & subLeadingLepton,
              const MeasuredLepton           & thirdLepton,
              const MeasuredHadronicTau      & selectedHadronicTau,
-             const MeasuredMET              & measuredMET,
-             UInt_t    run  = 0,
-             UInt_t    lumi = 0,
-             ULong64_t evt  = 0);
+             const MeasuredMET              & measuredMET);
 
   /* MEM environment parameters (do not change unless you know what you're doing) */
   std::string pdfName;
@@ -89,9 +86,9 @@ struct MEMInterface_3l1tau
   double nu;
 
 private:
+  VariableManager_3l1tau vm;
   MEM_ttHorZ_3l1tau mem_tt_HandZ;
   LikelihoodRatio_3l1tau lr_computation;
-  VariableManager_3l1tau vm;
 };
 
 #endif // MEMINTERFACE_3L1TAU_H

@@ -1,9 +1,13 @@
 #ifndef MEMOUTPUT_3L1TAU_H
 #define MEMOUTPUT_3L1TAU_H
 
+#include <iostream> // std::ostream
+
 struct MEMOutput_3l1tau
 {
   MEMOutput_3l1tau();
+  MEMOutput_3l1tau &
+  operator=(const MEMOutput_3l1tau &) = default;
 
   double prob_tth;
   double prob_tth_err;
@@ -25,6 +29,10 @@ struct MEMOutput_3l1tau
   double lr_err;
   double lr_up;
   double lr_down;
+
+  friend std::ostream &
+  operator<<(std::ostream & os,
+             const MEMOutput_3l1tau & output);
 };
 
 #endif // MEMOUTPUT_3L1TAU_H

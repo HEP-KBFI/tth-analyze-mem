@@ -17,9 +17,7 @@ MeasuredMET::MeasuredMET()
   , covMET_(TMatrixDSym(2))
   , covMET_eigenVectors_(TMatrixD(2, 2))
   , covMET_eigenValues_(TVectorD(2))
-{
-  initialize();
-}
+{}
 
 MeasuredMET::MeasuredMET(double pt,
                          double phi)
@@ -28,8 +26,11 @@ MeasuredMET::MeasuredMET(double pt,
   , covMET_XX_(100.)
   , covMET_XY_(  0.)
   , covMET_YY_(100.)
-  , covMET_(TMatrixDSym(2, 2))
+  , covMET_(TMatrixDSym(2))
+  , covMET_eigenVectors_(TMatrixD(2, 2))
+  , covMET_eigenValues_(TVectorD(2))
 {
+  LOGTRC;
   initialize();
 }
 
@@ -43,8 +44,11 @@ MeasuredMET::MeasuredMET(double pt,
   , covMET_XX_(covMET_XX)
   , covMET_XY_(covMET_XY)
   , covMET_YY_(covMET_YY)
-  , covMET_(TMatrixDSym(2, 2))
+  , covMET_(TMatrixDSym(2))
+  , covMET_eigenVectors_(TMatrixD(2, 2))
+  , covMET_eigenValues_(TVectorD(2))
 {
+  LOGTRC;
   initialize();
 }
 

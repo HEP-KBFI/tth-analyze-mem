@@ -129,8 +129,8 @@ LikelihoodRatio_3l1tau::fillResults(MEMOutput_3l1tau & result,
         result.prob_tth_err = kv.second[1];
         break;
       case Hypothesis::ttz:
-        result.prob_ttz = kv.second[0];
-        result.prob_ttz = kv.second[1];
+        result.prob_ttz     = kv.second[0];
+        result.prob_ttz_err = kv.second[1];
         break;
       case Hypothesis::tth_h2ww:
         result.prob_tth_h2ww     = kv.second[0];
