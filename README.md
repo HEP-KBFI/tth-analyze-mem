@@ -61,7 +61,7 @@ You can check other versions of VAMP [here](http://whizard.hepforge.org/vamp.htm
 Clone the library into `$CMSSW_BASE/src/tthAnalysis/tthMEM`:
 
 ```bash
-git clone git@github.com:HEP-KBFI/tth-analyze-mem.git $CMSSW_BASE/src/tthAnalysis/tthMEM
+git clone https://github.com/HEP-KBFI/tth-analyze-mem.git $CMSSW_BASE/src/tthAnalysis/tthMEM
 ```
 
 and build it with `scram b -j8` as usual.
