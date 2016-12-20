@@ -21,6 +21,7 @@ namespace tthMEM
                 double eta,
                 double phi,
                 double mass);
+    MeasuredJet(const LorentzVector & lv);
     MeasuredJet(const MeasuredJet & other);
     MeasuredJet & operator=(const MeasuredJet & other);
     ~MeasuredJet();

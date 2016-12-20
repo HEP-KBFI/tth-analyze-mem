@@ -13,6 +13,10 @@ MeasuredJet::MeasuredJet(double pt,
   : MeasuredObject(pt, eta, phi, mass)
 {}
 
+MeasuredJet::MeasuredJet(const LorentzVector & lv)
+  : MeasuredObject(lv)
+{}
+
 MeasuredJet::MeasuredJet(const MeasuredJet & other)
   : MeasuredObject(other)
 {}

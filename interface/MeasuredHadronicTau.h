@@ -24,6 +24,9 @@ namespace tthMEM
                         double mass,
                         int charge,
                         int decayMode);
+    MeasuredHadronicTau(const LorentzVector & lv,
+                        int charge,
+                        int decayMode);
     MeasuredHadronicTau(const MeasuredHadronicTau & other);
     MeasuredHadronicTau & operator=(const MeasuredHadronicTau & other);
     ~MeasuredHadronicTau();

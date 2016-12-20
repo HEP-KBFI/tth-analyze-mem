@@ -21,6 +21,13 @@ MeasuredHadronicTau::MeasuredHadronicTau(double pt,
   initialize();
 }
 
+MeasuredHadronicTau::MeasuredHadronicTau(const LorentzVector & lv,
+                                         int charge,
+                                         int decayMode)
+  : MeasuredLepton(lv, charge)
+  , decayMode_(decayMode)
+{}
+
 MeasuredHadronicTau::MeasuredHadronicTau(const MeasuredHadronicTau & other)
   : MeasuredLepton(other)
   , decayMode_(other.decayMode_)
