@@ -35,7 +35,7 @@ def createJobs(samples, channel, year, version, central_or_shifts, charge_select
   rocCSVDir   = os.path.join(rocDir, "csvs")
   rocCmd = "memROC"
 
-  sbatchBashFiles, sbatchLogFiles = [], []
+  sbatchBashFiles, sbatchLogFiles, sbatchOutFileNameLocalFiles = [], [], []
   outFileNameLocalArray = {}
   rocLabels, rocOutFileNames, rocCSVOutFileNames = [], [], []
   inputSignalFile = ""
@@ -128,6 +128,7 @@ def createJobs(samples, channel, year, version, central_or_shifts, charge_select
 
               sbatchBashFiles.append(jobBashFile_i)
               sbatchLogFiles.append(logFile_i)
+              sbatchOutFileNameLocalFiles.append(outFileNameLocal_i)
               outFileNameLocalArray[outFileNameLocalResult].append(outFileNameLocal_i)
 
   if not outFileNameLocalArray: sys.exit(0)
@@ -138,7 +139,7 @@ def createJobs(samples, channel, year, version, central_or_shifts, charge_select
     rocOutFileNames.append(os.path.join(rocPlotDir, "roc.pdf"))
 
   sbatchFile = os.path.join(memDir, "sbatchMEM_%s.py" % channel)
-  sbatchContents = createSbatch(sbatchBashFiles, sbatchLogFiles)
+  sbatchContents = createSbatch(sbatchBashFiles, sbatchLogFiles, sbatchOutFileNameLocalFiles)
   with codecs.open(sbatchFile, 'w', 'utf-8') as f: f.write(sbatchContents)
   st = os.stat(sbatchFile)
   os.chmod(sbatchFile, st.st_mode | stat.S_IEXEC)

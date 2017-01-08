@@ -66,9 +66,9 @@ def createBashCfg(inFileNameLocal, outFileNameLocal, inFileNameScratch,
     pythonCfg          = pythonCfg,
     cmsswSrcDir        = cmsswSrcDir)
 
-def createSbatch(bashScript, logFile):
+def createSbatch(bashScript, logFile, outLocalFiles):
   return jinja2.Template(sbatchTemplate).render(
-    zippedScriptLog = zip(bashScript, logFile))
+    zippedScriptLog = zip(bashScript, logFile, outLocalFiles))
 
 def createMakefile(waitingScript, outFileNameLocalArray, scratchDir,
                    rocOutFileNames, rocCmd, rocCfg, inputBkgFiles, inputSignalFile):

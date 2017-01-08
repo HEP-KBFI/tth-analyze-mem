@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-import subprocess, sys, getpass, time
+import subprocess, os, getpass, time
 
 if __name__ == '__main__':
   commands, sbatchIDs = [], []
-  {% for bashScript, logFile in zippedScriptLog %}
-  commands.append('sbatch --output={{ logFile }} {{ bashScript }}') {% endfor %}
+  {% for bashScript, logFile, outLocalFile in zippedScriptLog %}
+  if not os.path.exists('{{ outLocalFile }}'):
+    commands.append('sbatch --output={{ logFile }} {{ bashScript }}') {% endfor %}
   for command in commands:
     submitJobProcess = subprocess.Popen(command,
                                         stdout = subprocess.PIPE,
