@@ -73,3 +73,10 @@ At the time of writing, the project includes one executable, `runMEM`, which tak
 In order to run the MEM via SLURM, one has to call `python createJobs_3l1tau.py` in any directory and follow instructions on screen. Note that this assumes you have run the tth analysis: https://github.com/HEP-KBFI/tth-htt/ (with `select_root_output` set to `True`).
 
 The project also includes some unit tests, which can be run with `scram b -j8 runtests` after building the project.
+
+## Disabling logging
+
+If you want to gain in speed, you are advised to build the project w/o no logging whatsoever. This vcan be achieved w/ the following command
+```bash
+USER_CPPFLAGS="-DDISABLE_LOGGING" scram b -j8
+```
