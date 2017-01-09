@@ -24,7 +24,7 @@ MeasuredEvent_3l1tau::initialize()
 
 //--- let's read in all jets and print them
   LOGTRC << "All jets";
-  for(std::size_t i = 0; i < NOF_RECO_JETS; ++i)
+  for(std::size_t i = 0; i < NOF_RECO_JETS_MEM; ++i)
   {
     allJets[i].initialize();
     LOGTRC << "All jet " << (i + 1) << ": " << allJets[i];
@@ -193,7 +193,7 @@ MeasuredEvent_3l1tau::setBranches(TTree * t)
   for(std::size_t i = 0; i < 3; ++i)
     leptons[i].setBranches(t, Form("lepton%lu", (i + 1)));
 
-  for(std::size_t i = 0; i < NOF_RECO_JETS; ++i)
+  for(std::size_t i = 0; i < NOF_RECO_JETS_MEM; ++i)
     allJets[i].setBranches(t, Form("jets%lu", (i + 1)));
 
   htau.setBranches(t, "htau");
@@ -216,7 +216,7 @@ MeasuredEvent_3l1tau::initNewBranches(TTree * t)
   for(std::size_t i = 0; i < 3; ++i)
     leptons[i].initNewBranches(t, Form("lepton%lu", (i + 1)));
 
-  for(std::size_t i = 0; i < NOF_RECO_JETS; ++i)
+  for(std::size_t i = 0; i < NOF_RECO_JETS_MEM; ++i)
     allJets[i].initNewBranches(t, Form("jets%lu", (i + 1)));
 
   htau.initNewBranches(t, "htau");

@@ -19,7 +19,7 @@
 #include <memory> // std::shared_ptr<>
 #include <array> // std::array<,>
 
-#define NOF_RECO_JETS 4
+#define NOF_RECO_JETS_MEM 3
 
 namespace tthMEM
 {
@@ -41,7 +41,7 @@ namespace tthMEM
 
     MeasuredMET met;
     IndexWrapper<MeasuredLepton, 3> leptons;
-    std::array<MeasuredJet, NOF_RECO_JETS> allJets;
+    std::array<MeasuredJet, NOF_RECO_JETS_MEM> allJets;
     mutable IndexWrapper<MeasuredJet, 2> jets;
     MeasuredHadronicTau htau;
 
