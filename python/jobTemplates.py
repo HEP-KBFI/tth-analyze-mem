@@ -2,12 +2,12 @@ import subprocess, jinja2, os
 
 templatesDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'templates')
 
-rootEventCounterTemplate = open(os.path.join(templatesDir, 'rootEventCounterTemplate.cc')).read()
-pythonCfgTemplate        = open(os.path.join(templatesDir, 'pythonCfgTemplate.py')).read()
-pythonROCcfgTemplate     = open(os.path.join(templatesDir, 'pythonROCcfgTemplate.py')).read()
-jobTemplate              = open(os.path.join(templatesDir, 'jobTemplate.sh')).read()
-sbatchTemplate           = open(os.path.join(templatesDir, 'sbatchTemplate.py')).read()
-makefileTemplate         = open(os.path.join(templatesDir, 'makefileTemplate')).read()
+rootEventCounterTemplate = open(os.path.join(templatesDir, 'rootEventCounterTemplate.cc.template')).read()
+pythonCfgTemplate        = open(os.path.join(templatesDir, 'pythonCfgTemplate.py.template')).read()
+pythonROCcfgTemplate     = open(os.path.join(templatesDir, 'pythonROCcfgTemplate.py.template')).read()
+jobTemplate              = open(os.path.join(templatesDir, 'jobTemplate.sh.template')).read()
+sbatchTemplate           = open(os.path.join(templatesDir, 'sbatchTemplate.py.template')).read()
+makefileTemplate         = open(os.path.join(templatesDir, 'Makefile.template')).read()
 
 def getNofEntries(fileName, treeName):
   rootEventCounterCode = jinja2.Template(rootEventCounterTemplate).render(
