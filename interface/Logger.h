@@ -16,7 +16,7 @@
 #ifdef DISABLE_LOGGING
 #define LOG_ENABLER if(0)
 #else
-#define LOG_ENABLER (void) 0;
+#define LOG_ENABLER if(1)
 #endif
 
 #define LOGERR  LOG_ENABLER tthMEM::wrap(tthMEM::Logger::LogLevel::kError)   << INFIXMSG
