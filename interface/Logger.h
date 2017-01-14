@@ -77,6 +77,9 @@ namespace tthMEM
     static void
     setLogLevel(const std::string & logLevelString);
 
+    static std::string
+    getLogLevel();
+
     static void
     enableTimeStamp();
 
