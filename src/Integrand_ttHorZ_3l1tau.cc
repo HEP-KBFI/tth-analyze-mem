@@ -522,8 +522,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
                                           0.5 * xb * constants::sqrtS);
   const RecoTrueEvent_ttHorZ_3l1tau recoEventmem = recoEvent.boost(boost);
   const LorentzVector tthOrZ_mem = recoEventmem.getTTHorZ();
-  if(isTTH) LOGTRC << lmvrap("tth mem", tthOrZ_mem);
-  else      LOGTRC << lmvrap("ttz mem", tthOrZ_mem);
+  if(isTTH) { LOGTRC << lmvrap("tth mem", tthOrZ_mem); }
+  else      { LOGTRC << lmvrap("ttz mem", tthOrZ_mem); }
 
   const double z1_mem = recoEventmem.hTauLepton.e() / recoEventmem.hTau.e();
   const double z2_mem = recoEventmem.lTauLepton.e() / recoEventmem.lTau.e();

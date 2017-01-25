@@ -12,25 +12,30 @@
 #endif
 
 #define INFIXMSG '[' << __FILENAME__ << "][" << __FUNCTION__ << ':' << __LINE__ << "] "
-#define INFIXMSG_S INFIXMSG << std::scientific
 
-#define LOGERR  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)   << INFIXMSG
-#define LOGWARN tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning) << INFIXMSG
-#define LOGFIX  tthMEM::wrap(tthMEM::Logger::LogLevel::kFixme)   << INFIXMSG
-#define LOGINFO tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)    << INFIXMSG
-#define LOGDBG  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)   << INFIXMSG
-#define LOGVRB  tthMEM::wrap(tthMEM::Logger::LogLevel::kVerbose) << INFIXMSG
-#define LOGTRC  tthMEM::wrap(tthMEM::Logger::LogLevel::kTrace)   << INFIXMSG
-#define LOGALL  tthMEM::wrap(tthMEM::Logger::LogLevel::kAll)     << INFIXMSG
+#ifdef DISABLE_LOGGING
+#define LOG_ENABLER if(0)
+#else
+#define LOG_ENABLER if(1)
+#endif
 
-#define LOGERR_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kError)   << INFIXMSG_S
-#define LOGWARN_S tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning) << INFIXMSG_S
-#define LOGFIX_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kFixme)   << INFIXMSG_S
-#define LOGINFO_S tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)    << INFIXMSG_S
-#define LOGDBG_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)   << INFIXMSG_S
-#define LOGVRB_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kVerbose) << INFIXMSG_S
-#define LOGTRC_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kTrace)   << INFIXMSG_S
-#define LOGALL_S  tthMEM::wrap(tthMEM::Logger::LogLevel::kAll)     << INFIXMSG_S
+#define LOGERR  LOG_ENABLER tthMEM::wrap(tthMEM::Logger::LogLevel::kError)   << INFIXMSG
+#define LOGWARN LOG_ENABLER tthMEM::wrap(tthMEM::Logger::LogLevel::kWarning) << INFIXMSG
+#define LOGFIX  LOG_ENABLER tthMEM::wrap(tthMEM::Logger::LogLevel::kFixme)   << INFIXMSG
+#define LOGINFO LOG_ENABLER tthMEM::wrap(tthMEM::Logger::LogLevel::kInfo)    << INFIXMSG
+#define LOGDBG  LOG_ENABLER tthMEM::wrap(tthMEM::Logger::LogLevel::kDebug)   << INFIXMSG
+#define LOGVRB  LOG_ENABLER tthMEM::wrap(tthMEM::Logger::LogLevel::kVerbose) << INFIXMSG
+#define LOGTRC  LOG_ENABLER tthMEM::wrap(tthMEM::Logger::LogLevel::kTrace)   << INFIXMSG
+#define LOGALL  LOG_ENABLER tthMEM::wrap(tthMEM::Logger::LogLevel::kAll)     << INFIXMSG
+
+#define LOGERR_S  LOGERR  << std::scientific
+#define LOGWARN_S LOGWARN << std::scientific
+#define LOGFIX_S  LOGFIX  << std::scientific
+#define LOGINFO_S LOGINFO << std::scientific
+#define LOGDBG_S  LOGDBG  << std::scientific
+#define LOGVRB_S  LOGVRB  << std::scientific
+#define LOGTRC_S  LOGTRC  << std::scientific
+#define LOGALL_S  LOGALL  << std::scientific
 
 namespace tthMEM
 {
@@ -71,6 +76,9 @@ namespace tthMEM
 
     static void
     setLogLevel(const std::string & logLevelString);
+
+    static std::string
+    getLogLevel();
 
     static void
     enableTimeStamp();

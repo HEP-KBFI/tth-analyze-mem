@@ -1,0 +1,32 @@
+.DEFAULT_GOAL := all
+SHELL := /bin/bash
+
+run:
+	{{ waitingScript }}
+{% for outFileNameLocalResult, outFileNameLocals in outFileNameLocalArray.iteritems() %}
+{% for outFileNameLocal in outFileNameLocals %}
+{{ outFileNameLocal }}: run
+	:
+{% endfor %}
+{{ outFileNameLocalResult }}: {{ outFileNameLocals|join(' ') }}
+	hadd -f {{ outFileNameLocalResult }} {{ outFileNameLocals|join(' ') }} {% endfor %}
+
+{% for bkgParent, bkgArray in inputBkgFiles.iteritems() %}{% if bkgArray|length > 1 %}
+{{ bkgParent }}: {{ bkgArray|join(' ') }}
+	hadd -f {{ bkgParent }} {{ bkgArray|join(' ') }}{% endif %}{% endfor %}
+
+{% for outFileName in rocOutFileNames %}
+{{ outFileName }}: {{ inputBkgFiles.keys()|join(' ') }} {{ inputSignalFile }}
+	{{ rocCmd }} {{ rocCfg }}
+{% endfor %}
+
+all: {{ rocOutFileNames|join(' ') }}
+
+.PHONY: clean
+
+clean:{% for outFileNameLocalResult, outFileNameLocals in outFileNameLocalArray.iteritems() %}
+	rm -f {{ outFileNameLocalResult }} {% for outFileNameLocal in outFileNameLocals %}
+	rm -f {{ outFileNameLocal }} {% endfor %} {% endfor %} {% for outFileName in rocOutFileNames %}
+	rm -f {{ outFileName }} {% endfor %}
+	rm -rf {{ scratchDir }}
+

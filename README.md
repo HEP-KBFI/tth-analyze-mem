@@ -73,3 +73,49 @@ At the time of writing, the project includes one executable, `runMEM`, which tak
 In order to run the MEM via SLURM, one has to call `python createJobs_3l1tau.py` in any directory and follow instructions on screen. Note that this assumes you have run the tth analysis: https://github.com/HEP-KBFI/tth-htt/ (with `select_root_output` set to `True`).
 
 The project also includes some unit tests, which can be run with `scram b -j8 runtests` after building the project.
+
+## Disabling logging
+
+If you want to gain in speed, you are advised to build the project w/o no logging whatsoever. This vcan be achieved w/ the following command
+```bash
+USER_CPPFLAGS="-DDISABLE_LOGGING" scram b -j8
+```
+
+## Valgrind commands
+
+Here we provide some example valgrind commands which help to debug the application. Of course, in order to benefit from the Valgrind bundle, one should definitely build the project w/ debug symbols enabled:
+```bash
+scram b -j8 USER_CXXFLAGS="-g -Wuninitialized"
+```
+
+<details>
+<summary>Commands</summary>
+
+Memory leak detection:
+```bash
+valgrind --tool=memcheck `cmsvgsupp` \
+--leak-check=yes                     \
+--show-reachable=yes                 \
+--num-callers=20                     \
+--track-fds=yes                      \
+--track-origins=yes                  \
+--log-file="valgrind.log"            \
+runMEM_3l1tau python/runMEM_3l1tau_2016_cfg.py
+```
+
+Memory consumption:
+```bash
+valgrind --tool=massif \
+--depth=40             \
+--time-stamp=yes       \
+--time-unit=ms         \
+--threshold=0.1        \
+runMEM_3l1tau python/runMEM_3l1tau_2016_cfg.py
+```
+
+Callgraph:
+```bash
+valgrind --tool=callgrind \
+runMEM_3l1tau python/runMEM_3l1tau_2016_cfg.py
+```
+</details>

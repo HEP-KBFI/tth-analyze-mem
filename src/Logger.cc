@@ -1,5 +1,7 @@
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+
 #include <chrono> // std::chrono::
 #include <ctime> // std::time_t, std::tm
 #include <iomanip> // std::setprecision(), std::setw()
@@ -51,6 +53,20 @@ namespace tthMEM
     else if(boost::iequals(logLevelString, "verbose")) logLevel_ = Logger::LogLevel::kVerbose;
     else if(boost::iequals(logLevelString, "trace"))   logLevel_ = Logger::LogLevel::kTrace;
     else if(boost::iequals(logLevelString, "all"))     logLevel_ = Logger::LogLevel::kAll;
+  }
+
+  std::string
+  Logger::getLogLevel()
+  {
+    if(logLevel_ == Logger::LogLevel::kError)   return "error";
+    if(logLevel_ == Logger::LogLevel::kWarning) return "warning";
+    if(logLevel_ == Logger::LogLevel::kFixme)   return "fixme";
+    if(logLevel_ == Logger::LogLevel::kInfo)    return "info";
+    if(logLevel_ == Logger::LogLevel::kDebug)   return "debug";
+    if(logLevel_ == Logger::LogLevel::kVerbose) return "verbose";
+    if(logLevel_ == Logger::LogLevel::kTrace)   return "trace";
+    if(logLevel_ == Logger::LogLevel::kAll)     return "all";
+    throw_line("Logger") << "Unspecified logging level";
   }
 
   void
