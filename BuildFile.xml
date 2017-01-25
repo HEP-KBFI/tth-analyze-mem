@@ -1,5 +1,6 @@
 <use name="DataFormats/Math" />
 <use name="FWCore/ParameterSet" />
+<use name="FWCore/Utilities" />
 <use name="root" />
 <use name="rootgraphics" />
 <use name="lhapdf" />
