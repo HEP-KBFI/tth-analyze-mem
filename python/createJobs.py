@@ -2,7 +2,7 @@ import os, codecs, sys, logging, getpass, stat
 from tthAnalysis.tthMEM.jobTemplates import getNofEntries, \
   createPythonCfg, createBashCfg, createSbatch, createMakefile, createPythonROCcfg
 
-def createJobs(samples, channel, year, version, central_or_shifts, charge_selections, lepton_selections,
+def createJobs(samples, channel, year, version, memBaseDir, central_or_shifts, charge_selections, lepton_selections,
                execName, treeName, rleSelectionFile, integrationMode,
                maxObjFunctionCalls, nofIntegrationsPerJob, lhRatioBranchName, rocLegendPosition,
                debugPlots, forceGenLevel, higgsWidth, clampVariables, markovChainParams):
@@ -25,7 +25,7 @@ def createJobs(samples, channel, year, version, central_or_shifts, charge_select
   scratchTempOutputDir = os.path.join(scratchDir, "temp_output", "%d")
   scratchOutputDir     = os.path.join(scratchDir, "mem_output")
 
-  memDir       = os.path.join(baseDir, "mem")
+  memDir       = os.path.join(baseDir, memBaseDir)
   memCfgDir    = os.path.join(memDir,  "cfg")
   memOutputDir = os.path.join(memDir,  "output")
   memLogDir    = os.path.join(memDir,  "log")

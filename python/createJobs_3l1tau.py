@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import logging, sys
 from tthAnalysis.tthMEM.samples_3l1tau import samples
 from tthAnalysis.tthMEM.createJobs import createJobs
@@ -33,6 +35,7 @@ if __name__ == '__main__':
              channel               = "3l_1tau",
              year                  = "2016",
              version               = "2016Nov30",
+             memBaseDir            = "mem",
              central_or_shifts     = ["central"],
              charge_selections     = ["OS"],
              lepton_selections     = ["Tight"],
