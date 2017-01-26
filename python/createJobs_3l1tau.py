@@ -18,7 +18,7 @@ if __name__ == '__main__':
     ("z1",             False, False, 0.0),
     ("tauPhi",         False, False, 0.0),
     ("tauPhiInv",      False, False, 0.0),
-    ("tauMinvSquared", False, False, 0.0)
+    ("tauMinvSquared", False, False, 0.0),
   ]
 
   markovChainParams = {
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     "maxCallsStartingPos" : 1000,
     "epsilon0"            : 1.e-2,
     "T0"                  : 15.,
-    "nu"                  : 0.71
+    "nu"                  : 0.71,
   }
 
   createJobs(samples               = samples,
@@ -51,4 +51,5 @@ if __name__ == '__main__':
              forceGenLevel         = False,                    # dump gen lvl info regardless of clamping (ignored if !is(MC&2016))
              higgsWidth            = -1.,                     # use negative number in case of default H width
              clampVariables        = clampVariables,
-             markovChainParams     = markovChainParams)
+             markovChainParams     = markovChainParams,
+             comment               = "")

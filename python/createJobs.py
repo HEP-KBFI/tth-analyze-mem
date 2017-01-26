@@ -5,12 +5,7 @@ from tthAnalysis.tthMEM.jobTemplates import getNofEntries, \
 def createJobs(samples, channel, year, version, memBaseDir, central_or_shifts, charge_selections, lepton_selections,
                execName, treeName, rleSelectionFile, integrationMode,
                maxObjFunctionCalls, nofIntegrationsPerJob, lhRatioBranchName, rocLegendPosition,
-               debugPlots, forceGenLevel, higgsWidth, clampVariables, markovChainParams):
-  '''
-  TODO: - make the file names of roc curve plots channel and version specific
-  TODO: - revise the paths again (b/c someone ninja-commited to tth-htt)
-  TODO: - add a separate folder for 2016 samples not containing gen level info and make it the default
-  '''
+               debugPlots, forceGenLevel, higgsWidth, clampVariables, markovChainParams, comment):
 
   if os.environ.get('CMSSW_BASE') is None:
     logging.error("Variable CMSSW_BASE unset! " + \
@@ -25,10 +20,11 @@ def createJobs(samples, channel, year, version, memBaseDir, central_or_shifts, c
   scratchTempOutputDir = os.path.join(scratchDir, "temp_output", "%d")
   scratchOutputDir     = os.path.join(scratchDir, "mem_output")
 
-  memDir       = os.path.join(baseDir, memBaseDir)
-  memCfgDir    = os.path.join(memDir,  "cfg")
-  memOutputDir = os.path.join(memDir,  "output")
-  memLogDir    = os.path.join(memDir,  "log")
+  memDir         = os.path.join(baseDir, memBaseDir)
+  memCfgDir      = os.path.join(memDir,  "cfg")
+  memOutputDir   = os.path.join(memDir,  "output")
+  memLogDir      = os.path.join(memDir,  "log")
+  memCommentFile = os.path.join(memDir,  "comment.txt")
 
   rocDir      = os.path.join(memDir, "roc")
   rocPlotDir  = os.path.join(rocDir, "plots")
@@ -151,10 +147,14 @@ def createJobs(samples, channel, year, version, memBaseDir, central_or_shifts, c
                                       treeName, lhRatioBranchName, rocLabels, rocLegendPosition)
   with codecs.open(rocCfgFile, 'w', 'utf-8') as f: f.write(rocCfgContents)
 
-  makeFile = os.path.join(baseDir, "_".join(["Makefile", channel, "mem"]))
+  makeFile = os.path.join(memDir, "_".join(["Makefile", channel, "mem"]))
   makeFileContents = createMakefile(sbatchFile, outFileNameLocalArray, scratchDir,
                                     rocOutFileNames, rocCmd, rocCfgFile, inputBkgFiles, inputSignalFile)
   with codecs.open(makeFile, 'w', 'utf-8') as f: f.write(str(makeFileContents))
+
+  if comment:
+    with codecs.open(memCommentFile, 'w', 'utf-8') as f:
+      f.write(comment)
 
   logging.info("Run:\tmake -f %s -j 4" % makeFile)
   logging.info("Done")
