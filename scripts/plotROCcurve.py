@@ -1,4 +1,4 @@
-#!/usr/bin/env pyton
+#!/usr/bin/env python
 
 import argparse, sys, logging, os, matplotlib.pyplot as plt, numpy as np
 
@@ -27,12 +27,10 @@ if __name__ == '__main__':
         return text[2:].splitlines()
       return argparse.HelpFormatter._split_lines(self, text, width)
 
-  parser = argparse.ArgumentParser(formatter_class=lambda prog: SmartFormatter(prog, max_help_position=45))
-  parser.add_argument('-o', '--output', metavar = 'file', required = True, type = str, default = '',
-                      help = 'R|Output file')
+  parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 50))
   parser.add_argument('-i', '--input', metavar = 'directory', required = True, type = str, default = '',
                       help = 'R|Base directory where the MEM results are stored')
-  parser.add_argument('-l', '--list', metavar = 'directories', required = True, type = str, default = '', nargs = '+',
+  parser.add_argument('-l', '--list', metavar = 'dir', required = False, type = str, default = 'mem', nargs = '+',
                       help = 'R|List of subdirectories containing MEM results')
   parser.add_argument('-t', '--title', metavar = 'title', required = False, type = str, default = 'MEM ROC curve',
                       help = 'R|Title of the plot')
@@ -40,6 +38,9 @@ if __name__ == '__main__':
                       help = 'R|Label on the x-axis')
   parser.add_argument('-y', '--ylabel', metavar = 'text', required = False, type = str, default = 'TTZToLLNuNu',
                       help = 'R|Label on the y-axis')
+  parser.add_argument('-o', '--output', metavar = 'file', required = False, type = str,
+                      default = '%s_%s.pdf' % (parser.get_default('xlabel'), parser.get_default('ylabel')),
+                      help = 'R|Output file')
   parser.add_argument('-f', '--force', dest = 'force', action = 'store_true', default = False,
                       help = 'R|Force the creation of output directory if missing')
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
