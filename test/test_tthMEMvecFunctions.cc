@@ -4,9 +4,8 @@
 #include <cmath> // std::sqrt()
 
 #include <cppunit/extensions/HelperMacros.h> // CppUnit::TestFixture, CPPUNIT_ASSERT_*
-#include <FWCore/Utilities/interface/Exception.h> // cms::Exception
 
-#include "tthAnalysis/tthMEM/interface/tthMEMvecFunctions.h"
+#include "tthAnalysis/tthMEM/interface/tthMEMvecFunctions.h" // tthMEM::vec::, tthMEMexception
 
 // enable operator overloading for std::vector<>'s that we unit-test here
 using namespace tthMEM;
@@ -135,9 +134,9 @@ public:
   testSubv()
   {
     /* test with conflicting shifts */
-    CPPUNIT_ASSERT_THROW(vec::subv(simpleVector, 1,                       0                      ), cms::Exception);
-    CPPUNIT_ASSERT_THROW(vec::subv(simpleVector, 0,                       simpleVector.size() + 1), cms::Exception);
-    CPPUNIT_ASSERT_THROW(vec::subv(simpleVector, simpleVector.size() + 1, simpleVector.size() + 2), cms::Exception);
+    CPPUNIT_ASSERT_THROW(vec::subv(simpleVector, 1,                       0                      ), tthMEMexception);
+    CPPUNIT_ASSERT_THROW(vec::subv(simpleVector, 0,                       simpleVector.size() + 1), tthMEMexception);
+    CPPUNIT_ASSERT_THROW(vec::subv(simpleVector, simpleVector.size() + 1, simpleVector.size() + 2), tthMEMexception);
     /* test actual functionality */
     CPPUNIT_ASSERT_NO_THROW(vec::subv(simpleVector, 0, 3));
     const auto simpleVector0to3 = vec::subv(simpleVector, 0, 3);
@@ -162,9 +161,9 @@ public:
   testAvg()
   {
     /* test with conflicting shifts */
-    CPPUNIT_ASSERT_THROW(vec::avg(simpleVector, 1,                    0                   ), cms::Exception);
-    CPPUNIT_ASSERT_THROW(vec::avg(simpleVector, 0,                    simpleVectorSize + 1), cms::Exception);
-    CPPUNIT_ASSERT_THROW(vec::avg(simpleVector, simpleVectorSize + 1, simpleVectorSize + 2), cms::Exception);
+    CPPUNIT_ASSERT_THROW(vec::avg(simpleVector, 1,                    0                   ), tthMEMexception);
+    CPPUNIT_ASSERT_THROW(vec::avg(simpleVector, 0,                    simpleVectorSize + 1), tthMEMexception);
+    CPPUNIT_ASSERT_THROW(vec::avg(simpleVector, simpleVectorSize + 1, simpleVectorSize + 2), tthMEMexception);
     /* test actual functionality */
     CPPUNIT_ASSERT_NO_THROW(     vec::avg(simpleVector, 0, 3));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::avg(simpleVector, 0, 3),                subVector0to3Avg,   +1.e-8);
@@ -187,9 +186,9 @@ public:
   testL2()
   {
     /* test with conflicting shifts */
-    CPPUNIT_ASSERT_THROW(vec::l2(simpleVector, 1u,                    0u                   ), cms::Exception);
-    CPPUNIT_ASSERT_THROW(vec::l2(simpleVector, 0u,                    simpleVectorSize + 1u), cms::Exception);
-    CPPUNIT_ASSERT_THROW(vec::l2(simpleVector, simpleVectorSize + 1u, simpleVectorSize + 2u), cms::Exception);
+    CPPUNIT_ASSERT_THROW(vec::l2(simpleVector, 1u,                    0u                   ), tthMEMexception);
+    CPPUNIT_ASSERT_THROW(vec::l2(simpleVector, 0u,                    simpleVectorSize + 1u), tthMEMexception);
+    CPPUNIT_ASSERT_THROW(vec::l2(simpleVector, simpleVectorSize + 1u, simpleVectorSize + 2u), tthMEMexception);
     /* test actual functionality */
     CPPUNIT_ASSERT_NO_THROW(     vec::l2(simpleVector, 0u, 3u));
     CPPUNIT_ASSERT_NO_THROW(     vec::l2(simpleVector, 0u, 3u, -1.));
@@ -218,9 +217,9 @@ public:
   testStdev()
   {
     /* test with conflicting shifts */
-    CPPUNIT_ASSERT_THROW(vec::stdev(simpleVector, 1,                    0                   , subVector0to3Avg  ), cms::Exception);
-    CPPUNIT_ASSERT_THROW(vec::stdev(simpleVector, 0,                    simpleVectorSize + 1, subVector2toEndAvg), cms::Exception);
-    CPPUNIT_ASSERT_THROW(vec::stdev(simpleVector, simpleVectorSize + 1, simpleVectorSize + 2, subVector1to4Avg  ), cms::Exception);
+    CPPUNIT_ASSERT_THROW(vec::stdev(simpleVector, 1,                    0                   , subVector0to3Avg  ), tthMEMexception);
+    CPPUNIT_ASSERT_THROW(vec::stdev(simpleVector, 0,                    simpleVectorSize + 1, subVector2toEndAvg), tthMEMexception);
+    CPPUNIT_ASSERT_THROW(vec::stdev(simpleVector, simpleVectorSize + 1, simpleVectorSize + 2, subVector1to4Avg  ), tthMEMexception);
     /* test actual functionality */
     CPPUNIT_ASSERT_NO_THROW(     vec::stdev(simpleVector, 0, 3,                subVector0to3Avg));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(vec::stdev(simpleVector, 0, 3,                subVector0to3Avg),   subVector0to3Stdev,    +1.e-8);
@@ -245,7 +244,7 @@ public:
     const auto emptyVectorProduct = emptyVector * emptyVector;
     CPPUNIT_ASSERT(std::equal(emptyVectorProduct.begin(), emptyVectorProduct.end(), emptyVector.begin()));
     /* multiply empty vector with a non-empty one */
-    CPPUNIT_ASSERT_THROW(emptyVector * vectorWElem0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(emptyVector * vectorWElem0, tthMEMexception);
     /* simple 1-element product: { 0 } x { 1 } = { 0 } */
     CPPUNIT_ASSERT_NO_THROW(vectorWElem0 * vectorWElem1);
     const auto vectorProduct0Times1 = vectorWElem0 * vectorWElem1;
@@ -287,7 +286,7 @@ public:
     const auto emptyVectorSum = emptyVector + emptyVector;
     CPPUNIT_ASSERT(std::equal(emptyVectorSum.begin(), emptyVectorSum.end(), emptyVector.begin()));
     /* add empty vector w/ non-empty one: { } + { 0 } */
-    CPPUNIT_ASSERT_THROW(emptyVector + vectorWElem0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(emptyVector + vectorWElem0, tthMEMexception);
     /* simple 1-element addition: { 0 } + { 1 } = { 1 } */
     CPPUNIT_ASSERT_NO_THROW(vectorWElem0 + vectorWElem1);
     const auto vectorSum0plus1 = vectorWElem0 + vectorWElem1;
@@ -317,7 +316,7 @@ public:
     const auto emptyVectorDiff = emptyVector - emptyVector;
     CPPUNIT_ASSERT(std::equal(emptyVectorDiff.begin(), emptyVectorDiff.end(), emptyVector.begin()));
     /* subtract non-empty vector from an empty one: { } - { 0 } */
-    CPPUNIT_ASSERT_THROW(emptyVector - vectorWElem0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(emptyVector - vectorWElem0, tthMEMexception);
     /* subtract 1-element vector from itself: { 0 } - { 0 } = { } */
     CPPUNIT_ASSERT_NO_THROW(vectorWElem0 - vectorWElem0);
     const auto vectorSub0minus0 = vectorWElem0 - vectorWElem0;
@@ -573,28 +572,28 @@ public:
     CPPUNIT_ASSERT(std::equal(DoubleDivEmptyVector.begin(), DoubleDivEmptyVector.end(), emptyVector.begin()));
     /* dividing any vector with a zero scalar throws an exception */
     /* vector is empty, scalar is an int */
-    CPPUNIT_ASSERT_THROW(emptyVector / Int0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(emptyVector / Int0, tthMEMexception);
     /* vector is empty, scalar is a double */
-    CPPUNIT_ASSERT_THROW(emptyVector / Double0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(emptyVector / Double0, tthMEMexception);
     /* vector is non-empty. scalar is an int */
-    CPPUNIT_ASSERT_THROW(vectorWElem0 / Int0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(vectorWElem0 / Int0, tthMEMexception);
     /* vector is non-empty. scalar is an double */
-    CPPUNIT_ASSERT_THROW(vectorWElem0 / Double0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(vectorWElem0 / Double0, tthMEMexception);
     /* dividing with a vector that contains a zero element throws an exception, regardless of the nature of scalar */
     /* scalar is an int */
-    CPPUNIT_ASSERT_THROW(Int0 / vectorWElem0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(Int0 / vectorWElem0, tthMEMexception);
     /* scalar is an double */
-    CPPUNIT_ASSERT_THROW(Double0 / vectorWElem0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(Double0 / vectorWElem0, tthMEMexception);
     /* complex division (int + reverse) */
     CPPUNIT_ASSERT_NO_THROW(vectorScalarDiv / IntM2);
     const auto vectorScalarDivResultInt = vectorScalarDiv / IntM2;
     CPPUNIT_ASSERT(std::equal(vectorScalarDivResultInt.begin(), vectorScalarDivResultInt.end(), vectorScalarDivResult.begin()));
-    CPPUNIT_ASSERT_THROW(IntM2 / vectorScalarDiv, cms::Exception);
+    CPPUNIT_ASSERT_THROW(IntM2 / vectorScalarDiv, tthMEMexception);
     /* complex division (double + reverse) */
     CPPUNIT_ASSERT_NO_THROW(vectorScalarDiv / DoubleM2);
     const auto vectorScalarDivResultDouble = vectorScalarDiv / DoubleM2;
     CPPUNIT_ASSERT(std::equal(vectorScalarDivResultDouble.begin(), vectorScalarDivResultDouble.end(), vectorScalarDivResult.begin()));
-    CPPUNIT_ASSERT_THROW(DoubleM2 / vectorScalarDiv, cms::Exception);
+    CPPUNIT_ASSERT_THROW(DoubleM2 / vectorScalarDiv, tthMEMexception);
     /* complex division 2 (int) */
     CPPUNIT_ASSERT_NO_THROW(vectorScalarDiv2 / IntM2);
     const auto vectorScalarDiv2ResultInt = vectorScalarDiv2 / IntM2;
@@ -781,23 +780,23 @@ public:
     /* dividing any vector with zero scalar throws an exception */
     /* scalar is an int, empty vector */
     auto emptyVectorEmptyZeroScalarInt = emptyVector;
-    CPPUNIT_ASSERT_THROW(emptyVectorEmptyZeroScalarInt /= Int0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(emptyVectorEmptyZeroScalarInt /= Int0, tthMEMexception);
     /* scalar is a double, empty vector */
     auto emptyVectorEmptyZeroScalarDouble = emptyVector;
-    CPPUNIT_ASSERT_THROW(emptyVectorEmptyZeroScalarDouble /= Double0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(emptyVectorEmptyZeroScalarDouble /= Double0, tthMEMexception);
     /* scalar is an int, non-empty vector */
     auto nonEmptyVectorEmptyZeroScalarInt = vectorWElem0;
-    CPPUNIT_ASSERT_THROW(nonEmptyVectorEmptyZeroScalarInt /= Int0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(nonEmptyVectorEmptyZeroScalarInt /= Int0, tthMEMexception);
     /* scalar is a double, non-empty vector */
     auto nonEmptyVectorEmptyZeroScalarDouble = vectorWElem0;
-    CPPUNIT_ASSERT_THROW(nonEmptyVectorEmptyZeroScalarDouble /= Double0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(nonEmptyVectorEmptyZeroScalarDouble /= Double0, tthMEMexception);
     /* complex division & assignment */
     /* scalar is a zero int */
     auto complexVectorScalarInt0 = vectorScalarDiv;
-    CPPUNIT_ASSERT_THROW(complexVectorScalarInt0 /= Int0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(complexVectorScalarInt0 /= Int0, tthMEMexception);
     /* scalar is a zero double */
     auto complexVectorScalarDouble0 = vectorScalarDiv;
-    CPPUNIT_ASSERT_THROW(complexVectorScalarDouble0 /= Double0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(complexVectorScalarDouble0 /= Double0, tthMEMexception);
     /* scalar is a non-zero int */
     {
       auto complexVectorScalarInt = vectorScalarDiv;
@@ -832,7 +831,7 @@ public:
     CPPUNIT_ASSERT(std::equal(emptyVectorToEmpty.begin(), emptyVectorToEmpty.end(), emptyVector.begin()));
     /* adding non-empty vector to an empty vector throws an exception */
     auto emptyVectorToNonEmpty = emptyVector;
-    CPPUNIT_ASSERT_THROW(emptyVectorToNonEmpty += vectorWElem0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(emptyVectorToNonEmpty += vectorWElem0, tthMEMexception);
     /* adding two vectors of the same size, simple case: { 0 } + { 1 } = { 1 } */
     auto vectorWElem0Copy = vectorWElem0;
     CPPUNIT_ASSERT_NO_THROW(vectorWElem0Copy += vectorWElem1);
@@ -859,10 +858,10 @@ public:
     CPPUNIT_ASSERT(std::equal(emptyVectorToEmpty.begin(), emptyVectorToEmpty.end(), emptyVector.begin()));
     /* subtracting non-empty vector from an empty vector throws an exception */
     auto emptyVectorToNonEmpty = emptyVector;
-    CPPUNIT_ASSERT_THROW(emptyVectorToNonEmpty -= vectorWElem0, cms::Exception);
+    CPPUNIT_ASSERT_THROW(emptyVectorToNonEmpty -= vectorWElem0, tthMEMexception);
     /* subtracting an empty vector from a non-empty vector throws an exception */
     auto emptyVectorToNonEmpty2 = vectorWElem0;
-    CPPUNIT_ASSERT_THROW(emptyVectorToNonEmpty2 -= emptyVector, cms::Exception);
+    CPPUNIT_ASSERT_THROW(emptyVectorToNonEmpty2 -= emptyVector, tthMEMexception);
     /* subtracting two vectors of the same size, simple case: { 1 } - { 0 } = { 1 } */
     auto vectorWElem1Copy = vectorWElem1;
     CPPUNIT_ASSERT_NO_THROW(vectorWElem1Copy -= vectorWElem0);
