@@ -2,7 +2,7 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // pi()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 #include <algorithm> // std::count_if(), std:find_if()
 #include <utility> // std::move()
@@ -162,7 +162,7 @@ VariableManager_3l1tau::get(Var_3l1tau var,
   if(! varLimits_.at(var).isWithin(val))
   {
     const std::string varName = getVarName(var);
-    throw_line("runtime error")
+    throw_line_ext("runtime error", TTHEXCEPTION_ERR_CODE_VM)
       << "Fetched value '" << varName << "' = " << val << ' '
       << "is not within expected limits: " << varLimits_.at(var);
   }

@@ -135,7 +135,7 @@ MEM_ttHorZ_3l1tau &
 MEM_ttHorZ_3l1tau::setHiggsWidth(double higgsWidth)
 {
   if(higgsWidth < 0.)
-    throw_line("invalid argument")
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_HIGGS_WIDTH)
       << "Provided 'higgsWidth' = " << higgsWidth << ' '
       << "cannot be a negative number";
   higgsWidth_ = higgsWidth;
@@ -217,12 +217,12 @@ MEM_ttHorZ_3l1tau::getNofMXMCTries() const
 
 std::array<double, 2>
 MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
-                             ME_mg5_3l1tau currentME,
-                             bool & err)
+                             ME_mg5_3l1tau currentME)
 {
   LOGTRC;
   if(integrationMode_ == IntegrationMode::kUndefined)
-    throw_line("runtime error") << "Integration mode not set";
+    throw_line_ext("runtime error", TTHEXCEPTION_ERR_CODE_UNDEFINED_INTEGRATION_MODE)
+      << "Integration mode not set";
   const bool isTTH = currentME == ME_mg5_3l1tau::kTTH;
 
   LOGINFO << (isTTH ? "[TTH]" : "[TTZ]");
@@ -331,11 +331,8 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   ev.resetJetCombination();
 
   if(! hasFoundPermutation)
-  {
-    LOGWARN << "NB! Event was skipped altogether b/c there was no correct permutation found";
-    err = true;
-    return {{ 0., 0. }};
-  }
+    throw_line_ext("MEM tt[h,z] integrand", TTHEXCEPTION_ERR_CODE_MISSING_MISSING_PERMUTATION)
+      << "NB! Event was skipped altogether b/c there was no correct permutation found";
 
 //--- aggregate probability and corresponding error (uncertainty) variable
   LOGTRC_S << "p    (jet combinations) = " << pSum_allJc;

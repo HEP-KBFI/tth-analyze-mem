@@ -1,6 +1,6 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 #include <TString.h> // Form()
 
@@ -36,7 +36,8 @@ MeasuredEvent_3l1tau::initialize()
   LOGTRC << "Found " << njets << " jets in total";
   const std::vector<std::array<unsigned, 2>> jetCombinationIndexes = tthMEM::combination<2>(njets);
   if(! jetCombinationIndexes.size())
-    throw_line("MeasuredEvent_3l1tau") << "No combinations built";
+    throw_line_ext("MeasuredEvent_3l1tau", TTHEXCEPTION_ERR_CODE_MISSING_JET_COMBINATIONS)
+      << "No combinations built";
   jetCombinations_.clear();
   for(std::size_t i = 0; i < jetCombinationIndexes.size(); ++i)
   {
@@ -95,7 +96,7 @@ MeasuredEvent_3l1tau::initialize()
     }
   );
   if(std::abs(leptonChargeSum) != 1)
-    throw_line("runtime error")
+    throw_line_ext("runtime error", TTHEXCEPTION_ERR_CODE_NONZERO_CHARGE_SUM)
       << "Something's off: the abs of sum of lepton charges is not 1";
 
 //--- Determine the four index permutations the event can possibly have.

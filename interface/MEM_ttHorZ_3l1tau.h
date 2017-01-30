@@ -89,8 +89,7 @@ namespace tthMEM
 
     std::array<double, 2>
     integrate(const MeasuredEvent_3l1tau & ev,
-              ME_mg5_3l1tau currentME,
-              bool & err);
+              ME_mg5_3l1tau currentME);
 
   private:
     void

@@ -86,7 +86,7 @@ struct MEMInterface_3l1tau
   double nu;
 
   /* for tracking errors */
-  bool err;
+  int err;
 
 private:
   VariableManager_3l1tau vm;

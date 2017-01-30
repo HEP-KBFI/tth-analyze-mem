@@ -66,7 +66,8 @@ MEMIntegratorVEGAS::integrate(MEMIntegratorBase::gPtr_C integrand,
 {
   setIntegrand(integrand, xl, xu, dimension);
   if(! integrand_)
-    throw_line("invalid argument") << "No integrand function has been set";
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_MISSING_INTEGRAND)
+      << "No integrand function has been set";
 
   integral = 0;
   integralErr = 0;

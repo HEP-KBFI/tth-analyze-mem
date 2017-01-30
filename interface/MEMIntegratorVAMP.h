@@ -2,7 +2,7 @@
 #define MEMINTEGRATORVAMP_H
 
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorBase.h" // MEMIntegratorBase
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 namespace tthMEM
 {
@@ -40,7 +40,7 @@ namespace tthMEM
               double & integral,
               double & integralErr) override
     {
-      throw_line("invalid usage")
+      throw_line_ext("invalid usage", TTHEXCEPTION_ERR_CODE_UNDEFINED_FUNCTION)
         << "You must use integrate(gPtr_Fortran, ...) not this one";
     }
 

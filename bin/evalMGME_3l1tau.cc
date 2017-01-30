@@ -9,7 +9,7 @@
 #include <utility> // std::pair<,>
 #include <sstream> // std::stringstream
 
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line(), throw_line_ext()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR, LOGINFO
 #include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_qq_mg5.h" // me_tth_3l1tau_qq_mg5
 #include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_mg5.h" // me_tth_3l1tau_mg5
@@ -136,12 +136,13 @@ main(int argc,
      char * argv[])
 {
   if(argc != 2)
-    throw_line(argv[0]) << "Usage: " << argv[0] << " <python config file>";
+    throw_line_ext(argv[0], TTHEXCEPTION_ERR_CODE_INVALID_PARAMETERSET)
+      << "Usage: " << argv[0] << " <python config file>";
 
   const std::string evalMEMG = "evalMEMG";
   if(! edm::readPSetsFrom(argv[1]) -> existsAs<edm::ParameterSet>(evalMEMG.c_str()))
-    throw_line(argv[0]) << "No ParameterSet '" << evalMEMG << "' found in "
-                        << "configuration file = " << argv[1];
+    throw_line_ext(argv[0], TTHEXCEPTION_ERR_CODE_INVALID_PARAMETERSET)
+      << "No ParameterSet '" << evalMEMG << "' found in configuration file = " << argv[1];
   const edm::ParameterSet cfg = edm::readPSetsFrom(argv[1]) -> getParameter<edm::ParameterSet>(evalMEMG.c_str());
 
   const edm::ParameterSet cfg_tthMEM = cfg.getParameter<edm::ParameterSet>("tthMEM");

@@ -8,7 +8,7 @@
 #include <functional> // std::multiplies<>, std::plus<>, std::minus<>, ...
   // ... std::divides<>
 
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 namespace tthMEM
 {
@@ -179,7 +179,7 @@ namespace tthMEM
       if(! (shiftFromBegin_begin <= shiftFromBegin_end &&
             shiftFromBegin_begin <= vec.size() &&
             shiftFromBegin_end <= vec.size()))
-        throw_line("range error")
+        throw_line_ext("range error", TTHEXCEPTION_ERR_CODE_INVALID_RANGE)
           << "Invalid arguments: "
           << "'shiftFromBegin_begin' = " << shiftFromBegin_begin << "; "
           << "'shiftFromBegin_end' = " << shiftFromBegin_end << "; "
@@ -261,8 +261,8 @@ namespace tthMEM
             const std::vector<VectorElementType> & rhs)
   {
     if(lhs.size() != rhs.size())
-      throw_line("range error") << "LHS size = " << lhs.size() << "; "
-                                << "RHS size = " << rhs.size();
+      throw_line_ext("range error", TTHEXCEPTION_ERR_CODE_INVALID_RANGE)
+        << "LHS size = " << lhs.size() << "; " << "RHS size = " << rhs.size();
     std::vector<VectorElementType> result;
     std::transform(
       lhs.begin(), lhs.end(), rhs.begin(), std::back_inserter(result),
@@ -283,8 +283,8 @@ namespace tthMEM
             const std::vector<VectorElementType> & rhs)
   {
     if(lhs.size() != rhs.size())
-      throw_line("range error") << "LHS size = " << lhs.size() << "; "
-                                << "RHS size = " << rhs.size();
+      throw_line_ext("range error", TTHEXCEPTION_ERR_CODE_INVALID_RANGE)
+        << "LHS size = " << lhs.size() << "; " << "RHS size = " << rhs.size();
     std::vector<VectorElementType> result;
     std::transform(
       lhs.begin(), lhs.end(), rhs.begin(), std::back_inserter(result),
@@ -305,8 +305,8 @@ namespace tthMEM
             const std::vector<VectorElementType> & rhs)
   {
     if(lhs.size() != rhs.size())
-      throw_line("range error") << "LHS size = " << lhs.size() << "; "
-                                << "RHS size = " << rhs.size();
+      throw_line_ext("range error", TTHEXCEPTION_ERR_CODE_INVALID_RANGE)
+        << "LHS size = " << lhs.size() << "; " << "RHS size = " << rhs.size();
     std::vector<VectorElementType> result;
     std::transform(
       lhs.begin(), lhs.end(), rhs.begin(), std::back_inserter(result),
@@ -483,7 +483,7 @@ namespace tthMEM
       [lhs](const VectorElementType element) -> VectorElementType
       {
         if(element == 0)
-          throw_line("invalid argument")
+          throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_DIVISION_BY_ZERO)
             << "Dividing with a vector that contains a zero element";
         return static_cast<VectorElementType>(lhs) / element;
       }
@@ -508,7 +508,7 @@ namespace tthMEM
             ScalarType rhs)
   {
     if(rhs == 0)
-      throw_line("invalid argument")
+      throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_DIVISION_BY_ZERO)
         << "Passed zero divisor";
     std::vector<VectorElementType> result;
     std::transform(
@@ -612,7 +612,7 @@ namespace tthMEM
              ScalarType rhs)
   {
     if(rhs == 0)
-      throw_line("invalid argument")
+      throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_DIVISION_BY_ZERO)
         << "Division by zero";
     std::transform(
       lhs.begin(), lhs.end(), lhs.begin(),
@@ -636,8 +636,8 @@ namespace tthMEM
              const std::vector<VectorElementType> & rhs)
   {
     if(lhs.size() != rhs.size())
-      throw_line("range error") << "LHS size = " << lhs.size() << "; "
-                                << "RHS size = " << rhs.size();
+      throw_line_ext("range error", TTHEXCEPTION_ERR_CODE_INVALID_RANGE)
+        << "LHS size = " << lhs.size() << "; " << "RHS size = " << rhs.size();
     std::transform(
       lhs.begin(), lhs.end(), rhs.begin(), lhs.begin(),
       std::plus<VectorElementType>()
@@ -657,8 +657,8 @@ namespace tthMEM
              const std::vector<VectorElementType> & rhs)
   {
     if(lhs.size() != rhs.size())
-      throw_line("range error") << "LHS size = " << lhs.size() << "; "
-                                << "RHS size = " << rhs.size();
+      throw_line_ext("range error", TTHEXCEPTION_ERR_CODE_INVALID_RANGE)
+        << "LHS size = " << lhs.size() << "; " << "RHS size = " << rhs.size();
     std::transform(
       lhs.begin(), lhs.end(), rhs.begin(), lhs.begin(),
       std::minus<VectorElementType>()

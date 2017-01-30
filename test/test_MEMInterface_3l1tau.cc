@@ -160,7 +160,7 @@ public:
     const MEMOutput_3l1tau result = mem(jets, leadingLepton, subLeadingLepton_flip, thirdLepton, tau, met);
 
     // assert
-    CPPUNIT_ASSERT_EQUAL(result.err, 1);
+    CPPUNIT_ASSERT_EQUAL(result.err, TTHEXCEPTION_ERR_CODE_NONZERO_CHARGE_SUM);
   }
 
   void
@@ -181,7 +181,7 @@ public:
     const MEMOutput_3l1tau result = mem(jets_4, leadingLepton, subLeadingLepton, thirdLepton, tau, met);
 
     // assert
-    CPPUNIT_ASSERT_EQUAL(result.err, 1);
+    CPPUNIT_ASSERT_EQUAL(result.err, TTHEXCEPTION_ERR_CODE_INVALID_NOF_JETS);
   }
 
   void
@@ -201,7 +201,7 @@ public:
     const MEMOutput_3l1tau result = mem(jets_1, leadingLepton, subLeadingLepton, thirdLepton, tau, met);
 
     // assert
-    CPPUNIT_ASSERT_EQUAL(result.err, 1);
+    CPPUNIT_ASSERT_EQUAL(result.err, TTHEXCEPTION_ERR_CODE_INVALID_NOF_JETS);
   }
 };
 

@@ -16,7 +16,7 @@ MEMInterface_3l1tau::MEMInterface_3l1tau()
   , epsilon0               (1.e-2)
   , T0                     (15.)
   , nu                     (0.71)
-  , err                    (false)
+  , err                    (0)
   , mem_tt_HandZ           (pdfName, findFile(madgraphFileName), vm)
 {}
 
@@ -38,9 +38,12 @@ MEMInterface_3l1tau::initialize()
       { LikelihoodRatio_3l1tau::Hypothesis::tth }, // signal hypotheses
       { LikelihoodRatio_3l1tau::Hypothesis::ttz }  // background hypotheses
     );
+  } catch(const tthMEMexception & exception)
+  {
+    err = exception.getErrCode();
   } catch(...)
   {
-    err = true;
+    err = TTHEXCEPTION_ERR_CODE_DEFAULT;
   }
 }
 
@@ -60,7 +63,7 @@ MEMInterface_3l1tau::operator()(const std::vector<MeasuredJet> & selectedJets,
     {
       if(! (selectedJets.size() >= MIN_NOF_RECO_JETS &&
             selectedJets.size() <= MAX_NOF_RECO_JETS))
-        throw_line("MEMInterface_3l1tau")
+        throw_line_ext("MEMInterface_3l1tau", TTHEXCEPTION_ERR_CODE_INVALID_NOF_JETS)
           << "Invalid number of selected jets passed: " << selectedJets.size()
           << " (should be between " << MIN_NOF_RECO_JETS << " and " << MAX_NOF_RECO_JETS << ')';
 
@@ -76,9 +79,12 @@ MEMInterface_3l1tau::operator()(const std::vector<MeasuredJet> & selectedJets,
       event.lumi = 0;
       event.evt  = 0;
       event.initialize();
+    } catch(const tthMEMexception & exception)
+    {
+      err = exception.getErrCode();
     } catch(...)
     {
-      err = true;
+      err = TTHEXCEPTION_ERR_CODE_DEFAULT;
     }
   }
 
@@ -86,26 +92,36 @@ MEMInterface_3l1tau::operator()(const std::vector<MeasuredJet> & selectedJets,
     -> std::array<double, 2>
   {
     if(! err)
+    {
       try
       {
-        return mem_tt_HandZ.integrate(event, ME_mg5_3l1tau::kTTH, err);
+        return mem_tt_HandZ.integrate(event, ME_mg5_3l1tau::kTTH);
+      } catch(const tthMEMexception & exception)
+      {
+        err = exception.getErrCode();
       } catch(...)
       {
-        err = true;
+        err = TTHEXCEPTION_ERR_CODE_DEFAULT;
       }
+    }
     return {{0., 0.}}; // never used (see below)
   }();
   const std::array<double, 2> probBackgroundResult_ttz = [&event, this]()
     -> std::array<double, 2>
   {
     if(! err)
+    {
       try
       {
-        return mem_tt_HandZ.integrate(event, ME_mg5_3l1tau::kTTZ, err);
+        return mem_tt_HandZ.integrate(event, ME_mg5_3l1tau::kTTZ);
+      } catch(const tthMEMexception & exception)
+      {
+        err = exception.getErrCode();
       } catch(...)
       {
-        err = true;
+        err = TTHEXCEPTION_ERR_CODE_DEFAULT;
       }
+    }
     return {{0., 0.}}; // never used (see below)
   }();
 
@@ -113,11 +129,22 @@ MEMInterface_3l1tau::operator()(const std::vector<MeasuredJet> & selectedJets,
     [&probSignalResult, &probBackgroundResult_ttz, this]()
   {
     if(! err)
-      return lr_computation.compute(
-        { { LikelihoodRatio_3l1tau::Hypothesis::tth, probSignalResult         } },
-        { { LikelihoodRatio_3l1tau::Hypothesis::ttz, probBackgroundResult_ttz } }
-      );
-    return MEMOutput_3l1tau(1); // filled with -1's, error code set to 1
+    {
+      try
+      {
+        return lr_computation.compute(
+          { { LikelihoodRatio_3l1tau::Hypothesis::tth, probSignalResult         } },
+          { { LikelihoodRatio_3l1tau::Hypothesis::ttz, probBackgroundResult_ttz } }
+        );
+      } catch(const tthMEMexception & exception)
+      {
+        err = exception.getErrCode();
+      } catch(...)
+      {
+        err = TTHEXCEPTION_ERR_CODE_DEFAULT;
+      }
+   }
+   return MEMOutput_3l1tau(err);
   }();
 
   return result;

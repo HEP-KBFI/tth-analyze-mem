@@ -1,6 +1,6 @@
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 #include <chrono> // std::chrono::
 #include <ctime> // std::time_t, std::tm
@@ -66,7 +66,8 @@ namespace tthMEM
     if(logLevel_ == Logger::LogLevel::kVerbose) return "verbose";
     if(logLevel_ == Logger::LogLevel::kTrace)   return "trace";
     if(logLevel_ == Logger::LogLevel::kAll)     return "all";
-    throw_line("Logger") << "Unspecified logging level";
+    throw_line_ext("Logger", TTHEXCEPTION_ERR_CODE_UNDEFINED_LOGLEVEL)
+      << "Unspecified logging level";
   }
 
   void

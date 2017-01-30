@@ -7,7 +7,7 @@
 
 #include "tthAnalysis/tthMEM/interface/me_ttz_3l1tau_mg5.h"
 #include "tthAnalysis/tthMEM/interface/HelAmps_sm_ttz_3l1tau.h"
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 using namespace MG5_sm_ttz_3l1tau;
 
@@ -703,7 +703,8 @@ double me_ttz_3l1tau_mg5::sigmaHat()
 // Set Higgs width
 void me_ttz_3l1tau_mg5::setHiggsWidth(double __attribute__((unused)) higgsWidth)
 {
-  throw_line("invalid usage") << "Cannot set Higgs width for TTZ matrix element!!!";
+  throw_line_ext("invalid usage", TTHEXCEPTION_ERR_CODE_MGME)
+    << "Cannot set Higgs width for TTZ matrix element!!!";
 }
 
 //==========================================================================

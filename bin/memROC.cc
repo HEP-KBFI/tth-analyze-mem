@@ -2,7 +2,7 @@
 #include <string> // std::string
 #include <vector> // std::vector<>
 
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR, LOGINFO
 #include "tthAnalysis/tthMEM/interface/ROC.h" // tthMEM::ROC
 
@@ -22,8 +22,8 @@ main(int argc,
 
   const std::string rocStr = "roc";
   if(! edm::readPSetsFrom(argv[1]) -> existsAs<edm::ParameterSet>(rocStr.c_str()))
-    throw_line("tthMEM") << "No ParameterSet '" << rocStr << "' found in "
-                         << "configuration file = " << argv[1];
+    throw_line_ext("tthMEM", TTHEXCEPTION_ERR_CODE_INVALID_PARAMETERSET)
+      << "No ParameterSet '" << rocStr << "' found in configuration file = " << argv[1];
   const edm::ParameterSet cfg = edm::readPSetsFrom(argv[1]) -> getParameter<edm::ParameterSet>(rocStr.c_str());
 
   const edm::ParameterSet cfg_tthMEM = cfg.getParameter<edm::ParameterSet>("tthMEM");

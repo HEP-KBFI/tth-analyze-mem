@@ -1,6 +1,6 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 #include <cfenv> // std::fesetround(), FE_TONEAREST
 
@@ -43,7 +43,8 @@ namespace tthMEM
   {
     edm::FileInPath inputFile(fileName);
     if(inputFile.fullPath() == "")
-      throw_line("invalid argument") << "Error: cannot find file = " << fileName;
+      throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_FILE_NOT_FOUND)
+        << "Error: cannot find file = " << fileName;
     return inputFile.fullPath();
   }
 

@@ -30,7 +30,7 @@ namespace tthMEM
       if(! (shiftFromBegin_begin <= shiftFromBegin_end &&
             shiftFromBegin_begin <= vec.size() &&
             shiftFromBegin_end <= vec.size()))
-        throw_line("range error")
+        throw_line_ext("range error", TTHEXCEPTION_ERR_CODE_INVALID_RANGE)
           << "Invalid arguments: "
           << "'shiftFromBegin_begin' = " << shiftFromBegin_begin << "; "
           << "'shiftFromBegin_end' = " << shiftFromBegin_end << "; "
@@ -68,7 +68,7 @@ namespace tthMEM
       if(! (shiftFromBegin_begin <= shiftFromBegin_end &&
             shiftFromBegin_begin <= vec.size() &&
             shiftFromBegin_end <= vec.size()))
-        throw_line("range error")
+        throw_line_ext("range error", TTHEXCEPTION_ERR_CODE_INVALID_RANGE)
           << "Invalid arguments: "
           << "'shiftFromBegin_begin' = " << shiftFromBegin_begin << "; "
           << "'shiftFromBegin_end' = " << shiftFromBegin_end << "; "
@@ -115,7 +115,7 @@ namespace tthMEM
       if(! (shiftFromBegin_begin <= shiftFromBegin_end &&
             shiftFromBegin_begin <= vec.size() &&
             shiftFromBegin_end <= vec.size()))
-        throw_line("range error")
+        throw_line_ext("range error", TTHEXCEPTION_ERR_CODE_INVALID_RANGE)
           << "Invalid arguments: "
           << "'shiftFromBegin_begin' = " << shiftFromBegin_begin << "; "
           << "'shiftFromBegin_end' = " << shiftFromBegin_end << "; "

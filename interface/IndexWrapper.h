@@ -1,7 +1,7 @@
 #ifndef INDEXWRAPPER_H
 #define INDEXWRAPPER_H
 
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 #include <numeric> // std::iota()
 
@@ -22,16 +22,19 @@ struct IndexWrapper
                      unsigned maxCurrentPermutation)
   {
     if(! permutations.size())
-      throw_line("runtime error") << "Permutation size is zero";
+      throw_line_ext("runtime error", TTHEXCEPTION_ERR_CODE_IDXW_ZERO_PERMUTATION)
+        << "Permutation size is zero";
     for(const std::vector<unsigned> & permutation: permutations)
       if(permutation.size() != NofObjects)
-        throw_line("runtime error")
+        throw_line_ext("runtime error", TTHEXCEPTION_ERR_CODE_IDXW_INVALID_PERMUTATION)
           << "Permutation size = " << permutation.size() << " does not equal to "
           << "the number of objects = " << NofObjects;
     if(! currentPermutation)
-      throw_line("runtime error") << "Passed nullptr for 'currentPermutation'";
+      throw_line_ext("runtime error", TTHEXCEPTION_ERR_CODE_IDXW_INVALID_ARGUMENT)
+        << "Passed nullptr for 'currentPermutation'";
     if(! maxCurrentPermutation)
-      throw_line("runtime error") << "Passed 0 for 'maxCurrentPermutation'";
+      throw_line_ext("runtime error", TTHEXCEPTION_ERR_CODE_IDXW_INVALID_ARGUMENT)
+        << "Passed 0 for 'maxCurrentPermutation'";
 
     permutations_ = permutations;
     currentPermutation_ = currentPermutation;
@@ -44,7 +47,7 @@ struct IndexWrapper
     if(currentPermutation_)
     {
       if(*currentPermutation_ >= maxCurrentPermutation_)
-        throw_line("runtime error")
+        throw_line_ext("runtime error", TTHEXCEPTION_ERR_CODE_IDXW_INVALID_RANGE)
           << "'currentPermutation' ( = " << *currentPermutation_ << ") >= "
           << "'maxCurrentPermutation' ( = " << maxCurrentPermutation_ << ')';
       return objects[permutations_[*currentPermutation_][index]];
@@ -58,7 +61,7 @@ struct IndexWrapper
     if(currentPermutation_)
     {
       if(*currentPermutation_ >= maxCurrentPermutation_)
-        throw_line("runtime error")
+        throw_line_ext("runtime error", TTHEXCEPTION_ERR_CODE_IDXW_INVALID_RANGE)
           << "'currentPermutation' ( = " << *currentPermutation_ << ") >= "
           << "'maxCurrentPermutation' ( = " << maxCurrentPermutation_ << ')';
       return objects[permutations_[*currentPermutation_][index]];

@@ -20,7 +20,7 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMenums.h" // tthMEM::ME_mg5_3l1tau::
 #include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 #include "tthAnalysis/tthMEM/interface/LikelihoodRatio_3l1tau.h" // LikelihoodRatio_3l1tau, MEMOutput_3l1tau
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
@@ -29,10 +29,6 @@
 #include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles
 
 // JFC!!! fwlite:: doesn't include "FWCore/Utilities/interface/Exception.h"
-
-#define MEM_ERR_OK  0x00
-#define MEM_ERR_TTH 0x01 << 0
-#define MEM_ERR_TTZ 0x01 << 1
 
 using namespace tthMEM;
 
@@ -64,8 +60,8 @@ main(int argc,
 
   const std::string ps = "process";
   if(! edm::readPSetsFrom(argv[1]) -> existsAs<PSet>(ps.c_str()))
-    throw_line("tthMEM") << "No ParameterSet '" << ps << "' found "
-                         << "in configuration file = " << argv[1];
+    throw_line_ext("tthMEM", TTHEXCEPTION_ERR_CODE_INVALID_PARAMETERSET)
+      << "No ParameterSet '" << ps << "' found in configuration file = " << argv[1];
   const PSet cfg = edm::readPSetsFrom(argv[1]) -> getParameter<PSet>(ps.c_str());
 
   const PSet cfg_log = cfg.getParameter<PSet>("logging");
@@ -273,57 +269,39 @@ main(int argc,
   for(Long64_t i = startingFromEntry; i < nof_max_entries; ++i)
   {
     LOGINFO << "Processing " << i << "th event";
-    errCode = MEM_ERR_OK;
+    errCode = 0;
 
     inputTree -> GetEntry(i);
     measuredEvent.initialize();
     if(measuredEvent.isFiltered()) continue;
     LOGINFO << "run:lumi:event = " << measuredEvent.str(false);
 
-    bool err = false;
-    std::array<double, 2> probSignalResult;
-    probSignalResult = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTH, err);
-    realTime_tth     = mem_tt_HandZ.getComputingTime_real();
-    cpuTime_tth      = mem_tt_HandZ.getComputingTime_cpu();
-    nofMXMCTries_tth = mem_tt_HandZ.getNofMXMCTries();
-
-    std::array<double, 2> probBackgroundResult_ttz;
-    if(err) // skip the computation and save time
+    MEMOutput_3l1tau result;
+    try
     {
-      LOGWARN << "Evaluating the MEM score to -1 because of errors";
-      errCode = MEM_ERR_TTH;
+      std::array<double, 2> probSignalResult;
+      probSignalResult = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTH);
+      realTime_tth     = mem_tt_HandZ.getComputingTime_real();
+      cpuTime_tth      = mem_tt_HandZ.getComputingTime_cpu();
+      nofMXMCTries_tth = mem_tt_HandZ.getNofMXMCTries();
 
-      realTime_tth     = -1.;
-      cpuTime_tth      = -1.;
-      nofMXMCTries_tth = -1;
-    }
-    else
-    {
-      probBackgroundResult_ttz = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTZ, err);
+      std::array<double, 2> probBackgroundResult_ttz;
+      probBackgroundResult_ttz = mem_tt_HandZ.integrate(measuredEvent, ME_mg5_3l1tau::kTTZ);
       realTime_ttz     = mem_tt_HandZ.getComputingTime_real();
       cpuTime_ttz      = mem_tt_HandZ.getComputingTime_cpu();
       nofMXMCTries_ttz = mem_tt_HandZ.getNofMXMCTries();
-    }
-    if(err)
-    {
-      LOGWARN << "Evaluating the MEM score to -1 because of errors";
-      errCode = MEM_ERR_TTZ;
 
-      realTime_ttz     = -1.;
-      cpuTime_ttz      = -1.;
-      nofMXMCTries_ttz = -1;
-    }
-
-    const MEMOutput_3l1tau result =
-      [err, &lr_computation, &probSignalResult, &probBackgroundResult_ttz]()
-    {
-      if(err)
-        return MEMOutput_3l1tau(); // filled with -1's
-      return lr_computation.compute(
+      result = lr_computation.compute(
         { { LikelihoodRatio_3l1tau::Hypothesis::tth, probSignalResult         } },
         { { LikelihoodRatio_3l1tau::Hypothesis::ttz, probBackgroundResult_ttz } }
       );
-    }();
+    } catch(const tthMEMexception & exception)
+    {
+      errCode = exception.getErrCode();
+    } catch(...)
+    {
+      errCode = TTHEXCEPTION_ERR_CODE_DEFAULT;
+    }
 
     probSignal            = result.prob_tth;
     probSignalErr         = result.prob_tth_err;

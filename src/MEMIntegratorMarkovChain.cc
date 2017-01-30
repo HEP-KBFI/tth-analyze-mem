@@ -53,10 +53,11 @@ MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(const std::string & modeStr,
   const decltype(mxModeStrings_)::left_const_iterator it =
     mxModeStrings_.left.find(modeStr);
   if(it == mxModeStrings_.left.end())
-    throw_line("invalid argument") << "No such Markov Chain mode: '" << modeStr << '\'';
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_MXMC_INVALID_MODE)
+      << "No such Markov Chain mode: '" << modeStr << '\'';
   mode_ = it -> second;
   if(nofIterSimAnnPhaseSum_ > nofIterBurnin_)
-    throw_line("invalid argument")
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_MXMC_INVALID_ANNSUM)
       << "Invalid configuration parameters: "
       << "'nofIterSimAnnPhase1' = " << nofIterSimAnnPhase1_ << "; "
       << "'nofIterSimAnnPhase2' = " << nofIterSimAnnPhase2_ << "; "
@@ -65,30 +66,30 @@ MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(const std::string & modeStr,
       << "the number of ,,burnin'' iterations must be less than "
       << "the sum of annealing and sampling iteration numbers";
   if(! (alpha_ > 0. && alpha_ < 1.))
-    throw_line("invalid argument")
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_MXMC_INVALID_ALPHA)
       << "Invalid configuration parameter: "
       << "'alpha' = " << alpha_ << " must be in (0, 1)";
   if(! nofChains_)
-    throw_line("invalid argument")
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_MXMC_INVALID_NOF_CHAINS)
       << "Invalid configuration parameter: "
       << "'nofChains' = " << nofChains_ << " must be above zero";
   if(! nofBatches_)
-    throw_line("invalid argument")
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_MXMC_INVALID_NOF_BATCHES)
       << "Invalid configuration parameter: "
       << "'nofBatches' = " << nofBatches_ << " must be above zero";
   if(nofIterSampling_ % nofBatches_ != 0)
-    throw_line("invalid argument")
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_MXMC_INVALID_BATCH_DIV)
       << "Invalid configuration parameters: "
       << "'nofIterSampling' = " << nofIterSampling_ << "; "
       << "'nofBatches' = " << nofBatches_ << '\n'
       << " => 'nofIterSampling' must be divisible by 'nofBatches'";
   if(T0 <= 0.)
-    throw_line("invalid argument")
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_MXMC_INVALID_TEMP)
       << "Invalid configuration parameter: "
       << "'T0' = " << T0 << " must be above zero";
   /* not sure though but place the constrain anyways */
   if(! (nu_ > 0. && nu_ < 1.))
-    throw_line("invalid argument")
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_MXMC_INVALID_NU)
       << "Invalid configuration parameter: "
       << "'nu' = " << nu_ << " must be in (0, 1)";
 }
@@ -178,7 +179,8 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
 {
   setIntegrand(integrand, xl, xu, dimension);
   if(! integrand_)
-    throw_line("invalid argument") << "No integrand functional has been set";
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_MXMC_MISSING_INTEGRAND)
+      << "No integrand functional has been set";
 
 //--- set PRNG seed to the same number for each integration so that the integration
 //--- retsults do not depend on the pervious integration history
@@ -256,7 +258,7 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
       if(iMove > 0 && iMove % nofIterPerBatch_ == 0)
         ++iBatch;
       if(iBatch >= probSum_.size())
-        throw_line("runtime error")
+        throw_line_ext("runtime error", TTHEXCEPTION_ERR_CODE_MXMC_RUNTIME)
           << "Something's off: "
           << "'iBatch' = " << iBatch << " >= 'probSum_' size = " << probSum_.size();
       probSum_[iBatch] += prob_;
@@ -327,7 +329,7 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
   {
     const double qi = qProposal_[iDim] - std::floor(qProposal_[iDim]);
     if(! (qi >= 0. && qi <= 1.))
-      throw_line("runtime error")
+      throw_line_ext("runtime error", TTHEXCEPTION_ERR_CODE_MXMC_RUNTIME)
         << "Encountered position component q[" << iDim << "] = " << qi << ", "
         << "which is not in [0, 1] => bailing out";
     qProposal_[iDim] = qi;
@@ -348,7 +350,7 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
   else if(                     prob_ > 0.)
     deltaEnergy = +std::numeric_limits<double>::max();
   else
-    throw_line("runtime error")
+    throw_line_ext("runtime error", TTHEXCEPTION_ERR_CODE_MXMC_RUNTIME)
       << "Encountered negative change in the phase space voulme: "
       << "'probProposal' = " << probProposal << "; "
       << "'prob_' = " << prob_;

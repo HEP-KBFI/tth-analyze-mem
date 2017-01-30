@@ -2,7 +2,7 @@
 #define MEMINTEGRATORVEGAS_H
 
 #include "tthAnalysis/tthMEM/interface/MEMIntegratorBase.h" // MEMIntegratorBase
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 #include <gsl/gsl_rng.h> // gsl_rng
 #include <gsl/gsl_monte.h>       // gsl_monte_function
@@ -45,7 +45,7 @@ namespace tthMEM
               double & integral,
               double & integralErr) override
     {
-      throw_line("invalid usage")
+      throw_line_ext("invalid usage", TTHEXCEPTION_ERR_CODE_UNDEFINED_FUNCTION)
         << "You must use integrate(gPtr_C, ...) not this one";
     }
 

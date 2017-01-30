@@ -6,7 +6,7 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h"
 #include "tthAnalysis/tthMEM/interface/BJetTransferFunction.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h"
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 #include <cmath> // std::sqrt()
 #include <cstring> // std::memset()
@@ -37,7 +37,8 @@ Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(const std::string & pdfName,
   if(! pdf_ && pdfName != "") pdf_ = LHAPDF::mkPDF(pdfName.c_str(), 0);
   else
   {
-    throw_line("invalid argument") << "PDF file name empty!";
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_MISSING_PDF)
+      << "PDF file name empty!";
   }
 
   me_madgraph_[ME_mg5_3l1tau::kTTH] = new me_tth_3l1tau_mg5();
@@ -50,7 +51,8 @@ Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(const std::string & pdfName,
   }
   else
   {
-    throw_line("invalid argument") << "Madgraph file name empty!";
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_MISSING_MG)
+      << "Madgraph file name empty!";
   }
 
   for(unsigned i = 0; i < 10; ++i)
@@ -296,7 +298,8 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   if(lept1Charge == +1 && complLeptCharge == -1)
     mgMomentaIdxs_ = { 0, 1, 2, 3, 4, 5, 6, 7, 9, 8 };
   else
-    throw_line("integrand") << "This permutation shouldn't happen";
+    throw_line_ext("integrand", TTHEXCEPTION_ERR_CODE_INVALID_PERMUTATION)
+      << "This permutation shouldn't happen";
 
 //--- for debugging purposes plot some variables
   if(DebugPlotter_ttHorZ_3l1tau * dPlotter = measuredEvent_ -> debugPlotter)
@@ -325,7 +328,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   if(! measuredEvent_)            LOGERR << "Measured event not specified!";
   if(mgMomentaIdxs_.size() != 10) LOGERR << "Number of MG momenta indexes not equal to 10";
   if(! pdf_ || ! me_madgraph_[currentME_] || ! measuredEvent_ || mgMomentaIdxs_.size() != 10)
-    throw_line("invalid argument") << "Insufficient data for eval()";
+    throw_line_ext("invalid argument", TTHEXCEPTION_ERR_CODE_INSUFFICIENT_INTEGRAND)
+      << "Insufficient data for eval()";
 
   LOGVRB << "Current MG5 ME: " << me_madgraph_[currentME_] -> name();
   if(! MET_TF_) return 0.;

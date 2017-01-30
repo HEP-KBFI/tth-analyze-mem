@@ -5,7 +5,7 @@
 #include <vector> // std::vector<>
 #include <complex> // std::complex<>
 
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 class me_ttHorZ_3l1tau_mg5
 {
@@ -66,7 +66,7 @@ public:
   virtual const double *
   getMatrixElements() const
   {
-    throw_line("me_ttHorZ_3l1tau_mg5")
+    throw_line_ext("me_ttHorZ_3l1tau_mg5", TTHEXCEPTION_ERR_CODE_UNDEFINED_FUNCTION)
       << "Function getMatrixElements() undefined for the base class!";
     return 0;
   }

@@ -7,7 +7,7 @@
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::, pow2()
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 using namespace tthMEM;
 
@@ -30,14 +30,14 @@ LikelihoodRatio_3l1tau::addSignalHypothesis(Hypothesis hypothesis,
          signalHypotheses_.end(),
          hypothesis
       ) != signalHypotheses_.end())
-      throw_line("LikelihoodRatio_3l1tau")
+      throw_line_ext("LikelihoodRatio_3l1tau", TTHEXCEPTION_ERR_CODE_LH_SIGNAL_ALREADY_ADDED)
         << "Signal hypothesis already added";
     if(std::find(
          backgroundHypotheses_.begin(),
          backgroundHypotheses_.end(),
          hypothesis
       ) != backgroundHypotheses_.end())
-      throw_line("LikelihoodRatio_3l1tau")
+      throw_line_ext("LikelihoodRatio_3l1tau", TTHEXCEPTION_ERR_CODE_LH_SIGNAL_ALREADY_ADDED)
         << "Signal hypothesis has already been added to list of background hypotheses";
   }
   signalHypotheses_.push_back(hypothesis);
@@ -56,14 +56,14 @@ LikelihoodRatio_3l1tau::addBackgroundHypothesis(Hypothesis hypothesis,
          backgroundHypotheses_.end(),
          hypothesis
       ) != backgroundHypotheses_.end())
-      throw_line("LikelihoodRatio_3l1tau")
+      throw_line_ext("LikelihoodRatio_3l1tau", TTHEXCEPTION_ERR_CODE_LH_BKG_ALREADY_ADDED)
         << "Background hypothesis already added";
     if(std::find(
          signalHypotheses_.begin(),
          signalHypotheses_.end(),
          hypothesis
       ) != signalHypotheses_.end())
-      throw_line("LikelihoodRatio_3l1tau")
+      throw_line_ext("LikelihoodRatio_3l1tau", TTHEXCEPTION_ERR_CODE_LH_BKG_ALREADY_ADDED)
         << "Background hypothesis has already been added to list of signal hypotheses";
   }
   backgroundHypotheses_.push_back(hypothesis);
@@ -110,7 +110,8 @@ LikelihoodRatio_3l1tau::getVector(const std::map<Hypothesis, std::array<double, 
                                   unsigned idx)
 {
   if(idx > 2)
-    throw_line("LikelihoodRatio_3l1tau") << "Invalid index requested: " << idx;
+    throw_line_ext("LikelihoodRatio_3l1tau", TTHEXCEPTION_ERR_CODE_LH_INVALID_RANGE)
+      << "Invalid index requested: " << idx;
   std::vector<double> tmp;
   for(const auto & kv: vectorMap)
     tmp.push_back(kv.second[idx]);
@@ -147,10 +148,10 @@ LikelihoodRatio_3l1tau::compute(const std::map<Hypothesis, std::array<double, 2>
   if(debug)
   {
     if(signalResults.size() != signalWeights.size())
-      throw_line("LikelihoodRatio_3l1tau")
+      throw_line_ext("LikelihoodRatio_3l1tau", TTHEXCEPTION_ERR_CODE_LH_INVALID_RANGE)
         << "Number of signal results doesn't match with the number of weights in the LR";
     if(backgroundResults.size() != backgroundWeights.size())
-      throw_line("LikelihoodRatio_3l1tau")
+      throw_line_ext("LikelihoodRatio_3l1tau", TTHEXCEPTION_ERR_CODE_LH_INVALID_RANGE)
         << "Number of background results doesn't match with the number of weights in the LR";
 
     const std::vector<Hypothesis> signalKeys = [&signalResults]()
@@ -166,7 +167,7 @@ LikelihoodRatio_3l1tau::compute(const std::map<Hypothesis, std::array<double, 2>
            return backgroundResults.count(hypothesis) > 0;
          }
       ))
-      throw_line("LikelihoodRatio_3l1tau")
+      throw_line_ext("LikelihoodRatio_3l1tau", TTHEXCEPTION_ERR_CODE_LH_OVERLAP)
         << "Results of the given hypotheses are interleaving";
   }
 

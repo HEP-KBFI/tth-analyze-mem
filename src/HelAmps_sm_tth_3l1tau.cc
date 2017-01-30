@@ -9,7 +9,7 @@
 #include <complex>
 #include <cmath>
 
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 using namespace std; 
 
@@ -354,7 +354,8 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double>
     }
     else
     {
-      throw_line("impossible error?") << "Invalid helicity in txxxxx";
+      throw_line_ext("impossible error?", TTHEXCEPTION_ERR_CODE_INVALID_HELICITY)
+        << "Invalid helicity in txxxxx";
     }
   }
 
