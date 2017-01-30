@@ -2,7 +2,7 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 
-#include <cmath> // std::fabs(), std::sqrt(), std::atan2()
+#include <cmath> // std::fabs(), std::sqrt(), std::atan2(), std::fpclassify(), FP_ZERO
 
 #include <TVectorD.h> // TVectorD
 
@@ -107,7 +107,7 @@ namespace tthMEM
       const double invAbsFactor = std::fabs(
         bQuarkPunit.Dot(getVector(W).unit()) * W.Beta() / bQuarkBeta - 1.
       );
-      if(invAbsFactor == 0.)
+      if(std::fpclassify(invAbsFactor) == FP_ZERO)
       {
         LOGWARN << "Encountered singularities in the calculation of the"
                 << "Jacobi factor of the top decay";

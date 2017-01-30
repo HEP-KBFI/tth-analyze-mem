@@ -37,7 +37,7 @@ namespace tthMEM
   constexpr double
   pi()
   {
-    return std::acos(-1.L);
+    return std::acos(-1.);
   }
 
   /**

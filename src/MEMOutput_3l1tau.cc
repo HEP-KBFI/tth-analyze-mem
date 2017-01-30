@@ -2,7 +2,7 @@
 
 #include <iomanip> // std::setprecision()
 
-MEMOutput_3l1tau::MEMOutput_3l1tau(int err)
+MEMOutput_3l1tau::MEMOutput_3l1tau(int err_)
   : prob_tth(-1.)
   , prob_tth_err(-1.)
   , prob_ttz(-1.)
@@ -21,7 +21,7 @@ MEMOutput_3l1tau::MEMOutput_3l1tau(int err)
   , lr_err(-1.)
   , lr_up(-1.)
   , lr_down(-1.)
-  , err(err)
+  , err(err_)
 {}
 
 std::ostream &

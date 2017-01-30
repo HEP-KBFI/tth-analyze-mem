@@ -34,15 +34,15 @@ namespace tthMEM
     int decayMode() const;
 
     virtual void
-    initialize() override;
+    initialize() final override;
 
     virtual void
     setBranches(TTree * t,
-                const std::string & branchName) override;
+                const std::string & branchName) final override;
 
     virtual void
     initNewBranches(TTree * t,
-                    const std::string & branchName) override;
+                    const std::string & branchName) final override;
 
     friend std::ostream &
     operator<<(std::ostream & os,

@@ -164,7 +164,7 @@ namespace tthMEM
      * The function is needed by the integration libraries such as VEGAS
      * and VAMP.
      */
-    const double * const
+    const double *
     getXU() const;
 
     /**
@@ -178,7 +178,7 @@ namespace tthMEM
      * The function is needed by the integration libraries such as VEGAS
      * and VAMP.
      */
-    const double * const
+    const double *
     getXL() const;
 
     std::vector<Var_3l1tau> generatorLevels;

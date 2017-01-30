@@ -68,7 +68,7 @@ public:
   {
     throw_line_ext("me_ttHorZ_3l1tau_mg5", TTHEXCEPTION_ERR_CODE_UNDEFINED_FUNCTION)
       << "Function getMatrixElements() undefined for the base class!";
-    return 0;
+    return nullptr;
   }
 
   // Constants for array limits

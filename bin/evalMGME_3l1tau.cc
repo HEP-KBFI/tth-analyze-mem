@@ -446,8 +446,8 @@ main(int argc,
               prob_tth_qq, prob_tth, prob_ttz
             };
             outTxtFile << rle_str << std::scientific << std::setprecision(6); // those are ,,sticky''
-            for(std::size_t i = 0; i < probs.size(); ++i)
-              outTxtFile << ',' << probs[i] << (i == probs.size() - 1 ? "\n" : "");
+            for(std::size_t k = 0; k < probs.size(); ++k)
+              outTxtFile << ',' << probs[k] << (k == probs.size() - 1 ? "\n" : "");
           }
         }
 

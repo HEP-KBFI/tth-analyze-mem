@@ -122,10 +122,10 @@ namespace tthMEM
     LorentzVector p4_; ///< measured 4-momentum in the lab frame
     Vector p3_;        ///< measured 3-momentum in the lab frame
 
-    TBranch * branch_pt   = 0; ///< output branch for pt
-    TBranch * branch_eta  = 0; ///< output branch for eta
-    TBranch * branch_phi  = 0; ///< output branch for phi
-    TBranch * branch_mass = 0; ///< output branch for mass
+    TBranch * branch_pt   = nullptr; ///< output branch for pt
+    TBranch * branch_eta  = nullptr; ///< output branch for eta
+    TBranch * branch_phi  = nullptr; ///< output branch for phi
+    TBranch * branch_mass = nullptr; ///< output branch for mass
   };
 }
 

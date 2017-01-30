@@ -213,13 +213,13 @@ VariableManager_3l1tau::set(Var_3l1tau var,
   return EXIT_SUCCESS;
 }
 
-const double * const
+const double *
 VariableManager_3l1tau::getXL() const
 {
   return xl_.data();
 }
 
-const double * const
+const double *
 VariableManager_3l1tau::getXU() const
 {
   return xu_.data();

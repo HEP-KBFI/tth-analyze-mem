@@ -33,12 +33,12 @@ namespace tthMEM
               double & integralErr) override;
 
     void
-    integrate(MEMIntegratorBase::gPtr_C integrand,
-              const double * xl,
-              const double * xu,
-              unsigned dimension,
-              double & integral,
-              double & integralErr) override
+    integrate(MEMIntegratorBase::gPtr_C integrand __attribute__((unused)),
+              const double * xl __attribute__((unused)),
+              const double * xu __attribute__((unused)),
+              unsigned dimension __attribute__((unused)),
+              double & integral __attribute__((unused)),
+              double & integralErr __attribute__((unused))) override
     {
       throw_line_ext("invalid usage", TTHEXCEPTION_ERR_CODE_UNDEFINED_FUNCTION)
         << "You must use integrate(gPtr_Fortran, ...) not this one";

@@ -19,7 +19,7 @@ MeasuredEvent_3l1tau::initialize()
 
   met.initialize();
 
-  for(std::size_t i = 0; i < 3; ++i)
+  for(int i = 0; i < 3; ++i)
     leptons[i].initialize();
 
 //--- let's read in all jets and print them
@@ -63,10 +63,10 @@ MeasuredEvent_3l1tau::initialize()
     LOGTRC << "Redirecting reconstructed particles to their underlying "
            << "generator level particles";
     generatorLevel -> initialize();
-    for(std::size_t i = 0; i < 2; ++i)
+    for(int i = 0; i < 2; ++i)
       leptons[i] = generatorLevel -> genLepFromTop[i];
     leptons[2] = generatorLevel -> genLepFromTau;
-    for(std::size_t i = 0; i < 2; ++i)
+    for(int i = 0; i < 2; ++i)
     {
       const GeneratorParticle & jet = generatorLevel -> genBQuarkFromTop[i];
 //--- the first combination must include a permutation which passes gen lvl matching
@@ -191,8 +191,8 @@ MeasuredEvent_3l1tau::setBranches(TTree * t)
 
   met.setBranches(t);
 
-  for(std::size_t i = 0; i < 3; ++i)
-    leptons[i].setBranches(t, Form("lepton%lu", (i + 1)));
+  for(int i = 0; i < 3; ++i)
+    leptons[i].setBranches(t, Form("lepton%i", (i + 1)));
 
   for(std::size_t i = 0; i < NOF_RECO_JETS_MEM; ++i)
     allJets[i].setBranches(t, Form("jets%lu", (i + 1)));
@@ -384,9 +384,9 @@ namespace tthMEM
                         << event.lumi << ':'
                         << event.evt << "), "
        << "permutation #" << (event.currentPermutation_ + 1) << ":\n";
-    for(std::size_t i = 0; i < 3; ++i)
+    for(int i = 0; i < 3; ++i)
       os << "\tLepton " << (i + 1) << ": " << event.leptons[i] << '\n';
-    for(std::size_t i = 0; i < 2; ++i)
+    for(int i = 0; i < 2; ++i)
       os << "\tJet "    << (i + 1) << ":    " << event.jets[i]    << '\n';
     os << "\tTau:      " << event.htau << '\n';
     os << "\tMET:      " << event.met   << '\n';

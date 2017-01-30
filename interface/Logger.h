@@ -107,8 +107,8 @@ namespace tthMEM
       ~Holder();
 
       Logger & logger_;
-      bool enableLogging_;
       std::stringstream ss_;
+      bool enableLogging_;
     };
 
     mutable std::shared_ptr<Holder> holder_;

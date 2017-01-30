@@ -16,16 +16,16 @@ using namespace tthMEM;
 
 double
 g_C(double * x,
-    std::size_t dimension,
-    void * additionalParameters)
+    std::size_t dimension __attribute__((unused)),
+    void * additionalParameters __attribute__((unused)))
 {
   return Integrand_ttHorZ_3l1tau::gIntegrand -> eval(x);
 }
 
 double
 g_Fortran(double ** x,
-          std::size_t dimension,
-          void ** additionalParameters)
+          std::size_t dimension __attribute__((unused)),
+          void ** additionalParameters __attribute__((unused)))
 {
   return Integrand_ttHorZ_3l1tau::gIntegrand -> eval(*x);
 }

@@ -34,10 +34,10 @@ namespace tthMEM
     ULong64_t evt;
     Int_t njets;
 
-    TBranch * branch_run = 0;
-    TBranch * branch_lumi = 0;
-    TBranch * branch_evt = 0;
-    TBranch * branch_njets = 0;
+    TBranch * branch_run   = nullptr;
+    TBranch * branch_lumi  = nullptr;
+    TBranch * branch_evt   = nullptr;
+    TBranch * branch_njets = nullptr;
 
     MeasuredMET met;
     IndexWrapper<MeasuredLepton, 3> leptons;

@@ -49,7 +49,7 @@ main(int argc,
   std::atexit(Logger::flush);
 //--- point signal handler to std::exit() which also flushes the stdout
   for(int sig: { SIGABRT, SIGILL, SIGINT, SIGSEGV, SIGTERM, SIGQUIT })
-    std::signal(sig, [](int sig) { LOGERR << "Encountered signal " << sig; std::exit(sig); });
+    std::signal(sig, [](int sig_) { LOGERR << "Encountered signal " << sig_; std::exit(sig_); });
 
 //--- parse the configuration file
   if(argc != 2)

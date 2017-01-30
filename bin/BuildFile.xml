@@ -4,22 +4,22 @@
   <use name="FWCore/Utilities" />
   <use name="root" />
   <use name="tthAnalysis/tthMEM" />
-<!--  <Flags CXXFLAGS="-g3 -Og -ggdb3" /> -->
-  <Flags CXXFLAGS="-g0 -O3 -ggdb0" />
+<!--  <Flags CXXFLAGS="-g3 -Og -ggdb3 -Wall -Wextra -pedantic -Werror" /> -->
+  <Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Wshadow -Werror" />
 </bin>
 <bin file="bjetTFPlot.cc" name="bjetTFPlot">
   <use name="root" />
   <use name="rootgraphics" />
   <use name="boost" />
   <use name="tthAnalysis/tthMEM" />
-  <Flags CXXFLAGS="-g0 -O3 -ggdb0" />
+  <Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Wshadow -Werror" />
 </bin>
 <bin file="memROC.cc" name="memROC">
   <use name="FWCore/ParameterSet" />
   <use name="FWCore/PythonParameterSet" />
   <use name="FWCore/Utilities" />
   <use name="tthAnalysis/tthMEM" />
-  <Flags CXXFLAGS="-g0 -O3 -ggdb0" />
+  <Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Wshadow -Werror" />
 </bin>
 <bin file="evalMGME_3l1tau.cc" name="evalMGME_3l1tau">
   <use name="FWCore/ParameterSet" />
@@ -27,9 +27,9 @@
   <use name="FWCore/Utilities" />
   <use name="tthAnalysis/tthMEM" />
   <use name="boost" />
-  <Flags CXXFLAGS="-g0 -O3 -ggdb0" />
+  <Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Wshadow -Werror" />
 </bin>
 <bin file="testMEM_3l1tau.cc" name="testMEM_3l1tau">
   <use name="tthAnalysis/tthMEM" />
-  <Flags CXXFLAGS="-g0 -O3 -ggdb0" />
+  <Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Wshadow -Werror" />
 </bin>

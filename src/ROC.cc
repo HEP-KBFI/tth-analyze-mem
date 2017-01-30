@@ -7,6 +7,7 @@
 #include <functional> // std::less<>
 #include <algorithm> // std::generate()
 #include <fstream> // std::ofstream
+#include <climits> // SHRT_MAX
 
 #include <boost/filesystem/path.hpp> // boost::filesystem::path
 #include <boost/filesystem/operations.hpp> // boost::filesystem::exists(), ...
@@ -53,8 +54,8 @@ ROC::ROC(const std::string & signalFileName,
     wp.begin(), wp.end(),
     [this]
     {
-      static int x = 0;
-      return 1. * (x++) / (nofWPs - 1);
+      static int x_ = 0;
+      return 1. * (x_++) / (nofWPs - 1);
     }
   );
 
@@ -161,8 +162,8 @@ ROC::readInput(const std::string & fileName,
 
   double value;
   t -> SetBranchAddress(branchName_.c_str(), &value);
-  const unsigned nofEvents = t -> GetEntries();
-  for(unsigned i = 0; i < nofEvents; ++i)
+  const Long64_t nofEvents = t -> GetEntries();
+  for(typename std::remove_cv<decltype(nofEvents)>::type i = 0; i < nofEvents; ++i)
   {
     t -> GetEntry(i);
     values.push_back(value);
@@ -220,8 +221,8 @@ ROC::plotROC()
     c -> SetGrid();
     c -> SetFillColor(0);
 
-    TGraph * g = new TGraph(x.size(), x.data(), y.data());
-    g -> SetLineColor(2 + i);
+    TGraph * g = new TGraph(static_cast<Int_t>(x.size()), x.data(), y.data());
+    g -> SetLineColor(static_cast<Color_t>((2 + i) % SHRT_MAX));
     g -> SetFillColor(0);
     g -> SetMarkerStyle(7);
     g -> SetTitle("MEM ROC curve");

@@ -15,6 +15,7 @@
 #if defined(__OPTIMIZE__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wshadow"
 #endif
 
 #include <LHAPDF/LHAPDF.h> // LHAPDF::PDF

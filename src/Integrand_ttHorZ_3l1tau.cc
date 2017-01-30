@@ -8,7 +8,7 @@
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
-#include <cmath> // std::sqrt()
+#include <cmath> // std::sqrt(), std::fpclassify(), FP_ZERO
 #include <cstring> // std::memset()
 #include <algorithm> // std::for_each(), std::copy()
 #include <sstream> // std::ostringstream
@@ -19,16 +19,16 @@
 
 using namespace tthMEM;
 
-const Integrand_ttHorZ_3l1tau * Integrand_ttHorZ_3l1tau::gIntegrand = 0;
+const Integrand_ttHorZ_3l1tau * Integrand_ttHorZ_3l1tau::gIntegrand = nullptr;
 
 Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(const std::string & pdfName,
                                                  const std::string & madgraphFilename,
                                                  const VariableManager_3l1tau & vm)
   : beamAxis_(0., 0., 1.)
-  , pdf_(0)
+  , pdf_(nullptr)
   , currentME_(ME_mg5_3l1tau::kTTH) // default to tth
   , me_madgraph_{0, 0}
-  , measuredEvent_(0)
+  , measuredEvent_(nullptr)
   , vm_(vm)
   , bJetTF_(functions::deltaFunction)
 {
@@ -73,7 +73,7 @@ Integrand_ttHorZ_3l1tau::~Integrand_ttHorZ_3l1tau()
   for(unsigned i = 0; i < 2; ++i)
     if(me_madgraph_[i]) delete me_madgraph_[i];
 
-  measuredEvent_ = 0; // no allocation, just the address
+  measuredEvent_ = nullptr; // no allocation, just the address
 
   std::for_each(mgMomenta_.begin(), mgMomenta_.end(),
     [](double * & d) { delete d; d = 0; }
@@ -157,7 +157,7 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
   const double MET_y = met.py();
   TMatrixDSym invCovMET = met.covMET();
   const double covDet = invCovMET.Determinant();
-  if(covDet != 0.)
+  if(std::fpclassify(covDet) != FP_ZERO)
   {
     invCovMET.Invert();
     const double MET_TF_denom = 1. / (2. * pi() * std::sqrt(invCovMET.Determinant()));
@@ -172,7 +172,7 @@ Integrand_ttHorZ_3l1tau::setEvent(const MeasuredEvent_3l1tau & measuredEvent)
   }
   else
   {
-    MET_TF_ = 0;
+    MET_TF_ = nullptr;
     LOGERR << "Cannot invert MET covariance matrix b/c det = 0";
   }
 
@@ -451,7 +451,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
     }
 
     const double bEnergy_i = bQuarkEnergy_[i](recoEvent.W[i]);
-    if(bEnergy_i == 0.) return 0.;
+    if(std::fpclassify(bEnergy_i) == FP_ZERO) return 0.;
     const MeasuredJet & bJet_i = measuredEvent_ -> jets[i];
     const Vector bP3_i = std::sqrt(pow2(bEnergy_i) - constants::massBSquared) *
                          bJet_i.p3().unit();
@@ -563,14 +563,14 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
     );
     LOGTRC_S << "Jacobi factors arising from the top decay: #" << (i + 1) << " = "
              << tDecayJacobiFactors[i];
-    if(tDecayJacobiFactors[i] == 0.) return 0.;
+    if(std::fpclassify(tDecayJacobiFactors[i]) == FP_ZERO) return 0.;
   }
 
   const double hTauPSJacobiFactor = hadTauPSJacobiFactor_(z1);
   LOGTRC_S << "PS x Jacobi factor for hadronic tau decay = "
            << hTauPSJacobiFactor;
   const double lTauPSJacobiFactor = leptTauPSJacobiFactor_(mInvSquared, z2);
-  if(lTauPSJacobiFactor == 0.) return 0.;
+  if(std::fpclassify(lTauPSJacobiFactor) == FP_ZERO) return 0.;
   LOGTRC_S << "PS x Jacobi factor for leptonic tau decay = "
            << lTauPSJacobiFactor;
 

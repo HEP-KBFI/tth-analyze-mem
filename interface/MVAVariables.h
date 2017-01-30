@@ -40,17 +40,17 @@ namespace tthMEM
     Double_t mvaOutput_3l_ttV;
     Double_t mvaOutput_3l_ttbar;
 
-    TBranch * branch_max2LeptonEta = 0;
-    TBranch * branch_MT_met_lep1 = 0;
-    TBranch * branch_nJet25_Recl = 0;
-    TBranch * branch_mindr_lep1_jet = 0;
-    TBranch * branch_mindr_lep2_jet = 0;
-    TBranch * branch_lep1_cone_pt = 0;
-    TBranch * branch_lep3_cone_pt = 0;
-    TBranch * branch_avg_dr_jet = 0;
-    TBranch * branch_mhtJet25_Recl = 0;
-    TBranch * branch_mvaOutput_3l_ttV = 0;
-    TBranch * branch_mvaOutput_3l_ttbar = 0;
+    TBranch * branch_max2LeptonEta      = nullptr;
+    TBranch * branch_MT_met_lep1        = nullptr;
+    TBranch * branch_nJet25_Recl        = nullptr;
+    TBranch * branch_mindr_lep1_jet     = nullptr;
+    TBranch * branch_mindr_lep2_jet     = nullptr;
+    TBranch * branch_lep1_cone_pt       = nullptr;
+    TBranch * branch_lep3_cone_pt       = nullptr;
+    TBranch * branch_avg_dr_jet         = nullptr;
+    TBranch * branch_mhtJet25_Recl      = nullptr;
+    TBranch * branch_mvaOutput_3l_ttV   = nullptr;
+    TBranch * branch_mvaOutput_3l_ttbar = nullptr;
   };
 }
 

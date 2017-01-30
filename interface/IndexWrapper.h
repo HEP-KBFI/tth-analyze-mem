@@ -10,7 +10,7 @@ template<typename T,
 struct IndexWrapper
 {
   IndexWrapper()
-    : currentPermutation_(0)
+    : currentPermutation_(nullptr)
     , maxCurrentPermutation_(0)
   {
     std::iota(defaultPermutation, defaultPermutation + NofObjects, 0);
@@ -69,13 +69,13 @@ struct IndexWrapper
     return objects[defaultPermutation[index]];
   }
 
-  const T * const
+  const T *
   begin() const
   {
     return &objects[defaultPermutation[0]];
   }
 
-  const T * const
+  const T *
   end() const
   {
     return &objects[defaultPermutation[NofObjects - 1] + 1];
@@ -84,7 +84,7 @@ struct IndexWrapper
   void
   reset()
   {
-    currentPermutation_ = 0;
+    currentPermutation_ = nullptr;
     maxCurrentPermutation_ = 0;
   }
 
