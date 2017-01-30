@@ -7,7 +7,7 @@
 <use name="vamp" />
 <use name="boost" />
 <!-- <Flags CXXFLAGS="-g3 -Og -ggdb3 -pedantic -Werror" /> -->
-<Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Wshadow -Werror" />
+<Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Werror" />
 <export>
   <lib name="1" />
 </export>
