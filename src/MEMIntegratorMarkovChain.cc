@@ -293,7 +293,7 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
       return prng_.Gaus(0., 1.);
     };
   if     (idxMove < nofIterSimAnnPhase1_)
-    std::generate(p_.begin(), p_.end(), gaus);
+    p_ = sqrtT0_ * vec::genv(gaus, p_.size());
   else if(idxMove < nofIterSimAnnPhaseSum_)
   {
 //--- sample random numbers spherically (?)
