@@ -240,7 +240,7 @@ MEMIntegratorMarkovChain::integrate(gPtr_C integrand,
 //--- propose MX transition to a new, randomly chosen point
     for(unsigned iMove = 0; iMove < nofIterBurnin_; ++iMove)
     {
-      bool isAccepted = false; // never used!
+      bool isAccepted = false;
       makeStochasticMove(iMove, isAccepted);
     }
 
@@ -296,18 +296,18 @@ MEMIntegratorMarkovChain::makeStochasticMove(unsigned idxMove,
     p_ = sqrtT0_ * vec::genv(gaus, p_.size());
   else if(idxMove < nofIterSimAnnPhaseSum_)
   {
-//--- sample random numbers spherically (?)
+//--- sample random numbers spherically
     std::vector<double> u = vec::genv(gaus, p_.size());
     const double uL2 = vec::l2(u);
 //--- divide by the magnitude of the vector, uL2
     u /= uL2;
     const double pL2 = vec::l2(p_);
-    p_ = alpha_ * pL2 * u + (1. - alphaSquared_) * vec::genv(gaus, p_.size());
+    p_ = alpha_ * pL2 * u + std::sqrt(T0_ * (1. - alphaSquared_)) * vec::genv(gaus, p_.size());
   }
   else
     std::generate(p_.begin(), p_.end(), gaus);
 
-//--- choose random stpe size
+//--- choose random step size
   double expNuTimesC = 0.;
   do
   {

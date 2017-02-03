@@ -33,3 +33,7 @@
   <use name="tthAnalysis/tthMEM" />
   <Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Werror" />
 </bin>
+<bin file="testMEM_Integrators.cc" name="testMEM_Integrators">
+  <use name="tthAnalysis/tthMEM" />
+  <Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Werror" />
+</bin>
