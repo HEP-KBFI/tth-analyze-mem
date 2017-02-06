@@ -1,4 +1,4 @@
-import subprocess, jinja2, os
+import subprocess, jinja2, os, ROOT
 
 templatesDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'templates')
 
@@ -9,18 +9,23 @@ jobTemplate              = open(os.path.join(templatesDir, 'jobTemplate.sh.templ
 sbatchTemplate           = open(os.path.join(templatesDir, 'sbatchTemplate.py.template')).read()
 makefileTemplate         = open(os.path.join(templatesDir, 'Makefile.template')).read()
 
-def getNofEntries(fileName, treeName):
-  rootEventCounterCode = jinja2.Template(rootEventCounterTemplate).render(
-                            rootFile = fileName,
-                            treeName = treeName)
-  rootEventCounterCommand = "echo \"%s\" | root -b -l" % rootEventCounterCode
-  rootEventCounterProcess = subprocess.Popen(rootEventCounterCommand,
-                                             stdout = subprocess.PIPE,
-                                             stderr = subprocess.PIPE,
-                                             shell = True)
-  counterStdout, counterStderr = rootEventCounterProcess.communicate()
-  if counterStderr != "": raise ValueError(counterStderr)
-  return int(counterStdout)
+def getNofEntries(fileName, treeName, usePyROOT = True):
+  if usePyROOT:
+    rootFile = ROOT.TFile(fileName, "read")
+    tree = rootFile.Get(treeName)
+    return int(tree.GetEntries())
+  else:
+    rootEventCounterCode = jinja2.Template(rootEventCounterTemplate).render(
+                              rootFile = fileName,
+                              treeName = treeName)
+    rootEventCounterCommand = "echo \"%s\" | root -b -l" % rootEventCounterCode
+    rootEventCounterProcess = subprocess.Popen(rootEventCounterCommand,
+                                               stdout = subprocess.PIPE,
+                                               stderr = subprocess.PIPE,
+                                               shell  = True)
+    counterStdout, counterStderr = rootEventCounterProcess.communicate()
+    if counterStderr != "": raise ValueError(counterStderr)
+    return int(counterStdout)
 
 def createPythonCfg(isMC, is2016, inFileName, maxEvents, outFileName, treeName,
                     integrationMode, maxObjFunctionCalls, startingFromEntry,

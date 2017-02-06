@@ -1,0 +1,11 @@
+.DEFAULT_GOAL := all
+SHELL := /bin/bash
+
+all:{% for subdir, makefile in makefiles %}
+	+make -C {{ subdir }} -f {{ makefile }} -j $(J) {% endfor %}
+
+.PHONY: clean
+
+clean:{% for subdir, makefile in makefiles %}
+	+make -C {{ subdir }} -f {{ makefile }} clean -j $(J) {% endfor %}
+
