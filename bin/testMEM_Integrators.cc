@@ -3,30 +3,34 @@
 
 using namespace tthMEM;
 
-double eval_x  (double * x,
-                std::size_t dimension       __attribute__((unused)),
-                void * additionalParameters __attribute__((unused)))
-{ return      x[0];               }
-double eval_x2 (double * x,
-                std::size_t dimension       __attribute__((unused)),
-                void * additionalParameters __attribute__((unused)))
-{ return pow2(x[0]);              }
-double eval_x3 (double * x,
-                std::size_t dimension       __attribute__((unused)),
-                void * additionalParameters __attribute__((unused)))
-{ return pow2(x[0]);              }
-double eval_xy (double * x,
-                std::size_t dimension       __attribute__((unused)),
-                void * additionalParameters __attribute__((unused)))
-{ return      x[0]  *      x[1];  }
-double eval_x2y(double * x,
-                std::size_t dimension       __attribute__((unused)),
-                void * additionalParameters __attribute__((unused)))
-{ return pow2(x[0]) *      x[1];  }
-double eval_xy2(double * x,
-                std::size_t dimension       __attribute__((unused)),
-                void * additionalParameters __attribute__((unused)))
-{ return      x[0]  * pow2(x[1]); }
+double eval_x   (double * x,
+                 std::size_t dimension       __attribute__((unused)),
+                 void * additionalParameters __attribute__((unused)))
+{ return      x[0];                          }
+double eval_trix(double * x,
+                 std::size_t dimension       __attribute__((unused)),
+                 void * additionalParameters __attribute__((unused)))
+{ return std::max(1. - std::fabs(x[0]), 0.); }
+double eval_x2  (double * x,
+                 std::size_t dimension       __attribute__((unused)),
+                 void * additionalParameters __attribute__((unused)))
+{ return pow2(x[0]);                         }
+double eval_x3  (double * x,
+                 std::size_t dimension       __attribute__((unused)),
+                 void * additionalParameters __attribute__((unused)))
+{ return pow2(x[0]);                         }
+double eval_xy  (double * x,
+                 std::size_t dimension       __attribute__((unused)),
+                 void * additionalParameters __attribute__((unused)))
+{ return      x[0]  *      x[1];             }
+double eval_x2y (double * x,
+                 std::size_t dimension       __attribute__((unused)),
+                 void * additionalParameters __attribute__((unused)))
+{ return pow2(x[0]) *      x[1];             }
+double eval_xy2 (double * x,
+                 std::size_t dimension       __attribute__((unused)),
+                 void * additionalParameters __attribute__((unused)))
+{ return      x[0]  * pow2(x[1]);            }
 
 struct IntMeta
 {
@@ -110,11 +114,12 @@ main()
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
 
   std::vector<IntMeta> integrands = {
-    { eval_x,   "f(x)    = x      ", 1, { 0.     }, { std::sqrt(2.)                              }, 1. },
-    { eval_x2,  "f(x)    = x^2    ", 1, { 0.     }, { std::cbrt(3.)                              }, 1. },
-    { eval_x3,  "f(x)    = x^3    ", 1, { 0.     }, { std::sqrt(2.)                              }, 1. },
-    { eval_xy,  "f(x, y) = x * y  ", 2, { 0., 0. }, { std::sqrt(2.),        std::sqrt(2.)        }, 1. },
-    { eval_x2y, "f(x, y) = x^2 * y", 2, { 0., 0. }, { std::pow(6., 1. / 5), std::pow(6., 1. / 5) }, 1. }
+    { eval_x,    "f(x)    = x      ", 1, { 0.     }, { std::sqrt(2.)                              }, 1. },
+    { eval_trix, "f(x)    = tri(x) ", 1, { -2.    }, { 2.                                         }, 1. },
+    { eval_x2,   "f(x)    = x^2    ", 1, { 0.     }, { std::cbrt(3.)                              }, 1. },
+    { eval_x3,   "f(x)    = x^3    ", 1, { 0.     }, { std::sqrt(2.)                              }, 1. },
+    { eval_xy,   "f(x, y) = x * y  ", 2, { 0., 0. }, { std::sqrt(2.),        std::sqrt(2.)        }, 1. },
+    { eval_x2y,  "f(x, y) = x^2 * y", 2, { 0., 0. }, { std::pow(6., 1. / 5), std::pow(6., 1. / 5) }, 1. }
   };
   IntResult result;
 
