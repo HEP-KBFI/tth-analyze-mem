@@ -319,7 +319,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
       pSum_perJc += p;
       pSumErr_perJc += pErr;
 
-      if(integrationMode_ == IntegrationMode::kMarkovChain)
+      if(intAlgo_ && integrationMode_ == IntegrationMode::kMarkovChain)
         nofMXMCTries = *static_cast<unsigned *>(intAlgo_ -> metadata());
       else
         nofMXMCTries = -1;
