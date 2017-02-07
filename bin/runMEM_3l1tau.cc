@@ -72,6 +72,7 @@ main(int argc,
   Logger::setLogLevel(logLevel);
   Logger::enableLogging(enableLogging);
   Logger::enableTimeStamp(enableTimeStamp);
+  Logger::setFloatPrecision(6);
 
   const PSet cfg_tthMEM = cfg.getParameter<PSet>("tthMEM");
   const bool isMC = cfg_tthMEM.getParameter<bool>("isMC");

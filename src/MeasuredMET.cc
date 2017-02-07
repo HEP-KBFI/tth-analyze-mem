@@ -85,13 +85,10 @@ MeasuredMET::covMET() const
 void
 MeasuredMET::initialize()
 {
-  pt_   = roundToNdigits(pt_);
-  phi_  = roundToNdigits(phi_);
-
-  covMET_(0,0) = roundToNdigits(covMET_XX_); // in GeV
-  covMET_(0,1) = roundToNdigits(covMET_XY_);
-  covMET_(1,0) = roundToNdigits(covMET_XY_);
-  covMET_(1,1) = roundToNdigits(covMET_YY_);
+  covMET_(0,0) = covMET_XX_; // in GeV
+  covMET_(0,1) = covMET_XY_;
+  covMET_(1,0) = covMET_XY_;
+  covMET_(1,1) = covMET_YY_;
   calculateEigenVectorsValues();
 
   px_ = pt_ * std::cos(phi_);

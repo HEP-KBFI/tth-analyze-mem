@@ -58,8 +58,6 @@ MeasuredHadronicTau::decayMode() const
 void
 MeasuredHadronicTau::initialize()
 {
-  MeasuredLepton::initialize();
-
   preciseVisMass_ = mass_;
 
   double minVisMass = constants::massVisTauMin;

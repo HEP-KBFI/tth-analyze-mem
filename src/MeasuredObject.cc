@@ -187,11 +187,6 @@ MeasuredObject::initNewBranches(TTree * t,
 void
 MeasuredObject::initialize()
 {
-  pt_   = roundToNdigits(pt_);
-  eta_  = roundToNdigits(eta_);
-  phi_  = roundToNdigits(phi_);
-  mass_ = roundToNdigits(mass_);
-
   p_ = pt_ * std::cosh(eta_);
   px_ = pt_ * std::cos(phi_);
   py_ = pt_ * std::sin(phi_);
