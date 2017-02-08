@@ -34,6 +34,47 @@ namespace tthMEM
        double massHiggsOrZsquared);   /* bind */
 
     /**
+     * @brief A more precise computation of energy fraction in leptonic tau decay system
+     * @param z1                  Energy fraction in hadronic tau decay system
+     * @param mInvSquared         Squared invisible mass of the neutrino pair in leptonic tau decay system
+     * @param nuLtau_phi          Rotation angle of the neutrino pair in leptonic tau decay system
+     * @param nuHtau              4-momentum of the neutrino from hadronic tau decay system
+     * @param vis                 4-momentum of visible decay products of the tau pair
+     * @param complLepton         4-momentum of the lepton in leptonic tau decay system
+     * @param nuLtauLocalSystem   Coordinate transformation matrix in leptonic tau decay system
+     * @param massHiggsOrZsquared Squared mass of the mother of the tau pair (either Higgs or Z)
+     * @return A more precise value for the leptonic energy fraction
+     *
+     * @note Simple mH^2 = mVis^2 / (z1 * z2) doesn't hold very well; the solution is to expand the mH^2
+     *       term in terms of the integration variables and measured quantities. The result is way more complex
+     *       than the initial guess (which is pretty good but not good enough since Higgs mass width is so
+     *       narrow and even a slight deviation from the PDG mass will render the MEM useless). In principle,
+     *       a new set of integration variables should be developed, but this is too much work; hence the hack.
+     *
+     *       The solution basically boils down to solving a quadratic equation in terms of z2; however, there's
+     *       an implicit dependency in the opening angle of the leptonic tau decay system, which also depends on
+     *       the energy fraction z2. The approximation we employ is that we use first estimation of z2 in
+     *       the computation of this opening angle, which we in turn use to recompute z2.
+     *
+     *       Since we're dealing with a quadratic equation, we must consider both solutions. If both solutions
+     *       are physical, closest value to the initial estimate of z2 is considered. Since this is still
+     *       an approximation and not a perfect estimate for z2, there still might be bias in the calculation
+     *       (and it looks like it happens more often if the opening angle is relatively large).
+     *
+     *       An imporovement of this function would calculate all everything up to upper-most parent particle
+     *       and would choose the one which is closest to the expected mass of the parent.
+     */
+    double
+    z2(double z1,
+       double mInvSquared,
+       double nuLtau_phi,
+       const LorentzVector & nuHtau,
+       const LorentzVector & vis,          /* bind */
+       const LorentzVector & complLepton,  /* bind */
+       const TMatrixD & nuLtauLocalSystem, /* bind */
+       double massHiggsOrZsquared);        /* bind */
+
+    /**
      * @brief Reconstructs cosine of the opening angle between the hadronic tau
      *         decay products (a hadronic tau lepton and a neutrino): tau -> htau nu
      * @param nuHtau_en       Energy of the neutrino (equal to its momentum)
@@ -183,6 +224,23 @@ namespace tthMEM
          const TMatrixD & nuTauLocalSystem); /* bind */
 
     /**
+     * @brief Computes 4-momentum of the di-neutrino system
+     * @param z2                Energy fraction in leptonic tau decay system
+     * @param mInvSquared       Squared mass of the neutrino pair
+     * @param nuLtau_phi        Rotation angle of the neutrino system
+     * @param complLepton       Complementary lepton in leptonic tau decay system
+     * @param nuLtauLocalsystem Coordinate transformation matrix of the leptonic
+     *                          tau decay system
+     * @return Lorentz 4-momentum of the neutrino pair
+     */
+    LorentzVector
+    nuLtau(double z2,
+           double mInvSquared,
+           double nuLtau_phi,
+           const LorentzVector & complLepton,   /* bind */
+           const TMatrixD & nuLtauLocalsystem); /* bind */
+
+    /**
      * @brief Calculates lepton neutrino energy originating from W decay:
      *        W -> l nu
      * @param nuWPunit   Unit vector of neutrino 3-momentum
@@ -192,8 +250,8 @@ namespace tthMEM
      */
     double
     nuWEnergy(const VectorSpherical & nuWPunit,
-                const Vector & leptonPunit,     /* bind */
-                double leptonEnergy);           /* bind */
+              const Vector & leptonPunit,       /* bind */
+              double leptonEnergy);             /* bind */
 
     /**
      * @brief Calculates the value of MET/hadronic recoil transfer function (TF)

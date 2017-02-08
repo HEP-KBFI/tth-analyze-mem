@@ -122,28 +122,25 @@ namespace tthMEM
     ///< specifies the order in which the 4-momenta are assigned in MadGraph
 
     /* reconstruction functionals */
-    std::function<double(double)>                  z2_;
-    std::function<double(double)>                  nuHtauCosTheta_;
-    std::function<double(double, double, double)>  nuLeptTauCosTheta_;
-    std::function<double(double)>                  nuHtauEnergy_;
-    std::function<double(double)>                  nuLTauEnergy_;
-    std::function<LorentzVector(double, double,
-                                double)>           nuHTau_;
-    std::function<LorentzVector(double, double,
-                                double, double)>   nuLTau_;
-    std::function<double(const VectorSpherical &)> nuWEnergy_[2];
-    std::function<double(const LorentzVector &)>   bQuarkEnergy_[2];
+    std::function<double(double, double, double,
+                         const LorentzVector &)>         z2_;
+    std::function<double(double)>                        nuHtauCosTheta_;
+    std::function<double(double)>                        nuHtauEnergy_;
+    std::function<LorentzVector(double, double, double)> nuHTau_;
+    std::function<LorentzVector(double, double, double)> nuLtau_;
+    std::function<double(const VectorSpherical &)>       nuWEnergy_[2];
+    std::function<double(const LorentzVector &)>         bQuarkEnergy_[2];
 
     /* transfer functionals */
-    std::function<double(double, double, double)>  bJetTF_;
-    std::function<double(double)>                  bJetTFBound_[2];
-    std::function<double(double, double)>          MET_TF_;
+    std::function<double(double, double, double)>        bJetTF_;
+    std::function<double(double)>                        bJetTFBound_[2];
+    std::function<double(double, double)>                MET_TF_;
 
     /* Jacobi x phase space factors */
     std::function<double(const LorentzVector &,
-                         double, double, double)>  tDecayJacobiFactor_[2];
-    std::function<double(double)>                  hadTauPSJacobiFactor_;
-    std::function<double(double, double)>          leptTauPSJacobiFactor_;
+                         double, double, double)>        tDecayJacobiFactor_[2];
+    std::function<double(double)>                        hadTauPSJacobiFactor_;
+    std::function<double(double, double)>                leptTauPSJacobiFactor_;
 
     /**
      * @brief Sets madgraph momenta

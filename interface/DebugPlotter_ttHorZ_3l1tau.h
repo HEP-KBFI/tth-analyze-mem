@@ -19,30 +19,39 @@ namespace tthMEM
    */
   enum class hVar_3l1tau
   {
-    kZ2,         // energy fraction of leptonic tau decay products
-    kMassHtau,   // mass of hadronic tau lepton
-    kMassLtau,   // mass of leptonic tau lepton
-    kMassHorZ,   // mass of Higgs or Z
-    kB1en,       // energy of the 1st b-quark
-    kB2en,       // energy of the 2nd b-quark
-    kB1RecoEn,   // energy of the 1st b-jet
-    kB2RecoEn,   // energy of the 2nd b-jet
-    kB1energyTF, // TF value for the 1st b-jet energy
-    kB2energyTF, // TF value for the 2nd b-jet energy
-    kTdecayJF1,  // top decay Jacobi factor for the 1st top decay branch
-    kTdecayJF2,  // top decay Jacobi factor for the 2nd top decay branch
-    kHtauPSF,    // phase space factor of the tau decaying hadronically
-    kLtauPSF,    // phase space factor of the tau decaying leptonically
-    kJacobiF,    // overall Jacobi factor
-    kMETtf,      // value returned by the MET transfer function
-    kMsquared,   // squared matrix element amplitude
-    kXa,         // 1st Bjorken fraction
-    kXb,         // 2nd Bjorken fraction
-    kFlux,       // flux factor
-    kProbPDF,    // probability returned by parton distribution fraction
-    kProb,       // overall probability in the integrand
+    kDz1,             // difference in energy fraction of hadronic tau decay products
+    kDz2,             // difference in energy fraction of leptonic tau decay products
+    kDMassHorZ,       // difference in mass of Higgs or Z
+    kDnuHtauCosTheta, // difference in cosine of opening angle in hadronic tau system
+    kDnuLtauCosTheta, // difference in cosine of opening angle in leptonic tau system
+    kDnuHtauPhi,      // difference in revolution angle in hadronic tau system
+    kDnuLtauPhi,      // difference in revolution angle in leptonic tau system
+    kZ2,              // energy fraction of leptonic tau decay products
+    kMassHtau,        // mass of hadronic tau lepton
+    kMassLtau,        // mass of leptonic tau lepton
+    kMassHorZ,        // mass of Higgs or Z
+    kB1en,            // energy of the 1st b-quark
+    kB2en,            // energy of the 2nd b-quark
+    kB1RecoEn,        // energy of the 1st b-jet
+    kB2RecoEn,        // energy of the 2nd b-jet
+    kB1energyTF,      // TF value for the 1st b-jet energy
+    kB2energyTF,      // TF value for the 2nd b-jet energy
+    kTdecayJF1,       // top decay Jacobi factor for the 1st top decay branch
+    kTdecayJF2,       // top decay Jacobi factor for the 2nd top decay branch
+    kHtauPSF,         // phase space factor of the tau decaying hadronically
+    kLtauPSF,         // phase space factor of the tau decaying leptonically
+    kJacobiF,         // overall Jacobi factor
+    kMETx,            // x-component of the MET
+    kMETy,            // y-component of the MET
+    kMETtf,           // value returned by the MET transfer function
+    kMsquared,        // squared matrix element amplitude
+    kXa,              // 1st Bjorken fraction
+    kXb,              // 2nd Bjorken fraction
+    kFlux,            // flux factor
+    kProbPDF,         // probability returned by parton distribution fraction
+    kProb,            // overall probability in the integrand
 //--- for iteration
-    First = kZ2,
+    First = kDz1,
     Last = kProb
   };
 
@@ -135,10 +144,12 @@ namespace tthMEM
     ///< map of additional variables (listed in the implementation file)
     TFile * const file_;            ///< pointer to the file
     TTree * tree_;                  ///< pointer to the current tree
+    std::string dirName_;           ///< directory name under which the debug tree is written
     const unsigned debugFrequency_; ///< debugging frequency (see constructor)
     const unsigned debugRange_;     ///< debugging range (== 8; see constructor)
     unsigned logCounter_;           ///< counter incremented every time initialise() is called
     bool log_;                      ///< shorthand bool variable which tells whether to fill or not
+    bool isFilled_;                 ///< for bookkeeping: true if at least one variable is filled
 
     /**
      * @brief Reset the maps holding current values to the placeholder value

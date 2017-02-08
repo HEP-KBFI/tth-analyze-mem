@@ -68,10 +68,10 @@ GeneratorLevelEvent_3l1tau::initialize()
     genTau[hadronicTauDecayIdx].p4(), genHtau.p4()
   );
   genIntVariables[Var_3l1tau::kTauPhi]         = functions::phiFromLabMomenta(
-    genTau[hadronicTauDecayIdx].p4(), genHtau.p4(), beamAxis_
+    genTau[hadronicTauDecayIdx].p4(), genNuFromHtau.p4(), beamAxis_
   );
   genIntVariables[Var_3l1tau::kTauPhiInv]      = functions::phiFromLabMomenta(
-    genTau[leptonicTauDecayIdx].p4(), genLepFromTau.p4(), beamAxis_
+    genTau[leptonicTauDecayIdx].p4(), genNuFromLtau.p4(), beamAxis_
   );
   genIntVariables[Var_3l1tau::kTauMinvSquared] = pow2(genDiNuFromLtau.mass());
 }

@@ -1,6 +1,7 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMrecFunctions.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 
 #include <cmath> // std::fabs(), std::sqrt(), std::atan2(), std::fpclassify(), FP_ZERO
 
@@ -16,6 +17,78 @@ namespace tthMEM
        double massHiggsOrZsquared)
     {
       return measuredVisMassSquared / (massHiggsOrZsquared * z1);
+    }
+
+    double
+    z2(double z1,
+       double mInvSquared,
+       double nuLtau_phi,
+       const LorentzVector & nuHtau,
+       const LorentzVector & vis,
+       const LorentzVector & complLepton,
+       const TMatrixD & nuLtauLocalSystem,
+       double massHiggsOrZsquared)
+    {
+//--- compute an initial guess for z2
+      const double measuredVisMassSquared = vis.mass2();
+      const double z2_test = z2(z1, measuredVisMassSquared, massHiggsOrZsquared);
+      if(! (z2_test >= 1.e-5 && z2_test <= 1.))
+        return -1.;
+//--- compute an initial guess for di-neutrino system
+      LorentzVector nuLtau_test;
+      try
+      {
+        nuLtau_test = nuLtau(z2_test, mInvSquared, nuLtau_phi, complLepton, nuLtauLocalSystem);
+      }
+      catch(const tthMEMexception &)
+      {
+        return -1.;
+      }
+
+//--- compute the coefficients in the quadratic equation
+      const double complLepton_energy = complLepton.energy();
+      const double pvis_x_pnu1 = vis.Dot(nuHtau);
+      const LorentzVector px4 = vis + nuHtau;
+      const Vector px = px4.Vect();
+      const double Ex = px4.energy();
+      const double px_enu2Squared = pow2(px.Dot(nuLtau_test.Vect().unit()));
+      const double mbar2 = (massHiggsOrZsquared - measuredVisMassSquared - mInvSquared) / 2. - pvis_x_pnu1;
+      const double a = pow2(complLepton_energy) * (pow2(Ex) - px_enu2Squared);
+      const double b = -2 * complLepton_energy * Ex * mbar2;
+      const double c = pow2(mbar2) + mInvSquared * px_enu2Squared;
+      if(std::fpclassify(a) == FP_ZERO)
+        return -1.;
+
+//--- divide by a, since the discriminant will otherwise be huge
+//--- and subtracting huge and small numbers is imprecise (and we aim for precise values)
+      const double b_ = b / a;
+      const double c_ = c / a;
+      const double D = pow2(b_) / 4. - c_;
+
+      if(D < 0.)
+        return -1.;
+
+      const double alpha1 = -b_ / 2. - std::sqrt(D);
+      const double alpha2 = -b_ / 2. + std::sqrt(D);
+      double alpha = -1.;
+      const double alpha_test = (1. - z2_test) / z2_test;
+
+      if(alpha1 >= 0. && alpha2 >= 0.)
+      {
+        if(std::fabs(alpha1 - alpha_test) < std::fabs(alpha2 - alpha_test))
+          alpha = alpha1;
+        else
+          alpha = alpha2;
+      }
+      else if(alpha1 >= 0.)
+        alpha = alpha1;
+      else if(alpha2 >= 0.)
+        alpha = alpha2;
+      else
+        return -1.;
+
+      const double z2_new = 1. / (1. + alpha);
+      return z2_new;
     }
 
     double
@@ -200,6 +273,33 @@ namespace tthMEM
       const double nu_py = nuHtau_loc.Dot(getVector(nuTauLocalSystem[1]));
       const double nu_pz = nuHtau_loc.Dot(getVector(nuTauLocalSystem[2]));
       return LorentzVector(nu_px, nu_py, nu_pz, nuEnergy);
+    }
+
+    LorentzVector
+    nuLtau(double z2,
+           double mInvSquared,
+           double nuLtau_phi,
+           const LorentzVector & complLepton,
+           const TMatrixD & nuLtauLocalsystem)
+    {
+      const double complLepton_energy      = complLepton.energy();
+      const double complLepton_massSquared = complLepton.mass2();
+      const double complLepton_p           = complLepton.P();
+      const double nuLtau_energy   = nuTauEnergy(z2, complLepton_energy);
+      const double nuLtau_p        = std::sqrt(std::max(0., pow2(nuLtau_energy) - mInvSquared));
+      const double nuLtau_cosTheta = nuLeptTauCosTheta(
+        nuLtau_energy, mInvSquared, nuLtau_p, complLepton_energy, complLepton_massSquared, complLepton_p
+      );
+      if(! (nuLtau_cosTheta >= -1. && nuLtau_cosTheta <= +1.))
+      {
+        LOGVRB << "nuLtau_en = "       << nuLtau_energy          << ", "
+               << "nuLtau_p = "        << nuLtau_p               << ", "
+               << "nuLtau_phi = "      << nuLtau_phi             << " and "
+               << "nuLtau_m = "        << std::sqrt(mInvSquared) << "; but";
+        LOGVRB << "nuLtau_cosTheta = " << nuLtau_cosTheta        << " not in (-1, 1) => p = 0";
+        throw_line("nuLtau") << "unphysical angle";
+      }
+      return nuP4(std::acos(nuLtau_cosTheta), nuLtau_phi, nuLtau_energy, nuLtau_p, nuLtauLocalsystem);
     }
 
     double

@@ -27,7 +27,7 @@ Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(const std::string & pdfName,
   : beamAxis_(0., 0., 1.)
   , pdf_(nullptr)
   , currentME_(ME_mg5_3l1tau::kTTH) // default to tth
-  , me_madgraph_{0, 0}
+  , me_madgraph_{nullptr, nullptr}
   , measuredEvent_(nullptr)
   , vm_(vm)
   , bJetTF_(functions::deltaFunction)
@@ -76,7 +76,7 @@ Integrand_ttHorZ_3l1tau::~Integrand_ttHorZ_3l1tau()
   measuredEvent_ = nullptr; // no allocation, just the address
 
   std::for_each(mgMomenta_.begin(), mgMomenta_.end(),
-    [](double * & d) { delete d; d = 0; }
+    [](double * & d) { delete d; d = nullptr; }
   );
 }
 
@@ -195,8 +195,8 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   );
 
 //--- find the measured mass of both visible tau decay products
-  const double measuredVisMassSquared =
-    (recoEvent.hTauLepton + recoEvent.lTauLepton).mass2();
+  const LorentzVector vis = recoEvent.hTauLepton + recoEvent.lTauLepton;
+  const double measuredVisMassSquared = vis.mass2();
   const double massHiggsOrZsquared = currentME_ == ME_mg5_3l1tau::kTTH ?
     constants::massHiggsSquared : constants::massZSquared;
   LOGVRB << "measured mass of visible tau decay products: "
@@ -206,15 +206,7 @@ Integrand_ttHorZ_3l1tau::renewInputs()
 //--- and bind the functional arguments, so that no explicit storage is needed
 //--- for the variables which remain constant during the integration
   const double complLeptMassSquared = pow2(complLepton.mass());
-  const double complLeptEnergy = complLepton.energy();
   const double complLeptP = complLepton.p();
-  nuLeptTauCosTheta_ = [complLeptEnergy, complLeptMassSquared, complLeptP]
-                       (double nuLTau_en, double mInvSquared, double nuLTau_p) -> double
-  {
-    return functions::nuLeptTauCosTheta(
-      nuLTau_en, mInvSquared, nuLTau_p, complLeptEnergy, complLeptMassSquared, complLeptP
-    );
-  };
   leptTauPSJacobiFactor_ = [complLeptMassSquared, complLeptP]
                            (double mInvSquared, double z2) -> double
   {
@@ -222,22 +214,19 @@ Integrand_ttHorZ_3l1tau::renewInputs()
       mInvSquared, z2, complLeptMassSquared, complLeptP
     );
   };
-  nuLTauEnergy_ = [complLeptEnergy] (double z2) -> double
+  z2_ = [massHiggsOrZsquared, complLepton, nuLtauLocalSystem, vis]
+        (double z1, double mInvSquared, double nuLtau_phi, const LorentzVector & nuHtau) -> double
   {
-    return functions::nuTauEnergy(z2, complLeptEnergy);
-  };
-  nuLTau_ = [nuLtauLocalSystem]
-            (double nuLTau_theta, double nuLTau_phi, double nuLTau_en, double nuLTau_p)
-              -> LorentzVector
-  {
-    return functions::nuP4(
-      nuLTau_theta, nuLTau_phi, nuLTau_en, nuLTau_p, nuLtauLocalSystem
+    return functions::z2(
+      z1, mInvSquared, nuLtau_phi, nuHtau, vis, complLepton.p4(), nuLtauLocalSystem, massHiggsOrZsquared
     );
   };
-  z2_ = [measuredVisMassSquared, massHiggsOrZsquared] (double z1) -> double
+  nuLtau_ = [complLepton, nuLtauLocalSystem]
+            (double z2, double mInvSquared, double nuLtau_phi) -> LorentzVector
   {
-    return functions::z2(z1, measuredVisMassSquared, massHiggsOrZsquared);
+    return functions::nuLtau(z2, mInvSquared, nuLtau_phi, complLepton.p4(), nuLtauLocalSystem);
   };
+
   int lept1Charge = 0;
   for(unsigned i = 0; i < 2; ++i)
   {
@@ -334,6 +323,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   LOGVRB << "Current MG5 ME: " << me_madgraph_[currentME_] -> name();
   if(! MET_TF_) return 0.;
   const bool isTTH = currentME_ == ME_mg5_3l1tau::kTTH;
+  const auto generatorLevel = measuredEvent_ -> generatorLevel;
 
 //--- read the sampled values
   LOGVRB << "x = { " << vm_.getArrayString(x) << " }";
@@ -344,16 +334,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
                                vm_.get(Var_3l1tau::kBphi2, x) };
   const double z1          = vm_.get(Var_3l1tau::kZ1, x);
   const double nuHtau_phi  = vm_.get(Var_3l1tau::kTauPhi, x);
-  const double nuLTau_phi  = vm_.get(Var_3l1tau::kTauPhiInv, x);
+  const double nuLtau_phi  = vm_.get(Var_3l1tau::kTauPhiInv, x);
   const double mInvSquared = vm_.get(Var_3l1tau::kTauMinvSquared, x);
-
-//--- confirm that the energy fraction carried by the tau is indeed in (0,1)
-  const double z2 = z2_(z1);
-  if(! (z2 >= 1.e-5 && z2 <= 1.))
-  {
-    LOGVRB << "z2 = " << z2 << " not in (0, 1) => p = 0";
-    return 0.;
-  }
 
 //--- compute the neutrino and tau lepton 4-vector from hadronic tau
   const double nuHtau_en = nuHtauEnergy_(z1);
@@ -367,60 +349,63 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
   recoEvent.hTau = recoEvent.hTauLepton + recoEvent.nuHtau;
 
   LOGTRC << lextvrap("htau nu", recoEvent.nuHtau);
-  if(measuredEvent_ -> generatorLevel)
+  if(generatorLevel)
   {
-    LOGALL << lextvrap("gen htau nu", measuredEvent_ -> generatorLevel -> genNuFromHtau.p4());
+    LOGALL << lextvrap("gen htau nu", generatorLevel -> genNuFromHtau.p4());
     LOGALL << std::string(20, '-');
     LOGALL << lextvrap("htau lept", recoEvent.hTauLepton);
-    LOGALL << lextvrap("gen htau lept", measuredEvent_ -> generatorLevel -> genHtau.p4());
+    LOGALL << lextvrap("gen htau lept", generatorLevel -> genHtau.p4());
     LOGALL << std::string(20, '-');
   }
   LOGTRC << lextvrap("hadronic tau", recoEvent.hTau);
-  if(measuredEvent_ -> generatorLevel)
+  if(generatorLevel)
   {
-    const std::size_t & hadronicTauDecayIdx = measuredEvent_ -> generatorLevel -> hadronicTauDecayIdx;
-    LOGALL << lextvrap("gen hadr tau", measuredEvent_ -> generatorLevel -> genTau[hadronicTauDecayIdx].p4());
+    const std::size_t & hadronicTauDecayIdx = generatorLevel -> hadronicTauDecayIdx;
+    LOGALL << lextvrap("gen hadr tau", generatorLevel -> genTau[hadronicTauDecayIdx].p4());
     LOGALL << std::string(20, '-');
   }
 
-//--- compute the neutrino and tau lepton 4-vector from leptonic tau
-  const double nuLTau_en = nuLTauEnergy_(z2);
-  const double nuLTau_p = std::sqrt(std::max(0., pow2(nuLTau_en) - mInvSquared));
-  const double nuLTau_cosTheta = nuLeptTauCosTheta_(nuLTau_en, mInvSquared, nuLTau_p);
-  if(! (nuLTau_cosTheta >= -1. && nuLTau_cosTheta <= +1.))
+//--- confirm that the energy fraction carried by the tau is indeed in (0,1)
+  const double z2 = z2_(z1, mInvSquared, nuLtau_phi, recoEvent.nuHtau);
+  if(! (z2 >= 1.e-5 && z2 <= 1.))
   {
-    LOGVRB << "nuLTau_en = "  << nuLTau_en   << ", "
-           << "nuLTau_p = "   << nuLTau_p    << ", "
-           << "nuLTau_phi = " << nuLTau_phi  << " and "
-           << "nuLTau_m = "   << std::sqrt(mInvSquared) << "; but";
-    LOGVRB << "nuLTau_cosTheta = " << nuLTau_cosTheta << " not in (-1, 1) => p = 0";
+    LOGVRB << "z2 = " << z2 << " not in (0, 1) => p = 0";
     return 0.;
   }
-  recoEvent.nuLtau = nuLTau_(std::acos(nuLTau_cosTheta), nuLTau_phi, nuLTau_en, nuLTau_p);
+//--- compute the neutrino and tau lepton 4-vector from leptonic tau
+  try
+  {
+    recoEvent.nuLtau = nuLtau_(z2, mInvSquared, nuLtau_phi);
+  }
+  catch(const tthMEMexception &)
+  {
+    return 0.;
+  }
+
   recoEvent.lTau = recoEvent.lTauLepton + recoEvent.nuLtau;
   LOGTRC << lextvrap("lept tau di nu",  recoEvent.nuLtau);
-  if(measuredEvent_ -> generatorLevel)
+  if(generatorLevel)
   {
-    LOGALL << lextvrap("gen di nu", measuredEvent_ -> generatorLevel -> genDiNuFromLtau.p4());
+    LOGALL << lextvrap("gen di nu", generatorLevel -> genDiNuFromLtau.p4());
     LOGALL << std::string(20, '-');
     LOGALL << lextvrap("lept tau lept", recoEvent.lTauLepton);
-    LOGALL << lextvrap("gen ltau lept", measuredEvent_ -> generatorLevel -> genLepFromTau.p4());
+    LOGALL << lextvrap("gen ltau lept", generatorLevel -> genLepFromTau.p4());
     LOGALL << std::string(20, '-');
   }
   LOGTRC << lextvrap("leptonic tau", recoEvent.lTau);
-  if(measuredEvent_ -> generatorLevel)
+  if(generatorLevel)
   {
-    const std::size_t & leptonicTauDecayIdx = measuredEvent_ -> generatorLevel -> leptonicTauDecayIdx;
-    LOGALL << lextvrap("gen lept tau", measuredEvent_ -> generatorLevel -> genTau[leptonicTauDecayIdx].p4());
+    const std::size_t & leptonicTauDecayIdx = generatorLevel -> leptonicTauDecayIdx;
+    LOGALL << lextvrap("gen lept tau", generatorLevel -> genTau[leptonicTauDecayIdx].p4());
     LOGALL << std::string(20, '-');
   }
 
   recoEvent.higgsOrZ = recoEvent.hTau + recoEvent.lTau;
   LOGTRC << lextvrap(isTTH ? "higgs" : "Z", recoEvent.higgsOrZ);
-  if(measuredEvent_ -> generatorLevel)
+  if(generatorLevel)
   {
     LOGALL << lextvrap(Form("gen %s", (isTTH ? "higgs" : "Z")),
-                       measuredEvent_ -> generatorLevel -> genHorZ.p4());
+                       generatorLevel -> genHorZ.p4());
     LOGALL << std::string(20, '-');
   }
 
@@ -435,17 +420,15 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
     recoEvent.W[i] = recoEvent.nuW[i] + recoEvent.lW[i];
 
     LOGTRC << lextvrap("W nu " + i_str, recoEvent.nuW[i]);
-    if(measuredEvent_ -> generatorLevel)
+    if(generatorLevel)
     {
-      LOGALL << lextvrap("gen W nu " + i_str,
-                         measuredEvent_ -> generatorLevel -> genNuFromTop[i].p4());
+      LOGALL << lextvrap("gen W nu " + i_str, generatorLevel -> genNuFromTop[i].p4());
       LOGALL << std::string(20, '-');
     }
     LOGTRC << lextvrap("W " + i_str, recoEvent.W[i]);
-    if(measuredEvent_ -> generatorLevel)
+    if(generatorLevel)
     {
-      LOGALL << lextvrap("gen W " + i_str,
-                         measuredEvent_ -> generatorLevel -> genWBoson[i].p4());
+      LOGALL << lextvrap("gen W " + i_str, generatorLevel -> genWBoson[i].p4());
       LOGALL << std::string(20, '-');
     }
 
@@ -457,54 +440,22 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
     recoEvent.b[i] = getLorentzVector(bP3_i, bEnergy_i);
     recoEvent.t[i] = recoEvent.b[i] + recoEvent.W[i];
 
-    if(measuredEvent_ -> generatorLevel)
-      LOGALL << lextvrap("gen b " + i_str,
-                         measuredEvent_ -> generatorLevel -> genBQuarkFromTop[i].p4());
+    if(generatorLevel)
+      LOGALL << lextvrap("gen b " + i_str, generatorLevel -> genBQuarkFromTop[i].p4());
     LOGTRC << lextvrap("b " + i_str,           recoEvent.b[i]);
     LOGTRC << lextvrap("b " + i_str + " reco", bJet_i.p4());
-    if(measuredEvent_ -> generatorLevel) LOGALL << std::string(20, '-');
+    if(generatorLevel)
+      LOGALL << std::string(20, '-');
     LOGTRC << lextvrap("t " + i_str,           recoEvent.t[i]);
-    if(measuredEvent_ -> generatorLevel)
+    if(generatorLevel)
     {
-      LOGALL << lextvrap("gen t " + i_str,
-                         measuredEvent_ -> generatorLevel -> genTop[i].p4());
+      LOGALL << lextvrap("gen t " + i_str, generatorLevel -> genTop[i].p4());
       LOGALL << std::string(20, '-');
     }
 
 //--- b-jet energy transfer function
     bEnergyTF[i] = bJetTFBound_[i](bEnergy_i);
   }
-
-//--- compare integration variables against recomputed (and generator level) values
-  LOGTRC << "z1     = " << z1;
-  if(measuredEvent_ -> generatorLevel)
-  {
-    const std::size_t hadronicTauDecayIdx = measuredEvent_ -> generatorLevel -> hadronicTauDecayIdx;
-    const LorentzVector & genTau = measuredEvent_ -> generatorLevel -> genTau[hadronicTauDecayIdx].p4();
-    const LorentzVector & genHtau = measuredEvent_ -> generatorLevel -> genHtau.p4();
-    LOGALL << "gen z1 = " << functions::z(genTau, genHtau);
-  }
-  LOGTRC << "z2     = " << z2;
-  if(measuredEvent_ -> generatorLevel)
-  {
-    const std::size_t leptonicTauDecayIdx = measuredEvent_ -> generatorLevel -> leptonicTauDecayIdx;
-    const LorentzVector & genLTau = measuredEvent_ -> generatorLevel -> genTau[leptonicTauDecayIdx].p4();
-    const LorentzVector & genLepFromTau = measuredEvent_ -> generatorLevel -> genLepFromTau.p4();
-    LOGALL << "gen z2 = " << functions::z(genLTau, genLepFromTau);
-  }
-  LOGTRC << "nuHtau_cosTheta     = " << nuHtau_cosTheta;
-  if(measuredEvent_ -> generatorLevel)
-  {
-    const Vector & genNuFromHtau = measuredEvent_ -> generatorLevel -> genNuFromHtau.p3();
-    const Vector & genHtau = measuredEvent_ -> generatorLevel -> genHtau.p3();
-    LOGALL << "gen nuHtau_cosTheta = " << genNuFromHtau.unit().Dot(genHtau.unit());
-  }
-  LOGVRB << "input nu htau phi      = " << nuHtau_phi;
-  LOGVRB << "recomputed nu htau phi = "
-         << functions::phiFromLabMomenta(recoEvent.hTau, recoEvent.nuHtau, beamAxis_);
-  LOGVRB << "input nu ltau phi      = " << nuLTau_phi;
-  LOGVRB << "recomputed nu ltau phi = "
-         << functions::phiFromLabMomenta(recoEvent.lTau, recoEvent.nuLtau, beamAxis_);
 
   for(unsigned i = 0; i < 2; ++i)
     LOGTRC_S << "TF for #" << i << " b-quark energy = " << bEnergyTF[i];
@@ -521,8 +472,9 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
       result += recoEvent.b[i] - (measuredEvent_ -> jets[i]).p4();
     return result;
   }();
-  const double MET_TF = MET_TF_(nuSum.x() + bJetDifference.x(),
-                                nuSum.y() + bJetDifference.y());
+  const double METx = nuSum.x() + bJetDifference.x();
+  const double METy = nuSum.y() + bJetDifference.y();
+  const double MET_TF = MET_TF_(METx, METy);
 
 //--- compute Bjorken x variables
 //--- assume that hadronic recoil has only transverse component
@@ -616,6 +568,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
 
 //--- for debugging purposes plot some variables
   if(DebugPlotter_ttHorZ_3l1tau * dPlotter = measuredEvent_ -> debugPlotter)
+  {
     (*dPlotter).fill(hVar_3l1tau::kZ2,         z2)
                .fill(hVar_3l1tau::kMassHorZ,   recoEvent.higgsOrZ.mass())
                .fill(hVar_3l1tau::kMassHtau,   recoEvent.hTau.mass())
@@ -625,6 +578,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
                .fill(hVar_3l1tau::kB1RecoEn,   measuredEvent_ -> jets[0].energy())
                .fill(hVar_3l1tau::kB2RecoEn,   measuredEvent_ -> jets[1].energy())
                .fill(hVar_3l1tau::kMETtf,      MET_TF)
+               .fill(hVar_3l1tau::kMETx,       METx)
+               .fill(hVar_3l1tau::kMETy,       METy)
                .fill(hVar_3l1tau::kB1energyTF, bEnergyTF[0])
                .fill(hVar_3l1tau::kB2energyTF, bEnergyTF[1])
                .fill(hVar_3l1tau::kTdecayJF1,  tDecayJacobiFactors[0])
@@ -639,6 +594,52 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
                .fill(hVar_3l1tau::kMsquared,   prob_ME_mg)
                .fill(hVar_3l1tau::kProb,       p)
                .fill(vm_, x)
-               .fill();
+    ;
+    if(generatorLevel)
+    {
+//--- calculate various differences in the variables
+      const double expected_mHorZ = isTTH ? constants::massHiggs : constants::massZ;
+      const LorentzVector & hTau        = recoEvent.hTau;
+      const LorentzVector & complLepton = recoEvent.lTauLepton;
+      const LorentzVector & nuHtau      = recoEvent.nuHtau;
+      const LorentzVector & nuLtau      = recoEvent.nuLtau;
+      const LorentzVector & lTau        = recoEvent.lTau;
+      const double recomp_nuHtau_phi = functions::phiFromLabMomenta(hTau, nuHtau, beamAxis_);
+      const double recomp_nuLtau_phi = functions::phiFromLabMomenta(lTau, nuLtau, beamAxis_);
+      const double recomp_nuHtau_cosTheta = functions::nuHtauCosTheta(
+        nuHtau.e(), hTau.e(), hTau.mass2(), hTau.P()
+      );
+      const double recomp_nuLtau_cosTheta = functions::nuLeptTauCosTheta(
+        nuLtau.e(), nuLtau.mass2(), nuLtau.P(), complLepton.e(), complLepton.mass2(), complLepton.P()
+      );
+      const std::size_t hadronicTauDecayIdx = generatorLevel -> hadronicTauDecayIdx;
+      const std::size_t leptonicTauDecayIdx = generatorLevel -> leptonicTauDecayIdx;
+
+      const LorentzVector & genTauH = generatorLevel -> genTau[hadronicTauDecayIdx].p4();
+      const LorentzVector & genTauL = generatorLevel -> genTau[leptonicTauDecayIdx].p4();
+
+      const LorentzVector & genHtau         = generatorLevel -> genHtau.p4();
+      const LorentzVector & genLepFromTau   = generatorLevel -> genLepFromTau.p4();
+      const LorentzVector & genNuHtau       = generatorLevel -> genNuFromHtau.p4();
+      const LorentzVector & genDiNuFromLtau = generatorLevel -> genDiNuFromLtau.p4();
+
+      const double gen_z1 = functions::z(genTauH, genHtau);
+      const double gen_z2 = functions::z(genTauL, genLepFromTau);
+      const double gen_nuHtau_cosTheta = genNuHtau.Vect().unit().Dot(genHtau.Vect().unit());
+      const double gen_nuLtau_cosTheta = genDiNuFromLtau.Vect().unit().Dot(genLepFromTau.Vect().unit());
+      const double gen_nuHtau_phi = functions::phiFromLabMomenta(genTauH, genNuHtau, beamAxis_);
+      const double gen_nuLtau_phi = functions::phiFromLabMomenta(genTauH, genDiNuFromLtau, beamAxis_);
+
+      (*dPlotter).fill(hVar_3l1tau::kDz1,             z1 - gen_z1)
+                 .fill(hVar_3l1tau::kDz2,             z2 - gen_z2)
+                 .fill(hVar_3l1tau::kDMassHorZ,       expected_mHorZ - recoEvent.higgsOrZ.mass())
+                 .fill(hVar_3l1tau::kDnuHtauCosTheta, recomp_nuHtau_cosTheta - gen_nuHtau_cosTheta)
+                 .fill(hVar_3l1tau::kDnuHtauCosTheta, recomp_nuLtau_cosTheta - gen_nuLtau_cosTheta)
+                 .fill(hVar_3l1tau::kDnuHtauCosTheta, recomp_nuHtau_phi - gen_nuHtau_phi)
+                 .fill(hVar_3l1tau::kDnuHtauCosTheta, recomp_nuLtau_phi - gen_nuLtau_phi)
+      ;
+    }
+    dPlotter -> fill();
+  }
   return p;
 }
