@@ -38,8 +38,7 @@ if __name__ == '__main__':
                       help = 'R|Label on the x-axis')
   parser.add_argument('-y', '--ylabel', metavar = 'text', required = False, type = str, default = 'TTZToLLNuNu',
                       help = 'R|Label on the y-axis')
-  parser.add_argument('-o', '--output', metavar = 'file', required = False, type = str,
-                      default = '%s_%s.pdf' % (parser.get_default('xlabel'), parser.get_default('ylabel')),
+  parser.add_argument('-o', '--output', metavar = 'file', required = False, type = str, default = '',
                       help = 'R|Output file')
   parser.add_argument('-f', '--force', dest = 'force', action = 'store_true', default = False,
                       help = 'R|Force the creation of output directory if missing')
@@ -54,6 +53,12 @@ if __name__ == '__main__':
     logging.error("No such directory: {dirname}".format(dirname = args.input))
     sys.exit(1)
 
+  outputfile = '%s_%s.pdf' % (args.xlabel, args.ylabel)
+  if not args.output:
+    plot_dir = os.path.join(args.input, 'plots')
+    if os.path.isdir(plot_dir):
+      outputfile = os.path.join(plot_dir, outputfile)
+
   # testing if the list of MEM subdirs are really there
   mem_subdirs = { x : { 'dir' : os.path.join(args.input, x) } for x in args.list }
   mem_subdirs_missing = [ v['dir'] for v in mem_subdirs.values() if not os.path.exists(v['dir']) ]
@@ -63,18 +68,22 @@ if __name__ == '__main__':
     ))
     sys.exit(1)
 
-  # let's read the comment files (if they're there)
+  # let's read the comment files (if they're there); consider only the first line
   # if the comment file is missing then we just use the subfolder name as the comment
   for key, mem_subdir in mem_subdirs.iteritems():
     logging.debug("Reading comment files and reassuring the existence of ROC CSV files")
-    comment_file = os.path.join(mem_subdir, 'comment.txt')
+    comment_file = os.path.join(mem_subdir['dir'], 'comment.txt')
     if os.path.exists(comment_file):
-      mem_subdir['comment'] = open(comment_file, 'r').readlines()
+      comment_lines = open(comment_file, 'r').readlines()
+      if comment_lines:
+        mem_subdir['comment'] = comment_lines[0]
+      else:
+        mem_subdir['comment'] = key
     else:
       mem_subdir['comment'] = key
 
     roc_file = os.path.join(
-      mem_subdir, 'roc', 'csvs', 'roc_{xlabel}_{ylabel}.csv'.format(
+      mem_subdir['dir'], 'roc', 'csvs', 'roc_{xlabel}_{ylabel}.csv'.format(
         xlabel = args.xlabel,
         ylabel = args.ylabel,
       )
@@ -89,18 +98,18 @@ if __name__ == '__main__':
   # check if the directory to output file exists
   # we've postponed this check at latest possible b/c other checks might fail and we don't want to
   # create an empty directory if nothing won't be written there
-  outputfile_parentdir = os.path.dirname(args.output)
+  outputfile_parentdir = os.path.dirname(outputfile)
   if not os.path.isdir(outputfile_parentdir):
     if args.force:
       logging.debug("Directory {output_dirname} of the output file {output_filename} does not exist; "
                     "attempting to create one".format(
         output_dirname  = outputfile_parentdir,
-        output_filename = args.output,
+        output_filename = outputfile,
       ))
     else:
       logging.error("Directory {output_dirname} of the output file {output_filename} does not exist".format(
         output_dirname  = outputfile_parentdir,
-        output_filename = args.output,
+        output_filename = outputfile,
       ))
       sys.exit(1)
 
@@ -126,5 +135,5 @@ if __name__ == '__main__':
   plt.xlabel('%s efficiency' % args.xlabel, fontsize = 14)
   plt.ylabel('%s efficiency' % args.ylabel, fontsize = 14)
   plt.suptitle(args.title, fontsize = 16)
-  plt.savefig(args.output, bbox_inches = 'tight')
-  logging.info("Saved the figure to {image_path}".format(image_path = args.output))
+  plt.savefig(outputfile, bbox_inches = 'tight')
+  logging.info("Saved the figure to {image_path}".format(image_path = outputfile))
