@@ -84,7 +84,7 @@ namespace tthMEM
     double
     getAverageComputingTime_real() const;
 
-    unsigned
+    long long
     getNofMXMCTries() const;
 
     std::array<double, 2>

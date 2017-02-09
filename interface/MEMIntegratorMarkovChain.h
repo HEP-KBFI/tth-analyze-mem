@@ -167,7 +167,7 @@ namespace tthMEM
     unsigned long nofMoves_accepted_,      nofMoves_rejected_,
                   nofMoves_acceptedTotal_, nofMoves_rejectedTotal_,
                   nofIntegrationCalls_;
-    unsigned nofTries_;
+    long long nofTries_;
     ///< number of calls made until positive probability has been found (summed over chains)
 
     TRandom3 prng_;

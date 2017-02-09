@@ -209,7 +209,7 @@ MEM_ttHorZ_3l1tau::getAverageComputingTime_real() const
   return nof_calls_ != 0 ? numSecondsAccumul_real_ / nof_calls_ : 0.;
 }
 
-unsigned
+long long
 MEM_ttHorZ_3l1tau::getNofMXMCTries() const
 {
   return nofMXMCTries;
@@ -321,8 +321,8 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
       pSum_perJc += p;
       pSumErr_perJc += pErr;
 
-      if(intAlgo_ && integrationMode_ == IntegrationMode::kMarkovChain)
-        nofMXMCTries = *static_cast<unsigned *>(intAlgo_ -> metadata());
+      if(intAlgo_ && integrationMode_ == IntegrationMode::kMarkovChain && numDimensions_)
+        nofMXMCTries = *static_cast<long long *>(intAlgo_ -> metadata());
       else
         nofMXMCTries = -1;
 

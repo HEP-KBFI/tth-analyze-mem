@@ -57,27 +57,56 @@ namespace tthMEM
     Last = kProb
   };
 
+  /**
+   * @brief Class helping to distinguish between different event in the debug TTree
+   */
   class DebugString_ttHorZ_3l1tau
   {
   public:
+    /**
+     * @brief Default constructor
+     *
+     * Evaluates run:lumi:event (rle) and matrix element (me) strings to an empty one;
+     * permutation cycle and b-jet combination counters are set to 0.
+     */
     DebugString_ttHorZ_3l1tau();
 
+    /**
+     * @brief Constructor for default usage
+     * @param rle_               The run:lumi:event string
+     * @param me_                The matrix element string (either TTH or TTZ)
+     * @param leptonPermutation_ Lepton permutation counter
+     * @param bJetCombination_   b-jet combination counter
+     */
     DebugString_ttHorZ_3l1tau(const std::string & rle_,
                               const std::string & me_,
                               unsigned leptonPermutation_,
                               unsigned bJetCombination_);
 
+    /**
+     * @brief Creates a TDirectory name
+     * @return The TDirectory name of the form
+     *         run_lumi_event_leptonpermutation_bjetcounter
+     */
     std::string
     str() const;
 
+    /**
+     * @brief Checks if the given DebugString_ttHorZ_3l1tau instance has
+     *        the same run:lumi:event string
+     * @param other The DebugString_ttHorZ_3l1tau instance
+     * @return true, if the instance correspond to the same event
+     *               (i.e. has the same run:lumi:event string),
+     *         false otherwise
+     */
     bool
     hasSameRLE(const DebugString_ttHorZ_3l1tau & other) const;
 
   private:
-    std::string rle;
-    std::string me;
-    unsigned    leptonPermutation;
-    unsigned    bJetCombination;
+    std::string rle;               ///< run:lumi:event string (w/ : replaced by _)
+    std::string me;                ///< matrix element string (TTH or TTZ)
+    unsigned    leptonPermutation; ///< lepton permutation counter
+    unsigned    bJetCombination;   ///< b-jet combination counter
   };
 
   /**

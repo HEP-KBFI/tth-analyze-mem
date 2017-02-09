@@ -298,9 +298,13 @@ main(int argc,
       );
     } catch(const tthMEMexception & exception)
     {
+      nofMXMCTries_tth = -2;
+      nofMXMCTries_ttz = -2;
       errCode = exception.getErrCode();
     } catch(...)
     {
+      nofMXMCTries_tth = -2;
+      nofMXMCTries_ttz = -2;
       errCode = TTHEXCEPTION_ERR_CODE_DEFAULT;
     }
 
