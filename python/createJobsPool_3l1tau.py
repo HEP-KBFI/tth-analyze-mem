@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
   parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 50))
   parser.add_argument('-s', '--study-type', metavar = 'analysis', required = True, type = str, default = '',
-                      choices = ('higgs-width', 'mxmc-initial-sweep', 'nof-calls', 'clamping'),
+                      choices = ('higgs-width', 'mxmc-initial-sweep', 'nof-calls', 'clamping', 'integrators'),
                       help = 'R|Type of analysis to run')
   parser.add_argument('-b', '--basedir', metavar = 'path', required = True, type = str, default = '',
                       help = 'R|Path to the basedir where the MEM setup and results will be stored')
@@ -131,6 +131,7 @@ if __name__ == '__main__':
 
       logging.debug("Created jobs for Higgs width of %.3f GeV (version %d)" %
                     (higgsWidth, version_nr))
+
   elif args.study_type == 'mxmc-initial-sweep':
     # just vary markovChainParams's variable maxCallsStartingPos
     maxCallsStartingPositions = [100000, 25000, 10000, 2500, 1000]
@@ -155,6 +156,7 @@ if __name__ == '__main__':
 
       logging.debug("Created jobs for max calls starting position of %.3f (version %d)" %
                     (maxCallsStartingPos, version_nr))
+
   elif args.study_type == 'nof-calls':
     # vary maxObjFunctionCalls
     #                 200k    100k    50k    25k    10k    5k  2.5k
@@ -184,6 +186,7 @@ if __name__ == '__main__':
 
       logging.debug("Created jobs for integrator %s at nof calls of %d (version %d)" %
                     (defaultArguments['integrationMode'], nofCalls, version_nr))
+
   elif args.study_type == 'clamping':
     # we want to test the following scenarios:
     # 1) gen lvl objects, all clamped
@@ -240,6 +243,34 @@ if __name__ == '__main__':
 
       logging.debug("Created jobs for clamping regime '%s' (version %d)" %
                     (clampArgs['comment'], version_nr))
+
+  elif args.study_type == 'integrators':
+    # we want to test MEM with different integrators: Markov Chain integrator, VEGAS and VAMP
+    # if you want to perform the test at different number of function calls, edit the defaultArguments dict manually
+    integratorList = ['markovchain', 'VEGAS', 'VAMP']
+    integrator_template = 'mem_integrator_%s'
+    version_nr = getMEMversionNr(
+      defaultArguments['year'], defaultArguments['version'], integrator_template, integratorList
+    )
+
+    # now create a bunch of jobs, one for each max call starting position
+    for integratorType in integratorList:
+      integratorArgs = copy.deepcopy(defaultArguments)
+      integratorArgs['comment']         = '%s integrator' % integratorType
+      integratorArgs['memBaseDir']      = integrator_template % integratorType
+      integratorArgs['integrationMode'] = integratorType
+
+      jobs = JobCreator(**integratorArgs)
+      jobs.createJobs()
+
+      subDirs.append(jobs.memDir)
+      makeFiles.append(jobs.makeFile)
+      if not masterMakeFile:
+        masterMakeFile = os.path.join(jobs.baseDir, 'Makefile_integrators_v%d' % version_nr)
+
+      logging.debug("Created jobs for integrator '%s' (version %d)" %
+                    (integratorType, version_nr))
+
   else:
     raise ValueError("Internal error: unimplemented study type: {study_type}".format(study_type = args.study_type))
 

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+'''NB! matplotlib doesn't work with 80x workspace! see more at https://github.com/cms-sw/cmssw/issues/15660
+'''
+
 import argparse, sys, logging, os, matplotlib.pyplot as plt, numpy as np
 
 def auc(x, y):
