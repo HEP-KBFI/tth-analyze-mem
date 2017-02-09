@@ -289,16 +289,6 @@ Integrand_ttHorZ_3l1tau::renewInputs()
   else
     throw_line_ext("integrand", TTHEXCEPTION_ERR_CODE_INVALID_PERMUTATION)
       << "This permutation shouldn't happen";
-
-//--- for debugging purposes plot some variables
-  if(DebugPlotter_ttHorZ_3l1tau * dPlotter = measuredEvent_ -> debugPlotter)
-  {
-    dPlotter -> write();
-    std::string measuredEventStr = measuredEvent_ -> str();
-    measuredEventStr += std::string("_") +
-      (currentME_ == ME_mg5_3l1tau::kTTH ? "tth" : "ttz");
-    dPlotter -> initialize(measuredEventStr, vm_);
-  }
 }
 
 void
@@ -604,6 +594,7 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
       const LorentzVector & nuHtau      = recoEvent.nuHtau;
       const LorentzVector & nuLtau      = recoEvent.nuLtau;
       const LorentzVector & lTau        = recoEvent.lTau;
+      const MeasuredMET & met           = measuredEvent_ -> met;
       const double recomp_nuHtau_phi = functions::phiFromLabMomenta(hTau, nuHtau, beamAxis_);
       const double recomp_nuLtau_phi = functions::phiFromLabMomenta(lTau, nuLtau, beamAxis_);
       const double recomp_nuHtau_cosTheta = functions::nuHtauCosTheta(
@@ -637,6 +628,8 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
                  .fill(hVar_3l1tau::kDnuHtauCosTheta, recomp_nuLtau_cosTheta - gen_nuLtau_cosTheta)
                  .fill(hVar_3l1tau::kDnuHtauCosTheta, recomp_nuHtau_phi - gen_nuHtau_phi)
                  .fill(hVar_3l1tau::kDnuHtauCosTheta, recomp_nuLtau_phi - gen_nuLtau_phi)
+                 .fill(hVar_3l1tau::kDmetX,           METx - met.px())
+                 .fill(hVar_3l1tau::kDmetY,           METy - met.py())
       ;
     }
     dPlotter -> fill();

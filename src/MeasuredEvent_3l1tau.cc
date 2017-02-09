@@ -343,12 +343,9 @@ MeasuredEvent_3l1tau::printPermutation() const
 }
 
 std::string
-MeasuredEvent_3l1tau::str(bool includePermutation) const
+MeasuredEvent_3l1tau::str() const
 {
-  if(includePermutation)
-    return std::string(Form("%u_%u_%llu_%u", run, lumi, evt, currentPermutation_));
-  else
-    return std::string(Form("%u:%u:%llu", run, lumi, evt));
+  return std::string(Form("%u:%u:%llu", run, lumi, evt));
 }
 
 void

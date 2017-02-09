@@ -300,6 +300,8 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
 
       LOGDBG << ev;
       integrand_ -> renewInputs();
+      if(ev.debugPlotter)
+        ev.debugPlotter -> initialize({ev.str(), isTTH ? "TTH" : "TTZ", ev.getPermutationNumber(), ev.getJetCombinationNumber()}, vm_);
 
       double p = 0.;
       double pErr = 0.;
@@ -323,6 +325,9 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
         nofMXMCTries = *static_cast<unsigned *>(intAlgo_ -> metadata());
       else
         nofMXMCTries = -1;
+
+      if(ev.debugPlotter)
+        ev.debugPlotter -> write();
     }
     ev.resetPermutation();
     pSum_allJc.push_back(pSum_perJc);

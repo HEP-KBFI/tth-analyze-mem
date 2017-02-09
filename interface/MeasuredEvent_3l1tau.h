@@ -99,7 +99,7 @@ namespace tthMEM
     printPermutation() const;
 
     std::string
-    str(bool includePermutation = true) const;
+    str() const;
 
     void
     addFilter(const std::string & rleSelectionFileName);

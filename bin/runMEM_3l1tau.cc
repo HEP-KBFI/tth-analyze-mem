@@ -275,7 +275,7 @@ main(int argc,
     inputTree -> GetEntry(i);
     measuredEvent.initialize();
     if(measuredEvent.isFiltered()) continue;
-    LOGINFO << "run:lumi:event = " << measuredEvent.str(false);
+    LOGINFO << "run:lumi:event = " << measuredEvent.str();
 
     MEMOutput_3l1tau result;
     try
@@ -320,6 +320,9 @@ main(int argc,
   LOGINFO << "Average time spent on tth & ttz MEM per event: "
           << "Real time: " << mem_tt_HandZ.getAverageComputingTime_real() << " s;  "
           << "CPU time: " << mem_tt_HandZ.getAverageComputingTime_cpu() << " s";
+
+  if(debugPlots)
+    delete measuredEvent.debugPlotter;
 
   newFile -> Write();
 

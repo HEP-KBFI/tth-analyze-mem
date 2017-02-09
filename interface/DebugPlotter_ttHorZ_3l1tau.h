@@ -26,6 +26,8 @@ namespace tthMEM
     kDnuLtauCosTheta, // difference in cosine of opening angle in leptonic tau system
     kDnuHtauPhi,      // difference in revolution angle in hadronic tau system
     kDnuLtauPhi,      // difference in revolution angle in leptonic tau system
+    kDmetX,           // difference in x-component of MET
+    kDmetY,           // difference in y-component of MET
     kZ2,              // energy fraction of leptonic tau decay products
     kMassHtau,        // mass of hadronic tau lepton
     kMassLtau,        // mass of leptonic tau lepton
@@ -55,6 +57,29 @@ namespace tthMEM
     Last = kProb
   };
 
+  class DebugString_ttHorZ_3l1tau
+  {
+  public:
+    DebugString_ttHorZ_3l1tau();
+
+    DebugString_ttHorZ_3l1tau(const std::string & rle_,
+                              const std::string & me_,
+                              unsigned leptonPermutation_,
+                              unsigned bJetCombination_);
+
+    std::string
+    str() const;
+
+    bool
+    hasSameRLE(const DebugString_ttHorZ_3l1tau & other) const;
+
+  private:
+    std::string rle;
+    std::string me;
+    unsigned    leptonPermutation;
+    unsigned    bJetCombination;
+  };
+
   /**
    * @brief Class for plotting calculated or sampled values in eval() function
    *        of class Integrand_ttHorZ_3l1tau
@@ -77,14 +102,16 @@ namespace tthMEM
      *        event and its permutations
      * @param file           The file where the trees will be written
      * @param debugFrequency Specifies how often every event is logged
-     *
-     * Let's say that the debugFrequency is n. In this case all events
-     * and permutations that are in [n, n + debugRange_] with period n
-     * are dumped to the provided file. The debugRange_ variable is hard-
-     * coded to 8 in the respective implementation file.
      */
     DebugPlotter_ttHorZ_3l1tau(TFile * file,
                                unsigned debugFrequency);
+
+    /**
+      * @brief Simple destructor
+      *
+      * Saves unsaved information to the TTree.
+      */
+    ~DebugPlotter_ttHorZ_3l1tau();
 
     /**
      * @brief Creates a new subdirectory for the current tree
@@ -100,7 +127,7 @@ namespace tthMEM
      * e.g. 1_123_12345678_3_tth)
      */
     void
-    initialize(const std::string & dirName,
+    initialize(const DebugString_ttHorZ_3l1tau & metaInfo,
                const VariableManager_3l1tau & vm);
 
     /**
@@ -142,14 +169,13 @@ namespace tthMEM
     ///< map of sampled values
     std::unordered_map<hVar_3l1tau, Double_t, EnumClassHash> histRecod_;
     ///< map of additional variables (listed in the implementation file)
-    TFile * const file_;            ///< pointer to the file
-    TTree * tree_;                  ///< pointer to the current tree
-    std::string dirName_;           ///< directory name under which the debug tree is written
-    const unsigned debugFrequency_; ///< debugging frequency (see constructor)
-    const unsigned debugRange_;     ///< debugging range (== 8; see constructor)
-    unsigned logCounter_;           ///< counter incremented every time initialise() is called
-    bool log_;                      ///< shorthand bool variable which tells whether to fill or not
-    bool isFilled_;                 ///< for bookkeeping: true if at least one variable is filled
+    TFile * const file_;                 ///< pointer to the file
+    TTree * tree_;                       ///< pointer to the current tree
+    DebugString_ttHorZ_3l1tau metaInfo_; ///< directory name under which the debug tree is written
+    const unsigned debugFrequency_;      ///< debugging frequency (see constructor)
+    unsigned logCounter_;                ///< counter incremented every time initialise() is called
+    bool log_;                           ///< shorthand bool variable which tells whether to fill or not
+    bool isFilled_;                      ///< for bookkeeping: true if at least one variable is filled
 
     /**
      * @brief Reset the maps holding current values to the placeholder value

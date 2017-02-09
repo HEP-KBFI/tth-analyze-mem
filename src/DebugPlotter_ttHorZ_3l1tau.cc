@@ -1,6 +1,9 @@
 #include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
+#include "tthAnalysis/tthMEM/interface/Logger.h"
 
 #include <TString.h> // Form()
+
+#include <algorithm> // std::replace()
 
 #define PLACEHOLDER_DEBUGPLOTTER -9999
 
@@ -16,6 +19,8 @@ DebugPlotter_ttHorZ_3l1tau::hVarMap_ =
   { hVar_3l1tau::kDnuLtauCosTheta, "diff_nuLtauCosTheta", },
   { hVar_3l1tau::kDnuHtauPhi,      "diff_nuHtauPhi",      },
   { hVar_3l1tau::kDnuLtauPhi,      "diff_nuLtauPhi",      },
+  { hVar_3l1tau::kDmetX,           "diff_METx",           },
+  { hVar_3l1tau::kDmetY,           "diff_METy",           },
   { hVar_3l1tau::kZ2,              "z2",                  },
   { hVar_3l1tau::kMassHorZ,        "massHorZ"             },
   { hVar_3l1tau::kMassHtau,        "massHtau"             },
@@ -42,12 +47,41 @@ DebugPlotter_ttHorZ_3l1tau::hVarMap_ =
   { hVar_3l1tau::kProb,            "prob"                 }
 };
 
+DebugString_ttHorZ_3l1tau::DebugString_ttHorZ_3l1tau(const std::string & rle_,
+                                                     const std::string & me_,
+                                                     unsigned leptonPermutation_,
+                                                     unsigned bJetCombination_)
+  : me(me_)
+  , leptonPermutation(leptonPermutation_)
+  , bJetCombination(bJetCombination_)
+{
+  rle = rle_;
+  std::replace(rle.begin(), rle.end(), ':', '_');
+}
+
+DebugString_ttHorZ_3l1tau::DebugString_ttHorZ_3l1tau()
+  : DebugString_ttHorZ_3l1tau("", "", 0, 0)
+{}
+
+std::string
+DebugString_ttHorZ_3l1tau::str() const
+{
+  return std::string(Form(
+    "%s_%s_%u_%u", rle.c_str(), me.c_str(), leptonPermutation, bJetCombination
+  ));
+}
+
+bool
+DebugString_ttHorZ_3l1tau::hasSameRLE(const DebugString_ttHorZ_3l1tau & other) const
+{
+  return rle == other.rle;
+}
+
 DebugPlotter_ttHorZ_3l1tau::DebugPlotter_ttHorZ_3l1tau(TFile * file,
                                                        unsigned debugFrequency)
   : file_(file)
   , tree_(nullptr)
   , debugFrequency_(debugFrequency)
-  , debugRange_(8)
   , logCounter_(0)
   , log_(false)
   , isFilled_(false)
@@ -60,26 +94,31 @@ DebugPlotter_ttHorZ_3l1tau::DebugPlotter_ttHorZ_3l1tau(TFile * file)
 { }
 
 DebugPlotter_ttHorZ_3l1tau::DebugPlotter_ttHorZ_3l1tau()
-  : DebugPlotter_ttHorZ_3l1tau(0, 1)
+  : DebugPlotter_ttHorZ_3l1tau(nullptr, 1)
 { }
 
+DebugPlotter_ttHorZ_3l1tau::~DebugPlotter_ttHorZ_3l1tau()
+{
+  write();
+}
+
 void
-DebugPlotter_ttHorZ_3l1tau::initialize(const std::string & dirName,
+DebugPlotter_ttHorZ_3l1tau::initialize(const DebugString_ttHorZ_3l1tau & metaInfo,
                                        const VariableManager_3l1tau & vm)
 {
-  ++logCounter_;
-  log_ = (debugFrequency_ == 1) ||
-         (debugFrequency_ > 0 &&
-          logCounter_ % debugFrequency_ >= 1 &&
-          logCounter_ % debugFrequency_ <= debugRange_);
-  if(! log_) return;
+  if(! metaInfo_.hasSameRLE(metaInfo))
+    ++logCounter_;
+  log_ = (debugFrequency_ > 1 && (logCounter_ == 1 || logCounter_ % debugFrequency_ == 1)) ||
+          debugFrequency_ == 1;
+  metaInfo_ = metaInfo;
+  if(! log_)
+    return;
 
   if(file_)
   {
-    dirName_ = dirName;
-    file_ -> mkdir(dirName_.c_str());
-    file_ -> cd(dirName_.c_str());
-    tree_ = new TTree("tree", dirName_.c_str());
+    file_ -> mkdir(metaInfo_.str().c_str());
+    file_ -> cd(metaInfo_.str().c_str());
+    tree_ = new TTree("tree", metaInfo_.str().c_str());
 
 //--- variables declared in this file
     for(auto var: Enum<hVar_3l1tau>())
@@ -102,10 +141,7 @@ DebugPlotter_ttHorZ_3l1tau::fill(hVar_3l1tau var,
                                  double value)
 {
   if(log_)
-  {
-    isFilled_ = true;
     histRecod_[var] = value;
-  }
   return *this;
 }
 
@@ -115,10 +151,7 @@ DebugPlotter_ttHorZ_3l1tau::fill(const VariableManager_3l1tau & vm,
 {
   for(auto var: Enum<Var_3l1tau>())
     if(log_)
-    {
-      isFilled_ = true;
       histSampled_[var] = vm.get(var, x);
-    }
   return *this;
 }
 
@@ -140,14 +173,16 @@ DebugPlotter_ttHorZ_3l1tau::write()
   {
     if(file_ && ! isFilled_)
     {
-      //file_ -> rmdir(dirName_.c_str());
+      delete tree_;
+      tree_ = nullptr;
+      file_ -> rmdir(metaInfo_.str().c_str());
     }
     else
     {
       tree_ -> Write();
+      delete tree_;
+      tree_ = nullptr;
     }
-    delete tree_;
-    tree_ = nullptr;
     reset();
   }
 }
@@ -158,5 +193,4 @@ DebugPlotter_ttHorZ_3l1tau::reset()
   for(auto e: Enum<hVar_3l1tau>()) histRecod_[e]   = PLACEHOLDER_DEBUGPLOTTER;
   for(auto e: Enum<Var_3l1tau>())  histSampled_[e] = PLACEHOLDER_DEBUGPLOTTER;
   isFilled_ = false;
-  dirName_ = "";
 }
