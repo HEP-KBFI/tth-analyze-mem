@@ -11,6 +11,7 @@
   <use name="root" />
   <use name="rootgraphics" />
   <use name="boost" />
+  <use name="boost_program_options" />
   <use name="tthAnalysis/tthMEM" />
   <Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Werror" />
 </bin>

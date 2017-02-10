@@ -7,19 +7,21 @@
 #include <boost/filesystem/path.hpp> // boost::filesystem::path
 #include <boost/filesystem/operations.hpp> // boost::filesystem::exists(), ...
   // ... boost::filesystem::create_directories()
+#include <boost/program_options.hpp> // boost::program_options::
 
 #include <TCanvas.h> // TCanvas
 #include <TGraph.h> // TGraph
 #include <TMultiGraph.h> // TMultiGraph
 #include <TAxis.h> // SetTitle()
 #include <TLegend.h> // TLegend
+#include <TString.h> // Form()
 
 #include "tthAnalysis/tthMEM/interface/JetTransferFunction.h" // bJetTF(), qJetTF()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
 
 void
 plot(const std::function<double(double, double, double)> & jetTF,
-     const std::string & legendTitle,
+     const std::string & type,
      const std::string & fileName)
 {
   namespace fs = boost::filesystem;
@@ -39,7 +41,7 @@ plot(const std::function<double(double, double, double)> & jetTF,
   const double jetEmin = 0.,
                jetEmax = 225.;
   const unsigned nofSteps = 400;
-  const std::vector<double> bQuarkEs = { 50., 100., 150. };
+  const std::vector<double> quarkEs = { 50., 100., 150. };
   const std::vector<unsigned> colors = { 6, 2, 4 };
   const std::vector<unsigned> lineTypes = { 1, 2 };
   std::vector<double> jetEs(nofSteps);
@@ -51,17 +53,17 @@ plot(const std::function<double(double, double, double)> & jetTF,
   );
   const double * const x = jetEs.data();
 
-  TCanvas * c = new TCanvas("c", "c", 200, 10, 700, 500);
-  TGraph * grs[bQuarkEs.size() * eta.size()];
+  TCanvas * c = new TCanvas(type.c_str(), type.c_str(), 200, 10, 700, 500);
+  TGraph * grs[quarkEs.size() * eta.size()];
   TMultiGraph * mg = new TMultiGraph();
 
   unsigned grIdx = 0;
   for(unsigned etaIdx = 0; etaIdx < eta.size(); ++ etaIdx)
-    for(unsigned i = 0; i < bQuarkEs.size(); ++i)
+    for(unsigned i = 0; i < quarkEs.size(); ++i)
     {
       double y[jetEs.size()];
       for(unsigned j = 0; j < jetEs.size(); ++j)
-        y[j] = jetTF(bQuarkEs[i], jetEs[j], eta[etaIdx]);
+        y[j] = jetTF(quarkEs[i], jetEs[j], eta[etaIdx]);
       grs[grIdx] = new TGraph(jetEs.size(), x, y);
       grs[grIdx] -> SetLineColor(colors[i]);
       grs[grIdx] -> SetLineStyle(lineTypes[etaIdx]);
@@ -79,7 +81,7 @@ plot(const std::function<double(double, double, double)> & jetTF,
   mg -> SetMaximum(0.07);
 
   TLegend * leg = new TLegend(0.15, 0.6, 0.45, 0.8);
-  leg -> SetHeader(legendTitle.c_str());
+  leg -> SetHeader(Form("%s-quarks", type.c_str()));
   leg -> AddEntry(grs[0], "E_{q} = 50 GeV");
   leg -> AddEntry(grs[1], "E_{q} = 100 GeV");
   leg -> AddEntry(grs[2], "E_{q} = 150 GeV");
@@ -94,15 +96,60 @@ plot(const std::function<double(double, double, double)> & jetTF,
 
   const fs::path plot_path = plot_dir / fs::path(fileName);
   c -> SaveAs(plot_path.c_str());
+
+  delete mg;
+  delete leg;
+  delete leg2;
+  delete c;
 }
 
 /**
  * @brief Reproduces Fig. 2 in AN2013-313
  */
 int
-main()
+main(int argc,
+     char * argv[])
 {
-  plot(tthMEM::functions::bJetTF, "b-quarks", "bjetTF.pdf");
-  plot(tthMEM::functions::qJetTF, "u-quarks", "ujetTF.pdf");
+  bool type;
+  try
+  {
+    boost::program_options::options_description desc("Allowed options");
+    desc.add_options()
+      ("help,h",   "produce help message")
+      ("light,l",  boost::program_options::bool_switch(&type) -> default_value(false),
+                   "Plot light jet TF (default: b-jet TF)")
+    ;
+    boost::program_options::variables_map vm;
+    boost::program_options::store(
+      boost::program_options::parse_command_line(argc, argv, desc), vm
+    );
+    if(vm.count("help"))
+    {
+      std::cout << desc << '\n';
+      return EXIT_SUCCESS;
+    }
+    boost::program_options::notify(vm); // might throw
+  }
+  catch(boost::program_options::error & e)
+  {
+    std::cerr << "User error: " << e.what() << '\n';
+    return EXIT_FAILURE;
+  }
+  catch(std::exception & e)
+  {
+    std::cerr << "Error: " << e.what() << '\n';
+    return EXIT_FAILURE;
+  }
+  catch(...)
+  {
+    std::cerr << "Unknown error!\n";
+    return EXIT_FAILURE;
+  }
+
+  if(type)
+    plot(tthMEM::functions::qJetTF, "u", "ujetTF.pdf");
+  else
+    plot(tthMEM::functions::bJetTF, "b", "bjetTF.pdf");
+
   return EXIT_SUCCESS;
 }
