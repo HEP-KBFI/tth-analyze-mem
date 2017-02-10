@@ -7,7 +7,7 @@
 <!--  <Flags CXXFLAGS="-g3 -Og -ggdb3 -Wall -Wextra -pedantic -Werror" /> -->
   <Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Werror" />
 </bin>
-<bin file="bjetTFPlot.cc" name="bjetTFPlot">
+<bin file="jetTFPlot.cc" name="jetTFPlot">
   <use name="root" />
   <use name="rootgraphics" />
   <use name="boost" />

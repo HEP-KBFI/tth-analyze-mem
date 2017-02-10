@@ -4,7 +4,7 @@
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMrecFunctions.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h"
-#include "tthAnalysis/tthMEM/interface/BJetTransferFunction.h"
+#include "tthAnalysis/tthMEM/interface/JetTransferFunction.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 

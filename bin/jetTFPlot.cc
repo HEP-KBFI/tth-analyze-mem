@@ -2,6 +2,7 @@
 #include <vector> // std::vector<>
 #include <algorithm> // std::generate()
 #include <string> // std::string
+#include <functional> // std::function<>
 
 #include <boost/filesystem/path.hpp> // boost::filesystem::path
 #include <boost/filesystem/operations.hpp> // boost::filesystem::exists(), ...
@@ -13,20 +14,19 @@
 #include <TAxis.h> // SetTitle()
 #include <TLegend.h> // TLegend
 
-#include "tthAnalysis/tthMEM/interface/BJetTransferFunction.h"
+#include "tthAnalysis/tthMEM/interface/JetTransferFunction.h" // bJetTF(), qJetTF()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
 
-/**
- * @brief Reproduces Fig. 2 in AN2013-313
- */
-int
-main()
+void
+plot(const std::function<double(double, double, double)> & jetTF,
+     const std::string & legendTitle,
+     const std::string & fileName)
 {
   namespace fs = boost::filesystem;
   fs::path plot_dir;
   if(const char * cmssw_base = std::getenv("CMSSW_BASE"))
   {
-    plot_dir = fs::path(cmssw_base) / fs::path("src/tthAnalysis/tthMEM/plots");
+    plot_dir = fs::path(cmssw_base) / fs::path("src/tthAnalysis/tthMEM/data/plots");
     if(! fs::exists(plot_dir))
     {
       fs::create_directories(plot_dir);
@@ -61,7 +61,7 @@ main()
     {
       double y[jetEs.size()];
       for(unsigned j = 0; j < jetEs.size(); ++j)
-        y[j] = tthMEM::functions::bJetTF(bQuarkEs[i], jetEs[j], eta[etaIdx]);
+        y[j] = jetTF(bQuarkEs[i], jetEs[j], eta[etaIdx]);
       grs[grIdx] = new TGraph(jetEs.size(), x, y);
       grs[grIdx] -> SetLineColor(colors[i]);
       grs[grIdx] -> SetLineStyle(lineTypes[etaIdx]);
@@ -79,7 +79,7 @@ main()
   mg -> SetMaximum(0.07);
 
   TLegend * leg = new TLegend(0.15, 0.6, 0.45, 0.8);
-  leg -> SetHeader("b-quarks");
+  leg -> SetHeader(legendTitle.c_str());
   leg -> AddEntry(grs[0], "E_{q} = 50 GeV");
   leg -> AddEntry(grs[1], "E_{q} = 100 GeV");
   leg -> AddEntry(grs[2], "E_{q} = 150 GeV");
@@ -92,8 +92,17 @@ main()
   leg2 -> SetBorderSize(0);
   leg2 -> Draw();
 
-  const fs::path plot_path = plot_dir / fs::path("bjetTF.pdf");
+  const fs::path plot_path = plot_dir / fs::path(fileName);
   c -> SaveAs(plot_path.c_str());
+}
 
+/**
+ * @brief Reproduces Fig. 2 in AN2013-313
+ */
+int
+main()
+{
+  plot(tthMEM::functions::bJetTF, "b-quarks", "bjetTF.pdf");
+  plot(tthMEM::functions::qJetTF, "u-quarks", "ujetTF.pdf");
   return EXIT_SUCCESS;
 }
