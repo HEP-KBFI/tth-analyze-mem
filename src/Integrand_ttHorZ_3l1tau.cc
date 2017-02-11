@@ -625,9 +625,9 @@ Integrand_ttHorZ_3l1tau::eval(const double * x) const
                  .fill(hVar_3l1tau::kDz2,             z2 - gen_z2)
                  .fill(hVar_3l1tau::kDMassHorZ,       expected_mHorZ - recoEvent.higgsOrZ.mass())
                  .fill(hVar_3l1tau::kDnuHtauCosTheta, recomp_nuHtau_cosTheta - gen_nuHtau_cosTheta)
-                 .fill(hVar_3l1tau::kDnuHtauCosTheta, recomp_nuLtau_cosTheta - gen_nuLtau_cosTheta)
-                 .fill(hVar_3l1tau::kDnuHtauCosTheta, recomp_nuHtau_phi - gen_nuHtau_phi)
-                 .fill(hVar_3l1tau::kDnuHtauCosTheta, recomp_nuLtau_phi - gen_nuLtau_phi)
+                 .fill(hVar_3l1tau::kDnuLtauCosTheta, recomp_nuLtau_cosTheta - gen_nuLtau_cosTheta)
+                 .fill(hVar_3l1tau::kDnuHtauPhi,      recomp_nuHtau_phi - gen_nuHtau_phi)
+                 .fill(hVar_3l1tau::kDnuLtauPhi,      recomp_nuLtau_phi - gen_nuLtau_phi)
                  .fill(hVar_3l1tau::kDmetX,           METx - met.px())
                  .fill(hVar_3l1tau::kDmetY,           METy - met.py())
       ;
