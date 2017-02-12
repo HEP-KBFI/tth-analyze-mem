@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 
-'''NB! matplotlib doesn't work with 80x workspace! see more at https://github.com/cms-sw/cmssw/issues/15660
+'''NB! matplotlib 1.5.2 doesn't work with 80x workspace! see more at https://github.com/cms-sw/cmssw/issues/15660
+       Therefore we must tweak the PYTHONPATH variable a little bit so that we'd use matplotlib 1.2.1
 '''
 
-import argparse, sys, logging, os, matplotlib.pyplot as plt, numpy as np
+import sys, os
+sys.path = ['/cvmfs/cms.cern.ch/%s/external/py2-matplotlib/1.2.1-ikhhed/lib/python2.7/site-packages/' % os.getenv('SCRAM_ARCH')] + sys.path
+
+import argparse, logging, matplotlib.pyplot as plt, numpy as np
 
 def auc(x, y):
   '''Calculates area under curve (AUC)
