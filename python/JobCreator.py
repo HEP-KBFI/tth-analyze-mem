@@ -30,11 +30,11 @@ class JobCreator:
     self.markovChainParams     = markovChainParams
     self.comment               = comment
 
-    self.baseDirPattern = self.getBaseDirPattern(self.year, self.version)
-    self.baseDir        = self.baseDirPattern % "home"
+    self.baseDirPattern = os.path.join(getpass.getuser(), "ttHAnalysis", self.year, self.version)
+    self.baseDir        = os.path.join("/home", self.baseDirPattern)
     self.cmsswSrcDir    = os.path.join(os.environ.get('CMSSW_BASE'), "src")
 
-    self.scratchDir           = self.baseDirPattern % "scratch"
+    self.scratchDir           = os.path.join("/scratch", self.baseDirPattern)
     self.scratchTempOutputDir = os.path.join(self.scratchDir, "temp_output", "%d")
     self.scratchOutputDir     = os.path.join(self.scratchDir, "mem_output")
 
@@ -55,12 +55,7 @@ class JobCreator:
 
   @staticmethod
   def isMEMPathAvailable(year, version, memBaseDir):
-    memPath = os.path.join(JobCreator.getBaseDirPattern(year, version) % "home", memBaseDir)
-    return not os.path.isdir(memPath)
-
-  @staticmethod
-  def getBaseDirPattern(year, version):
-    return os.path.join("/%s", getpass.getuser(), "ttHAnalysis", year, version)
+    return not os.path.isdir(os.path.join("/home", getpass.getuser(), "ttHAnalysis", year, version, memBaseDir))
 
   def createJobs(self):
 
