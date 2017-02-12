@@ -196,7 +196,7 @@ if __name__ == '__main__':
     # 5) reco lvl objects, none clamped
     # therefore, the naming scheme is the following:
     #   mem_clamp_[gen|reco]_[all|none|z1|not-z1]_v$(version number)
-    clampList = [ "reco_none", "gen_none", "gen_all", "gen_z1", "gen_not-z1" ]
+    clampList = [ "reco_none", "gen_none", "gen_all", "gen_z1", "gen_all-but-z1" ]
     clamp_template = "mem_clamp_%s_v%d"
     version_nr = getMEMversionNr(
       defaultArguments['year'], defaultArguments['version'], clamp_template, clampList
@@ -214,6 +214,11 @@ if __name__ == '__main__':
         clampArgs['forceGenLevel'] = True
       elif clampType == "gen_all":
         clampArgs['forceGenLevel'] = True
+        for clampVariable_idx in range(len(clampArgs['clampVariables'])):
+          clampVariable = clampArgs['clampVariables'][clampVariable_idx]
+          tmpClampVariable = list(clampArgs['clampVariables'][clampVariable_idx])
+          tmpClampVariable[1] = True
+          clampArgs['clampVariables'][clampVariable_idx] = tuple(tmpClampVariable)
       elif clampType == "gen_z1":
         clampArgs['forceGenLevel'] = True
         for clampVariable_idx in range(len(clampArgs['clampVariables'])):
@@ -222,7 +227,7 @@ if __name__ == '__main__':
             tmpClampVariable = list(clampArgs['clampVariables'][clampVariable_idx])
             tmpClampVariable[1] = True
             clampArgs['clampVariables'][clampVariable_idx] = tuple(tmpClampVariable)
-      elif clampType == "gen_not-z1":
+      elif clampType == "gen_all-but-z1":
         clampArgs['forceGenLevel'] = True
         for clampVariable_idx in range(len(clampArgs['clampVariables'])):
           clampVariable = clampArgs['clampVariables'][clampVariable_idx]
