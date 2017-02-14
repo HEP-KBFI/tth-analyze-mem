@@ -2,10 +2,18 @@
 import subprocess, os, getpass, time
 
 if __name__ == '__main__':
+
+  priority = '{{ priority }}'
+  priority_env = os.environ.get('SBATCH_PRIORITY')
+  if priority_env:
+    priority = priority_env
+  if not priority:
+    priority = "main"
+
   commands, sbatchIDs = [], []
   {% for bashScript, logFile, outLocalFile in zippedScriptLog %}
   if not os.path.exists('{{ outLocalFile }}'):
-    commands.append('sbatch --output={{ logFile }} {{ bashScript }}') {% endfor %}
+    commands.append('sbatch --partition=%s --output={{ logFile }} {{ bashScript }}' % priority) {% endfor %}
   for command in commands:
     submitJobProcess = subprocess.Popen(command,
                                         stdout = subprocess.PIPE,

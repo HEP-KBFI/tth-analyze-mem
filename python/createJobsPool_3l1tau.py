@@ -98,6 +98,7 @@ if __name__ == '__main__':
     'clampVariables'        : clampVariables,
     'markovChainParams'     : markovChainParams,
     'comment'               : '',
+    'priority'              : 'main',
   }
 
   masterMakeFile = ''

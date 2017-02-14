@@ -46,7 +46,8 @@ def createPythonCfg(isMC, is2016, inFileName, maxEvents, outFileName, treeName,
     forceGenLevel       = forceGenLevel,
     higgsWidth          = higgsWidth,
     clampVariables      = clampVariables,
-    markovChainParams   = markovChainParams)
+    markovChainParams   = markovChainParams,
+  )
 
 def createPythonROCcfg(fileList, classList, memBaseFolder, outFolderCSV,
                        xlab, ylabs, outputFiles, treeName, branchName):
@@ -58,7 +59,8 @@ def createPythonROCcfg(fileList, classList, memBaseFolder, outFolderCSV,
     xlab          = xlab,
     backgrounds   = zip(ylabs, outputFiles),
     treeName      = treeName,
-    branchName    = branchName)
+    branchName    = branchName,
+  )
 
 def createBashCfg(inFileNameLocal, outFileNameLocal, inFileNameScratch,
                   outFileNameScratch, execName, pythonCfg, cmsswSrcDir):
@@ -69,11 +71,14 @@ def createBashCfg(inFileNameLocal, outFileNameLocal, inFileNameScratch,
     outFileNameScratch = outFileNameScratch,
     execName           = execName,
     pythonCfg          = pythonCfg,
-    cmsswSrcDir        = cmsswSrcDir)
+    cmsswSrcDir        = cmsswSrcDir,
+  )
 
-def createSbatch(bashScript, logFile, outLocalFiles):
+def createSbatch(bashScript, logFile, outLocalFiles, priority):
   return jinja2.Template(sbatchTemplate).render(
-    zippedScriptLog = zip(bashScript, logFile, outLocalFiles))
+    zippedScriptLog = zip(bashScript, logFile, outLocalFiles),
+    priority        = priority,
+  )
 
 def createMakefile(waitingScript, outFileNameLocalArray, scratchDir,
                    rocOutFileNames, rocCmd, inputBkgFiles, inputSignalFile):
@@ -84,4 +89,5 @@ def createMakefile(waitingScript, outFileNameLocalArray, scratchDir,
     rocOutFileNames       = rocOutFileNames,
     rocCmd                = rocCmd,
     inputBkgFiles         = inputBkgFiles,
-    inputSignalFile       = inputSignalFile)
+    inputSignalFile       = inputSignalFile,
+  )
