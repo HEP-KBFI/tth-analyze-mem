@@ -17,7 +17,7 @@ run:
 
 {% for outFileName in rocOutFileNames %}
 {{ outFileName }}: {{ inputBkgFiles.keys()|join(' ') }} {{ inputSignalFile }}
-	{{ rocCmd }} {{ rocCfg }}
+	{{ rocCmd }}
 {% endfor %}
 
 all: {{ rocOutFileNames|join(' ') }}

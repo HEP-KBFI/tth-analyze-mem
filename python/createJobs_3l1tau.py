@@ -47,7 +47,6 @@ if __name__ == '__main__':
     'maxObjFunctionCalls'   : 100000,  # 25k per permutation
     'nofIntegrationsPerJob' : 1,
     'lhRatioBranchName'     : "lhRatioNP",
-    'rocLegendPosition'     : [0.15, 0.78, 0.3, 0.88],
     'debugPlots'            : 0,       # every 10th event is dumped to TH1D
     'forceGenLevel'         : False,   # dump gen lvl info regardless of clamping (ignored if !is(MC&2016))
     'higgsWidth'            : -1.,     # use negative number in case of default H width
@@ -57,5 +56,5 @@ if __name__ == '__main__':
   }
   analysis = JobCreator(**jobArgs)
   analysis.createJobs()
-  logging.info("Run:\tmake -f %s -j 4" % analysis.makeFile)
+  logging.info("Run:\tmake -f %s -j 8" % analysis.makeFile)
   logging.info("Done")

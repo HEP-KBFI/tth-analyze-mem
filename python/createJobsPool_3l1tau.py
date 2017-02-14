@@ -92,7 +92,6 @@ if __name__ == '__main__':
     'maxObjFunctionCalls'   : 100000,
     'nofIntegrationsPerJob' : 1,
     'lhRatioBranchName'     : 'lhRatioNP',
-    'rocLegendPosition'     : [0.15, 0.78, 0.3, 0.88],
     'debugPlots'            : 0,
     'forceGenLevel'         : False,
     'higgsWidth'            : -1.,

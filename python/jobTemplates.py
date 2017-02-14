@@ -4,7 +4,7 @@ templatesDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'templa
 
 rootEventCounterTemplate = open(os.path.join(templatesDir, 'rootEventCounterTemplate.cc.template')).read()
 pythonCfgTemplate        = open(os.path.join(templatesDir, 'pythonCfgTemplate.py.template')).read()
-pythonROCcfgTemplate     = open(os.path.join(templatesDir, 'pythonROCcfgTemplate.py.template')).read()
+pythonROCcfgTemplate     = open(os.path.join(templatesDir, 'pythonROCcfgTemplate.sh.template')).read()
 jobTemplate              = open(os.path.join(templatesDir, 'jobTemplate.sh.template')).read()
 sbatchTemplate           = open(os.path.join(templatesDir, 'sbatchTemplate.py.template')).read()
 makefileTemplate         = open(os.path.join(templatesDir, 'Makefile.template')).read()
@@ -48,17 +48,17 @@ def createPythonCfg(isMC, is2016, inFileName, maxEvents, outFileName, treeName,
     clampVariables      = clampVariables,
     markovChainParams   = markovChainParams)
 
-def createPythonROCcfg(signalFile, bkgFiles, outFolder, csvOutFolder, treeName,
-                       branchName, labels, legendPosition):
+def createPythonROCcfg(fileList, classList, memBaseFolder, outFolderCSV,
+                       xlab, ylabs, outputFiles, treeName, branchName):
   return jinja2.Template(pythonROCcfgTemplate).render(
-    signalFile     = signalFile,
-    bkgFiles       = bkgFiles,
-    outFolder      = outFolder,
-    csvOutFolder   = csvOutFolder,
-    treeName       = treeName,
-    branchName     = branchName,
-    labels         = labels,
-    legendPosition = legendPosition)
+    fileList      = fileList,
+    classList     = classList,
+    memBaseFolder = memBaseFolder,
+    outFolderCSV  = outFolderCSV,
+    xlab          = xlab,
+    backgrounds   = zip(ylabs, outputFiles),
+    treeName      = treeName,
+    branchName    = branchName)
 
 def createBashCfg(inFileNameLocal, outFileNameLocal, inFileNameScratch,
                   outFileNameScratch, execName, pythonCfg, cmsswSrcDir):
@@ -76,13 +76,12 @@ def createSbatch(bashScript, logFile, outLocalFiles):
     zippedScriptLog = zip(bashScript, logFile, outLocalFiles))
 
 def createMakefile(waitingScript, outFileNameLocalArray, scratchDir,
-                   rocOutFileNames, rocCmd, rocCfg, inputBkgFiles, inputSignalFile):
+                   rocOutFileNames, rocCmd, inputBkgFiles, inputSignalFile):
   return jinja2.Template(makefileTemplate).render(
     waitingScript         = waitingScript,
     outFileNameLocalArray = outFileNameLocalArray,
     scratchDir            = scratchDir,
     rocOutFileNames       = rocOutFileNames,
     rocCmd                = rocCmd,
-    rocCfg                = rocCfg,
     inputBkgFiles         = inputBkgFiles,
     inputSignalFile       = inputSignalFile)

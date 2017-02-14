@@ -5,8 +5,8 @@ from tthAnalysis.tthMEM.jobTemplates import getNofEntries, \
 class JobCreator:
   def __init__(self, samples, channel, year, version, memBaseDir, central_or_shifts, charge_selections,
                lepton_selections, execName, treeName, rleSelectionFile, integrationMode,
-               maxObjFunctionCalls, nofIntegrationsPerJob, lhRatioBranchName, rocLegendPosition,
-               debugPlots, forceGenLevel, higgsWidth, clampVariables, markovChainParams, comment):
+               maxObjFunctionCalls, nofIntegrationsPerJob, lhRatioBranchName, debugPlots, forceGenLevel,
+               higgsWidth, clampVariables, markovChainParams, comment):
     self.samples               = samples
     self.channel               = channel
     self.year                  = year
@@ -22,7 +22,6 @@ class JobCreator:
     self.maxObjFunctionCalls   = maxObjFunctionCalls
     self.nofIntegrationsPerJob = nofIntegrationsPerJob
     self.lhRatioBranchName     = lhRatioBranchName
-    self.rocLegendPosition     = rocLegendPosition
     self.debugPlots            = debugPlots
     self.forceGenLevel         = forceGenLevel
     self.higgsWidth            = higgsWidth
@@ -48,7 +47,7 @@ class JobCreator:
     self.rocPlotDir = os.path.join(self.rocDir, "plots")
     self.rocCSVDir  = os.path.join(self.rocDir, "csvs")
     self.rocCmd     = "memROC"
-    self.rocCfgFile = os.path.join(self.rocDir, "cfg.py")
+    self.rocCfgFile = os.path.join(self.rocDir, "cfg.sh")
 
     self.sbatchFile = os.path.join(self.memDir, "sbatchMEM_%s.py" % self.channel)
     self.makeFile   = os.path.join(self.memDir, "_".join(["Makefile", self.channel, "mem"]))
@@ -177,13 +176,19 @@ class JobCreator:
 
     if not os.path.exists(self.rocDir):
       os.makedirs(self.rocDir)
-    rocCfgContents = createPythonROCcfg(inputSignalFile, inputBkgFiles.keys(), self.rocPlotDir, self.rocCSVDir,
-                                        self.treeName, self.lhRatioBranchName, rocLabels, self.rocLegendPosition)
+    allInputFiles = [inputSignalFile] + inputBkgFiles.keys()
+    classLabels   = ['sig'] + (['bkg'] * len(inputBkgFiles))
+    rocCfgContents = createPythonROCcfg(
+      allInputFiles, classLabels, self.memDir, self.rocCSVDir, rocLabels[0], rocLabels[1:],
+      rocOutFileNames, self.treeName, self.lhRatioBranchName
+    )
     with codecs.open(self.rocCfgFile, 'w', 'utf-8') as f:
       f.write(rocCfgContents)
+    st = os.stat(self.rocCfgFile)
+    os.chmod(self.rocCfgFile, st.st_mode | stat.S_IEXEC)
 
     makeFileContents = createMakefile(self.sbatchFile, outFileNameLocalArray, self.scratchDir,
-                                      rocOutFileNames, self.rocCmd, self.rocCfgFile, inputBkgFiles, inputSignalFile)
+                                      rocOutFileNames, self.rocCfgFile, inputBkgFiles, inputSignalFile)
     with codecs.open(self.makeFile, 'w', 'utf-8') as f:
       f.write(str(makeFileContents))
 

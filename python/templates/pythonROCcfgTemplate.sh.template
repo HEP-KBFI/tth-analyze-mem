@@ -1,0 +1,8 @@
+#!/bin/bash
+
+memROCcsv.py -i {{ fileList|join(" ") }} -c {{ classList|join(" ") }} -l {{ branchName }} \
+  -t {{ treeName }} -o {{ outFolderCSV }} -f -v
+{% for ylab, outputFile in backgrounds %}
+plotROCcurve.py -i $(dirname {{ memBaseFolder }}) -l $(basename {{ memBaseFolder }}) \
+  -x {{ xlab }} -y {{ ylab }} -b {{ branchName }} -o {{ outputFile }} -e -f -v {% endfor %}
+

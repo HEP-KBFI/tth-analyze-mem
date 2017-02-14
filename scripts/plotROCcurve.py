@@ -7,7 +7,7 @@
 import sys, os
 sys.path = ['/cvmfs/cms.cern.ch/%s/external/py2-matplotlib/1.2.1-ikhhed/lib/python2.7/site-packages/' % os.getenv('SCRAM_ARCH')] + sys.path
 
-import argparse, logging, matplotlib.pyplot as plt, numpy as np
+import argparse, logging, matplotlib.pyplot as plt, matplotlib.ticker as tck, numpy as np
 
 def auc(x, y):
   '''Calculates area under curve (AUC)
@@ -45,8 +45,12 @@ if __name__ == '__main__':
                       help = 'R|Label on the x-axis')
   parser.add_argument('-y', '--ylabel', metavar = 'text', required = False, type = str, default = 'TTZToLLNuNu',
                       help = 'R|Label on the y-axis')
+  parser.add_argument('-b', '--branch-name', metavar = 'text', required = False, type = str, default = 'lhRatioNP',
+                      help = 'R|Name of the likelihood ratio branch')
   parser.add_argument('-o', '--output', metavar = 'file', required = False, type = str, default = '',
                       help = 'R|Output file')
+  parser.add_argument('-e', '--error-bands', dest = 'error_bands', action = 'store_true', default = False,
+                      help = 'R|Plot error bands around the ROC curves')
   parser.add_argument('-f', '--force', dest = 'force', action = 'store_true', default = False,
                       help = 'R|Force the creation of output directory if missing')
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
@@ -60,11 +64,11 @@ if __name__ == '__main__':
     logging.error("No such directory: {dirname}".format(dirname = args.input))
     sys.exit(1)
 
-  outputfile = '%s_%s.pdf' % (args.xlabel, args.ylabel)
   if not args.output:
     plot_dir = os.path.join(args.input, 'plots')
-    if os.path.isdir(plot_dir):
-      outputfile = os.path.join(plot_dir, outputfile)
+    outputfile = os.path.join(plot_dir, '%s_%s.pdf' % (args.xlabel, args.ylabel))
+  else:
+    outputfile = args.output
 
   # testing if the list of MEM subdirs are really there
   mem_subdirs = { x : { 'dir' : os.path.join(args.input, x) } for x in args.list }
@@ -90,13 +94,14 @@ if __name__ == '__main__':
       mem_subdir['comment'] = key
 
     roc_file = os.path.join(
-      mem_subdir['dir'], 'roc', 'csvs', 'roc_{xlabel}_{ylabel}.csv'.format(
-        xlabel = args.xlabel,
-        ylabel = args.ylabel,
+      mem_subdir['dir'], 'roc', 'csvs', 'roc_{xlabel}_{ylabel}_{branch_name}.csv'.format(
+        xlabel      = args.xlabel,
+        ylabel      = args.ylabel,
+        branch_name = args.branch_name,
       )
     )
     if not os.path.isfile(roc_file):
-      logging.error("File {roc_filename} does not exist (check if the x- and y-labels are correct".format(
+      logging.error("File '{roc_filename}' does not exist (check if the x- and y-labels are correct".format(
         roc_filename = roc_file,
       ))
       sys.exit(1)
@@ -108,13 +113,20 @@ if __name__ == '__main__':
   outputfile_parentdir = os.path.dirname(outputfile)
   if not os.path.isdir(outputfile_parentdir):
     if args.force:
-      logging.debug("Directory {output_dirname} of the output file {output_filename} does not exist; "
+      logging.debug("Directory '{output_dirname}' of the output file '{output_filename}' does not exist; "
                     "attempting to create one".format(
         output_dirname  = outputfile_parentdir,
         output_filename = outputfile,
       ))
+      try:
+        os.makedirs(outputfile_parentdir)
+      except IOError as err:
+        logging.error("Could not create directory '{output_dirname}' because: {reasons}".format(
+          output_dirname = outputfile_parentdir,
+          reasons        = err,
+        ))
     else:
-      logging.error("Directory {output_dirname} of the output file {output_filename} does not exist".format(
+      logging.error("Directory '{output_dirname}' of the output file '{output_filename}' does not exist".format(
         output_dirname  = outputfile_parentdir,
         output_filename = outputfile,
       ))
@@ -122,7 +134,7 @@ if __name__ == '__main__':
 
   # now we're ready to plot the ROC curve
   logging.debug("Plotting ...")
-  plt.figure(figsize = (12, 8))
+  fig, ax = plt.subplots(figsize = (10, 8))
   for _, values in mem_subdirs.iteritems():
     data = np.loadtxt(values['roc_csv'], delimiter = ',', unpack = True)
     plt.plot(data[0], data[1], label = '%s (%.2f)' % (values['comment'], auc(data[0], data[1])), lw = 2)
@@ -130,6 +142,8 @@ if __name__ == '__main__':
     xmin = data[0][minIdx]
     ymin = data[1][minIdx]
     plt.plot((xmin,), (ymin,), marker = 'o', markersize = 10, ls = '', c = 'none')
+    if not np.allclose(data[3], data[5]):
+      ax.fill_between(data[0], data[3], data[5], interpolate = True, alpha = 0.2, linewidth = 0.0)
     plt.annotate('%.2f' % data[2][minIdx], xy = (xmin + 0.025, ymin))
     plt.annotate('Optimal cutoff points are circled with\ncorresponding WP values next to the circle',
                  xy = (0.01, 0.6), fontsize = 12, family = 'sans-serif')
@@ -139,8 +153,12 @@ if __name__ == '__main__':
   plt.legend(loc = 2)
   plt.grid(True)
   plt.tick_params(labelright = True, labeltop = True)
+  ax.xaxis.set_major_locator(tck.MultipleLocator(0.1))
+  ax.xaxis.set_minor_locator(tck.MultipleLocator(0.01))
+  ax.yaxis.set_major_locator(tck.MultipleLocator(0.1))
+  ax.yaxis.set_minor_locator(tck.MultipleLocator(0.01))
   plt.xlabel('%s efficiency' % args.xlabel, fontsize = 14)
   plt.ylabel('%s efficiency' % args.ylabel, fontsize = 14)
   plt.suptitle(args.title, fontsize = 16)
   plt.savefig(outputfile, bbox_inches = 'tight')
-  logging.info("Saved the figure to {image_path}".format(image_path = outputfile))
+  logging.info("Saved the figure to: {image_path}".format(image_path = outputfile))
