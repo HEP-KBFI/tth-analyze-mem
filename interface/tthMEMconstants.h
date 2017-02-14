@@ -65,11 +65,11 @@ namespace tthMEM
     const double resolutionScaleTTZ __attribute__((unused)) = massT + massZ / 2.;
     const double ttHhadTauPSfactor  __attribute__((unused)) = 16. * pi() * pow3(massTau);
     const double ttHfactor __attribute__((unused)) = pow2(
-      massT * gammaT * gammaW * massHiggs * gammaHiggs / massW * massTau * gammaTau * s
-    );
+      massT * gammaT * gammaW * massHiggs * gammaHiggs / (massW * massTau * gammaTau * s)
+    ); // missing factor: 2^-25 * pi^-13
     const double ttZfactor __attribute__((unused)) = pow2(
-      massT * gammaT * gammaW * massZ * gammaZ / massW * massTau * gammaTau * s
-    );
+      massT * gammaT * gammaW * massZ * gammaZ / (massW * massTau * gammaTau * s)
+    ); // missing factor: 2^-25 * pi^-13
   }
 }
 
