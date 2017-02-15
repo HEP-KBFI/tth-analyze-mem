@@ -6,7 +6,7 @@ class JobCreator:
   def __init__(self, samples, channel, year, version, memBaseDir, central_or_shifts, charge_selections,
                lepton_selections, execName, treeName, rleSelectionFile, integrationMode,
                maxObjFunctionCalls, nofIntegrationsPerJob, lhRatioBranchName, debugPlots, forceGenLevel,
-               higgsWidth, clampVariables, markovChainParams, comment, priority = 'main'):
+               higgsWidth, clampVariables, markovChainParams, comment, priority = 'main', limit = 1000, maxRetries = 3):
     self.samples               = samples
     self.channel               = channel
     self.year                  = year
@@ -29,6 +29,8 @@ class JobCreator:
     self.markovChainParams     = markovChainParams
     self.comment               = comment
     self.priority              = priority
+    self.limit                 = limit
+    self.maxRetries            = maxRetries
 
     self.baseDirPattern = os.path.join(getpass.getuser(), "ttHAnalysis", self.year, self.version)
     self.baseDir        = os.path.join("/home", self.baseDirPattern)
@@ -168,7 +170,9 @@ class JobCreator:
     if len(rocLabels) > 2:
       rocOutFileNames.append(os.path.join(self.rocPlotDir, "roc.pdf"))
 
-    sbatchContents = createSbatch(sbatchBashFiles, sbatchLogFiles, sbatchOutFileNameLocalFiles, self.priority)
+    sbatchContents = createSbatch(
+      sbatchBashFiles, sbatchLogFiles, sbatchOutFileNameLocalFiles, self.priority, self.limit, self.maxRetries
+    )
     with codecs.open(self.sbatchFile, 'w', 'utf-8') as f:
       f.write(sbatchContents)
     st = os.stat(self.sbatchFile)

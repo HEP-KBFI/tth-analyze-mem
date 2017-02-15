@@ -74,10 +74,12 @@ def createBashCfg(inFileNameLocal, outFileNameLocal, inFileNameScratch,
     cmsswSrcDir        = cmsswSrcDir,
   )
 
-def createSbatch(bashScript, logFile, outLocalFiles, priority):
+def createSbatch(bashScript, logFile, outLocalFiles, priority, limit, maxRetries):
   return jinja2.Template(sbatchTemplate).render(
-    zippedScriptLog = zip(bashScript, logFile, outLocalFiles),
-    priority        = priority,
+    zippedInfo = zip(outLocalFiles, bashScript, logFile),
+    priority   = priority,
+    limit      = limit,
+    maxRetries = maxRetries,
   )
 
 def createMakefile(waitingScript, outFileNameLocalArray, scratchDir,

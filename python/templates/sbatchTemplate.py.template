@@ -3,6 +3,24 @@ import subprocess, os, getpass, time
 
 if __name__ == '__main__':
 
+  # define the status codes
+  STATUS_NOT_SUBMITTED = 0
+  STATUS_RUNNING       = 1
+  STATUS_FINISHED      = 2
+  STATUS_FAILED        = 3
+
+  # create a list of targets and necessary meta-information associated w/ each job
+  jobs = { {% for targetFile, logFile, bashScript in zippedInfo %}
+    '{{ targetFile }}' : {
+      'logFile'    : '{{ logFile }}',
+      'bashScript' : '{{ bashScript }}',
+      'ID'         : -1,
+      'status'     : STATUS_NOT_SUBMITTED,
+      'retries'    : 0,
+    },{% endfor %}
+  }
+
+  # update the queue priority if needed
   priority = '{{ priority }}'
   priority_env = os.environ.get('SBATCH_PRIORITY')
   if priority_env:
@@ -10,28 +28,61 @@ if __name__ == '__main__':
   if not priority:
     priority = "main"
 
-  commands, sbatchIDs = [], []
-  {% for bashScript, logFile, outLocalFile in zippedScriptLog %}
-  if not os.path.exists('{{ outLocalFile }}'):
-    commands.append('sbatch --partition=%s --output={{ logFile }} {{ bashScript }}' % priority) {% endfor %}
-  for command in commands:
-    submitJobProcess = subprocess.Popen(command,
-                                        stdout = subprocess.PIPE,
-                                        stderr = subprocess.PIPE,
-                                        shell = True)
-    submitStdout, submitStderr = submitJobProcess.communicate()
-    sbatchIDs.append(submitStdout.rstrip('\n').split()[-1])
-
   squeueCommand = "squeue -u %s | tail -n+2 | awk '{print $1}'" % getpass.getuser()
   while True:
-    squeueProcess = subprocess.Popen(squeueCommand,
-                                     stdout = subprocess.PIPE,
-                                     stderr = subprocess.PIPE,
-                                     shell = True)
-    squeueStdout, squeueStderr = squeueProcess.communicate()
-    nofJobsStillRunning = 0
-    for line in squeueStdout.rstrip('\n').split('\n'):
-      if line in sbatchIDs: nofJobsStillRunning += 1
-    if nofJobsStillRunning == 0: break
-    else:                        time.sleep(30)
+    # fetch the IDs of running jobs
+    squeueProcess = subprocess.Popen(
+      squeueCommand,
+      stdout = subprocess.PIPE,
+      stderr = subprocess.PIPE,
+      shell  = True)
+    runningIDs = squeueStdout.rstrip('\n').split('\n')
 
+    #update status here
+    for target, entry in jobs.iteritems():
+      if entry['status'] == STATUS_RUNNING and entry['ID'] not in runningIDs:
+        if os.path.exists(target):
+          entry['status'] = STATUS_FINISHED
+        else:
+          if entry['retries'] > {{ maxRetries }}:
+            # if the number of resubmission exceeds certain threshold, mark it as failed
+            entry['status'] = STATUS_FAILED
+          else:
+            # otherwise resubmit the job
+            entry['status'] = STATUS_NOT_SUBMITTED
+
+    # check if all jobs have been finished
+    if all([jobs[t]['status'] in (STATUS_FINISHED, STATUS_FAILED) for t in jobs]):
+      break
+
+    # submit new jobs if needed
+    nof_running = len([jobst[t]['status'] == STATUS_RUNNING])
+    for target, entry in jobs.iteritems():
+
+      # check if the number of running jobs exceeds the limit
+      if nof_running >= {{ limit }}:
+        break
+
+      if entry['status'] == STATUS_NOT_SUBMITTED:
+        # submit the job
+        submitJobProcess = subprocess.Popen(
+          'sbatch --partition={priority} --output={logFile} {bashScript}'.format(
+            priority   = priority,
+            logFile    = entry['logFile'],
+            bashScript = entry['bashScript'],
+          ),
+          stdout = subprocess.PIPE,
+          stderr = subprocess.PIPE,
+          shell  = True
+        )
+        submitStdout, submitStderr = submitJobProcess.communicate()
+        entry['ID']       = submitStdout.rstrip('\n').split()[-1]
+        entry['status']   = STATUS_RUNNING
+        entry['retries'] += 1
+        nof_running += 1
+
+      else:
+        raise ValueError("Internal error")
+
+    # wait a little
+    time.sleep(30)

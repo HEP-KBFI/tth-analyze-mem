@@ -99,6 +99,8 @@ if __name__ == '__main__':
     'markovChainParams'     : markovChainParams,
     'comment'               : '',
     'priority'              : 'main',
+    'limit'                 : 1000,
+    'maxRetries'            : 3,
   }
 
   masterMakeFile = ''
@@ -118,8 +120,9 @@ if __name__ == '__main__':
     # now create a bunch of jobs, one for each Higgs width
     for higgsWidth in higgsWidths:
       higgsArgs = copy.deepcopy(defaultArguments)
+      higgsWidth_comment = '%.3f GeV' % higgsWidth if higgsWidth > 0. else 'original'
       higgsArgs['higgsWidth'] = higgsWidth
-      higgsArgs['comment']    = "Higgs width %.3f GeV" % higgsWidth
+      higgsArgs['comment']    = "Higgs width %s" % higgsWidth_comment
       higgsArgs['memBaseDir'] = hw_template % (higgsWidth, version_nr)
       jobs = JobCreator(**higgsArgs)
       jobs.createJobs()
@@ -282,4 +285,4 @@ if __name__ == '__main__':
   # create a ,,master'' Makefile
   assert (masterMakeFile)
   createMasterMakefile(subDirs, makeFiles, masterMakeFile)
-  logging.info("Run it with:\n\tmake -f %s -j 8" % masterMakeFile)
+  logging.info("Run it with:\n\tmake -f %s -j 8 &> %s.log" % (masterMakeFile, masterMakeFile))

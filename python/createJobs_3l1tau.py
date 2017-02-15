@@ -54,8 +54,10 @@ if __name__ == '__main__':
     'markovChainParams'     : markovChainParams,
     'comment'               : "",
     'priority'              : "main",
+    'limit'                 : 1000,
+    'maxRetries'            : 3,
   }
   analysis = JobCreator(**jobArgs)
   analysis.createJobs()
-  logging.info("Run:\tmake -f %s -j 8" % analysis.makeFile)
+  logging.info("Run:\tmake -f %s -j 8 &> %s.log" % (analysis.makeFile, analysis.makeFile))
   logging.info("Done")
