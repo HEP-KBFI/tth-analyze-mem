@@ -59,7 +59,7 @@ class JobCreator:
   def isMEMPathAvailable(year, version, memBaseDir):
     return not os.path.isdir(os.path.join("/home", getpass.getuser(), "ttHAnalysis", year, version, memBaseDir))
 
-  def createJobs(self):
+  def createJobs(self, sbatchComment = ''):
 
     if os.environ.get('CMSSW_BASE') is None:
       logging.error("Variable CMSSW_BASE unset! " + \
@@ -171,7 +171,8 @@ class JobCreator:
       rocOutFileNames.append(os.path.join(self.rocPlotDir, "roc.pdf"))
 
     sbatchContents = createSbatch(
-      sbatchBashFiles, sbatchLogFiles, sbatchOutFileNameLocalFiles, self.priority, self.limit, self.maxRetries
+      sbatchBashFiles, sbatchLogFiles, sbatchOutFileNameLocalFiles, self.priority, self.limit, self.maxRetries,
+      sbatchComment
     )
     with codecs.open(self.sbatchFile, 'w', 'utf-8') as f:
       f.write(sbatchContents)

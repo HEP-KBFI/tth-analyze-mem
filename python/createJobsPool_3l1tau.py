@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import argparse, sys, logging, os, copy, jinja2
+import argparse, sys, logging, os, copy, jinja2, uuid
 from tthAnalysis.tthMEM.samples_3l1tau import samples
 from tthAnalysis.tthMEM.JobCreator import JobCreator
 
@@ -106,6 +106,10 @@ if __name__ == '__main__':
   masterMakeFile = ''
   makeFiles, subDirs = [], []
 
+  # use GUID as sbatch comment which is periodically checked by squeue
+  # by each job instance in the job pool
+  sbatchComment = str(uuid.uuid4())
+
   if args.study_type == 'higgs-width':
     # just vary higgsWidth parameter in some predefined range
     # let's get the version number first (so that all jobs belong to one version number)
@@ -125,7 +129,7 @@ if __name__ == '__main__':
       higgsArgs['comment']    = "Higgs width %s" % higgsWidth_comment
       higgsArgs['memBaseDir'] = hw_template % (higgsWidth, version_nr)
       jobs = JobCreator(**higgsArgs)
-      jobs.createJobs()
+      jobs.createJobs(sbatchComment)
 
       subDirs.append(jobs.memDir)
       makeFiles.append(jobs.makeFile)
@@ -150,7 +154,7 @@ if __name__ == '__main__':
       mcspArgs['comment']                                  = "Max calls starting pos %d" % maxCallsStartingPos
       mcspArgs['memBaseDir']                               = mcsp_template % (maxCallsStartingPos, version_nr)
       jobs = JobCreator(**mcspArgs)
-      jobs.createJobs()
+      jobs.createJobs(sbatchComment)
 
       subDirs.append(jobs.memDir)
       makeFiles.append(jobs.makeFile)
@@ -176,7 +180,7 @@ if __name__ == '__main__':
       nofCallsArgs['comment']             = "NOF calls %d" % nofCalls
       nofCallsArgs['memBaseDir']          = nofCalls_template % (nofCalls, version_nr)
       jobs = JobCreator(**nofCallsArgs)
-      jobs.createJobs()
+      jobs.createJobs(sbatchComment)
 
       subDirs.append(jobs.memDir)
       makeFiles.append(jobs.makeFile)
@@ -242,7 +246,7 @@ if __name__ == '__main__':
         raise ValueError("Internal error: no such clamping type: {clampType}".format(clampType = clampType))
 
       jobs = JobCreator(**clampArgs)
-      jobs.createJobs()
+      jobs.createJobs(sbatchComment)
 
       subDirs.append(jobs.memDir)
       makeFiles.append(jobs.makeFile)
@@ -269,7 +273,7 @@ if __name__ == '__main__':
       integratorArgs['integrationMode'] = integratorType
 
       jobs = JobCreator(**integratorArgs)
-      jobs.createJobs()
+      jobs.createJobs(sbatchComment)
 
       subDirs.append(jobs.memDir)
       makeFiles.append(jobs.makeFile)
