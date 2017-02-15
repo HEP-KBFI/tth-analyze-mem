@@ -1,11 +1,17 @@
 .DEFAULT_GOAL := all
 SHELL := /bin/bash
 
-all:{% for subdir, makefile in makefiles %}
-	+make -C {{ subdir }} -f {{ makefile }} -j $(J) {% endfor %}
+{% for i in range(makefiles|length) %}
+target_{{ i }}:
+	+make -C {{ makefiles[i][0] }} -f {{ makefiles[i][1] }} -j $(J)
 
-.PHONY: clean
+target_clean_{{ i }}:
+	+make -C {{ makefiles[i][0] }} -f {{ makefiles[i][1] }} -j $(J) clean
+{% endfor %}
 
-clean:{% for subdir, makefile in makefiles %}
-	+make -C {{ subdir }} -f {{ makefile }} clean -j $(J) {% endfor %}
+all:{%for i in range(makefiles|length) %} target_{{ i }}{% endfor %}
+
+.PHONY: clean{%for i in range(makefiles|length) %} target_clean_{{ i }}{% endfor %}
+
+clean:{%for i in range(makefiles|length) %} target_clean_{{ i }}{% endfor %}
 
