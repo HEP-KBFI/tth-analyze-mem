@@ -134,16 +134,22 @@ if __name__ == '__main__':
 
   # now we're ready to plot the ROC curve
   logging.debug("Plotting ...")
-  fig, ax = plt.subplots(figsize = (10, 8))
+  fig, ax = plt.subplots(figsize = (12, 8))
   for _, values in mem_subdirs.iteritems():
     data = np.loadtxt(values['roc_csv'], delimiter = ',', unpack = True)
-    plt.plot(data[0], data[1], label = '%s (%.2f)' % (values['comment'], auc(data[0], data[1])), lw = 2)
+    p = plt.plot(data[0], data[1], label = '%s (%.2f)' % (values['comment'], auc(data[0], data[1])), lw = 2)
     minIdx = np.argmin(np.sqrt((data[0] - 1) ** 2 + data[1] ** 2))
     xmin = data[0][minIdx]
     ymin = data[1][minIdx]
     plt.plot((xmin,), (ymin,), marker = 'o', markersize = 10, ls = '', c = 'none')
     if not np.allclose(data[3], data[5]):
-      ax.fill_between(data[0], data[3], data[5], interpolate = True, alpha = 0.2, linewidth = 0.0)
+      ax.fill_between(
+        data[0], data[3], data[5],
+        interpolate = True,
+        alpha       = 0.1,
+        linewidth   = 0.0,
+        color       = p[0].get_color(),
+      )
     plt.annotate('%.2f' % data[2][minIdx], xy = (xmin + 0.025, ymin))
     plt.annotate('Optimal cutoff points are circled with\ncorresponding WP values next to the circle',
                  xy = (0.01, 0.6), fontsize = 12, family = 'sans-serif')
