@@ -68,6 +68,18 @@ if __name__ == '__main__':
   poll_thread.setDaemon(True)
   poll_thread.start()
 
+  # let's loop over the entries first to see whether some files have already been finished
+  # the problem we want to avoid here is that if make command is cancelled or it failed
+  # for whatever reason (e.g. the cluster is back to operating normally), and we want to
+  # run it again, the make command discovers some missing files and winds this script up
+  # however, if we don't check for already finished targets, the jobs will be submitted
+  # regardless of the completion of targets
+  # in other words, all the jobs will be submitted even though we want to recover only
+  # a fraction of them
+  for target, entry in jobs.iteritems():
+    if os.path.exists(target):
+      entry['status'] = STATUS_FINISHED
+
   while True:
     #update status here
     for target, entry in jobs.iteritems():
