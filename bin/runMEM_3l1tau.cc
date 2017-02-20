@@ -190,7 +190,7 @@ main(int argc,
   TTree * newTree = new TTree("tree", Form("Tree created by %s", argv[0]));
 
   MeasuredEvent_3l1tau measuredEvent;
-  measuredEvent.addFilter(rleSelectionFileName);
+  measuredEvent.rle.read(rleSelectionFileName);
   measuredEvent.includeGeneratorLevel(includeGeneratorLevel);
   measuredEvent.setBranches(inputTree);
   measuredEvent.initNewBranches(newTree);
@@ -274,8 +274,8 @@ main(int argc,
 
     inputTree -> GetEntry(i);
     measuredEvent.initialize();
-    if(measuredEvent.isFiltered()) continue;
-    LOGINFO << "run:lumi:event = " << measuredEvent.str();
+    if(! measuredEvent.rle.has()) continue;
+    LOGINFO << "run:lumi:event = " << measuredEvent.rle.str();
 
     MEMOutput_3l1tau result;
     try

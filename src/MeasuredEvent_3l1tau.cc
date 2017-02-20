@@ -184,9 +184,7 @@ MeasuredEvent_3l1tau::initialize()
 void
 MeasuredEvent_3l1tau::setBranches(TTree * t)
 {
-  t -> SetBranchAddress("run",  &run);
-  t -> SetBranchAddress("lumi", &lumi);
-  t -> SetBranchAddress("evt",  &evt);
+  rle.setBranches(t);
   t -> SetBranchAddress("njets", &njets);
 
   met.setBranches(t);
@@ -207,9 +205,7 @@ MeasuredEvent_3l1tau::setBranches(TTree * t)
 void
 MeasuredEvent_3l1tau::initNewBranches(TTree * t)
 {
-  branch_run   = t -> Branch("run",   &run,   "run/i");
-  branch_lumi  = t -> Branch("lumi",  &lumi,  "lumi/i");
-  branch_evt   = t -> Branch("evt",   &evt,   "evt/l");
+  rle.initNewBranches(t);
   branch_njets = t -> Branch("njets", &njets, "njets/I");
 
   met.initNewBranches(t);
@@ -342,44 +338,13 @@ MeasuredEvent_3l1tau::printPermutation() const
   }
 }
 
-std::string
-MeasuredEvent_3l1tau::str() const
-{
-  return std::string(Form("%u:%u:%llu", run, lumi, evt));
-}
-
-void
-MeasuredEvent_3l1tau::addFilter(const std::string & rleSelectionFileName)
-{
-  if(! rleSelectionFileName.empty())
-  {
-    LOGINFO << "Adding filter file '" << rleSelectionFileName << '\'';
-    std::ifstream rleSelectionFile(rleSelectionFileName);
-    for(std::string line; std::getline(rleSelectionFile, line);)
-    {
-      LOGINFO << "Selecting event = '" << line << '\'';
-      rleSelection.push_back(line);
-    }
-  }
-}
-
-bool
-MeasuredEvent_3l1tau::isFiltered() const
-{
-  const std::string rle(Form("%u:%u:%llu", run, lumi, evt));
-  return rleSelection.size() &&
-         std::find(rleSelection.begin(), rleSelection.end(), rle) == rleSelection.end();
-}
-
 namespace tthMEM
 {
   std::ostream &
   operator<<(std::ostream & os,
              const MeasuredEvent_3l1tau & event)
   {
-    os << "The event (" << event.run << ':'
-                        << event.lumi << ':'
-                        << event.evt << "), "
+    os << "The event (" << event.rle.str() << "), "
        << "permutation #" << (event.currentPermutation_ + 1) << ":\n";
     for(int i = 0; i < 3; ++i)
       os << "\tLepton " << (i + 1) << ": " << event.leptons[i] << '\n';

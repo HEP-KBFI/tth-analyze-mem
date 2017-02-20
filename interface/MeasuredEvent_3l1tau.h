@@ -13,6 +13,7 @@
 #include "tthAnalysis/tthMEM/interface/IndexWrapper.h" // tthMEM::IndexWrapper<,>
 #include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
 #include "tthAnalysis/tthMEM/interface/GeneratorLevelEvent_3l1tau.h" // GeneratorLevelEvent_3l1tau
+#include "tthAnalysis/tthMEM/interface/RLESelector.h" // RLESelector<>
 
 #include <ostream> // std::ostream
 #include <vector> // std::vector<>
@@ -29,16 +30,10 @@ namespace tthMEM
   public:
     MeasuredEvent_3l1tau() = default;
 
-    UInt_t run;
-    UInt_t lumi;
-    ULong64_t evt;
     Int_t njets;
-
-    TBranch * branch_run   = nullptr;
-    TBranch * branch_lumi  = nullptr;
-    TBranch * branch_evt   = nullptr;
     TBranch * branch_njets = nullptr;
 
+    mutable RLESelector<> rle;
     MeasuredMET met;
     IndexWrapper<MeasuredLepton, 3> leptons;
     std::array<MeasuredJet, NOF_RECO_JETS_MEM> allJets;
@@ -98,15 +93,6 @@ namespace tthMEM
     void
     printPermutation() const;
 
-    std::string
-    str() const;
-
-    void
-    addFilter(const std::string & rleSelectionFileName);
-
-    bool
-    isFiltered() const;
-
     friend std::ostream &
     operator<<(std::ostream & os,
                const MeasuredEvent_3l1tau & event);
@@ -117,7 +103,6 @@ namespace tthMEM
     std::vector<IndexWrapper<MeasuredJet, 2>> jetCombinations_;
     std::vector<std::vector<unsigned>> leptonPermIdxs;
     std::vector<std::vector<unsigned>> jetPermIdxs;
-    std::vector<std::string> rleSelection;
     double dR;
   };
 }

@@ -23,5 +23,5 @@ evalMEMG.tthMEM = cms.PSet(
   logLevel         = cms.string('trace'),
   logPrecision     = cms.uint32(10),
   outputFileName   = cms.string(os.path.expanduser('~/sandbox/evalMEMG/out.root')),
-  dumpToText       = cms.bool(True)
+  dumpToText       = cms.bool(False)
 )

@@ -9,13 +9,14 @@
 #include <utility> // std::pair<,>
 #include <sstream> // std::stringstream
 
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line(), throw_line_ext()
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line(), throw_line_ext(), tthMEMexception
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR, LOGINFO
 #include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_qq_mg5.h" // me_tth_3l1tau_qq_mg5
 #include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_mg5.h" // me_tth_3l1tau_mg5
 #include "tthAnalysis/tthMEM/interface/me_ttz_3l1tau_mg5.h" // me_ttz_3l1tau_mg5
 #include "tthAnalysis/tthMEM/interface/GeneratorLevelEvent_3l1tau.h" // tthMEM::GeneratorLevelEvent_3l1tau
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // tthMEM::constants
+#include "tthAnalysis/tthMEM/interface/RLESelector.h" // RLESelector<>
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 #include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
@@ -226,19 +227,21 @@ main(int argc,
         };
         const std::string id = boost::algorithm::join(id_vector, "_");
 
+        RLESelector<> rle;
         const std::string rleSelectionFileName = pset.getParameter<std::string>("rleSelection");
-        std::vector<std::string> rles;
-        if(! rleSelectionFileName.empty())
+        try
         {
-          if(! boost::filesystem::exists(rleSelectionFileName) ||
-             ! boost::filesystem::is_regular_file(rleSelectionFileName))
-          {
-            LOGERR << "File '" << rleSelectionFileName << "' does not exist or isn't a regular file";
-            return EXIT_FAILURE;
-          }
-          std::ifstream rleSelectionFile(rleSelectionFileName);
-          for(std::string line; std::getline(rleSelectionFile, line); )
-            rles.push_back(line);
+          rle.read(rleSelectionFileName);
+        }
+        catch(const tthMEMexception & err)
+        {
+          LOGERR << err;
+          return EXIT_FAILURE;
+        }
+        catch(...)
+        {
+          LOGERR << "Caught unrecognzed error while trying to initialize RLE selector";
+          return EXIT_FAILURE;
         }
 
         LOGINFO << "Processing " << id;
@@ -267,9 +270,9 @@ main(int argc,
         }
         LOGINFO << "Read in file '" << fileName << "' and using tree '" << treeName << '\'';
 
-        UInt_t run;
-        UInt_t lumi;
-        ULong64_t event;
+        RLESelector<>::run_type  run;
+        RLESelector<>::lumi_type lumi;
+        RLESelector<>::evt_type  event;
         tree -> SetBranchAddress("run",  &run);
         tree -> SetBranchAddress("lumi", &lumi);
         tree -> SetBranchAddress("evt",  &event);
@@ -306,11 +309,9 @@ main(int argc,
         {
           tree -> GetEntry(i);
           evt.initialize();
-
-          std::stringstream ss;
-          ss << run << ':' << lumi << ':' << event;
-          const std::string rle_str = ss.str();
-          if(rles.size() && std::find(rles.begin(), rles.end(), rle_str) == rles.end()) continue;
+          if(! rle.has(run, lumi, event))
+            continue;
+          const std::string rle_str = rle.str();
 
           if(forceTauPairMass > 0.)
           {

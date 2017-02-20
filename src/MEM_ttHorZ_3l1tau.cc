@@ -301,7 +301,15 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
       LOGDBG << ev;
       integrand_ -> renewInputs();
       if(ev.debugPlotter)
-        ev.debugPlotter -> initialize({ev.str(), isTTH ? "TTH" : "TTZ", ev.getPermutationNumber(), ev.getJetCombinationNumber()}, vm_);
+        ev.debugPlotter -> initialize(
+          {
+            ev.rle.str(),
+            isTTH ? "TTH" : "TTZ",
+            ev.getPermutationNumber(),
+            ev.getJetCombinationNumber()
+          },
+          vm_
+        );
 
       double p = 0.;
       double pErr = 0.;

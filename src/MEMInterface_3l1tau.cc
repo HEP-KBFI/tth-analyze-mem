@@ -75,9 +75,7 @@ MEMInterface_3l1tau::operator()(const std::vector<MeasuredJet> & selectedJets,
       event.njets = selectedJets.size();
       event.htau = selectedHadronicTau;
       event.met  = measuredMET;
-      event.run  = 0;
-      event.lumi = 0;
-      event.evt  = 0;
+      event.rle.reset();
       event.initialize();
     } catch(const tthMEMexception & exception)
     {
