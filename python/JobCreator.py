@@ -36,7 +36,7 @@ class JobCreator:
     self.baseDir        = os.path.join("/home", self.baseDirPattern)
     self.cmsswSrcDir    = os.path.join(os.environ.get('CMSSW_BASE'), "src")
 
-    self.scratchDir           = os.path.join("/scratch", self.baseDirPattern)
+    self.scratchDir           = os.path.join("/scratch", self.baseDirPattern, self.memBaseDir)
     self.scratchTempOutputDir = os.path.join(self.scratchDir, "temp_output", "%d")
     self.scratchOutputDir     = os.path.join(self.scratchDir, "mem_output")
 

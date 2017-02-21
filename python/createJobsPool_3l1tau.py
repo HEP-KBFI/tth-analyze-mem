@@ -80,7 +80,7 @@ if __name__ == '__main__':
     'samples'               : samples,
     'channel'               : '3l_1tau',
     'year'                  : '2016',
-    'version'               : args.basedir,
+    'version'               : os.path.basename(args.basedir),
     'memBaseDir'            : 'mem',
     'central_or_shifts'     : ["central"],
     'charge_selections'     : ["OS"],
@@ -166,8 +166,8 @@ if __name__ == '__main__':
 
   elif args.study_type == 'nof-calls':
     # vary maxObjFunctionCalls
-    #                 200k    100k    50k    25k    10k    5k  2.5k
-    nofCallsList = [200000, 100000, 50000, 25000, 10000, 5000, 2500]
+    #                 200k    100k    50k    25k    10k    5k
+    nofCallsList = [200000, 100000, 50000, 25000, 10000, 5000]
     nofCalls_template = "mem_nofCalls_{integrator}_%d_v%d".format(integrator = defaultArguments['integrationMode'])
     version_nr = getMEMversionNr(
       defaultArguments['year'], defaultArguments['version'], nofCalls_template, nofCallsList
