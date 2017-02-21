@@ -155,8 +155,8 @@ if __name__ == '__main__':
         for i in range(nof_entries):
           tree.GetEntry(i)
           sig_bkg_dict['lr'].append(lr[0])
-          sig_bkg_dict['lr_up'].append(lr[0] + lr_err[0])
-          sig_bkg_dict['lr_down'].append(lr[0] - lr_err[0])
+          sig_bkg_dict['lr_up'].append(min(lr[0] + lr_err[0], 1.))
+          sig_bkg_dict['lr_down'].append(max(lr[0] - lr_err[0], 0.))
       else:
         branch_sig_err = '%s_err' % branch_sig
         branch_bkg_err = '%s_err' % branch_bkg
