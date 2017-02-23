@@ -63,7 +63,8 @@ def createPythonROCcfg(fileList, classList, memBaseFolder, outFolderCSV,
   )
 
 def createBashCfg(inFileNameLocal, outFileNameLocal, inFileNameScratch,
-                  outFileNameScratch, execName, pythonCfg, cmsswSrcDir):
+                  outFileNameScratch, execName, pythonCfg, cmsswSrcDir,
+                  zombieMacro = ''):
   return jinja2.Template(jobTemplate).render(
     inFileNameLocal    = inFileNameLocal,
     outFileNameLocal   = outFileNameLocal,
@@ -72,6 +73,7 @@ def createBashCfg(inFileNameLocal, outFileNameLocal, inFileNameScratch,
     execName           = execName,
     pythonCfg          = pythonCfg,
     cmsswSrcDir        = cmsswSrcDir,
+    zombieMacro        = zombieMacro,
   )
 
 def createSbatch(bashScript, logFile, outLocalFiles, priority, limit, maxRetries, sbatchComment = ''):

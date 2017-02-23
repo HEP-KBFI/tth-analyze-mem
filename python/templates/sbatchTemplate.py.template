@@ -1,24 +1,40 @@
 #!/usr/bin/env python
-import subprocess, os, getpass, time, threading
+import subprocess, os, getpass, time, threading, logging, sys
 
 runningIDs = []
 do_poll    = True
+
+def run_cmd(cmd_str, log = True):
+  cmd = subprocess.Popen(
+    cmd_str,
+    stdout = subprocess.PIPE,
+    stderr = subprocess.PIPE,
+    shell  = True
+  )
+  if log:
+    logging.debug(cmd_str)
+  stdout, stderr = cmd.communicate()
+  return stdout, stderr
 
 def poll(squeueCommand):
   # fetch the IDs of running jobs
   global runningIDs
   global do_poll
   while do_poll:
-    squeueProcess = subprocess.Popen(
-      squeueCommand,
-      stdout = subprocess.PIPE,
-      stderr = subprocess.PIPE,
-      shell  = True)
-    squeueStdout, squeueStderr = squeueProcess.communicate()
+    squeueStdout, squeueStderr = run_cmd(squeueCommand, False)
     runningIDs = squeueStdout.rstrip('\n').split('\n')
     time.sleep(2)
 
 if __name__ == '__main__':
+
+  logging.basicConfig(
+    stream = sys.stdout,
+    level  = logging.DEBUG,
+    format = '[%(filename)s] %(asctime)s - %(levelname)s: %(message)s',
+  )
+
+  # start the clock
+  start_time = time.time()
 
   # define the status codes
   STATUS_NOT_SUBMITTED = 0
@@ -29,11 +45,17 @@ if __name__ == '__main__':
   # create a list of targets and necessary meta-information associated w/ each job
   jobs = { {% for targetFile, bashScript, logFile in zippedInfo %}
     '{{ targetFile }}' : {
-      'logFile'    : '{{ logFile }}',
-      'bashScript' : '{{ bashScript }}',
-      'ID'         : -1,
-      'status'     : STATUS_NOT_SUBMITTED,
-      'retries'    : 0,
+      'logFile'           : '{{ logFile }}',
+      'bashScript'        : '{{ bashScript }}',
+      'ID'                : -1,
+      'status'            : STATUS_NOT_SUBMITTED,
+      'retries'           : 0,
+      'nodelist'          : [],
+      'start'             : [],
+      'end'               : [],
+      'elapsed'           : [],
+      'exit_code'         : [],
+      'derived_exit_code' : [],
     },{% endfor %}
   }
 
@@ -56,6 +78,7 @@ if __name__ == '__main__':
 
   sbatchComment = '{{ sbatchComment }}'
   if sbatchComment:
+    # look into a group of jobs that were submitted with the same comment (preferably a GUID)
     squeueCommand = "squeue -u {user} -o '%i %36k' | tail -n+2 | grep {comment}".format(
       user    = getpass.getuser(),
       comment = sbatchComment,
@@ -63,6 +86,9 @@ if __name__ == '__main__':
   else:
     squeueCommand = "squeue -u {user} -o '%i' | tail -n+2".format(user = getpass.getuser())
   squeueCommand += " | awk '{print $1}'"
+
+  sacct_cmd_template = "sacct -X -P -n -j {jobID} -o ExitCode,DerivedExitCode,Start,End,Elapsed,NodeList"
+  blacklisted_nodelists = []
 
   poll_thread = threading.Thread(target = poll, args = (squeueCommand,))
   poll_thread.setDaemon(True)
@@ -84,15 +110,63 @@ if __name__ == '__main__':
     #update status here
     for target, entry in jobs.iteritems():
       if entry['status'] == STATUS_RUNNING and entry['ID'] not in runningIDs:
+
+        # use sacct command to gather statistics about the job
+        # if the job failed (i.e. the ExitCode or DerivedExitCode was not 0:0), then blacklist the node
+        has_statistics = False
+        sacct_out, sacct_err = run_cmd(sacct_cmd_template.format(jobID = entry['ID']))
+        if not sacct_err:
+          ExitCode, DerivedExitCode, Start, End, Elapsed, NodeList = sacct_out.split('|')
+          entry['exit_code'].append(ExitCode)
+          entry['derived_exit_code'].append(DerivedExitCode)
+          entry['start'].append(Start)
+          entry['end'].append(End)
+          entry['elapsed'].append(Elapsed)
+          entry['nodelist'].append(NodeList)
+          has_statistics = True
+
+          logging.debug('Finished job {jobID} at {end} (elapsed {elapsed}) with exit code '
+                        '{exit_code} ({derived_exit_code}) at {node_name}'.format(
+            jobID             = entry['ID'],
+            end               = End,
+            elapsed           = Elapsed,
+            exit_code         = ExitCode,
+            derived_exit_code = DerivedExitCode,
+            node_name         = NodeList,
+          ))
+        else:
+          logging.debug('Finished job {jobID}'.format(jobID = entry['ID']))
+
         if os.path.exists(target):
           entry['status'] = STATUS_FINISHED
+          logging.debug('Job {jobID} finished successfully'.format(jobID = entry['ID']))
         else:
           if entry['retries'] > {{ maxRetries }}:
             # if the number of resubmission exceeds certain threshold, mark it as failed
             entry['status'] = STATUS_FAILED
+            logging.debug('Job {jobID} failed {max_retries} times'.format(
+              jobID       = entry['ID'],
+              max_retries = {{ maxRetries }},
+            ))
           else:
             # otherwise resubmit the job
             entry['status'] = STATUS_NOT_SUBMITTED
+            logging.debug('Job {jobID} will be resubmitted shortly'.format(jobID = entry['ID']))
+
+            # if the job exit code was not that what we would've expected, blacklist the node just in case
+            if has_statistics:
+              ExitCode        = entry['exit_code'][-1]
+              DerivedExitCode = entry['derived_exit_code'][-1]
+
+              if ExitCode != '0:0' or DerivedExitCode != '0:0':
+                to_blacklist = entry['nodelist'][-1]
+                if to_blacklist not in blacklisted_nodelists:
+                  blacklisted_nodelists.append(to_blacklist)
+                  logging.debug('Blacklisted node: {node_name} ({start}-{end})'.format(
+                    node_name = to_blacklist,
+                    start     = entry['start'][-1],
+                    end       = entry['end'][-1],
+                  ))
 
     # check if all jobs have been finished
     if all([jobs[t]['status'] in (STATUS_FINISHED, STATUS_FAILED) for t in jobs]):
@@ -108,23 +182,25 @@ if __name__ == '__main__':
 
       if entry['status'] == STATUS_NOT_SUBMITTED:
         # submit the job
-        submitJobProcess = subprocess.Popen(
-          'sbatch --partition={priority} --output={logFile} --comment="{comment}" {bashScript}'.format(
+        submitJobProcess = 'sbatch --partition={priority} --output={logFile}.{ver} {exclude} --comment="{comment}" {bashScript}'.format(
             priority   = priority,
             logFile    = entry['logFile'],
+            ver        = entry['retries'],
+            exclude    = ('--exclude=%s' % ','.join(blacklisted_nodelists)) if blacklisted_nodelists else '',
             bashScript = entry['bashScript'],
             comment    = sbatchComment,
-          ),
-          stdout = subprocess.PIPE,
-          stderr = subprocess.PIPE,
-          shell  = True
         )
-        submitStdout, submitStderr = submitJobProcess.communicate()
+        submitStdout, submitStderr = run_cmd(submitJobProcess)
         if submitStderr:
           raise ValueError("sbatch error: {reason}".format(reason = submitStderr))
         entry['ID']       = submitStdout.rstrip('\n').split()[-1]
         entry['status']   = STATUS_RUNNING
         entry['retries'] += 1
+
+        logging.debug('Submitted task {bashScript} with job ID {jobID}'.format(
+          bashScript = entry['bashScript'],
+          jobID      = entry['ID'],
+        ))
 
     # wait a little
     time.sleep(30)
@@ -132,4 +208,14 @@ if __name__ == '__main__':
   do_poll = False
   poll_thread.join()
 
+  # stop the clock
+  end_time = time.time()
+
+  logging.debug('Finished job submission')
+  logging.debug('Number of targets already present: %d' % len([k for k, v in jobs.items() if v['status'] == STATUS_FINISHED and v['retries'] == 0]))
+  logging.debug('Number of jobs submitted:          %d' % len([k for k, v in jobs.items() if v['retries'] > 0                                    ]))
+  logging.debug('Number of successful jobs:         %d' % len([k for k, v in jobs.items() if v['status'] == STATUS_FINISHED and v['retries'] != 0]))
+  logging.debug('Number of failed jobs:             %d' % len([k for k, v in jobs.items() if v['status'] == STATUS_FAILED                        ]))
+  logging.debug('Blacklisted nodes: {blacklist}'.format(blacklist = ', '.join(blacklisted_nodelists) if blacklisted_nodelists else 'None'))
+  logging.debug('Total time elapsed: %.1f s' % (end_time - start_time))
 

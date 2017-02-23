@@ -2,10 +2,28 @@
 
 set -v
 
+cleanup ()
+{
+  echo -e "\n\nCleaning up"
+  rm -rf $(dirname {{ inFileNameScratch }})
+  rm -rf $(dirname {{ outFileNameScratch }})
+}
+
 echo -n "Current time: "
 date
 echo -n "Hostname: "
 hostname
+echo "Current PID:      $SLURM_TASK_PID"
+echo "Current job ID:   $SLURM_JOB_ID"
+echo "Current parition: $SLURM_JOB_PARTITION"
+
+echo -e "\n\nTesting if the network drive is mounted"
+MOUNT_POINT="/cvmfs/cms.cern.ch"
+MOUNT_TEST=$(cat /proc/mounts | grep $MOUNT_POINT | awk '{print $4}')
+if [ -z $MOUNT_TEST ]; then
+  echo -e "\n\nCannot access $MOUNT_POINT\nBailing out";
+  exit 1;
+fi
 
 echo -e "\n\nInitializing CMSSW run-time environment"
 
@@ -30,10 +48,17 @@ echo "{{ execName }} {{ pythonCfg }}"
 LINE=$(seq -s= 30|tr -d '[:digit:]')
 echo "${LINE} BEGIN ${LINE}"
 {{ execName }} {{ pythonCfg }}
+RET_CODE=$?
 echo "${LINE}= END =${LINE}"
 
 echo -n -e "\n\nFinished at "
 date
+
+if [ $RET_CODE -ne 0 ]; then
+  echo "\n\nThe program did not finish successfully ($RET_CODE)";
+  cleanup
+  exit $RET_CODE;
+fi
 
 echo -e "\n\nCreating directory $(dirname {{ outFileNameLocal }})"
 mkdir -p $(dirname {{ outFileNameLocal }})
@@ -41,8 +66,18 @@ mkdir -p $(dirname {{ outFileNameLocal }})
 echo -e "\n\nMoving {{ outFileNameScratch }} to {{ outFileNameLocal }}"
 mv {{ outFileNameScratch }} {{ outFileNameLocal }}
 
-echo -e "\n\nCleaning up"
-rm -rf $(dirname {{ inFileNameScratch }})
+cleanup
+
+ZOMBIE_MACRO="{{ zombieMacro }}"
+if [ -z $ZOMBIE_MACRO ] && [ -f $ZOMBIE_MACRO ]; then
+  echo -e "\n\nTesting if the file {{ outFileNameLocal }} is corrupted"
+  root -b -l -q "$ZOMBIE_MACRO(\"{{ outFileNameLocal }}\")"
+  TEST_IF_ZOMBIE=$?
+  if [ $TEST_IF_ZOMBIE -ne 0 ]; then
+    echo "\n\nFile {{ outFileNameLocal }} is a zombie; deleting it";
+    rm -f {{ outFileNameLocal }};
+  fi
+fi
 
 echo -e "\n\nDone"
 

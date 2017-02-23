@@ -166,8 +166,8 @@ if __name__ == '__main__':
 
   elif args.study_type == 'nof-calls':
     # vary maxObjFunctionCalls
-    #                 200k    100k    50k    25k    10k    5k
-    nofCallsList = [200000, 100000, 50000, 25000, 10000, 5000]
+    #                    1M    500k    200k    100k    50k    25k    10k    5k
+    nofCallsList = [1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000]
     nofCalls_template = "mem_nofCalls_{integrator}_%d_v%d".format(integrator = defaultArguments['integrationMode'])
     version_nr = getMEMversionNr(
       defaultArguments['year'], defaultArguments['version'], nofCalls_template, nofCallsList

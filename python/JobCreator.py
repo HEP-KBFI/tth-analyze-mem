@@ -6,7 +6,8 @@ class JobCreator:
   def __init__(self, samples, channel, year, version, memBaseDir, central_or_shifts, charge_selections,
                lepton_selections, execName, treeName, rleSelectionFile, integrationMode,
                maxObjFunctionCalls, nofIntegrationsPerJob, lhRatioBranchName, debugPlots, forceGenLevel,
-               higgsWidth, clampVariables, markovChainParams, comment, priority = 'main', limit = 1000, maxRetries = 3):
+               higgsWidth, clampVariables, markovChainParams, comment, priority = 'main', limit = 1000,
+               maxRetries = 3):
     self.samples               = samples
     self.channel               = channel
     self.year                  = year
@@ -32,9 +33,10 @@ class JobCreator:
     self.limit                 = limit
     self.maxRetries            = maxRetries
 
-    self.baseDirPattern = os.path.join(getpass.getuser(), "ttHAnalysis", self.year, self.version)
+    self.baseDirPattern = JobCreator.getMEMPath(self.year, self.version)
     self.baseDir        = os.path.join("/home", self.baseDirPattern)
     self.cmsswSrcDir    = os.path.join(os.environ.get('CMSSW_BASE'), "src")
+    self.zombieMacro    = os.path.join(os.path.dirname(__file__), 'macros', 'is_zombie.cc')
 
     self.scratchDir           = os.path.join("/scratch", self.baseDirPattern, self.memBaseDir)
     self.scratchTempOutputDir = os.path.join(self.scratchDir, "temp_output", "%d")
@@ -55,9 +57,16 @@ class JobCreator:
     self.sbatchFile = os.path.join(self.memDir, "sbatchMEM_%s.py" % self.channel)
     self.makeFile   = os.path.join(self.memDir, "_".join(["Makefile", self.channel, "mem"]))
 
+    if not os.path.isfile(self.zombieMacro):
+      self.zombieMacro = ''
+
   @staticmethod
   def isMEMPathAvailable(year, version, memBaseDir):
-    return not os.path.isdir(os.path.join("/home", getpass.getuser(), "ttHAnalysis", year, version, memBaseDir))
+    return not os.path.isdir(os.path.join("/home", JobCreator.getMEMPath(year, version), memBaseDir))
+
+  @staticmethod
+  def getMEMPath(year, version):
+    return os.path.join(os.path.join(getpass.getuser(), "ttHAnalysis", year, version))
 
   def createJobs(self, sbatchComment = ''):
 
@@ -150,7 +159,7 @@ class JobCreator:
                 )
                 bashCfg = createBashCfg(
                   fileNameLocal, outFileNameLocal_i, fileNameScratch_i, outFileNameScratch_i,
-                  self.execName, jobCfgFile_i, self.cmsswSrcDir
+                  self.execName, jobCfgFile_i, self.cmsswSrcDir, self.zombieMacro
                 )
                 with codecs.open(jobCfgFile_i, 'w', 'utf-8') as f: f.write(pythonCfg)
                 with codecs.open(jobBashFile_i, 'w', 'utf-8') as f: f.write(bashCfg)
