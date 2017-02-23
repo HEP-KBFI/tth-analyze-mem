@@ -5,38 +5,37 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#include "tthAnalysis/tthMEM/interface/me_ttz_3l1tau_mg5.h"
-#include "tthAnalysis/tthMEM/interface/HelAmps_sm_ttz_3l1tau.h"
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
+#include "tthAnalysis/tthMEM/interface/mg5_tth_t2lvl_tbar2lvl_h2tata.h"
+#include "tthAnalysis/tthMEM/interface/HelAmps_sm_tth_t2lvl_tbar2lvl_h2tata.h"
 
-using namespace MG5_sm_ttz_3l1tau;
+using namespace MG5_sm_tth_t2lvl_tbar2lvl_h2tata;
 
 //==========================================================================
 // Class member functions for calculating the matrix elements for
-// Process: g g > t t~ z WEIGHTED<=4 @1
+// Process: g g > t t~ h WEIGHTED<=4 @1
 // *   Decay: t > b e+ ve WEIGHTED<=4
 // *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
-// *   Decay: z > ta+ ta- WEIGHTED<=2
-// Process: g g > t t~ z WEIGHTED<=4 @1
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: g g > t t~ h WEIGHTED<=4 @1
 // *   Decay: t > b mu+ vm WEIGHTED<=4
 // *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
-// *   Decay: z > ta+ ta- WEIGHTED<=2
-// Process: g g > t t~ z WEIGHTED<=4 @1
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: g g > t t~ h WEIGHTED<=4 @1
 // *   Decay: t > b e+ ve WEIGHTED<=4
 // *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
-// *   Decay: z > ta+ ta- WEIGHTED<=2
-// Process: g g > t t~ z WEIGHTED<=4 @1
+// *   Decay: h > ta+ ta- WEIGHTED<=2
+// Process: g g > t t~ h WEIGHTED<=4 @1
 // *   Decay: t > b mu+ vm WEIGHTED<=4
 // *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
-// *   Decay: z > ta+ ta- WEIGHTED<=2
+// *   Decay: h > ta+ ta- WEIGHTED<=2
 
 //--------------------------------------------------------------------------
 // Initialize process.
 
-void me_ttz_3l1tau_mg5::initProc(std::string param_card_name)
+void mg5_tth_t2lvl_tbar2lvl_h2tata::initProc(std::string param_card_name)
 {
   // Instantiate the model class and set parameters that stay fixed during run
-  pars = Parameters_sm_ttz_3l1tau::getInstance();
+  pars = Parameters_sm_tth_t2lvl_tbar2lvl_h2tata::getInstance();
   SLHAReader slha(param_card_name); 
   pars->setIndependentParameters(slha); 
   pars->setIndependentCouplings(); 
@@ -59,7 +58,7 @@ void me_ttz_3l1tau_mg5::initProc(std::string param_card_name)
 //--------------------------------------------------------------------------
 // Evaluate |M|^2, part independent of incoming flavour.
 
-void me_ttz_3l1tau_mg5::sigmaKin()
+void mg5_tth_t2lvl_tbar2lvl_h2tata::sigmaKin()
 {
   // Set the parameters which change event by event
   pars->setDependentParameters(); 
@@ -82,7 +81,7 @@ void me_ttz_3l1tau_mg5::sigmaKin()
   static int ntry = 0, sum_hel = 0, ngood = 0; 
   static int igood[ncomb]; 
   static int jhel; 
-  //std::complex<double> * * wfs;
+  // std::complex<double> * * wfs; 
   double t[nprocesses]; 
   // Helicities for the process
   static const int helicities[ncomb][nexternal] = {{-1, -1, -1, -1, -1, -1, -1,
@@ -634,7 +633,7 @@ void me_ttz_3l1tau_mg5::sigmaKin()
       if (goodhel[ihel] || ntry < 2)
       {
         calculate_wavefunctions(perm, helicities[ihel]); 
-        t[0] = matrix_1_gg_ttxz_t_bepve_tx_bxemvex_z_taptam(); 
+        t[0] = matrix_1_gg_ttxh_t_bepve_tx_bxemvex_h_taptam(); 
 
         double tsum = 0; 
         for(int iproc = 0; iproc < nprocesses; iproc++ )
@@ -665,7 +664,7 @@ void me_ttz_3l1tau_mg5::sigmaKin()
       double hwgt = double(ngood)/double(sum_hel); 
       int ihel = igood[jhel]; 
       calculate_wavefunctions(perm, helicities[ihel]); 
-      t[0] = matrix_1_gg_ttxz_t_bepve_tx_bxemvex_z_taptam(); 
+      t[0] = matrix_1_gg_ttxh_t_bepve_tx_bxemvex_h_taptam(); 
 
       for(int iproc = 0; iproc < nprocesses; iproc++ )
       {
@@ -684,7 +683,7 @@ void me_ttz_3l1tau_mg5::sigmaKin()
 //--------------------------------------------------------------------------
 // Evaluate |M|^2, including incoming flavour dependence.
 
-double me_ttz_3l1tau_mg5::sigmaHat()
+double mg5_tth_t2lvl_tbar2lvl_h2tata::sigmaHat()
 {
   // Select between the different processes
   if(id1 == 21 && id2 == 21)
@@ -701,10 +700,9 @@ double me_ttz_3l1tau_mg5::sigmaHat()
 
 //--------------------------------------------------------------------------
 // Set Higgs width
-void me_ttz_3l1tau_mg5::setHiggsWidth(double __attribute__((unused)) higgsWidth)
+void mg5_tth_t2lvl_tbar2lvl_h2tata::setHiggsWidth(double higgsWidth)
 {
-  throw_line_ext("invalid usage", TTHEXCEPTION_ERR_CODE_MGME)
-    << "Cannot set Higgs width for TTZ matrix element!!!";
+  if(pars) pars -> mdl_WH = higgsWidth;
 }
 
 //==========================================================================
@@ -713,10 +711,10 @@ void me_ttz_3l1tau_mg5::setHiggsWidth(double __attribute__((unused)) higgsWidth)
 //--------------------------------------------------------------------------
 // Evaluate |M|^2 for each subprocess
 
-void me_ttz_3l1tau_mg5::calculate_wavefunctions(const int perm[], const int hel[])
+void mg5_tth_t2lvl_tbar2lvl_h2tata::calculate_wavefunctions(const int perm[], const int hel[])
 {
   // Calculate wavefunctions for all processes
-  //int i, j;
+  // int i, j; 
 
   // Calculate all wavefunctions
   vxxxxx(p[perm[0]], mME[0], hel[0], -1, w[0]); 
@@ -733,13 +731,10 @@ void me_ttz_3l1tau_mg5::calculate_wavefunctions(const int perm[], const int hel[
   FFV2_2(w[7], w[10], pars->GC_100, pars->mdl_MT, pars->mdl_WT, w[11]); 
   ixxxxx(p[perm[8]], mME[8], hel[8], -1, w[12]); 
   oxxxxx(p[perm[9]], mME[9], hel[9], +1, w[13]); 
-  FFV2_4_3(w[12], w[13], pars->GC_50, pars->GC_59, pars->mdl_MZ, pars->mdl_WZ,
-      w[14]);
+  FFS4_3(w[12], w[13], pars->GC_99, pars->mdl_MH, pars->mdl_WH, w[14]); 
   VVV1P0_1(w[0], w[1], pars->GC_10, pars->ZERO, pars->ZERO, w[15]); 
-  FFV2_5_1(w[6], w[14], pars->GC_51, pars->GC_58, pars->mdl_MT, pars->mdl_WT,
-      w[16]);
-  FFV2_5_2(w[11], w[14], pars->GC_51, pars->GC_58, pars->mdl_MT, pars->mdl_WT,
-      w[17]);
+  FFS4_1(w[6], w[14], pars->GC_94, pars->mdl_MT, pars->mdl_WT, w[16]); 
+  FFS4_2(w[11], w[14], pars->GC_94, pars->mdl_MT, pars->mdl_WT, w[17]); 
   FFV1_1(w[6], w[0], pars->GC_11, pars->mdl_MT, pars->mdl_WT, w[18]); 
   FFV1_2(w[11], w[1], pars->GC_11, pars->mdl_MT, pars->mdl_WT, w[19]); 
   FFV1_2(w[11], w[0], pars->GC_11, pars->mdl_MT, pars->mdl_WT, w[20]); 
@@ -749,19 +744,19 @@ void me_ttz_3l1tau_mg5::calculate_wavefunctions(const int perm[], const int hel[
   // Amplitude(s) for diagram number 0
   FFV1_0(w[11], w[16], w[15], pars->GC_11, amp[0]); 
   FFV1_0(w[17], w[6], w[15], pars->GC_11, amp[1]); 
-  FFV2_5_0(w[19], w[18], w[14], pars->GC_51, pars->GC_58, amp[2]); 
+  FFS4_0(w[19], w[18], w[14], pars->GC_94, amp[2]); 
   FFV1_0(w[17], w[18], w[1], pars->GC_11, amp[3]); 
-  FFV2_5_0(w[20], w[21], w[14], pars->GC_51, pars->GC_58, amp[4]); 
+  FFS4_0(w[20], w[21], w[14], pars->GC_94, amp[4]); 
   FFV1_0(w[20], w[16], w[1], pars->GC_11, amp[5]); 
   FFV1_0(w[17], w[21], w[0], pars->GC_11, amp[6]); 
   FFV1_0(w[19], w[16], w[0], pars->GC_11, amp[7]); 
 
 }
-double me_ttz_3l1tau_mg5::matrix_1_gg_ttxz_t_bepve_tx_bxemvex_z_taptam()
+double mg5_tth_t2lvl_tbar2lvl_h2tata::matrix_1_gg_ttxh_t_bepve_tx_bxemvex_h_taptam()
 {
   int i, j; 
   // Local variables
-  //const int ngraphs = 8;
+  // const int ngraphs = 8; 
   const int ncolor = 2; 
   std::complex<double> ztemp; 
   std::complex<double> jamp[ncolor]; 

@@ -7,22 +7,22 @@
 
 #include <iostream> 
 #include <iomanip> 
-#include "tthAnalysis/tthMEM/interface/Parameters_sm_tth_3l1tau.h"
+#include "tthAnalysis/tthMEM/interface/Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 
 // Initialize static instance
-Parameters_sm_tth_3l1tau * Parameters_sm_tth_3l1tau::instance = 0;
+Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata * Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata::instance = 0;
 
 // Function to get static instance - only one instance per program
-Parameters_sm_tth_3l1tau * Parameters_sm_tth_3l1tau::getInstance()
+Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata * Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata::getInstance()
 {
   if (instance == 0)
-    instance = new Parameters_sm_tth_3l1tau();
+    instance = new Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata();
 
   return instance; 
 }
 
-void Parameters_sm_tth_3l1tau::setIndependentParameters(SLHAReader& slha)
+void Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata::setIndependentParameters(SLHAReader& slha)
 {
   // Define "zero"
   zero = 0; 
@@ -79,26 +79,28 @@ void Parameters_sm_tth_3l1tau::setIndependentParameters(SLHAReader& slha)
   mdl_sw__exp__2 = pow(mdl_sw, 2.); 
   mdl_cw__exp__2 = pow(mdl_cw, 2.); 
 }
-void Parameters_sm_tth_3l1tau::setIndependentCouplings()
+void Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata::setIndependentCouplings()
 {
-  GC_94 = -((mdl_complexi * mdl_yt)/mdl_sqrt__2); 
-  GC_99 = -((mdl_complexi * mdl_ytau)/mdl_sqrt__2); 
+  GC_50 = -(mdl_cw * mdl_ee * mdl_complexi)/(2. * mdl_sw); 
+  GC_51 = (mdl_cw * mdl_ee * mdl_complexi)/(2. * mdl_sw); 
+  GC_58 = -(mdl_ee * mdl_complexi * mdl_sw)/(6. * mdl_cw); 
+  GC_59 = (mdl_ee * mdl_complexi * mdl_sw)/(2. * mdl_cw); 
   GC_100 = (mdl_ee * mdl_complexi * mdl_conjg__CKM1x1)/(mdl_sw * mdl_sqrt__2); 
 }
-void Parameters_sm_tth_3l1tau::setDependentParameters()
+void Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata::setDependentParameters()
 {
   mdl_sqrt__aS = sqrt(aS); 
   G = 2. * mdl_sqrt__aS * sqrt(M_PI); 
   mdl_G__exp__2 = pow(G, 2.); 
 }
-void Parameters_sm_tth_3l1tau::setDependentCouplings()
+void Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata::setDependentCouplings()
 {
   GC_11 = mdl_complexi * G; 
   GC_10 = -G; 
 }
 
 // Routines for printing out parameters
-void Parameters_sm_tth_3l1tau::printIndependentParameters()
+void Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata::printIndependentParameters()
 {
   LOGVRB <<  "sm model parameters independent of event kinematics:";
   LOGVRB << setw(20) <<  "mdl_WH " <<  "= " << setiosflags(ios::scientific) <<
@@ -198,17 +200,21 @@ void Parameters_sm_tth_3l1tau::printIndependentParameters()
   LOGVRB << setw(20) <<  "mdl_cw__exp__2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_cw__exp__2;
 }
-void Parameters_sm_tth_3l1tau::printIndependentCouplings()
+void Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata::printIndependentCouplings()
 {
   LOGVRB <<  "sm model couplings independent of event kinematics:";
-  LOGVRB << setw(20) <<  "GC_94 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_94;
-  LOGVRB << setw(20) <<  "GC_99 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_99;
+  LOGVRB << setw(20) <<  "GC_50 " <<  "= " << setiosflags(ios::scientific) <<
+      setw(10) << GC_50;
+  LOGVRB << setw(20) <<  "GC_51 " <<  "= " << setiosflags(ios::scientific) <<
+      setw(10) << GC_51;
+  LOGVRB << setw(20) <<  "GC_58 " <<  "= " << setiosflags(ios::scientific) <<
+      setw(10) << GC_58;
+  LOGVRB << setw(20) <<  "GC_59 " <<  "= " << setiosflags(ios::scientific) <<
+      setw(10) << GC_59;
   LOGVRB << setw(20) <<  "GC_100 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << GC_100;
 }
-void Parameters_sm_tth_3l1tau::printDependentParameters()
+void Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata::printDependentParameters()
 {
   LOGVRB <<  "sm model parameters dependent on event kinematics:";
   LOGVRB << setw(20) <<  "mdl_sqrt__aS " <<  "= " << setiosflags(ios::scientific)
@@ -218,7 +224,7 @@ void Parameters_sm_tth_3l1tau::printDependentParameters()
   LOGVRB << setw(20) <<  "mdl_G__exp__2 " <<  "= " <<
       setiosflags(ios::scientific) << setw(10) << mdl_G__exp__2;
 }
-void Parameters_sm_tth_3l1tau::printDependentCouplings()
+void Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata::printDependentCouplings()
 {
   LOGVRB <<  "sm model couplings dependent on event kinematics:";
   LOGVRB << setw(20) <<  "GC_11 " <<  "= " << setiosflags(ios::scientific) <<

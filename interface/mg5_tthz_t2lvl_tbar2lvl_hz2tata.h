@@ -1,5 +1,5 @@
-#ifndef ME_TTHORZ_3L1TAU_MG5_H
-#define ME_TTHORZ_3L1TAU_MG5_H
+#ifndef mg5_tthz_t2lvl_tbar2lvl_hz2tata_H
+#define mg5_tthz_t2lvl_tbar2lvl_hz2tata_H
 
 #include <string> // std::string
 #include <vector> // std::vector<>
@@ -7,12 +7,12 @@
 
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
-class me_ttHorZ_3l1tau_mg5
+class mg5_tthz_t2lvl_tbar2lvl_hz2tata
 {
 public:
-  me_ttHorZ_3l1tau_mg5() = default;
+  mg5_tthz_t2lvl_tbar2lvl_hz2tata() = default;
 
-  virtual ~me_ttHorZ_3l1tau_mg5()
+  virtual ~mg5_tthz_t2lvl_tbar2lvl_hz2tata()
   { }
 
   // Initialize process.
@@ -66,7 +66,7 @@ public:
   virtual const double *
   getMatrixElements() const
   {
-    throw_line_ext("me_ttHorZ_3l1tau_mg5", TTHEXCEPTION_ERR_CODE_UNDEFINED_FUNCTION)
+    throw_line_ext("mg5_tthz_t2lvl_tbar2lvl_hz2tata", TTHEXCEPTION_ERR_CODE_UNDEFINED_FUNCTION)
       << "Function getMatrixElements() undefined for the base class!";
     return nullptr;
   }
@@ -90,4 +90,4 @@ protected:
   int id1, id2;
 };
 
-#endif // ME_TTHORZ_3L1TAU_MG5_H
+#endif // mg5_tthz_t2lvl_tbar2lvl_hz2tata_H

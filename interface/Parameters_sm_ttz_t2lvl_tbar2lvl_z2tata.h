@@ -5,19 +5,19 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#ifndef Parameters_sm_tth_3l1tau_H
-#define Parameters_sm_tth_3l1tau_H
+#ifndef Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata_H
+#define Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata_H
 
 #include <complex> 
 
 #include "read_slha.h"
 using namespace std; 
 
-class Parameters_sm_tth_3l1tau
+class Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata
 {
   public:
 
-    static Parameters_sm_tth_3l1tau * getInstance();
+    static Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata * getInstance();
 
     // Define "zero"
     double zero, ZERO; 
@@ -35,7 +35,7 @@ class Parameters_sm_tth_3l1tau
     // Model parameters dependent on aS
     double mdl_sqrt__aS, G, mdl_G__exp__2; 
     // Model couplings independent of aS
-    std::complex<double> GC_94, GC_99, GC_100; 
+    std::complex<double> GC_50, GC_51, GC_58, GC_59, GC_100; 
     // Model couplings dependent on aS
     std::complex<double> GC_11, GC_10; 
 
@@ -59,8 +59,8 @@ class Parameters_sm_tth_3l1tau
 
 
   private:
-    static Parameters_sm_tth_3l1tau * instance;
+    static Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata * instance;
 }; 
 
-#endif  // Parameters_sm_tth_3l1tau_H
+#endif  // Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata_H
 

@@ -5,10 +5,10 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_qq_mg5.h"
-#include "tthAnalysis/tthMEM/interface/HelAmps_sm_tth_3l1tau.h"
+#include "tthAnalysis/tthMEM/interface/mg5_tth_t2lvl_tbar2lvl_h2tata_qq.h"
+#include "tthAnalysis/tthMEM/interface/HelAmps_sm_tth_t2lvl_tbar2lvl_h2tata.h"
 
-using namespace MG5_sm_tth_3l1tau;
+using namespace MG5_sm_tth_t2lvl_tbar2lvl_h2tata;
 
 //==========================================================================
 // Class member functions for calculating the matrix elements for
@@ -80,10 +80,10 @@ using namespace MG5_sm_tth_3l1tau;
 //--------------------------------------------------------------------------
 // Initialize process.
 
-void me_tth_3l1tau_qq_mg5::initProc(std::string param_card_name)
+void mg5_tth_t2lvl_tbar2lvl_h2tata_qq::initProc(std::string param_card_name)
 {
   // Instantiate the model class and set parameters that stay fixed during run
-  pars = Parameters_sm_tth_3l1tau::getInstance();
+  pars = Parameters_sm_tth_t2lvl_tbar2lvl_h2tata::getInstance();
   SLHAReader slha(param_card_name); 
   pars->setIndependentParameters(slha); 
   pars->setIndependentCouplings(); 
@@ -106,7 +106,7 @@ void me_tth_3l1tau_qq_mg5::initProc(std::string param_card_name)
 //--------------------------------------------------------------------------
 // Evaluate |M|^2, part independent of incoming flavour.
 
-void me_tth_3l1tau_qq_mg5::sigmaKin()
+void mg5_tth_t2lvl_tbar2lvl_h2tata_qq::sigmaKin()
 {
   // Set the parameters which change event by event
   pars->setDependentParameters(); 
@@ -749,7 +749,7 @@ void me_tth_3l1tau_qq_mg5::sigmaKin()
 //--------------------------------------------------------------------------
 // Evaluate |M|^2, including incoming flavour dependence.
 
-double me_tth_3l1tau_qq_mg5::sigmaHat()
+double mg5_tth_t2lvl_tbar2lvl_h2tata_qq::sigmaHat()
 {
   // Select between the different processes
   if(id1 == -3 && id2 == 3)
@@ -801,7 +801,7 @@ double me_tth_3l1tau_qq_mg5::sigmaHat()
 
 //--------------------------------------------------------------------------
 // Set Higgs width
-void me_tth_3l1tau_qq_mg5::setHiggsWidth(double higgsWidth)
+void mg5_tth_t2lvl_tbar2lvl_h2tata_qq::setHiggsWidth(double higgsWidth)
 {
   if(pars) pars -> mdl_WH = higgsWidth;
 }
@@ -812,7 +812,7 @@ void me_tth_3l1tau_qq_mg5::setHiggsWidth(double higgsWidth)
 //--------------------------------------------------------------------------
 // Evaluate |M|^2 for each subprocess
 
-void me_tth_3l1tau_qq_mg5::calculate_wavefunctions(const int perm[], const int hel[])
+void mg5_tth_t2lvl_tbar2lvl_h2tata_qq::calculate_wavefunctions(const int perm[], const int hel[])
 {
   // Calculate wavefunctions for all processes
   //int i, j;
@@ -843,7 +843,7 @@ void me_tth_3l1tau_qq_mg5::calculate_wavefunctions(const int perm[], const int h
   FFV1_0(w[17], w[6], w[15], pars->GC_11, amp[1]); 
 
 }
-double me_tth_3l1tau_qq_mg5::matrix_1_uux_ttxh_t_bepve_tx_bxemvex_h_taptam()
+double mg5_tth_t2lvl_tbar2lvl_h2tata_qq::matrix_1_uux_ttxh_t_bepve_tx_bxemvex_h_taptam()
 {
   int i, j; 
   // Local variables

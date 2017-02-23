@@ -5,46 +5,46 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#ifndef me_tth_3l1tau_mg5_h
-#define me_tth_3l1tau_mg5_h
+#ifndef mg5_ttz_t2lvl_tbar2lvl_z2tata_h
+#define mg5_ttz_t2lvl_tbar2lvl_z2tata_h
 
-#include "tthAnalysis/tthMEM/interface/me_ttHorZ_3l1tau_mg5.h"
-#include "Parameters_sm_tth_3l1tau.h"
+#include "tthAnalysis/tthMEM/interface/mg5_tthz_t2lvl_tbar2lvl_hz2tata.h"
+#include "Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata.h"
 
 //==========================================================================
 // A class for calculating the matrix elements for
-// Process: g g > t t~ h WEIGHTED<=4 @1
+// Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > b e+ ve WEIGHTED<=4
 // *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
-// *   Decay: h > ta+ ta- WEIGHTED<=2
-// Process: g g > t t~ h WEIGHTED<=4 @1
+// *   Decay: z > ta+ ta- WEIGHTED<=2
+// Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > b mu+ vm WEIGHTED<=4
 // *   Decay: t~ > b~ e- ve~ WEIGHTED<=4
-// *   Decay: h > ta+ ta- WEIGHTED<=2
-// Process: g g > t t~ h WEIGHTED<=4 @1
+// *   Decay: z > ta+ ta- WEIGHTED<=2
+// Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > b e+ ve WEIGHTED<=4
 // *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
-// *   Decay: h > ta+ ta- WEIGHTED<=2
-// Process: g g > t t~ h WEIGHTED<=4 @1
+// *   Decay: z > ta+ ta- WEIGHTED<=2
+// Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > b mu+ vm WEIGHTED<=4
 // *   Decay: t~ > b~ mu- vm~ WEIGHTED<=4
-// *   Decay: h > ta+ ta- WEIGHTED<=2
+// *   Decay: z > ta+ ta- WEIGHTED<=2
 //--------------------------------------------------------------------------
 
-class me_tth_3l1tau_mg5
-  : public me_ttHorZ_3l1tau_mg5
+class mg5_ttz_t2lvl_tbar2lvl_z2tata
+  : public mg5_tthz_t2lvl_tbar2lvl_hz2tata
 {
   public:
 
     // Constructor.
-    me_tth_3l1tau_mg5()
+    mg5_ttz_t2lvl_tbar2lvl_z2tata()
     {
       for(std::size_t i = 0; i < nprocesses; ++i)
         jamp2[i] = nullptr;
     }
 
     // Destructor.
-    virtual ~me_tth_3l1tau_mg5() override
+    virtual ~mg5_ttz_t2lvl_tbar2lvl_z2tata() override
     {
       for(std::size_t i = 0; i < nprocesses; ++i)
         if(jamp2[i])
@@ -70,7 +70,7 @@ class me_tth_3l1tau_mg5
     virtual std::string
     name() const override
     {
-      return "[TTH] g g > b e+ ve b~ e- ve~ ta+ ta- (sm)";
+      return "[TTZ] g g > b e+ ve b~ e- ve~ ta+ ta- (sm)";
     }
 
     // Set Higgs width
@@ -106,11 +106,11 @@ class me_tth_3l1tau_mg5
     std::complex<double> amp[namplitudes];
 
     double
-    matrix_1_gg_ttxh_t_bepve_tx_bxemvex_h_taptam();
+    matrix_1_gg_ttxz_t_bepve_tx_bxemvex_z_taptam();
 
     // Pointer to the model parameters
-    Parameters_sm_tth_3l1tau * pars;
+    Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata * pars;
 }; 
 
 
-#endif  // me_tth_3l1tau_mg5_h
+#endif  // mg5_ttz_t2lvl_tbar2lvl_z2tata_h

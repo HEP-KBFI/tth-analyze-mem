@@ -5,15 +5,15 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#ifndef HelAmps_sm_ttz_3l1tau_H
-#define HelAmps_sm_ttz_3l1tau_H
+#ifndef HelAmps_sm_tth_t2lvl_tbar2lvl_h2tata_H
+#define HelAmps_sm_tth_t2lvl_tbar2lvl_h2tata_H
 
 #include <cmath> 
 #include <complex> 
 
 using namespace std; 
 
-namespace MG5_sm_tth_3l1tau
+namespace MG5_sm_tth_t2lvl_tbar2lvl_h2tata
 {
 void oxxxxx(double p[4], double fmass, int nhel, int nsf, std::complex<double>
     fo[6]);
@@ -67,6 +67,6 @@ void FFS4_3(complex<double> F1[], complex<double> F2[], complex<double> COUP,
 void VVV1P0_1(complex<double> V2[], complex<double> V3[], complex<double> COUP,
     double M1, double W1, complex<double> V1[]);
 
-}  // end namespace MG5_sm
+}  // end namespace MG5_sm_tth_t2lvl_tbar2lvl_h2tata
 
-#endif  // HelAmps_sm_ttz_3l1tau_H
+#endif  // HelAmps_sm_tth_t2lvl_tbar2lvl_h2tata_H

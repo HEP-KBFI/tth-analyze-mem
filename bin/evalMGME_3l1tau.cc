@@ -11,9 +11,9 @@
 
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line(), throw_line_ext(), tthMEMexception
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR, LOGINFO
-#include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_qq_mg5.h" // me_tth_3l1tau_qq_mg5
-#include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_mg5.h" // me_tth_3l1tau_mg5
-#include "tthAnalysis/tthMEM/interface/me_ttz_3l1tau_mg5.h" // me_ttz_3l1tau_mg5
+#include "tthAnalysis/tthMEM/interface/mg5_tth_t2lvl_tbar2lvl_h2tata_qq.h" // mg5_tth_t2lvl_tbar2lvl_h2tata_qq
+#include "tthAnalysis/tthMEM/interface/mg5_tth_t2lvl_tbar2lvl_h2tata.h" // mg5_tth_t2lvl_tbar2lvl_h2tata
+#include "tthAnalysis/tthMEM/interface/mg5_ttz_t2lvl_tbar2lvl_z2tata.h" // mg5_ttz_t2lvl_tbar2lvl_z2tata
 #include "tthAnalysis/tthMEM/interface/GeneratorLevelEvent_3l1tau.h" // tthMEM::GeneratorLevelEvent_3l1tau
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // tthMEM::constants
 #include "tthAnalysis/tthMEM/interface/RLESelector.h" // RLESelector<>
@@ -185,9 +185,9 @@ main(int argc,
   clock.Reset();
   clock.Start(evalMEMG.c_str());
 
-  me_tth_3l1tau_qq_mg5 tth_qq_me;
-  me_tth_3l1tau_mg5    tth_me;
-  me_ttz_3l1tau_mg5    ttz_me;
+  mg5_tth_t2lvl_tbar2lvl_h2tata_qq tth_qq_me;
+  mg5_tth_t2lvl_tbar2lvl_h2tata    tth_me;
+  mg5_ttz_t2lvl_tbar2lvl_z2tata    ttz_me;
   tth_qq_me.initProc(madgraphFilename);
   tth_me.initProc(madgraphFilename);
   ttz_me.initProc(madgraphFilename);

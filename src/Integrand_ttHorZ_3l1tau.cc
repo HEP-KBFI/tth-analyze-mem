@@ -1,6 +1,6 @@
 #include "tthAnalysis/tthMEM/interface/Integrand_ttHorZ_3l1tau.h"
-#include "tthAnalysis/tthMEM/interface/me_tth_3l1tau_mg5.h"
-#include "tthAnalysis/tthMEM/interface/me_ttz_3l1tau_mg5.h"
+#include "tthAnalysis/tthMEM/interface/mg5_tth_t2lvl_tbar2lvl_h2tata.h"
+#include "tthAnalysis/tthMEM/interface/mg5_ttz_t2lvl_tbar2lvl_z2tata.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMrecFunctions.h"
 #include "tthAnalysis/tthMEM/interface/tthMEMconstants.h"
@@ -41,8 +41,8 @@ Integrand_ttHorZ_3l1tau::Integrand_ttHorZ_3l1tau(const std::string & pdfName,
       << "PDF file name empty!";
   }
 
-  me_madgraph_[ME_mg5_3l1tau::kTTH] = new me_tth_3l1tau_mg5();
-  me_madgraph_[ME_mg5_3l1tau::kTTZ] = new me_ttz_3l1tau_mg5();
+  me_madgraph_[ME_mg5_3l1tau::kTTH] = new mg5_tth_t2lvl_tbar2lvl_h2tata();
+  me_madgraph_[ME_mg5_3l1tau::kTTZ] = new mg5_ttz_t2lvl_tbar2lvl_z2tata();
 
   if(madgraphFilename != "")
   {

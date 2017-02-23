@@ -5,7 +5,7 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#include "tthAnalysis/tthMEM/interface/HelAmps_sm_tth_3l1tau.h"
+#include "tthAnalysis/tthMEM/interface/HelAmps_sm_ttz_t2lvl_tbar2lvl_z2tata.h"
 #include <complex>
 #include <cmath>
 
@@ -13,7 +13,7 @@
 
 using namespace std; 
 
-namespace MG5_sm_tth_3l1tau
+namespace MG5_sm_ttz_t2lvl_tbar2lvl_z2tata
 {
 
 void oxxxxx(double p[4], double fmass, int nhel, int nsf, complex<double> fo[6])
@@ -443,8 +443,8 @@ void FFV2_3(complex<double> F1[], complex<double> F2[], complex<double> COUP,
 {
   complex<double> cI = complex<double> (0., 1.); 
   complex<double> denom; 
-  complex<double> TMP0; 
   double P3[4]; 
+  complex<double> TMP6; 
   double OM3; 
   OM3 = 0.; 
   if (M3 != 0.)
@@ -455,17 +455,35 @@ void FFV2_3(complex<double> F1[], complex<double> F2[], complex<double> COUP,
   P3[1] = -V3[1].real(); 
   P3[2] = -V3[1].imag(); 
   P3[3] = -V3[0].imag(); 
-  TMP0 = (F1[2] * (F2[4] * (P3[0] + P3[3]) + F2[5] * (P3[1] + cI * (P3[2]))) +
+  TMP6 = (F1[2] * (F2[4] * (P3[0] + P3[3]) + F2[5] * (P3[1] + cI * (P3[2]))) +
       F1[3] * (F2[4] * (P3[1] - cI * (P3[2])) + F2[5] * (P3[0] - P3[3])));
   denom = COUP/(pow(P3[0], 2) - pow(P3[1], 2) - pow(P3[2], 2) - pow(P3[3], 2) -
       M3 * (M3 - cI * W3));
-  V3[2] = denom * - cI * (F2[4] * F1[2] + F2[5] * F1[3] - P3[0] * OM3 * TMP0); 
-  V3[3] = denom * - cI * (-F2[4] * F1[3] - F2[5] * F1[2] - P3[1] * OM3 * TMP0); 
-  V3[4] = denom * - cI * (-cI * (F2[5] * F1[2]) + cI * (F2[4] * F1[3]) - P3[2]
-      * OM3 * TMP0);
-  V3[5] = denom * - cI * (F2[5] * F1[3] - F2[4] * F1[2] - P3[3] * OM3 * TMP0); 
+  V3[2] = denom * - cI * (F1[2] * F2[4] + F1[3] * F2[5] - P3[0] * OM3 * TMP6); 
+  V3[3] = denom * - cI * (-F1[2] * F2[5] - F1[3] * F2[4] - P3[1] * OM3 * TMP6); 
+  V3[4] = denom * - cI * (-cI * (F1[2] * F2[5]) + cI * (F1[3] * F2[4]) - P3[2]
+      * OM3 * TMP6);
+  V3[5] = denom * - cI * (F1[3] * F2[5] - F1[2] * F2[4] - P3[3] * OM3 * TMP6); 
 }
 
+void FFV2_4_3(complex<double> F1[], complex<double> F2[], complex<double>
+    COUP1, complex<double> COUP2, double M3, double W3, complex<double> V3[])
+{
+  //complex<double> cI = complex<double> (0., 1.);
+  //complex<double> denom;
+  //double P3[4];
+  //double OM3;
+  int i; 
+  complex<double> Vtmp[6]; 
+  FFV2_3(F1, F2, COUP1, M3, W3, V3); 
+  FFV4_3(F1, F2, COUP2, M3, W3, Vtmp); 
+  i = 2; 
+  while (i < 6)
+  {
+    V3[i] = V3[i] + Vtmp[i]; 
+    i++; 
+  }
+}
 
 void FFV1P0_3(complex<double> F1[], complex<double> F2[], complex<double> COUP,
     double M3, double W3, complex<double> V3[])
@@ -481,18 +499,59 @@ void FFV1P0_3(complex<double> F1[], complex<double> F2[], complex<double> COUP,
   P3[3] = -V3[0].imag(); 
   denom = COUP/(pow(P3[0], 2) - pow(P3[1], 2) - pow(P3[2], 2) - pow(P3[3], 2) -
       M3 * (M3 - cI * W3));
-  V3[2] = denom * - cI * (F2[4] * F1[2] + F2[5] * F1[3] + F2[2] * F1[4] + F2[3]
-      * F1[5]);
-  V3[3] = denom * - cI * (F2[3] * F1[4] + F2[2] * F1[5] - F2[5] * F1[2] - F2[4]
-      * F1[3]);
-  V3[4] = denom * - cI * (-cI * (F2[5] * F1[2] + F2[2] * F1[5]) + cI * (F2[4] *
-      F1[3] + F2[3] * F1[4]));
-  V3[5] = denom * - cI * (F2[5] * F1[3] + F2[2] * F1[4] - F2[4] * F1[2] - F2[3]
-      * F1[5]);
+  V3[2] = denom * - cI * (F1[2] * F2[4] + F1[3] * F2[5] + F1[4] * F2[2] + F1[5]
+      * F2[3]);
+  V3[3] = denom * - cI * (F1[4] * F2[3] + F1[5] * F2[2] - F1[2] * F2[5] - F1[3]
+      * F2[4]);
+  V3[4] = denom * - cI * (-cI * (F1[2] * F2[5] + F1[5] * F2[2]) + cI * (F1[3] *
+      F2[4] + F1[4] * F2[3]));
+  V3[5] = denom * - cI * (F1[3] * F2[5] + F1[4] * F2[2] - F1[2] * F2[4] - F1[5]
+      * F2[3]);
 }
 
 
-void FFV2_2(complex<double> F1[], complex<double> V3[], complex<double> COUP,
+void FFV3_1(complex<double> F2[], complex<double> V3[], complex<double> COUP,
+    double M1, double W1, complex<double> F1[])
+{
+  complex<double> cI = complex<double> (0., 1.); 
+  double P1[4]; 
+  complex<double> denom; 
+  F1[0] = +F2[0] + V3[0]; 
+  F1[1] = +F2[1] + V3[1]; 
+  P1[0] = -F1[0].real(); 
+  P1[1] = -F1[1].real(); 
+  P1[2] = -F1[1].imag(); 
+  P1[3] = -F1[0].imag(); 
+  denom = COUP/(pow(P1[0], 2) - pow(P1[1], 2) - pow(P1[2], 2) - pow(P1[3], 2) -
+      M1 * (M1 - cI * W1));
+  F1[2] = denom * - 2. * cI * (F2[2] * (P1[0] * (V3[5] - V3[2]) + (P1[1] *
+      (V3[3] - cI * (V3[4])) + (P1[2] * (V3[4] + cI * (V3[3])) + P1[3] * (V3[5]
+      - V3[2])))) + (+1./2. * (M1 * (+2. * (F2[4] * - 1./2. * (V3[2] + V3[5]))
+      - F2[5] * (V3[3] + cI * (V3[4])))) + F2[3] * (P1[0] * (V3[3] + cI *
+      (V3[4])) + (P1[1] * - 1. * (V3[2] + V3[5]) + (P1[2] * - 1. * (+cI *
+      (V3[2] + V3[5])) + P1[3] * (V3[3] + cI * (V3[4])))))));
+  F1[3] = denom * - 2. * cI * (F2[2] * (P1[0] * (V3[3] - cI * (V3[4])) + (P1[1]
+      * (V3[5] - V3[2]) + (P1[2] * (-cI * (V3[5]) + cI * (V3[2])) + P1[3] *
+      (+cI * (V3[4]) - V3[3])))) + (+1./2. * (M1 * (F2[5] * (V3[5] - V3[2]) +
+      2. * (F2[4] * 1./2. * (+cI * (V3[4]) - V3[3])))) + F2[3] * (P1[0] * - 1.
+      * (V3[2] + V3[5]) + (P1[1] * (V3[3] + cI * (V3[4])) + (P1[2] * (V3[4] -
+      cI * (V3[3])) + P1[3] * (V3[2] + V3[5]))))));
+  F1[4] = denom * cI * (F2[4] * (P1[0] * - 1. * (V3[2] + V3[5]) + (P1[1] *
+      (V3[3] - cI * (V3[4])) + (P1[2] * (V3[4] + cI * (V3[3])) + P1[3] * (V3[2]
+      + V3[5])))) + (F2[5] * (P1[0] * - 1. * (V3[3] + cI * (V3[4])) + (P1[1] *
+      (V3[2] - V3[5]) + (P1[2] * (-cI * (V3[5]) + cI * (V3[2])) + P1[3] *
+      (V3[3] + cI * (V3[4]))))) + M1 * (F2[2] * 2. * (V3[5] - V3[2]) + 2. *
+      (F2[3] * (V3[3] + cI * (V3[4]))))));
+  F1[5] = denom * - cI * (F2[4] * (P1[0] * (V3[3] - cI * (V3[4])) + (P1[1] * -
+      1. * (V3[2] + V3[5]) + (P1[2] * (+cI * (V3[2] + V3[5])) + P1[3] * (V3[3]
+      - cI * (V3[4]))))) + (F2[5] * (P1[0] * (V3[2] - V3[5]) + (P1[1] * - 1. *
+      (V3[3] + cI * (V3[4])) + (P1[2] * (+cI * (V3[3]) - V3[4]) + P1[3] *
+      (V3[2] - V3[5])))) + M1 * (F2[2] * 2. * (+cI * (V3[4]) - V3[3]) + 2. *
+      (F2[3] * (V3[2] + V3[5])))));
+}
+
+
+void FFV5_2(complex<double> F1[], complex<double> V3[], complex<double> COUP,
     double M2, double W2, complex<double> F2[])
 {
   complex<double> cI = complex<double> (0., 1.); 
@@ -508,18 +567,28 @@ void FFV2_2(complex<double> F1[], complex<double> V3[], complex<double> COUP,
       M2 * (M2 - cI * W2));
   F2[2] = denom * cI * (F1[2] * (P2[0] * (V3[2] + V3[5]) + (P2[1] * - 1. *
       (V3[3] + cI * (V3[4])) + (P2[2] * (+cI * (V3[3]) - V3[4]) - P2[3] *
-      (V3[2] + V3[5])))) + F1[3] * (P2[0] * (V3[3] - cI * (V3[4])) + (P2[1] *
+      (V3[2] + V3[5])))) + (F1[3] * (P2[0] * (V3[3] - cI * (V3[4])) + (P2[1] *
       (V3[5] - V3[2]) + (P2[2] * (-cI * (V3[5]) + cI * (V3[2])) + P2[3] * (+cI
-      * (V3[4]) - V3[3])))));
+      * (V3[4]) - V3[3])))) + M2 * (F1[4] * 4. * (V3[2] - V3[5]) + 4. * (F1[5]
+      * (+cI * (V3[4]) - V3[3])))));
   F2[3] = denom * cI * (F1[2] * (P2[0] * (V3[3] + cI * (V3[4])) + (P2[1] * - 1.
       * (V3[2] + V3[5]) + (P2[2] * - 1. * (+cI * (V3[2] + V3[5])) + P2[3] *
-      (V3[3] + cI * (V3[4]))))) + F1[3] * (P2[0] * (V3[2] - V3[5]) + (P2[1] *
+      (V3[3] + cI * (V3[4]))))) + (F1[3] * (P2[0] * (V3[2] - V3[5]) + (P2[1] *
       (+cI * (V3[4]) - V3[3]) + (P2[2] * - 1. * (V3[4] + cI * (V3[3])) + P2[3]
-      * (V3[2] - V3[5])))));
-  F2[4] = denom * - cI * M2 * (F1[2] * - 1. * (V3[2] + V3[5]) + F1[3] * (+cI *
-      (V3[4]) - V3[3]));
-  F2[5] = denom * cI * M2 * (F1[2] * (V3[3] + cI * (V3[4])) + F1[3] * (V3[2] -
-      V3[5]));
+      * (V3[2] - V3[5])))) + M2 * (F1[4] * - 4. * (V3[3] + cI * (V3[4])) + 4. *
+      (F1[5] * (V3[2] + V3[5])))));
+  F2[4] = denom * - 4. * cI * (F1[4] * (P2[0] * (V3[5] - V3[2]) + (P2[1] *
+      (V3[3] + cI * (V3[4])) + (P2[2] * (V3[4] - cI * (V3[3])) + P2[3] * (V3[5]
+      - V3[2])))) + (+1./4. * (M2 * (F1[3] * (+cI * (V3[4]) - V3[3]) + 4. *
+      (F1[2] * - 1./4. * (V3[2] + V3[5])))) + F1[5] * (P2[0] * (V3[3] - cI *
+      (V3[4])) + (P2[1] * - 1. * (V3[2] + V3[5]) + (P2[2] * (+cI * (V3[2] +
+      V3[5])) + P2[3] * (V3[3] - cI * (V3[4])))))));
+  F2[5] = denom * - 4. * cI * (F1[4] * (P2[0] * (V3[3] + cI * (V3[4])) + (P2[1]
+      * (V3[5] - V3[2]) + (P2[2] * (-cI * (V3[2]) + cI * (V3[5])) - P2[3] *
+      (V3[3] + cI * (V3[4]))))) + (+1./4. * (M2 * (F1[3] * (V3[5] - V3[2]) + 4.
+      * (F1[2] * - 1./4. * (V3[3] + cI * (V3[4]))))) + F1[5] * (P2[0] * - 1. *
+      (V3[2] + V3[5]) + (P2[1] * (V3[3] - cI * (V3[4])) + (P2[2] * (V3[4] + cI
+      * (V3[3])) + P2[3] * (V3[2] + V3[5]))))));
 }
 
 
@@ -553,6 +622,40 @@ void FFV2_1(complex<double> F2[], complex<double> V3[], complex<double> COUP,
       (V3[2] - V3[5])))));
 }
 
+void FFV2_5_1(complex<double> F2[], complex<double> V3[], complex<double>
+    COUP1, complex<double> COUP2, double M1, double W1, complex<double> F1[])
+{
+  //complex<double> cI = complex<double> (0., 1.);
+  //double P1[4];
+  //complex<double> denom;
+  int i; 
+  complex<double> Ftmp[6]; 
+  FFV2_1(F2, V3, COUP1, M1, W1, F1); 
+  FFV5_1(F2, V3, COUP2, M1, W1, Ftmp); 
+  i = 2; 
+  while (i < 6)
+  {
+    F1[i] = F1[i] + Ftmp[i]; 
+    i++; 
+  }
+}
+void FFV2_3_1(complex<double> F2[], complex<double> V3[], complex<double>
+    COUP1, complex<double> COUP2, double M1, double W1, complex<double> F1[])
+{
+  //complex<double> cI = complex<double> (0., 1.);
+  //double P1[4];
+  complex<double> denom; 
+  int i; 
+  complex<double> Ftmp[6]; 
+  FFV2_1(F2, V3, COUP1, M1, W1, F1); 
+  FFV3_1(F2, V3, COUP2, M1, W1, Ftmp); 
+  i = 2; 
+  while (i < 6)
+  {
+    F1[i] = F1[i] + Ftmp[i]; 
+    i++; 
+  }
+}
 
 void FFV1_2(complex<double> F1[], complex<double> V3[], complex<double> COUP,
     double M2, double W2, complex<double> F2[])
@@ -595,15 +698,78 @@ void FFV1_2(complex<double> F1[], complex<double> V3[], complex<double> COUP,
 }
 
 
-void FFS4_0(complex<double> F1[], complex<double> F2[], complex<double> S3[],
+void FFV2_0(complex<double> F1[], complex<double> F2[], complex<double> V3[],
     complex<double> COUP, complex<double> & vertex)
 {
   complex<double> cI = complex<double> (0., 1.); 
-  complex<double> TMP2; 
-  complex<double> TMP3; 
-  TMP3 = (F2[4] * F1[4] + F2[5] * F1[5]); 
-  TMP2 = (F2[2] * F1[2] + F2[3] * F1[3]); 
-  vertex = COUP * - S3[2] * (+cI * (TMP2 + TMP3)); 
+  complex<double> TMP5; 
+  TMP5 = (F1[2] * (F2[4] * (V3[2] + V3[5]) + F2[5] * (V3[3] + cI * (V3[4]))) +
+      F1[3] * (F2[4] * (V3[3] - cI * (V3[4])) + F2[5] * (V3[2] - V3[5])));
+  vertex = COUP * - cI * TMP5; 
+}
+
+void FFV2_5_0(complex<double> F1[], complex<double> F2[], complex<double> V3[],
+    complex<double> COUP1, complex<double> COUP2, complex<double> & vertex)
+{
+  //complex<double> cI = complex<double> (0., 1.);
+  complex<double> tmp; 
+  FFV2_0(F1, F2, V3, COUP1, vertex); 
+  FFV5_0(F1, F2, V3, COUP2, tmp); 
+  vertex = vertex + tmp; 
+}
+
+void FFV5_0(complex<double> F1[], complex<double> F2[], complex<double> V3[],
+    complex<double> COUP, complex<double> & vertex)
+{
+  complex<double> cI = complex<double> (0., 1.); 
+  complex<double> TMP10; 
+  complex<double> TMP9; 
+  TMP9 = (F1[2] * (F2[4] * (V3[2] + V3[5]) + F2[5] * (V3[3] + cI * (V3[4]))) +
+      F1[3] * (F2[4] * (V3[3] - cI * (V3[4])) + F2[5] * (V3[2] - V3[5])));
+  TMP10 = (F1[4] * (F2[2] * (V3[2] - V3[5]) - F2[3] * (V3[3] + cI * (V3[4]))) +
+      F1[5] * (F2[2] * (+cI * (V3[4]) - V3[3]) + F2[3] * (V3[2] + V3[5])));
+  vertex = COUP * - 1. * (+cI * (TMP9) + 4. * cI * (TMP10)); 
+}
+
+
+void FFV5_1(complex<double> F2[], complex<double> V3[], complex<double> COUP,
+    double M1, double W1, complex<double> F1[])
+{
+  complex<double> cI = complex<double> (0., 1.); 
+  double P1[4]; 
+  complex<double> denom; 
+  F1[0] = +F2[0] + V3[0]; 
+  F1[1] = +F2[1] + V3[1]; 
+  P1[0] = -F1[0].real(); 
+  P1[1] = -F1[1].real(); 
+  P1[2] = -F1[1].imag(); 
+  P1[3] = -F1[0].imag(); 
+  denom = COUP/(pow(P1[0], 2) - pow(P1[1], 2) - pow(P1[2], 2) - pow(P1[3], 2) -
+      M1 * (M1 - cI * W1));
+  F1[2] = denom * 4. * cI * (F2[2] * (P1[0] * (V3[5] - V3[2]) + (P1[1] * (V3[3]
+      - cI * (V3[4])) + (P1[2] * (V3[4] + cI * (V3[3])) + P1[3] * (V3[5] -
+      V3[2])))) + (+1./4. * (M1 * (F2[5] * (V3[3] + cI * (V3[4])) + 4. * (F2[4]
+      * 1./4. * (V3[2] + V3[5])))) + F2[3] * (P1[0] * (V3[3] + cI * (V3[4])) +
+      (P1[1] * - 1. * (V3[2] + V3[5]) + (P1[2] * - 1. * (+cI * (V3[2] + V3[5]))
+      + P1[3] * (V3[3] + cI * (V3[4])))))));
+  F1[3] = denom * 4. * cI * (F2[2] * (P1[0] * (V3[3] - cI * (V3[4])) + (P1[1] *
+      (V3[5] - V3[2]) + (P1[2] * (-cI * (V3[5]) + cI * (V3[2])) + P1[3] * (+cI
+      * (V3[4]) - V3[3])))) + (+1./4. * (M1 * (F2[5] * (V3[2] - V3[5]) + 4. *
+      (F2[4] * 1./4. * (V3[3] - cI * (V3[4]))))) + F2[3] * (P1[0] * - 1. *
+      (V3[2] + V3[5]) + (P1[1] * (V3[3] + cI * (V3[4])) + (P1[2] * (V3[4] - cI
+      * (V3[3])) + P1[3] * (V3[2] + V3[5]))))));
+  F1[4] = denom * - cI * (F2[4] * (P1[0] * (V3[2] + V3[5]) + (P1[1] * (+cI *
+      (V3[4]) - V3[3]) + (P1[2] * - 1. * (V3[4] + cI * (V3[3])) - P1[3] *
+      (V3[2] + V3[5])))) + (F2[5] * (P1[0] * (V3[3] + cI * (V3[4])) + (P1[1] *
+      (V3[5] - V3[2]) + (P1[2] * (-cI * (V3[2]) + cI * (V3[5])) - P1[3] *
+      (V3[3] + cI * (V3[4]))))) + M1 * (F2[2] * 4. * (V3[5] - V3[2]) + 4. *
+      (F2[3] * (V3[3] + cI * (V3[4]))))));
+  F1[5] = denom * cI * (F2[4] * (P1[0] * (+cI * (V3[4]) - V3[3]) + (P1[1] *
+      (V3[2] + V3[5]) + (P1[2] * - 1. * (+cI * (V3[2] + V3[5])) + P1[3] * (+cI
+      * (V3[4]) - V3[3])))) + (F2[5] * (P1[0] * (V3[5] - V3[2]) + (P1[1] *
+      (V3[3] + cI * (V3[4])) + (P1[2] * (V3[4] - cI * (V3[3])) + P1[3] * (V3[5]
+      - V3[2])))) + M1 * (F2[2] * 4. * (+cI * (V3[4]) - V3[3]) + 4. * (F2[3] *
+      (V3[2] + V3[5])))));
 }
 
 
@@ -611,37 +777,53 @@ void FFV1_0(complex<double> F1[], complex<double> F2[], complex<double> V3[],
     complex<double> COUP, complex<double> & vertex)
 {
   complex<double> cI = complex<double> (0., 1.); 
-  complex<double> TMP1; 
-  TMP1 = (F1[2] * (F2[4] * (V3[2] + V3[5]) + F2[5] * (V3[3] + cI * (V3[4]))) +
+  complex<double> TMP7; 
+  TMP7 = (F1[2] * (F2[4] * (V3[2] + V3[5]) + F2[5] * (V3[3] + cI * (V3[4]))) +
       (F1[3] * (F2[4] * (V3[3] - cI * (V3[4])) + F2[5] * (V3[2] - V3[5])) +
       (F1[4] * (F2[2] * (V3[2] - V3[5]) - F2[3] * (V3[3] + cI * (V3[4]))) +
       F1[5] * (F2[2] * (+cI * (V3[4]) - V3[3]) + F2[3] * (V3[2] + V3[5])))));
-  vertex = COUP * - cI * TMP1; 
+  vertex = COUP * - cI * TMP7; 
 }
 
 
-void FFS4_1(complex<double> F2[], complex<double> S3[], complex<double> COUP,
-    double M1, double W1, complex<double> F1[])
+void FFV3_2(complex<double> F1[], complex<double> V3[], complex<double> COUP,
+    double M2, double W2, complex<double> F2[])
 {
   complex<double> cI = complex<double> (0., 1.); 
-  double P1[4]; 
+  double P2[4]; 
   complex<double> denom; 
-  F1[0] = +F2[0] + S3[0]; 
-  F1[1] = +F2[1] + S3[1]; 
-  P1[0] = -F1[0].real(); 
-  P1[1] = -F1[1].real(); 
-  P1[2] = -F1[1].imag(); 
-  P1[3] = -F1[0].imag(); 
-  denom = COUP/(pow(P1[0], 2) - pow(P1[1], 2) - pow(P1[2], 2) - pow(P1[3], 2) -
-      M1 * (M1 - cI * W1));
-  F1[2] = denom * - cI * S3[2] * (F2[4] * (P1[0] + P1[3]) + (F2[5] * (P1[1] +
-      cI * (P1[2])) - F2[2] * M1));
-  F1[3] = denom * cI * S3[2] * (F2[4] * (+cI * (P1[2]) - P1[1]) + (F2[5] *
-      (P1[3] - P1[0]) + F2[3] * M1));
-  F1[4] = denom * cI * S3[2] * (F2[2] * (P1[3] - P1[0]) + (F2[3] * (P1[1] + cI
-      * (P1[2])) + F2[4] * M1));
-  F1[5] = denom * - cI * S3[2] * (F2[2] * (+cI * (P1[2]) - P1[1]) + (F2[3] *
-      (P1[0] + P1[3]) - F2[5] * M1));
+  F2[0] = +F1[0] + V3[0]; 
+  F2[1] = +F1[1] + V3[1]; 
+  P2[0] = -F2[0].real(); 
+  P2[1] = -F2[1].real(); 
+  P2[2] = -F2[1].imag(); 
+  P2[3] = -F2[0].imag(); 
+  denom = COUP/(pow(P2[0], 2) - pow(P2[1], 2) - pow(P2[2], 2) - pow(P2[3], 2) -
+      M2 * (M2 - cI * W2));
+  F2[2] = denom * cI * (F1[2] * (P2[0] * (V3[2] + V3[5]) + (P2[1] * - 1. *
+      (V3[3] + cI * (V3[4])) + (P2[2] * (+cI * (V3[3]) - V3[4]) - P2[3] *
+      (V3[2] + V3[5])))) + (F1[3] * (P2[0] * (V3[3] - cI * (V3[4])) + (P2[1] *
+      (V3[5] - V3[2]) + (P2[2] * (-cI * (V3[5]) + cI * (V3[2])) + P2[3] * (+cI
+      * (V3[4]) - V3[3])))) + M2 * (F1[4] * 2. * (V3[5] - V3[2]) + 2. * (F1[5]
+      * (V3[3] - cI * (V3[4]))))));
+  F2[3] = denom * cI * (F1[2] * (P2[0] * (V3[3] + cI * (V3[4])) + (P2[1] * - 1.
+      * (V3[2] + V3[5]) + (P2[2] * - 1. * (+cI * (V3[2] + V3[5])) + P2[3] *
+      (V3[3] + cI * (V3[4]))))) + (F1[3] * (P2[0] * (V3[2] - V3[5]) + (P2[1] *
+      (+cI * (V3[4]) - V3[3]) + (P2[2] * - 1. * (V3[4] + cI * (V3[3])) + P2[3]
+      * (V3[2] - V3[5])))) + M2 * (F1[4] * 2. * (V3[3] + cI * (V3[4])) - 2. *
+      (F1[5] * (V3[2] + V3[5])))));
+  F2[4] = denom * 2. * cI * (F1[4] * (P2[0] * (V3[5] - V3[2]) + (P2[1] * (V3[3]
+      + cI * (V3[4])) + (P2[2] * (V3[4] - cI * (V3[3])) + P2[3] * (V3[5] -
+      V3[2])))) + (+1./2. * (M2 * (F1[3] * (V3[3] - cI * (V3[4])) + 2. * (F1[2]
+      * 1./2. * (V3[2] + V3[5])))) + F1[5] * (P2[0] * (V3[3] - cI * (V3[4])) +
+      (P2[1] * - 1. * (V3[2] + V3[5]) + (P2[2] * (+cI * (V3[2] + V3[5])) +
+      P2[3] * (V3[3] - cI * (V3[4])))))));
+  F2[5] = denom * 2. * cI * (F1[4] * (P2[0] * (V3[3] + cI * (V3[4])) + (P2[1] *
+      (V3[5] - V3[2]) + (P2[2] * (-cI * (V3[2]) + cI * (V3[5])) - P2[3] *
+      (V3[3] + cI * (V3[4]))))) + (+1./2. * (M2 * (F1[3] * (V3[2] - V3[5]) + 2.
+      * (F1[2] * 1./2. * (V3[3] + cI * (V3[4]))))) + F1[5] * (P2[0] * - 1. *
+      (V3[2] + V3[5]) + (P2[1] * (V3[3] - cI * (V3[4])) + (P2[2] * (V3[4] + cI
+      * (V3[3])) + P2[3] * (V3[2] + V3[5]))))));
 }
 
 
@@ -686,50 +868,42 @@ void FFV1_1(complex<double> F2[], complex<double> V3[], complex<double> COUP,
 }
 
 
-void FFS4_2(complex<double> F1[], complex<double> S3[], complex<double> COUP,
-    double M2, double W2, complex<double> F2[])
+void FFV4_3(complex<double> F1[], complex<double> F2[], complex<double> COUP,
+    double M3, double W3, complex<double> V3[])
 {
   complex<double> cI = complex<double> (0., 1.); 
-  double P2[4]; 
   complex<double> denom; 
-  F2[0] = +F1[0] + S3[0]; 
-  F2[1] = +F1[1] + S3[1]; 
-  P2[0] = -F2[0].real(); 
-  P2[1] = -F2[1].real(); 
-  P2[2] = -F2[1].imag(); 
-  P2[3] = -F2[0].imag(); 
-  denom = COUP/(pow(P2[0], 2) - pow(P2[1], 2) - pow(P2[2], 2) - pow(P2[3], 2) -
-      M2 * (M2 - cI * W2));
-  F2[2] = denom * cI * S3[2] * (F1[4] * (P2[0] - P2[3]) + (F1[5] * (+cI *
-      (P2[2]) - P2[1]) + F1[2] * M2));
-  F2[3] = denom * - cI * S3[2] * (F1[4] * (P2[1] + cI * (P2[2])) + (F1[5] * -
-      1. * (P2[0] + P2[3]) - F1[3] * M2));
-  F2[4] = denom * - cI * S3[2] * (F1[2] * - 1. * (P2[0] + P2[3]) + (F1[3] *
-      (+cI * (P2[2]) - P2[1]) - F1[4] * M2));
-  F2[5] = denom * cI * S3[2] * (F1[2] * (P2[1] + cI * (P2[2])) + (F1[3] *
-      (P2[0] - P2[3]) + F1[5] * M2));
-}
-
-
-void FFS4_3(complex<double> F1[], complex<double> F2[], complex<double> COUP,
-    double M3, double W3, complex<double> S3[])
-{
-  complex<double> cI = complex<double> (0., 1.); 
-  complex<double> TMP2; 
   double P3[4]; 
-  complex<double> denom; 
-  complex<double> TMP3; 
-  S3[0] = +F1[0] + F2[0]; 
-  S3[1] = +F1[1] + F2[1]; 
-  P3[0] = -S3[0].real(); 
-  P3[1] = -S3[1].real(); 
-  P3[2] = -S3[1].imag(); 
-  P3[3] = -S3[0].imag(); 
-  TMP3 = (F2[4] * F1[4] + F2[5] * F1[5]); 
-  TMP2 = (F2[2] * F1[2] + F2[3] * F1[3]); 
+  complex<double> TMP6; 
+  double OM3; 
+  complex<double> TMP8; 
+  OM3 = 0.; 
+  if (M3 != 0.)
+    OM3 = 1./pow(M3, 2); 
+  V3[0] = +F1[0] + F2[0]; 
+  V3[1] = +F1[1] + F2[1]; 
+  P3[0] = -V3[0].real(); 
+  P3[1] = -V3[1].real(); 
+  P3[2] = -V3[1].imag(); 
+  P3[3] = -V3[0].imag(); 
+  TMP6 = (F1[2] * (F2[4] * (P3[0] + P3[3]) + F2[5] * (P3[1] + cI * (P3[2]))) +
+      F1[3] * (F2[4] * (P3[1] - cI * (P3[2])) + F2[5] * (P3[0] - P3[3])));
+  TMP8 = (F1[4] * (F2[2] * (P3[0] - P3[3]) - F2[3] * (P3[1] + cI * (P3[2]))) +
+      F1[5] * (F2[2] * (+cI * (P3[2]) - P3[1]) + F2[3] * (P3[0] + P3[3])));
   denom = COUP/(pow(P3[0], 2) - pow(P3[1], 2) - pow(P3[2], 2) - pow(P3[3], 2) -
       M3 * (M3 - cI * W3));
-  S3[2] = denom * (+cI * (TMP2 + TMP3)); 
+  V3[2] = denom * - 2. * cI * (OM3 * - 1./2. * P3[0] * (TMP6 + 2. * (TMP8)) +
+      (+1./2. * (F1[2] * F2[4] + F1[3] * F2[5]) + F1[4] * F2[2] + F1[5] *
+      F2[3]));
+  V3[3] = denom * - 2. * cI * (OM3 * - 1./2. * P3[1] * (TMP6 + 2. * (TMP8)) +
+      (-1./2. * (F1[2] * F2[5] + F1[3] * F2[4]) + F1[4] * F2[3] + F1[5] *
+      F2[2]));
+  V3[4] = denom * 2. * cI * (OM3 * 1./2. * P3[2] * (TMP6 + 2. * (TMP8)) +
+      (+1./2. * cI * (F1[2] * F2[5]) - 1./2. * cI * (F1[3] * F2[4]) - cI *
+      (F1[4] * F2[3]) + cI * (F1[5] * F2[2])));
+  V3[5] = denom * 2. * cI * (OM3 * 1./2. * P3[3] * (TMP6 + 2. * (TMP8)) +
+      (+1./2. * (F1[2] * F2[4]) - 1./2. * (F1[3] * F2[5]) - F1[4] * F2[2] +
+      F1[5] * F2[3]));
 }
 
 
@@ -737,15 +911,15 @@ void VVV1P0_1(complex<double> V2[], complex<double> V3[], complex<double> COUP,
     double M1, double W1, complex<double> V1[])
 {
   complex<double> cI = complex<double> (0., 1.); 
-  complex<double> denom; 
+  complex<double> TMP2; 
+  complex<double> TMP1; 
   double P1[4]; 
+  complex<double> TMP0; 
   double P2[4]; 
-  complex<double> TMP7; 
   double P3[4]; 
-  complex<double> TMP6; 
-  complex<double> TMP5; 
+  complex<double> denom; 
   complex<double> TMP4; 
-  complex<double> TMP8; 
+  complex<double> TMP3; 
   P2[0] = V2[0].real(); 
   P2[1] = V2[1].real(); 
   P2[2] = V2[1].imag(); 
@@ -760,23 +934,88 @@ void VVV1P0_1(complex<double> V2[], complex<double> V3[], complex<double> COUP,
   P1[1] = -V1[1].real(); 
   P1[2] = -V1[1].imag(); 
   P1[3] = -V1[0].imag(); 
-  TMP5 = (V3[2] * P2[0] - V3[3] * P2[1] - V3[4] * P2[2] - V3[5] * P2[3]); 
-  TMP4 = (V3[2] * P1[0] - V3[3] * P1[1] - V3[4] * P1[2] - V3[5] * P1[3]); 
-  TMP7 = (P3[0] * V2[2] - P3[1] * V2[3] - P3[2] * V2[4] - P3[3] * V2[5]); 
-  TMP6 = (P1[0] * V2[2] - P1[1] * V2[3] - P1[2] * V2[4] - P1[3] * V2[5]); 
-  TMP8 = (V3[2] * V2[2] - V3[3] * V2[3] - V3[4] * V2[4] - V3[5] * V2[5]); 
+  TMP4 = (V3[2] * V2[2] - V3[3] * V2[3] - V3[4] * V2[4] - V3[5] * V2[5]); 
+  TMP1 = (V3[2] * P2[0] - V3[3] * P2[1] - V3[4] * P2[2] - V3[5] * P2[3]); 
+  TMP0 = (V3[2] * P1[0] - V3[3] * P1[1] - V3[4] * P1[2] - V3[5] * P1[3]); 
+  TMP3 = (V2[2] * P3[0] - V2[3] * P3[1] - V2[4] * P3[2] - V2[5] * P3[3]); 
+  TMP2 = (P1[0] * V2[2] - P1[1] * V2[3] - P1[2] * V2[4] - P1[3] * V2[5]); 
   denom = COUP/(pow(P1[0], 2) - pow(P1[1], 2) - pow(P1[2], 2) - pow(P1[3], 2) -
       M1 * (M1 - cI * W1));
-  V1[2] = denom * (TMP8 * (-cI * (P2[0]) + cI * (P3[0])) + (V2[2] * (-cI *
-      (TMP4) + cI * (TMP5)) + V3[2] * (-cI * (TMP7) + cI * (TMP6))));
-  V1[3] = denom * (TMP8 * (-cI * (P2[1]) + cI * (P3[1])) + (V2[3] * (-cI *
-      (TMP4) + cI * (TMP5)) + V3[3] * (-cI * (TMP7) + cI * (TMP6))));
-  V1[4] = denom * (TMP8 * (-cI * (P2[2]) + cI * (P3[2])) + (V2[4] * (-cI *
-      (TMP4) + cI * (TMP5)) + V3[4] * (-cI * (TMP7) + cI * (TMP6))));
-  V1[5] = denom * (TMP8 * (-cI * (P2[3]) + cI * (P3[3])) + (V2[5] * (-cI *
-      (TMP4) + cI * (TMP5)) + V3[5] * (-cI * (TMP7) + cI * (TMP6))));
+  V1[2] = denom * (TMP4 * (-cI * (P2[0]) + cI * (P3[0])) + (V2[2] * (-cI *
+      (TMP0) + cI * (TMP1)) + V3[2] * (-cI * (TMP3) + cI * (TMP2))));
+  V1[3] = denom * (TMP4 * (-cI * (P2[1]) + cI * (P3[1])) + (V2[3] * (-cI *
+      (TMP0) + cI * (TMP1)) + V3[3] * (-cI * (TMP3) + cI * (TMP2))));
+  V1[4] = denom * (TMP4 * (-cI * (P2[2]) + cI * (P3[2])) + (V2[4] * (-cI *
+      (TMP0) + cI * (TMP1)) + V3[4] * (-cI * (TMP3) + cI * (TMP2))));
+  V1[5] = denom * (TMP4 * (-cI * (P2[3]) + cI * (P3[3])) + (V2[5] * (-cI *
+      (TMP0) + cI * (TMP1)) + V3[5] * (-cI * (TMP3) + cI * (TMP2))));
 }
 
+
+void FFV2_2(complex<double> F1[], complex<double> V3[], complex<double> COUP,
+    double M2, double W2, complex<double> F2[])
+{
+  complex<double> cI = complex<double> (0., 1.); 
+  double P2[4]; 
+  complex<double> denom; 
+  F2[0] = +F1[0] + V3[0]; 
+  F2[1] = +F1[1] + V3[1]; 
+  P2[0] = -F2[0].real(); 
+  P2[1] = -F2[1].real(); 
+  P2[2] = -F2[1].imag(); 
+  P2[3] = -F2[0].imag(); 
+  denom = COUP/(pow(P2[0], 2) - pow(P2[1], 2) - pow(P2[2], 2) - pow(P2[3], 2) -
+      M2 * (M2 - cI * W2));
+  F2[2] = denom * cI * (F1[2] * (P2[0] * (V3[2] + V3[5]) + (P2[1] * - 1. *
+      (V3[3] + cI * (V3[4])) + (P2[2] * (+cI * (V3[3]) - V3[4]) - P2[3] *
+      (V3[2] + V3[5])))) + F1[3] * (P2[0] * (V3[3] - cI * (V3[4])) + (P2[1] *
+      (V3[5] - V3[2]) + (P2[2] * (-cI * (V3[5]) + cI * (V3[2])) + P2[3] * (+cI
+      * (V3[4]) - V3[3])))));
+  F2[3] = denom * cI * (F1[2] * (P2[0] * (V3[3] + cI * (V3[4])) + (P2[1] * - 1.
+      * (V3[2] + V3[5]) + (P2[2] * - 1. * (+cI * (V3[2] + V3[5])) + P2[3] *
+      (V3[3] + cI * (V3[4]))))) + F1[3] * (P2[0] * (V3[2] - V3[5]) + (P2[1] *
+      (+cI * (V3[4]) - V3[3]) + (P2[2] * - 1. * (V3[4] + cI * (V3[3])) + P2[3]
+      * (V3[2] - V3[5])))));
+  F2[4] = denom * - cI * M2 * (F1[2] * - 1. * (V3[2] + V3[5]) + F1[3] * (+cI *
+      (V3[4]) - V3[3]));
+  F2[5] = denom * cI * M2 * (F1[2] * (V3[3] + cI * (V3[4])) + F1[3] * (V3[2] -
+      V3[5]));
+}
+
+void FFV2_3_2(complex<double> F1[], complex<double> V3[], complex<double>
+    COUP1, complex<double> COUP2, double M2, double W2, complex<double> F2[])
+{
+  //complex<double> cI = complex<double> (0., 1.);
+  complex<double> Ftmp[6]; 
+  //double P2[4];
+  //complex<double> denom;
+  int i; 
+  FFV2_2(F1, V3, COUP1, M2, W2, F2); 
+  FFV3_2(F1, V3, COUP2, M2, W2, Ftmp); 
+  i = 2; 
+  while (i < 6)
+  {
+    F2[i] = F2[i] + Ftmp[i]; 
+    i++; 
+  }
+}
+void FFV2_5_2(complex<double> F1[], complex<double> V3[], complex<double>
+    COUP1, complex<double> COUP2, double M2, double W2, complex<double> F2[])
+{
+  //complex<double> cI = complex<double> (0., 1.);
+  complex<double> Ftmp[6]; 
+  //double P2[4];
+  //complex<double> denom;
+  int i; 
+  FFV2_2(F1, V3, COUP1, M2, W2, F2); 
+  FFV5_2(F1, V3, COUP2, M2, W2, Ftmp); 
+  i = 2; 
+  while (i < 6)
+  {
+    F2[i] = F2[i] + Ftmp[i]; 
+    i++; 
+  }
+}
 
 }  // end namespace $(namespace)s_sm
 

@@ -6,7 +6,7 @@
 #include <functional> // std::function<>
 
 #include "tthAnalysis/tthMEM/interface/tthMEMenums.h" // ME_mg5_3l1tau
-#include "tthAnalysis/tthMEM/interface/me_ttHorZ_3l1tau_mg5.h" // me_ttHorZ_3l1tau_mg5
+#include "tthAnalysis/tthMEM/interface/mg5_tthz_t2lvl_tbar2lvl_hz2tata.h" // mg5_tthz_t2lvl_tbar2lvl_hz2tata
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // MeasuredEvent
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 #include "tthAnalysis/tthMEM/interface/RecoTrueEvent_ttHorZ_3l1tau.h" // RecoTrueEvent_ttHorZ_3l1tau
@@ -106,7 +106,7 @@ namespace tthMEM
     ///< pointer to the parton distribution function (PDF)
     ME_mg5_3l1tau currentME_;
     ///< tells whether current integration is for tth or ttz
-    mutable me_ttHorZ_3l1tau_mg5 * me_madgraph_[2];
+    mutable mg5_tthz_t2lvl_tbar2lvl_hz2tata * me_madgraph_[2];
     ///< two sets of MadGraph matrix elements: one for tth, the other for ttz
 
     double Q_;              ///< the resolution scale needed by the PDF

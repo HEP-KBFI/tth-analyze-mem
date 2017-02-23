@@ -5,11 +5,11 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#ifndef me_tth_3l1tau_qq_mg5_h
-#define me_tth_3l1tau_qq_mg5_h
+#ifndef mg5_tth_t2lvl_tbar2lvl_h2tata_qq_h
+#define mg5_tth_t2lvl_tbar2lvl_h2tata_qq_h
 
-#include "tthAnalysis/tthMEM/interface/me_ttHorZ_3l1tau_mg5.h"
-#include "Parameters_sm_tth_3l1tau.h"
+#include "tthAnalysis/tthMEM/interface/mg5_tthz_t2lvl_tbar2lvl_hz2tata.h"
+#include "Parameters_sm_tth_t2lvl_tbar2lvl_h2tata.h"
 
 //==========================================================================
 // A class for calculating the matrix elements for
@@ -79,20 +79,20 @@
 // *   Decay: h > ta+ ta- WEIGHTED<=2
 //--------------------------------------------------------------------------
 
-class me_tth_3l1tau_qq_mg5
-  : public me_ttHorZ_3l1tau_mg5
+class mg5_tth_t2lvl_tbar2lvl_h2tata_qq
+  : public mg5_tthz_t2lvl_tbar2lvl_hz2tata
 {
   public:
 
     // Constructor.
-    me_tth_3l1tau_qq_mg5()
+    mg5_tth_t2lvl_tbar2lvl_h2tata_qq()
     {
       for(std::size_t i = 0; i < nprocesses; ++i)
           jamp2[i] = nullptr;
     }
 
     // Destructor.
-    virtual ~me_tth_3l1tau_qq_mg5() override
+    virtual ~mg5_tth_t2lvl_tbar2lvl_h2tata_qq() override
     {
       for(std::size_t i = 0; i < nprocesses; ++i)
         if(jamp2[i])
@@ -157,8 +157,8 @@ class me_tth_3l1tau_qq_mg5
     matrix_1_uux_ttxh_t_bepve_tx_bxemvex_h_taptam();
 
     // Pointer to the model parameters
-    Parameters_sm_tth_3l1tau * pars;
+    Parameters_sm_tth_t2lvl_tbar2lvl_h2tata * pars;
 }; 
 
 
-#endif  // me_tth_3l1tau_qq_mg5_h
+#endif  // mg5_tth_t2lvl_tbar2lvl_h2tata_qq_h
