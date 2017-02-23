@@ -192,7 +192,10 @@ if __name__ == '__main__':
         )
         submitStdout, submitStderr = run_cmd(submitJobProcess)
         if submitStderr:
-          raise ValueError("sbatch error: {reason}".format(reason = submitStderr))
+          if "Slurm temporarily unable to accept job, sleeping and retrying." in submitStderr:
+            logging.warning(submitStderr)
+          else:
+            raise ValueError("sbatch error: {reason}".format(reason = submitStderr))
         entry['ID']       = submitStdout.rstrip('\n').split()[-1]
         entry['status']   = STATUS_RUNNING
         entry['retries'] += 1
