@@ -6,7 +6,7 @@
 #include <boost/range/adaptor/map.hpp> // boost::adaptros::map_keys
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 
-#include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::, pow2()
+#include "tthAnalysis/tthMEM/interface/general/constants.h" // constants::, pow2()
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 using namespace tthMEM;

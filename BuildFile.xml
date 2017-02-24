@@ -1,3 +1,4 @@
+<flags ADD_SUBDIR="1" />
 <use name="DataFormats/Math" />
 <use name="FWCore/ParameterSet" />
 <use name="FWCore/Utilities" />

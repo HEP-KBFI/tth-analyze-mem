@@ -5,11 +5,11 @@
 #include <TTree.h> // TTree
 #include <TBranch.h> // TBranch
 
-#include "tthAnalysis/tthMEM/interface/MeasuredMET.h" // tthMEM::MeasuredMET
-#include "tthAnalysis/tthMEM/interface/MeasuredLepton.h" // tthMEM::MeasuredLepton
-#include "tthAnalysis/tthMEM/interface/MeasuredJet.h" // tthMEM::MeasuredJet
-#include "tthAnalysis/tthMEM/interface/MeasuredHadronicTau.h" // tthMEM::MeasuredHadronicTau
-#include "tthAnalysis/tthMEM/interface/MVAVariables.h" // tthMEM::MVAVariables
+#include "tthAnalysis/tthMEM/interface/objects/MeasuredMET.h" // tthMEM::MeasuredMET
+#include "tthAnalysis/tthMEM/interface/objects/MeasuredLepton.h" // tthMEM::MeasuredLepton
+#include "tthAnalysis/tthMEM/interface/objects/MeasuredJet.h" // tthMEM::MeasuredJet
+#include "tthAnalysis/tthMEM/interface/objects/MeasuredHadronicTau.h" // tthMEM::MeasuredHadronicTau
+#include "tthAnalysis/tthMEM/interface/objects/MVAVariables.h" // tthMEM::MVAVariables
 #include "tthAnalysis/tthMEM/interface/IndexWrapper.h" // tthMEM::IndexWrapper<,>
 #include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
 #include "tthAnalysis/tthMEM/interface/GeneratorLevelEvent_3l1tau.h" // GeneratorLevelEvent_3l1tau

@@ -1,5 +1,5 @@
-#include "tthAnalysis/tthMEM/interface/MEMIntegratorMarkovChain.h" // MEMIntegratorMarkovChain
-#include "tthAnalysis/tthMEM/interface/MEMIntegratorVEGAS.h" // MEMIntegratorVEGAS
+#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorMarkovChain.h" // MEMIntegratorMarkovChain
+#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorVEGAS.h" // MEMIntegratorVEGAS
 
 using namespace tthMEM;
 

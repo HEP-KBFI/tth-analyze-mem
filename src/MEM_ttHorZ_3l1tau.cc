@@ -1,12 +1,12 @@
 #include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
-#include "tthAnalysis/tthMEM/interface/MEMIntegratorVEGAS.h"
-#include "tthAnalysis/tthMEM/interface/MEMIntegratorVAMP.h"
-#include "tthAnalysis/tthMEM/interface/MEMIntegratorMarkovChain.h"
-#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // ...
+#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorVEGAS.h"
+#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorVAMP.h"
+#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorMarkovChain.h"
+#include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // ...
   // ... roundToNearestUInt(), pi()
-#include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // constants::
-#include "tthAnalysis/tthMEM/interface/tthMEMvecFunctions.h" // vec::
+#include "tthAnalysis/tthMEM/interface/general/constants.h" // constants::
+#include "tthAnalysis/tthMEM/interface/general/vecFunctions.h" // vec::
 
 #include <cmath> // std::round()
 

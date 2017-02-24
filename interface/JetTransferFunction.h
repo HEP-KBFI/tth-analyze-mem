@@ -1,7 +1,7 @@
 #ifndef BJETTRANSFERFUNCTION_H
 #define BJETTRANSFERFUNCTION_H
 
-#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // pi()
+#include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // pi()
 
 namespace tthMEM
 {

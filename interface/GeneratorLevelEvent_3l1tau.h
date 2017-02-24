@@ -1,7 +1,7 @@
 #ifndef GENERATORLEVELEVENT_3L1TAU_H
 #define GENERATORLEVELEVENT_3L1TAU_H
 
-#include "tthAnalysis/tthMEM/interface/MeasuredLepton.h" // MeasuredLepton
+#include "tthAnalysis/tthMEM/interface/objects/MeasuredLepton.h" // MeasuredLepton
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 
 #include <array> // std::array<>

@@ -1,7 +1,7 @@
 #ifndef RECOTRUEEVENT_TTHORZ_3L1TAU_H
 #define RECOTRUEEVENT_TTHORZ_3L1TAU_H
 
-#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // Vector, LorentzVector
+#include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // Vector, LorentzVector
 
 #include <vector> // std::vector<>
 

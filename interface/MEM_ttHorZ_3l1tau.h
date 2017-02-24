@@ -6,7 +6,7 @@
 
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/Integrand_ttHorZ_3l1tau.h"
-#include "tthAnalysis/tthMEM/interface/MEMIntegratorBase.h"
+#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorBase.h"
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h"
 
 #include <TBenchmark.h> // TBenchmark

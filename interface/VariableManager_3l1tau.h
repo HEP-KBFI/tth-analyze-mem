@@ -1,7 +1,7 @@
 #ifndef VARIABLEMANAGER_3L1TAU_H
 #define VARIABLEMANAGER_3L1TAU_H
 
-#include "tthAnalysis/tthMEM/interface/tthMEMenums.h" // EnumClassHash
+#include "tthAnalysis/tthMEM/interface/general/enums.h" // EnumClassHash
 #include "tthAnalysis/tthMEM/interface/Limits.h" // Limits
 
 #include <string> // std::string

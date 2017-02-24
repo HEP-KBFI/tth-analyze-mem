@@ -1,6 +1,6 @@
 #include <string> // std::string
 
-#include "tthAnalysis/tthMEM/interface/tthMEMauxFunctions.h" // tthMEM::roundToNdigits()
+#include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // tthMEM::roundToNdigits()
 #include <cppunit/extensions/HelperMacros.h> // CppUnit::TestFixture, CPPUNIT_ASSERT_*
 
 class Test_tthMEMauxFunctions

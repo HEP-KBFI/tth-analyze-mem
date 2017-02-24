@@ -1,10 +1,10 @@
 #ifndef MEMINTERFACE_3L1TAU_H
 #define MEMINTERFACE_3L1TAU_H
 
-#include "tthAnalysis/tthMEM/interface/MeasuredLepton.h" // tthMEM::MeasuredLepton
-#include "tthAnalysis/tthMEM/interface/MeasuredJet.h" // tthMEM::MeasuredJet
-#include "tthAnalysis/tthMEM/interface/MeasuredHadronicTau.h" // tthMEM::MeasuredHadronicTau
-#include "tthAnalysis/tthMEM/interface/MeasuredMET.h" // tthMEM::MeasuredMET
+#include "tthAnalysis/tthMEM/interface/objects/MeasuredLepton.h" // tthMEM::MeasuredLepton
+#include "tthAnalysis/tthMEM/interface/objects/MeasuredJet.h" // tthMEM::MeasuredJet
+#include "tthAnalysis/tthMEM/interface/objects/MeasuredHadronicTau.h" // tthMEM::MeasuredHadronicTau
+#include "tthAnalysis/tthMEM/interface/objects/MeasuredMET.h" // tthMEM::MeasuredMET
 #include "tthAnalysis/tthMEM/interface/MEMOutput_3l1tau.h" // MEMOutput_3l1tau
 #include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h" // tthMEM::MEM_ttHorZ_3l1tau
 #include "tthAnalysis/tthMEM/interface/LikelihoodRatio_3l1tau.h" // LikelihoodRatio_3l1tau

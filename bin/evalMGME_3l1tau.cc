@@ -11,11 +11,11 @@
 
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line(), throw_line_ext(), tthMEMexception
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR, LOGINFO
-#include "tthAnalysis/tthMEM/interface/mg5_tth_t2lvl_tbar2lvl_h2tata_qq.h" // mg5_tth_t2lvl_tbar2lvl_h2tata_qq
-#include "tthAnalysis/tthMEM/interface/mg5_tth_t2lvl_tbar2lvl_h2tata.h" // mg5_tth_t2lvl_tbar2lvl_h2tata
-#include "tthAnalysis/tthMEM/interface/mg5_ttz_t2lvl_tbar2lvl_z2tata.h" // mg5_ttz_t2lvl_tbar2lvl_z2tata
+#include "tthAnalysis/tthMEM/interface/mg5/me/mg5_tth_t2lvl_tbar2lvl_h2tata_qq.h" // mg5_tth_t2lvl_tbar2lvl_h2tata_qq
+#include "tthAnalysis/tthMEM/interface/mg5/me/mg5_tth_t2lvl_tbar2lvl_h2tata.h" // mg5_tth_t2lvl_tbar2lvl_h2tata
+#include "tthAnalysis/tthMEM/interface/mg5/me/mg5_ttz_t2lvl_tbar2lvl_z2tata.h" // mg5_ttz_t2lvl_tbar2lvl_z2tata
 #include "tthAnalysis/tthMEM/interface/GeneratorLevelEvent_3l1tau.h" // tthMEM::GeneratorLevelEvent_3l1tau
-#include "tthAnalysis/tthMEM/interface/tthMEMconstants.h" // tthMEM::constants
+#include "tthAnalysis/tthMEM/interface/general/constants.h" // tthMEM::constants
 #include "tthAnalysis/tthMEM/interface/RLESelector.h" // RLESelector<>
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet

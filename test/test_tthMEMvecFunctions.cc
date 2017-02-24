@@ -5,7 +5,7 @@
 
 #include <cppunit/extensions/HelperMacros.h> // CppUnit::TestFixture, CPPUNIT_ASSERT_*
 
-#include "tthAnalysis/tthMEM/interface/tthMEMvecFunctions.h" // tthMEM::vec::, tthMEMexception
+#include "tthAnalysis/tthMEM/interface/general/vecFunctions.h" // tthMEM::vec::, tthMEMexception
 
 // enable operator overloading for std::vector<>'s that we unit-test here
 using namespace tthMEM;

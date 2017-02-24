@@ -1,7 +1,7 @@
 #ifndef DEBUGPLOTTER_TTHORZ_3L1TAU_H
 #define DEBUGPLOTTER_TTHORZ_3L1TAU_H
 
-#include "tthAnalysis/tthMEM/interface/tthMEMenums.h" // EnumClassHash, hVar_3l1tau::
+#include "tthAnalysis/tthMEM/interface/general/enums.h" // EnumClassHash, hVar_3l1tau::
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 
 #include <string> // std::string
