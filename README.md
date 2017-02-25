@@ -26,18 +26,11 @@ Create a new file with the following contents
 <tool name="vamp" version="2.3.0">
   <lib name="vamp"/>
   <client>
-    <environment name="LIBDIR" default="<your lib dir>"/>
-    <environment name="INCLUDE" default="<your include dir>"/>
+    <environment name="LIBDIR"  default="$CMSSW_BASE/VAMP/vamp-2.3.0/prefix/lib"         />
+    <environment name="INCLUDE" default="$CMSSW_BASE/VAMP/vamp-2.3.0/prefix/include/vamp"/>
   </client>
   <use name="f77compiler"/>
 </tool>
-```
-
-where the full paths are
-
-```bash
-<your lib dir>     = $CMSSW_BASE/VAMP/vamp-2.3.0/prefix/lib
-<your include dir> = $CMSSW_BASE/VAMP/vamp-2.3.0/prefix/include/vamp
 ```
 
 Save it to `$CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected/vamp.xml`. Next up try to set up with `scram setup vamp` and verify the installation with `scram tool info vamp`. You should see output along the lines of
@@ -93,15 +86,15 @@ scram b -j8 USER_CXXFLAGS="-g -Wuninitialized"
 
 Memory leak detection:
 ```bash
-valgrind --tool=memcheck `cmsvgsupp`                              \
---suppressions=CMSSW_BASE/src/tthAnalysis/tthMEM/data/tthMEM.supp \
---leak-check=yes                                                  \
---show-reachable=yes                                              \
---num-callers=20                                                  \
---track-fds=yes                                                   \
---track-origins=yes                                               \
---log-file="valgrind.log"                                         \
-runMEM_3l1tau python/runMEM_3l1tau_2016_cfg.py                    \
+valgrind --tool=memcheck `cmsvgsupp`                               \
+--suppressions=$CMSSW_BASE/src/tthAnalysis/tthMEM/data/tthMEM.supp \
+--leak-check=yes                                                   \
+--show-reachable=yes                                               \
+--num-callers=20                                                   \
+--track-fds=yes                                                    \
+--track-origins=yes                                                \
+--log-file="valgrind.log"                                          \
+runMEM_3l1tau python/runMEM_3l1tau_2016_cfg.py                     \
 &> out.log
 ```
 The second line suppresses leaks from 3rd party libraries linked to `runMEM_3l1tau`. If you only see Python-related leaks, then you're good.
