@@ -82,7 +82,7 @@ Integrand_ttHorZ_3l1tau::~Integrand_ttHorZ_3l1tau()
   measuredEvent_ = nullptr; // no allocation, just the address
 
   std::for_each(mgMomenta_.begin(), mgMomenta_.end(),
-    [](double * & d) { delete d; d = nullptr; }
+    [](double * & d) { delete [] d; d = nullptr; }
   );
 }
 

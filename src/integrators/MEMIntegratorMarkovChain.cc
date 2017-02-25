@@ -44,6 +44,15 @@ MEMIntegratorMarkovChain::MEMIntegratorMarkovChain(const std::string & modeStr,
   , nofIterPerBatch_(nofBatches_ > 0 ? nofIterSampling_ / nofBatches_ : 0)
   , epsilon0_(epsilon0)
   , nu_(nu)
+  , integrand_(nullptr)
+  , nofDimensions_(0)
+  , prob_(0.)
+  , nofMoves_accepted_(0)
+  , nofMoves_rejected_(0)
+  , nofMoves_acceptedTotal_(0)
+  , nofMoves_rejectedTotal_(0)
+  , nofIntegrationCalls_(0)
+  , nofTries_(0)
 {
   const decltype(mxModeStrings_)::left_const_iterator it =
     mxModeStrings_.left.find(modeStr);

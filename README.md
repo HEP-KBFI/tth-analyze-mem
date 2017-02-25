@@ -93,29 +93,34 @@ scram b -j8 USER_CXXFLAGS="-g -Wuninitialized"
 
 Memory leak detection:
 ```bash
-valgrind --tool=memcheck `cmsvgsupp` \
---leak-check=yes                     \
---show-reachable=yes                 \
---num-callers=20                     \
---track-fds=yes                      \
---track-origins=yes                  \
---log-file="valgrind.log"            \
-runMEM_3l1tau python/runMEM_3l1tau_2016_cfg.py
+valgrind --tool=memcheck `cmsvgsupp`                              \
+--suppressions=CMSSW_BASE/src/tthAnalysis/tthMEM/data/tthMEM.supp \
+--leak-check=yes                                                  \
+--show-reachable=yes                                              \
+--num-callers=20                                                  \
+--track-fds=yes                                                   \
+--track-origins=yes                                               \
+--log-file="valgrind.log"                                         \
+runMEM_3l1tau python/runMEM_3l1tau_2016_cfg.py                    \
+&> out.log
 ```
+The second line suppresses leaks from 3rd party libraries linked to `runMEM_3l1tau`. If you only see Python-related leaks, then you're good.
 
 Memory consumption:
 ```bash
-valgrind --tool=massif \
---depth=40             \
---time-stamp=yes       \
---time-unit=ms         \
---threshold=0.1        \
-runMEM_3l1tau python/runMEM_3l1tau_2016_cfg.py
+valgrind --tool=massif                         \
+--depth=40                                     \
+--time-stamp=yes                               \
+--time-unit=ms                                 \
+--threshold=0.1                                \
+runMEM_3l1tau python/runMEM_3l1tau_2016_cfg.py \
+&> out.log
 ```
 
 Callgraph:
 ```bash
-valgrind --tool=callgrind \
-runMEM_3l1tau python/runMEM_3l1tau_2016_cfg.py
+valgrind --tool=callgrind                      \
+runMEM_3l1tau python/runMEM_3l1tau_2016_cfg.py \
+&> out.log
 ```
 </details>

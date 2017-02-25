@@ -1,0 +1,140 @@
+{
+   tthMEM_Leak_0
+   Memcheck:Leak
+   ...
+   obj:/cvmfs/cms.cern.ch/*/cms/cmssw/*/lib/*/lib*.so*
+   ...
+}
+{
+   tthMEM_Cond_0
+   Memcheck:Cond
+   ...
+   obj:/cvmfs/cms.cern.ch/*/cms/cmssw/*/lib/*/lib*.so*
+   ...
+}
+{
+   tthMEM_Free_0
+   Memcheck:Free
+   ...
+   obj:/cvmfs/cms.cern.ch/*/cms/cmssw/*/lib/*/lib*.so*
+   ...
+}
+{
+   tthMEM_Value8_0
+   Memcheck:Value8
+   ...
+   obj:/cvmfs/cms.cern.ch/*/cms/cmssw/*/lib/*/lib*.so*
+   ...
+}
+{
+   tthMEM_Leak_1
+   Memcheck:Leak
+   ...
+   obj:/cvmfs/cms.cern.ch/*/cms/cmssw/*/external/*/lib/lib*.so*
+   ...
+}
+{
+   tthMEM_Cond_1
+   Memcheck:Cond
+   ...
+   obj:/cvmfs/cms.cern.ch/*/cms/cmssw/*/external/*/lib/lib*.so*
+   ...
+}
+{
+   tthMEM_Free_1
+   Memcheck:Free
+   ...
+   obj:/cvmfs/cms.cern.ch/*/cms/cmssw/*/external/*/lib/lib*.so*
+   ...
+}
+{
+   tthMEM_Value8_1
+   Memcheck:Value8
+   ...
+   obj:/cvmfs/cms.cern.ch/*/cms/cmssw/*/external/*/lib/lib*.so*
+   ...
+}
+{
+   tthMEM_Leak_2
+   Memcheck:Leak
+   ...
+   obj:/cvmfs/cms.cern.ch/*/external/gcc/*/lib64/lib*.so*
+   ...
+}
+{
+   tthMEM_Cond_2
+   Memcheck:Cond
+   ...
+   obj:/cvmfs/cms.cern.ch/*/external/gcc/*/lib64/lib*.so*
+   ...
+}
+{
+   tthMEM_Free_2
+   Memcheck:Free
+   ...
+   obj:/cvmfs/cms.cern.ch/*/external/gcc/*/lib64/lib*.so*
+   ...
+}
+{
+   tthMEM_Value8_2
+   Memcheck:Value8
+   ...
+   obj:/cvmfs/cms.cern.ch/*/external/gcc/*/lib64/lib*.so*
+   ...
+}
+{
+   tthMEM_Leak_3
+   Memcheck:Leak
+   ...
+   obj:/cvmfs/cms.cern.ch/*/cms/cmssw/*/external/*/lib/lib*.so*
+   ...
+}
+{
+   tthMEM_Cond_3
+   Memcheck:Cond
+   ...
+   obj:/cvmfs/cms.cern.ch/*/cms/cmssw/*/external/*/lib/lib*.so*
+   ...
+}
+{
+   tthMEM_Free_3
+   Memcheck:Free
+   ...
+   obj:/cvmfs/cms.cern.ch/*/cms/cmssw/*/external/*/lib/lib*.so*
+   ...
+}
+{
+   tthMEM_Value8_3
+   Memcheck:Value8
+   ...
+   obj:/cvmfs/cms.cern.ch/*/cms/cmssw/*/external/*/lib/lib*.so*
+   ...
+}
+{
+   tthMEM_Leak_4
+   Memcheck:Leak
+   ...
+   obj:/cvmfs/cms.cern.ch/*/lcg/root/*/lib/lib*.so*
+   ...
+}
+{
+   tthMEM_Cond_4
+   Memcheck:Cond
+   ...
+   obj:/cvmfs/cms.cern.ch/*/lcg/root/*/lib/lib*.so*
+   ...
+}
+{
+   tthMEM_Free_4
+   Memcheck:Free
+   ...
+   obj:/cvmfs/cms.cern.ch/*/lcg/root/*/lib/lib*.so*
+   ...
+}
+{
+   tthMEM_Value8_4
+   Memcheck:Value8
+   ...
+   obj:/cvmfs/cms.cern.ch/*/lcg/root/*/lib/lib*.so*
+   ...
+}

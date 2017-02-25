@@ -312,6 +312,10 @@ main(int argc,
     delete measuredEvent.debugPlotter;
 
   newFile -> Write();
+  inputTree -> Reset();
+
+  delete newTree;
+  delete newFile;
 
   LOGINFO << "Wrote results to file = " << outputFileName;
   LOGINFO << "Done";
