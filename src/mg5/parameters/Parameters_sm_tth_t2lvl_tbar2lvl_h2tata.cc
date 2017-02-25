@@ -11,12 +11,12 @@
 #include <iomanip>
 
 // Initialize static instance
-Parameters_sm_tth_t2lvl_tbar2lvl_h2tata * Parameters_sm_tth_t2lvl_tbar2lvl_h2tata::instance = 0;
+Parameters_sm_tth_t2lvl_tbar2lvl_h2tata * Parameters_sm_tth_t2lvl_tbar2lvl_h2tata::instance = nullptr;
 
 // Function to get static instance - only one instance per program
 Parameters_sm_tth_t2lvl_tbar2lvl_h2tata * Parameters_sm_tth_t2lvl_tbar2lvl_h2tata::getInstance()
 {
-  if (instance == 0)
+  if (! instance)
     instance = new Parameters_sm_tth_t2lvl_tbar2lvl_h2tata();
 
   return instance; 

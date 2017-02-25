@@ -36,7 +36,7 @@ namespace tthMEM
     unsigned complLeptonIdx;
     std::vector<unsigned> bjetLeptonIdxs;
 
-    mutable DebugPlotter_ttHorZ_3l1tau * debugPlotter = 0;
+    mutable DebugPlotter_ttHorZ_3l1tau * debugPlotter = nullptr;
     std::shared_ptr<GeneratorLevelEvent_3l1tau> generatorLevel;
 
     void

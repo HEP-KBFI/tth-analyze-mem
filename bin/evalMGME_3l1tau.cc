@@ -230,7 +230,7 @@ main(int argc,
         TFile * const file = [&]()
         {
           if(! boost::filesystem::is_regular_file(fileName))
-            return static_cast<TFile *>(0);
+            return static_cast<TFile *>(nullptr);
           return new TFile(fileName.c_str(), "read");
         }();
         if(! file)
@@ -241,7 +241,7 @@ main(int argc,
         TTree * const tree = [&]()
         {
           if(! file -> GetListOfKeys() -> Contains(treeName.c_str()))
-            return static_cast<TTree *>(0);
+            return static_cast<TTree *>(nullptr);
           return static_cast<TTree *>(file -> Get(treeName.c_str()));
         }();
         if(! tree)

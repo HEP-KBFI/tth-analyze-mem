@@ -54,7 +54,7 @@ MEM_ttHorZ_3l1tau::initialize(const std::string & pdfName,
   LOGTRC;
   integrand_ = new Integrand_ttHorZ_3l1tau(pdfName, madgraphFileName, vm_);
   integrationMode_ = IntegrationMode::kUndefined;
-  intAlgo_ = 0;
+  intAlgo_ = nullptr;
   numDimensions_ = vm_.getCurrentDim();
   setTF_ = false;
   useAvgB_ = false;
@@ -84,12 +84,12 @@ MEM_ttHorZ_3l1tau::~MEM_ttHorZ_3l1tau()
   if(integrand_)
   {
     delete integrand_;
-    integrand_ = 0;
+    integrand_ = nullptr;
   }
   if(clock_)
   {
     delete clock_;
-    clock_ = 0;
+    clock_ = nullptr;
   }
 }
 
@@ -322,7 +322,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
           intAlgo_ -> integrate(&g_Fortran, xl, xu, numDimensions_, p, pErr);
       }
       else
-        p = integrand_ -> eval(0);
+        p = integrand_ -> eval(nullptr);
 
       LOGINFO_S << "p = " << p << "; pErr = " << pErr;
       pSum_perJc += p;
@@ -372,7 +372,7 @@ MEM_ttHorZ_3l1tau::integrate(const MeasuredEvent_3l1tau & ev,
   if(intAlgo_)
   {
     delete intAlgo_;
-    intAlgo_ = 0;
+    intAlgo_ = nullptr;
   }
 
   clock_ -> Stop(__PRETTY_FUNCTION__);

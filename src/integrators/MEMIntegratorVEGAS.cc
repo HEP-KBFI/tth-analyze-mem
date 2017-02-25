@@ -6,14 +6,14 @@ MEMIntegratorVEGAS::MEMIntegratorVEGAS(unsigned numCallsGridOpt,
                                        unsigned numCallsIntEval,
                                        unsigned maxIntEvalIter,
                                        double maxChi2)
-  : integrand_(0)
+  : integrand_(nullptr)
   , numCallsGridOpt_(numCallsGridOpt)
   , numCallsIntEval_(numCallsIntEval)
   , maxIntEvalIter_(maxIntEvalIter)
   , maxChi2_(maxChi2)
   , precision_(1.e-5)
-  , xl_(0)
-  , xu_(0)
+  , xl_(nullptr)
+  , xu_(nullptr)
 {}
 
 MEMIntegratorVEGAS::~MEMIntegratorVEGAS()
@@ -90,24 +90,24 @@ MEMIntegratorVEGAS::integrate(MEMIntegratorBase::gPtr_C integrand,
   if(xl_)
   {
     delete [] xl_;
-    xl_ = 0;
+    xl_ = nullptr;
   }
   if(xu_)
   {
     delete [] xu_;
-    xu_ = 0;
+    xu_ = nullptr;
   }
   if(vegasIntegrand_ -> params)
     delete [] static_cast<double *>(vegasIntegrand_ -> params);
   if(vegasIntegrand_)
   {
     delete vegasIntegrand_;
-    vegasIntegrand_ = 0;
+    vegasIntegrand_ = nullptr;
   }
   gsl_monte_vegas_free(vegasWorkspace_);
   gsl_rng_free(vegasRnd_);
-  vegasWorkspace_ = 0;
-  vegasRnd_ = 0;
+  vegasWorkspace_ = nullptr;
+  vegasRnd_ = nullptr;
 }
 
 void *

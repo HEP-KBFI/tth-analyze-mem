@@ -94,8 +94,8 @@ plot(const std::function<double(double, double, double)> & jetTF,
   leg -> Draw();
 
   TLegend * leg2 = new TLegend(0.63, 0.45, 0.87, 0.55);
-  leg2 -> AddEntry(static_cast<TObject *>(0), "Solid: |#eta| < 1.0", "");
-  leg2 -> AddEntry(static_cast<TObject *>(0), "Dashed: |#eta| #geq 1.0", "");
+  leg2 -> AddEntry(static_cast<TObject *>(nullptr), "Solid: |#eta| < 1.0", "");
+  leg2 -> AddEntry(static_cast<TObject *>(nullptr), "Dashed: |#eta| #geq 1.0", "");
   leg2 -> SetBorderSize(0);
   leg2 -> Draw();
 
