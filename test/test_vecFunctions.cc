@@ -1,8 +1,3 @@
-#include <string> // std::string
-#include <vector> // std::vector<>
-#include <algorithm> // std::equal()
-#include <cmath> // std::sqrt()
-
 #include <cppunit/extensions/HelperMacros.h> // CppUnit::TestFixture, CPPUNIT_ASSERT_*
 
 #include "tthAnalysis/tthMEM/interface/general/vecFunctions.h" // tthMEM::vec::, tthMEMexception

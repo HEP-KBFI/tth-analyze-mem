@@ -1,13 +1,11 @@
 #include "tthAnalysis/tthMEM/interface/LikelihoodRatio_3l1tau.h"
-
-#include <algorithm> // std::accumulate()
-#include <numeric> // std::inner_product()
-
-#include <boost/range/adaptor/map.hpp> // boost::adaptros::map_keys
-#include <boost/range/algorithm/copy.hpp> // boost::copy()
-
 #include "tthAnalysis/tthMEM/interface/general/constants.h" // constants::, pow2()
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
+
+#include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
+#include <boost/range/algorithm/copy.hpp> // boost::copy()
+
+#include <numeric> // std::inner_product()
 
 using namespace tthMEM;
 

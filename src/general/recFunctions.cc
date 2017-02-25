@@ -3,10 +3,6 @@
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line()
 
-#include <cmath> // std::fabs(), std::sqrt(), std::atan2(), std::fpclassify(), FP_ZERO
-
-#include <TVectorD.h> // TVectorD
-
 namespace tthMEM
 {
   namespace functions

@@ -1,5 +1,8 @@
 #include "tthAnalysis/tthMEM/interface/objects/MVAVariables.h" // tthMEM::MVAVariables
 
+#include <TBranch.h> // TBranch
+#include <TTree.h> // TTree
+
 using namespace tthMEM;
 
 void

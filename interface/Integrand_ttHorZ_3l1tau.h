@@ -1,31 +1,22 @@
 #ifndef INTEGRAND_TTHORZ_3L1TAU_H
 #define INTEGRAND_TTHORZ_3L1TAU_H
 
-#include <string> // std::string
-#include <vector> // std::vector<>
-#include <functional> // std::function<>
-
-#include "tthAnalysis/tthMEM/interface/general/enums.h" // ME_mg5_3l1tau
-#include "tthAnalysis/tthMEM/interface/mg5/me/mg5_tthz_t2lvl_tbar2lvl_hz2tata.h" // mg5_tthz_t2lvl_tbar2lvl_hz2tata
-#include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // MeasuredEvent
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 #include "tthAnalysis/tthMEM/interface/RecoTrueEvent_ttHorZ_3l1tau.h" // RecoTrueEvent_ttHorZ_3l1tau
 
-// ignore "-Wmaybe-uninitialized" gcc error if compiled with -Og -g3 -ggdb3
-#if defined(__OPTIMIZE__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#pragma GCC diagnostic ignored "-Wshadow"
-#endif
+#include <functional> // std::function<>
 
-#include <LHAPDF/LHAPDF.h> // LHAPDF::PDF
+namespace LHAPDF
+{
+  class PDF;
+}
 
-#if defined(__OPTIMIZE__)
-#pragma GCC diagnostic pop
-#endif
+class mg5_tthz_t2lvl_tbar2lvl_hz2tata;
 
 namespace tthMEM
 {
+  class MeasuredEvent_3l1tau;
+
   /**
    * @brief MEM integrand of the process tth, h->tautau, 3l1tau channel (LO)
    *

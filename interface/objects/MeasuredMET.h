@@ -1,12 +1,11 @@
 #ifndef MEASUREDMET_H
 #define MEASUREDMET_H
 
-#include <Rtypes.h> // UInt_t, ULong64_t, Float_t, Long64_t
-#include <TTree.h> // TTree
-#include <TBranch.h> // TBranch
-#include <TMatrixD.h> // TMatrixD
 #include <TMatrixDSym.h> // TMatrixDSym
 #include <TVectorD.h> // TVectorD
+
+class TTree;
+class TBranch;
 
 namespace tthMEM
 {

@@ -1,5 +1,7 @@
 #include "tthAnalysis/tthMEM/interface/objects/MeasuredLepton.h"
 
+#include <TTree.h> // TTree
+
 using namespace tthMEM;
 
 MeasuredLepton::MeasuredLepton()

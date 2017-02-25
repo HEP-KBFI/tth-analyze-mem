@@ -3,12 +3,6 @@
 
 #include "tthAnalysis/tthMEM/interface/general/lvFunctions.h" // LorentzVector, Vector*
 
-#include <string> // std::string
-#include <cmath> // std::acos()
-#include <vector> // std::vector<>
-#include <array> // std::array<,>
-#include <algorithm> // std::next_permutation()
-
 namespace tthMEM
 {
   /**

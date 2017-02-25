@@ -1,14 +1,7 @@
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/general/constants.h" // constants::
-#include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // pi()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
-
-#include <algorithm> // std::count_if(), std:find_if()
-#include <utility> // std::move()
-#include <iomanip> // std::setw()
-#include <sstream> // std::stringstream
-#include <cstdlib> // EXIT_FAILURE, EXIT_SUCCESS
 
 #include <boost/assign/list_of.hpp> // boost::assign::list_of<>
 

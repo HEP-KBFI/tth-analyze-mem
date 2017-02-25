@@ -1,10 +1,12 @@
 #include "tthAnalysis/tthMEM/interface/objects/MeasuredObject.h" // MeasuredObject, roundToNdigits()
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 
+#include <TTree.h> // TTree
+#include <TBranch.h> // TBranch
+#include <TString.h> // Form()
+
 #define _USE_MATH_DEFINES // M_PI from cmath
 #include <cmath> // std::cos(), std::sin(), std::cosh(), std::sinh(), std::sqrt()
-
-#include <TString.h> // Form()
 
 #define _SPACE std::setw(10) << std::right
 

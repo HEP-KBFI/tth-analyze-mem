@@ -3,8 +3,6 @@
 
 #include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // Vector, LorentzVector
 
-#include <vector> // std::vector<>
-
 namespace tthMEM
 {
   class RecoTrueEvent_ttHorZ_3l1tau

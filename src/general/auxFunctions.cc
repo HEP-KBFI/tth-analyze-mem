@@ -2,13 +2,13 @@
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
-#include <cfenv> // std::fesetround(), FE_TONEAREST
+#include <FWCore/ParameterSet/interface/FileInPath.h> // edm::FileInPath
 
 #include <boost/range/algorithm/lexicographical_compare.hpp> // ...
   // ... boost::range::lexicographical_compare()
 #include <boost/algorithm/string/compare.hpp> // boost::is_iless()
 
-#include <FWCore/ParameterSet/interface/FileInPath.h> // edm::FileInPath
+#include <cfenv> // std::fesetround(), FE_TONEAREST
 
 namespace tthMEM
 {

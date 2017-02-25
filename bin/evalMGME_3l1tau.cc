@@ -1,34 +1,15 @@
-#include <cstdlib> // EXIT_FAILURE, EXIT_SUCCESS
-#include <string> // std::string, std::getline()
-#include <cstring> // std::memset()
-#include <vector> // std::vector<>
-#include <array> // std::array<,>
-#include <fstream> // std::ofstream::, std::scientific, std::ifstream
-#include <iomanip> // std::setprecision()
-#include <algorithm> // std::for_each()
-#include <utility> // std::pair<,>
-#include <sstream> // std::stringstream
-
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line(), throw_line_ext(), tthMEMexception
-#include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR, LOGINFO
 #include "tthAnalysis/tthMEM/interface/mg5/me/mg5_tth_t2lvl_tbar2lvl_h2tata_qq.h" // mg5_tth_t2lvl_tbar2lvl_h2tata_qq
 #include "tthAnalysis/tthMEM/interface/mg5/me/mg5_tth_t2lvl_tbar2lvl_h2tata.h" // mg5_tth_t2lvl_tbar2lvl_h2tata
 #include "tthAnalysis/tthMEM/interface/mg5/me/mg5_ttz_t2lvl_tbar2lvl_z2tata.h" // mg5_ttz_t2lvl_tbar2lvl_z2tata
-#include "tthAnalysis/tthMEM/interface/GeneratorLevelEvent_3l1tau.h" // tthMEM::GeneratorLevelEvent_3l1tau
-#include "tthAnalysis/tthMEM/interface/general/constants.h" // tthMEM::constants
-#include "tthAnalysis/tthMEM/interface/RLESelector.h" // RLESelector<>
+#include "tthAnalysis/tthMEM/interface/GeneratorLevelEvent_3l1tau.h" // GeneratorLevelEvent_3l1tau
+#include "tthAnalysis/tthMEM/interface/general/constants.h" // constants
+#include "tthAnalysis/tthMEM/interface/RLESelector.h" // RLESelector<>, boost::algorithm::join()
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 #include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
-#include <FWCore/Utilities/interface/Exception.h> // cms::Exception
 
 #include <boost/filesystem/operations.hpp> // boost::filesystem::
-#include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
-#include <Rtypes.h> // UInt_t, ULong64_t
-#include <TString.h> // Form()
-#include <TFile.h> // TFile
-#include <TTree.h> // TTree
 #include <TBenchmark.h> // TBenchmark
 #include <Math/VectorUtil.h> // ROOT::Math::VectorUtil::boost()
 

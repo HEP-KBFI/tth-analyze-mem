@@ -1,29 +1,20 @@
 #ifndef MEASUREDEVENT_H
 #define MEASUREDEVENT_H
 
-#include <Rtypes.h> // UInt_t, ULong64_t, Float_t, Long64_t
-#include <TTree.h> // TTree
-#include <TBranch.h> // TBranch
-
-#include "tthAnalysis/tthMEM/interface/objects/MeasuredMET.h" // tthMEM::MeasuredMET
-#include "tthAnalysis/tthMEM/interface/objects/MeasuredLepton.h" // tthMEM::MeasuredLepton
-#include "tthAnalysis/tthMEM/interface/objects/MeasuredJet.h" // tthMEM::MeasuredJet
-#include "tthAnalysis/tthMEM/interface/objects/MeasuredHadronicTau.h" // tthMEM::MeasuredHadronicTau
-#include "tthAnalysis/tthMEM/interface/objects/MVAVariables.h" // tthMEM::MVAVariables
-#include "tthAnalysis/tthMEM/interface/IndexWrapper.h" // tthMEM::IndexWrapper<,>
-#include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
 #include "tthAnalysis/tthMEM/interface/GeneratorLevelEvent_3l1tau.h" // GeneratorLevelEvent_3l1tau
+#include "tthAnalysis/tthMEM/interface/objects/MeasuredMET.h" // MeasuredMET
+#include "tthAnalysis/tthMEM/interface/objects/MeasuredJet.h" // MeasuredJet
+#include "tthAnalysis/tthMEM/interface/objects/MeasuredHadronicTau.h" // MeasuredHadronicTau
+#include "tthAnalysis/tthMEM/interface/objects/MVAVariables.h" // MVAVariables
+#include "tthAnalysis/tthMEM/interface/IndexWrapper.h" // IndexWrapper<,>
 #include "tthAnalysis/tthMEM/interface/RLESelector.h" // RLESelector<>
-
-#include <ostream> // std::ostream
-#include <vector> // std::vector<>
-#include <memory> // std::shared_ptr<>
-#include <array> // std::array<,>
 
 #define NOF_RECO_JETS_MEM 3
 
 namespace tthMEM
 {
+  class DebugPlotter_ttHorZ_3l1tau;
+
   class
   MeasuredEvent_3l1tau
   {

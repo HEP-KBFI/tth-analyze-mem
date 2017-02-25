@@ -1,14 +1,8 @@
 #ifndef MEMINTERFACE_3L1TAU_H
 #define MEMINTERFACE_3L1TAU_H
 
-#include "tthAnalysis/tthMEM/interface/objects/MeasuredLepton.h" // tthMEM::MeasuredLepton
-#include "tthAnalysis/tthMEM/interface/objects/MeasuredJet.h" // tthMEM::MeasuredJet
-#include "tthAnalysis/tthMEM/interface/objects/MeasuredHadronicTau.h" // tthMEM::MeasuredHadronicTau
-#include "tthAnalysis/tthMEM/interface/objects/MeasuredMET.h" // tthMEM::MeasuredMET
-#include "tthAnalysis/tthMEM/interface/MEMOutput_3l1tau.h" // MEMOutput_3l1tau
-#include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h" // tthMEM::MEM_ttHorZ_3l1tau
-#include "tthAnalysis/tthMEM/interface/LikelihoodRatio_3l1tau.h" // LikelihoodRatio_3l1tau
-#include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
+#include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h" // MEM_ttHorZ_3l1tau, Measured*
+#include "tthAnalysis/tthMEM/interface/LikelihoodRatio_3l1tau.h" // LikelihoodRatio_3l1tau, MEMOutput_3l1tau
 
 #define MIN_NOF_RECO_JETS 2
 #define MAX_NOF_RECO_JETS 3

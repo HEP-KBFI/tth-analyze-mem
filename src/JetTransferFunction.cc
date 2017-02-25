@@ -1,7 +1,4 @@
 #include "tthAnalysis/tthMEM/interface/JetTransferFunction.h"
-#include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // pow2()
-
-#include <cmath> // std::fabs()
 
 namespace tthMEM
 {

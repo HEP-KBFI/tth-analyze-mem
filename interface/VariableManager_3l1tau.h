@@ -4,12 +4,9 @@
 #include "tthAnalysis/tthMEM/interface/general/enums.h" // EnumClassHash
 #include "tthAnalysis/tthMEM/interface/Limits.h" // Limits
 
-#include <string> // std::string
-#include <unordered_map> // std::unordered_map<,,>
-#include <ostream> // std::ostream
-#include <vector> // std::vector<>
-
 #include <boost/bimap/bimap.hpp> // boost::bimaps::bimap<,>
+
+#include <unordered_map> // std::unordered_map<,,>
 
 namespace tthMEM
 {

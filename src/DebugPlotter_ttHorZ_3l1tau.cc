@@ -1,9 +1,9 @@
 #include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
-#include "tthAnalysis/tthMEM/interface/Logger.h"
+#include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 
 #include <TString.h> // Form()
-
-#include <algorithm> // std::replace()
+#include <TFile.h> // TFile
+#include <TTree.h> // TTree
 
 #define PLACEHOLDER_DEBUGPLOTTER -9999
 

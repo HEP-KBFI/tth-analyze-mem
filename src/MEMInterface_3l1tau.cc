@@ -1,5 +1,4 @@
 #include "tthAnalysis/tthMEM/interface/MEMInterface_3l1tau.h" // MEMInterface_3l1tau
-#include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // MeasuredEvent_3l1tau
 
 MEMInterface_3l1tau::MEMInterface_3l1tau()
   : pdfName                ("MSTW2008lo68cl")

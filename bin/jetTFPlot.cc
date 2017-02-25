@@ -1,13 +1,19 @@
-#include <cstdlib> // std::getenv(), EXIT_SUCCESS
-#include <vector> // std::vector<>
-#include <algorithm> // std::generate()
-#include <string> // std::string
-#include <functional> // std::function<>
+#include "tthAnalysis/tthMEM/interface/JetTransferFunction.h" // bJetTF(), qJetTF()
+#include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
 
 #include <boost/filesystem/path.hpp> // boost::filesystem::path
 #include <boost/filesystem/operations.hpp> // boost::filesystem::exists(), ...
-  // ... boost::filesystem::create_directories()
-#include <boost/program_options.hpp> // boost::program_options::
+ // ... boost::filesystem::create_directories()
+#include <boost/program_options/options_description.hpp>
+ // boost::program_options::options_description
+#include <boost/program_options/value_semantic.hpp>
+ // boost::program_options::bool_switch
+#include <boost/program_options/variables_map.hpp>
+ // boost::program_options::variables_map, boost::program_options::store(),
+ // boost::program_options::notify()
+#include <boost/program_options/parsers.hpp>
+ // boost::program_options::parse_command_line()
+#include <boost/program_options/errors.hpp> // boost::program_options::error
 
 #include <TCanvas.h> // TCanvas
 #include <TGraph.h> // TGraph
@@ -16,8 +22,7 @@
 #include <TLegend.h> // TLegend
 #include <TString.h> // Form()
 
-#include "tthAnalysis/tthMEM/interface/JetTransferFunction.h" // bJetTF(), qJetTF()
-#include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
+#include <functional> // std::function<>
 
 void
 plot(const std::function<double(double, double, double)> & jetTF,
@@ -111,26 +116,25 @@ main(int argc,
      char * argv[])
 {
   bool type;
+  namespace po = boost::program_options;
   try
   {
-    boost::program_options::options_description desc("Allowed options");
+    po::options_description desc("Allowed options");
     desc.add_options()
       ("help,h",   "produce help message")
-      ("light,l",  boost::program_options::bool_switch(&type) -> default_value(false),
+      ("light,l",  po::bool_switch(&type) -> default_value(false),
                    "Plot light jet TF (default: b-jet TF)")
     ;
-    boost::program_options::variables_map vm;
-    boost::program_options::store(
-      boost::program_options::parse_command_line(argc, argv, desc), vm
-    );
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
     if(vm.count("help"))
     {
       std::cout << desc << '\n';
       return EXIT_SUCCESS;
     }
-    boost::program_options::notify(vm); // might throw
+    po::notify(vm); // might throw
   }
-  catch(boost::program_options::error & e)
+  catch(po::error & e)
   {
     std::cerr << "User error: " << e.what() << '\n';
     return EXIT_FAILURE;

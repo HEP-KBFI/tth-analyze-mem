@@ -8,9 +8,10 @@
 #ifndef Parameters_sm_tth_t2lvl_tbar2lvl_h2tata_H
 #define Parameters_sm_tth_t2lvl_tbar2lvl_h2tata_H
 
-#include <complex> 
-
 #include "tthAnalysis/tthMEM/interface/mg5/read_slha.h"
+
+#include <complex>
+
 using namespace std; 
 
 class Parameters_sm_tth_t2lvl_tbar2lvl_h2tata

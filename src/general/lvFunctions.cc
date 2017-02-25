@@ -1,9 +1,5 @@
 #include "tthAnalysis/tthMEM/interface/general/lvFunctions.h"
 
-#include <cmath> // std::max()
-#include <iomanip> // std::setw()
-#include <vector> // std::vector<>
-
 #define _SPACE std::setw(10) << std::right
 
 namespace tthMEM

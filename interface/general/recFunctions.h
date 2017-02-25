@@ -5,7 +5,6 @@
 
 #include <TMatrixDSym.h> // TMatrixDSym
 #include <TMatrixD.h> // TMatrixD
-#include <TVectorD.h> // TVectorD
 
 namespace tthMEM
 {

@@ -4,9 +4,6 @@
 #include "tthAnalysis/tthMEM/interface/objects/MeasuredLepton.h" // MeasuredLepton
 #include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
 
-#include <array> // std::array<>
-#include <unordered_map> // std::unordered_map<,,>
-
 namespace tthMEM
 {
   typedef MeasuredLepton GeneratorParticle;

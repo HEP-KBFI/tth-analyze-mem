@@ -1,18 +1,15 @@
 #ifndef MEM_TTH_3L1TAU_H
 #define MEM_TTH_3L1TAU_H
 
-#include <string> // std::string
-#include <array> // std::array<,>
+#include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // MeasuredEvent_3l1tau
 
-#include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h"
-#include "tthAnalysis/tthMEM/interface/Integrand_ttHorZ_3l1tau.h"
-#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorBase.h"
-#include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h"
-
-#include <TBenchmark.h> // TBenchmark
+class TBenchmark;
 
 namespace tthMEM
 {
+  class Integrand_ttHorZ_3l1tau;
+  class MEMIntegratorBase;
+
   /**
    * @brief Class for performing the phase space integration
    *

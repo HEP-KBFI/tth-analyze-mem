@@ -1,21 +1,19 @@
 #include "tthAnalysis/tthMEM/interface/MEMInterface_3l1tau.h" // MEMInterface_3l1tau, MEMOutput_3l1tau
 #include "tthAnalysis/tthMEM/interface/Logger.h" // Logger::
 
-#include <iostream> // std::cout
-#include <cstdlib> // EXIT_SUCCESS
-
 #define VERY_QUICK 1
 #define QUICK      1
 #define MEDIUM     1
 
 #define DISABLE_LOGGING 1
 
-
 /**
  * @file
  *
  * This piece of code demonstrates, how to use the interface to MEM for 3l1tau channel.
  * @see test/test_MEMInterface_3l1tau for more tests that demonstrate different usage scenarios.
+ *
+ * @todo Update the figures!
  */
 
 int

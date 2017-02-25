@@ -1,14 +1,14 @@
 #ifndef TTHMEMVECFUNCTIONS_H
 #define TTHMEMVECFUNCTIONS_H
 
+#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
+
 #include <vector> // std::vector<>
 #include <ostream> // std::ostream
 #include <iterator> // std::ostream_iterator<>, std::back_inserter()
 #include <algorithm> // std::copy(), std::transform()
 #include <functional> // std::multiplies<>, std::plus<>, std::minus<>, ...
   // ... std::divides<>
-
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 namespace tthMEM
 {

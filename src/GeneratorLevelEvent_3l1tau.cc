@@ -1,8 +1,8 @@
 #include "tthAnalysis/tthMEM/interface/GeneratorLevelEvent_3l1tau.h"
 #include "tthAnalysis/tthMEM/interface/general/recFunctions.h" // functions::
-#include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // pow2()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOGTRC
 
+#include <TTree.h> // TTree
 #include <TString.h> // Form()
 
 using namespace tthMEM;

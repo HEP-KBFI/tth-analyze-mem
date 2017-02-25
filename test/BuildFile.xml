@@ -1,10 +1,10 @@
-<bin file="CppUnit_testdriver.cc,test_tthMEMauxFunctions.cc" name="testMEMaux">
+<bin file="CppUnit_testdriver.cc,test_auxFunctions.cc" name="testMEMaux">
   <use name="DataFormats/Math" />
   <use name="tthAnalysis/tthMEM" />
   <use name="cppunit" />
   <Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Werror" />
 </bin>
-<bin file="CppUnit_testdriver.cc,test_tthMEMvecFunctions.cc" name="testMEMvec">
+<bin file="CppUnit_testdriver.cc,test_vecFunctions.cc" name="testMEMvec">
   <use name="DataFormats/Math" />
   <use name="tthAnalysis/tthMEM" />
   <use name="cppunit" />

@@ -1,13 +1,10 @@
 #ifndef MEMINTEGRATORMARKOVCHAIN_H
 #define MEMINTEGRATORMARKOVCHAIN_H
 
-#include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // iStrComparator
 #include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorBase.h" // MEMIntegratorBase
+#include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // iStrComparator
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
-
-#include <vector> // std::vector<>
-#include <ostream> // std::ostream
 
 #include <boost/bimap/bimap.hpp> // boost::bimaps::bimap<,>
 #include <boost/bimap/set_of.hpp> // boost::bimaps::set_of<,>

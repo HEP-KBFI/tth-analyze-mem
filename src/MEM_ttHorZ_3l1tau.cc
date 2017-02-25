@@ -1,14 +1,13 @@
 #include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h"
-#include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
-#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorVEGAS.h"
-#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorVAMP.h"
-#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorMarkovChain.h"
-#include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // ...
-  // ... roundToNearestUInt(), pi()
+#include "tthAnalysis/tthMEM/interface/Integrand_ttHorZ_3l1tau.h" // Integrand_ttHorZ_3l1tau
+#include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
+#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorVEGAS.h" // MEMIntegratorVEGAS
+#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorVAMP.h" // MEMIntegratorVAMP
+#include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorMarkovChain.h" // MEMIntegratorMarkovChain
 #include "tthAnalysis/tthMEM/interface/general/constants.h" // constants::
 #include "tthAnalysis/tthMEM/interface/general/vecFunctions.h" // vec::
 
-#include <cmath> // std::round()
+#include <TBenchmark.h> // TBenchmark
 
 #include <boost/algorithm/string/predicate.hpp> // boost::iequals()
 

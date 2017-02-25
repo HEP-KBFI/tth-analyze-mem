@@ -2,12 +2,9 @@
 #include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // roundToNdigits()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // Logger::getFloatPrecision()
 
-#include <cmath> // std::cos(), std::sin()
-#include <sstream> // std::stringstream
-#include <string> // std::string
-#include <iomanip> // std::setw(), std::setprecision()
-
 #include <TMatrixDSymEigen.h> // TMatrixDSymEigen
+#include <TTree.h> // TTree
+#include <TBranch.h> // TBranch
 
 using namespace tthMEM;
 

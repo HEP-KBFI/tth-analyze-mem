@@ -6,9 +6,6 @@
 
 #include <TVectorD.h> // TVectorD
 
-#include <ostream> // std::ostream
-#include <string> // std::string
-
 namespace tthMEM
 {
   typedef math::XYZTLorentzVectorD LorentzVector;

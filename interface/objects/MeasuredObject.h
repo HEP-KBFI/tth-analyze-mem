@@ -1,13 +1,10 @@
 #ifndef MEASUREDOBJECT_H
 #define MEASUREDOBJECT_H
 
-#include <string> // std::string
-#include <ostream> // std::ostream
-
-#include <TTree.h> // TTree
-#include <TBranch.h> // TBranch
-
 #include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // tthMEM::LorentzVector(), tthMEM::Vector()
+
+class TTree;
+class TBranch;
 
 namespace tthMEM
 {

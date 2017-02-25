@@ -1,12 +1,5 @@
 #include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h"
-#include "tthAnalysis/tthMEM/interface/Logger.h" // LOGERR
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
-
-#include <TString.h> // Form()
-
-#include <algorithm> // std::swap(), std::accumulate(), std::find(), std::rotate()
-#include <cmath> // std::abs()
-#include <fstream> // std::ifstream
+#include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
 
 using namespace tthMEM;
 

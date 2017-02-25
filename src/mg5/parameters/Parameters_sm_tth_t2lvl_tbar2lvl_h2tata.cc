@@ -5,10 +5,10 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#include <iostream> 
-#include <iomanip> 
 #include "tthAnalysis/tthMEM/interface/mg5/parameters/Parameters_sm_tth_t2lvl_tbar2lvl_h2tata.h"
 #include "tthAnalysis/tthMEM/interface/Logger.h"
+
+#include <iomanip>
 
 // Initialize static instance
 Parameters_sm_tth_t2lvl_tbar2lvl_h2tata * Parameters_sm_tth_t2lvl_tbar2lvl_h2tata::instance = 0;

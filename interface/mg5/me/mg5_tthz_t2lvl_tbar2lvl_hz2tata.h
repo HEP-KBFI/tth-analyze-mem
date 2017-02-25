@@ -1,11 +1,9 @@
 #ifndef mg5_tthz_t2lvl_tbar2lvl_hz2tata_H
 #define mg5_tthz_t2lvl_tbar2lvl_hz2tata_H
 
-#include <string> // std::string
-#include <vector> // std::vector<>
-#include <complex> // std::complex<>
-
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
+
+#include <vector> // std::vector<>
 
 class mg5_tthz_t2lvl_tbar2lvl_hz2tata
 {
@@ -84,7 +82,7 @@ protected:
   std::vector<double> mME;
 
   // vector with momenta (to be changed each event)
-  std::vector <double *> p;
+  std::vector<double *> p;
 
   // Initial particle ids
   int id1, id2;

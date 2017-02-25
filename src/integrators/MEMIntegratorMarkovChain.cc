@@ -1,16 +1,11 @@
 #include "tthAnalysis/tthMEM/interface/integrators/MEMIntegratorMarkovChain.h"
 #include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // pow*()
-#include "tthAnalysis/tthMEM/interface/general/vecFunctions.h" // tthMEM::vec::
-
-#include <cmath> // std::sqrt(), std::exp()
-#include <algorithm> // std::copy(), std::fill_n(), std::generate(), ...
-  // ..., std::transform(), std::find_if_not(), std::generate_n()
-#include <limits> // std::numeric_limist<>
-#include <iterator> // std::back_inserter()
-
-#include <boost/assign/list_of.hpp> // boost::assign::list_of<>
+#include "tthAnalysis/tthMEM/interface/general/vecFunctions.h" // vec::
 
 #include <TMath.h> // TMath::IsNaN(), TMath::Finite()
+ // ... (why not use std here: http://stackoverflow.com/a/570694)
+
+#include <boost/assign/list_of.hpp> // boost::assign::list_of<>
 
 using namespace tthMEM;
 

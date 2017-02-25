@@ -2,8 +2,9 @@
 #define MVAVARIABLES_H
 
 #include <Rtypes.h> // Double_t
-#include <TBranch.h> // TBranch
-#include <TTree.h> // TTree
+
+class TTree;
+class TBranch;
 
 namespace tthMEM
 {

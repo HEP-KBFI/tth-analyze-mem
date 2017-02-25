@@ -6,9 +6,6 @@
 //==========================================================================
 
 #include "tthAnalysis/tthMEM/interface/mg5/helamps/HelAmps_sm_tth_t2lvl_tbar2lvl_h2tata.h"
-#include <complex>
-#include <cmath>
-
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
 using namespace std; 

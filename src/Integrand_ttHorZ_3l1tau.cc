@@ -1,21 +1,27 @@
 #include "tthAnalysis/tthMEM/interface/Integrand_ttHorZ_3l1tau.h"
-#include "tthAnalysis/tthMEM/interface/mg5/me/mg5_tth_t2lvl_tbar2lvl_h2tata.h"
-#include "tthAnalysis/tthMEM/interface/mg5/me/mg5_ttz_t2lvl_tbar2lvl_z2tata.h"
-#include "tthAnalysis/tthMEM/interface/general/auxFunctions.h"
-#include "tthAnalysis/tthMEM/interface/general/recFunctions.h"
-#include "tthAnalysis/tthMEM/interface/general/constants.h"
+#include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // MeasuredEvent_3l1tau
+#include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
+#include "tthAnalysis/tthMEM/interface/mg5/me/mg5_tth_t2lvl_tbar2lvl_h2tata.h" // mg5_tth_t2lvl_tbar2lvl_h2tata
+#include "tthAnalysis/tthMEM/interface/mg5/me/mg5_ttz_t2lvl_tbar2lvl_z2tata.h" // mg5_ttz_t2lvl_tbar2lvl_z2tata
 #include "tthAnalysis/tthMEM/interface/JetTransferFunction.h"
-#include "tthAnalysis/tthMEM/interface/Logger.h"
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
-
-#include <cmath> // std::sqrt(), std::fpclassify(), FP_ZERO
-#include <cstring> // std::memset()
-#include <algorithm> // std::for_each(), std::copy()
-#include <sstream> // std::ostringstream
-#include <iomanip> // std::setprecision()
+#include "tthAnalysis/tthMEM/interface/general/recFunctions.h" // functions::
+#include "tthAnalysis/tthMEM/interface/general/constants.h" // constants::
 
 #include <TMath.h> // TMath::IsNaN() ...
  // ... (why not use std here: http://stackoverflow.com/a/570694)
+
+// ignore "-Wmaybe-uninitialized" gcc error if compiled with -Og -g3 -ggdb3
+#if defined(__OPTIMIZE__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wshadow"
+#endif
+
+#include <LHAPDF/LHAPDF.h> // LHAPDF::PDF
+
+#if defined(__OPTIMIZE__)
+#pragma GCC diagnostic pop
+#endif
 
 using namespace tthMEM;
 

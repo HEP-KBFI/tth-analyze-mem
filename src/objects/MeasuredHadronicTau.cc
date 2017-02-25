@@ -1,6 +1,9 @@
 #include "tthAnalysis/tthMEM/interface/objects/MeasuredHadronicTau.h" // MeasuredHadronicTau
 #include "tthAnalysis/tthMEM/interface/general/constants.h" // constants::
-#include "tthAnalysis/tthMEM/interface/Logger.h"
+#include "tthAnalysis/tthMEM/interface/Logger.h" // LOGWARN
+
+#include <TTree.h> // TTree
+#include <TBranch.h> // TBranch
 
 using namespace tthMEM;
 

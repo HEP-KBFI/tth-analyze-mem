@@ -5,14 +5,6 @@
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
 
-#include <unordered_map> // std::unordered_map<>
-#include <string> // std::string, std::to_string()
-#include <fstream> // std::ifstream
-#include <system_error> // std::system_error
-#include <regex> // std::regex, std::regex_search(), std::smatch
-#include <vector> // std::vector<>
-#include <type_traits> // std::enable_if<>, std::
-
 #include <boost/filesystem.hpp> // boost::filesystem::is_regular_file()
 #include <boost/lexical_cast.hpp> // boost::lexical_cast<>(), boost::bad_lexical_cast
 #include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
@@ -21,6 +13,11 @@
 #include <TTree.h> // TTree
 #include <TFile.h> // TTree
 #include <TString.h> // Form()
+
+#include <unordered_map> // std::unordered_map<>
+#include <fstream> // std::ifstream
+#include <regex> // std::regex, std::regex_search(), std::smatch
+#include <type_traits> // std::enable_if<>, std::
 
 namespace std
 {

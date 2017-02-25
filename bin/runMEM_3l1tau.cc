@@ -1,34 +1,17 @@
-#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE, setenv(), std::atexit()
-#include <string> // std::string
-#include <vector> // std::vector<>
-#include <algorithm> // std::inner_product()
-#include <csignal> // std::signal(), SIG*
-
-#include <boost/filesystem/operations.hpp> // boost::filesystem::exists()
-
-#include <Rtypes.h> // Long64_t
-#include <TFile.h> // TFile
-#include <TChain.h> // TChain
-#include <TTree.h> // TTree
-#include <TString.h> // Form()
-
-#include "tthAnalysis/tthMEM/interface/Logger.h" // LOG*
-#include "tthAnalysis/tthMEM/interface/MeasuredEvent_3l1tau.h" // tthMEM::MeasuredEvent_3l1tau
-#include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h" // tthMEM::MEM_ttHorZ_3l1tau
-#include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // tthMEM::findFile()
-#include "tthAnalysis/tthMEM/interface/general/constants.h" // tthMEM::constants
-#include "tthAnalysis/tthMEM/interface/general/enums.h" // tthMEM::ME_mg5_3l1tau::
+#include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h" // MEM_ttHorZ_3l1tau
 #include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
-#include "tthAnalysis/tthMEM/interface/VariableManager_3l1tau.h" // VariableManager_3l1tau
-#include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 #include "tthAnalysis/tthMEM/interface/LikelihoodRatio_3l1tau.h" // LikelihoodRatio_3l1tau, MEMOutput_3l1tau
+
+#include <TChain.h> // TChain
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 #include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
 #include <DataFormats/FWLite/interface/InputSource.h> // fwlite::InputSource
 #include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles
 
-// JFC!!! fwlite:: doesn't include "FWCore/Utilities/interface/Exception.h"
+#include <boost/filesystem/operations.hpp> // boost::filesystem::exists()
+
+#include <csignal> // std::signal(), SIG*
 
 using namespace tthMEM;
 
@@ -64,28 +47,28 @@ main(int argc,
       << "No ParameterSet '" << ps << "' found in configuration file = " << argv[1];
   const PSet cfg = edm::readPSetsFrom(argv[1]) -> getParameter<PSet>(ps.c_str());
 
-  const PSet cfg_log = cfg.getParameter<PSet>("logging");
+  const PSet cfg_log         = cfg.getParameter<PSet>("logging");
   const std::string logLevel = cfg_log.getParameter<std::string>("logLevel");
-  const bool enableLogging = cfg_log.getParameter<bool>("enableLogging");
+  const bool enableLogging   = cfg_log.getParameter<bool>("enableLogging");
   const bool enableTimeStamp = cfg_log.getParameter<bool>("enableTimeStamp");
 
-  Logger::setLogLevel(logLevel);
-  Logger::enableLogging(enableLogging);
-  Logger::enableTimeStamp(enableTimeStamp);
+  Logger::setLogLevel      (logLevel);
+  Logger::enableLogging    (enableLogging);
+  Logger::enableTimeStamp  (enableTimeStamp);
   Logger::setFloatPrecision(5);
 
   const PSet cfg_tthMEM = cfg.getParameter<PSet>("tthMEM");
-  const bool isMC = cfg_tthMEM.getParameter<bool>("isMC");
-  const std::string treeName = cfg_tthMEM.getParameter<std::string>("treeName");
+  const bool isMC                        = cfg_tthMEM.getParameter<bool>("isMC");
+  const std::string treeName             = cfg_tthMEM.getParameter<std::string>("treeName");
   const std::string rleSelectionFileName = cfg_tthMEM.getParameter<std::string>("rleSelectionFile");
-  const std::string pdfName = cfg_tthMEM.getParameter<std::string>("pdfName");
-  const std::string madgraphFileName = cfg_tthMEM.getParameter<std::string>("madgraphFileName");
-  const std::string integrationMode = cfg_tthMEM.getParameter<std::string>("integrationMode");
-  const unsigned maxObjFunctionCalls = cfg_tthMEM.getParameter<unsigned>("maxObjFunctionCalls");
-  const Long64_t startingFromEntry = cfg_tthMEM.getParameter<Long64_t>("startingFromEntry");
-  const unsigned debugPlots = cfg_tthMEM.getParameter<unsigned>("debugPlots");
-  const double higgsWidth = cfg_tthMEM.getParameter<double>("higgsWidth");
-  const bool is2016 = cfg_tthMEM.getParameter<bool>("is2016");
+  const std::string pdfName              = cfg_tthMEM.getParameter<std::string>("pdfName");
+  const std::string madgraphFileName     = cfg_tthMEM.getParameter<std::string>("madgraphFileName");
+  const std::string integrationMode      = cfg_tthMEM.getParameter<std::string>("integrationMode");
+  const unsigned maxObjFunctionCalls     = cfg_tthMEM.getParameter<unsigned>("maxObjFunctionCalls");
+  const Long64_t startingFromEntry       = cfg_tthMEM.getParameter<Long64_t>("startingFromEntry");
+  const unsigned debugPlots              = cfg_tthMEM.getParameter<unsigned>("debugPlots");
+  const double higgsWidth                = cfg_tthMEM.getParameter<double>("higgsWidth");
+  const bool is2016                      = cfg_tthMEM.getParameter<bool>("is2016");
   bool includeGeneratorLevel = [&]() -> bool
   {
     return cfg_tthMEM.getParameter<bool>("forceGenLevel") && is2016 && isMC;
@@ -102,9 +85,9 @@ main(int argc,
   for(const auto & cfg_clamp: clampVariables)
   {
     const std::string clampStr = cfg_clamp.getParameter<std::string>("var");
-    const bool useGen = cfg_clamp.getParameter<bool>("useGen");
-    const bool useCfg = cfg_clamp.getParameter<bool>("useCfg");
-    const double clampValue = cfg_clamp.getParameter<double>("val");
+    const bool useGen          = cfg_clamp.getParameter<bool>("useGen");
+    const bool useCfg          = cfg_clamp.getParameter<bool>("useCfg");
+    const double clampValue    = cfg_clamp.getParameter<double>("val");
 
     if(useGen && ! isMC)
     {
@@ -144,23 +127,24 @@ main(int argc,
 //--- initialize the MEM instance
   LOGINFO << "Initializing the tth&z MEM instance";
   MEM_ttHorZ_3l1tau mem_tt_HandZ(pdfName, findFile(madgraphFileName), vm);
-  mem_tt_HandZ.setIntegrationMode(integrationMode);
-  mem_tt_HandZ.setMaxObjFunctionCalls(maxObjFunctionCalls);
+  mem_tt_HandZ.setIntegrationMode     (integrationMode);
+  mem_tt_HandZ.setMaxObjFunctionCalls (maxObjFunctionCalls);
   mem_tt_HandZ.setBJetTransferFunction(true);
-  mem_tt_HandZ.useAvgBjetCombo(true);
+  mem_tt_HandZ.useAvgBjetCombo        (true);
   if(mem_tt_HandZ.isMarkovChainIntegrator())
   {
 //--- retrieve the parameters for Markov Chain integrator
     const PSet cfg_mx = cfg_tthMEM.getParameter<PSet>("markovChainParams");
-    const std::string mxMode = cfg_mx.getParameter<std::string>("mode");
-    const unsigned nofBatches = cfg_mx.getParameter<unsigned>("nofBatches");
-    const unsigned nofChains = cfg_mx.getParameter<unsigned>("nofChains");
+    const std::string mxMode           = cfg_mx.getParameter<std::string>("mode");
+    const unsigned nofBatches          = cfg_mx.getParameter<unsigned>("nofBatches");
+    const unsigned nofChains           = cfg_mx.getParameter<unsigned>("nofChains");
     const unsigned maxCallsStartingPos = cfg_mx.getParameter<unsigned>("maxCallsStartingPos");
-    const double epsilon0 = cfg_mx.getParameter<double>("epsilon0");
-    const double T0 = cfg_mx.getParameter<double>("T0");
-    const double nu = cfg_mx.getParameter<double>("nu");
-    mem_tt_HandZ.setMarkovChainParams(mxMode, nofBatches, nofChains,
-                                      maxCallsStartingPos, epsilon0, T0, nu);
+    const double epsilon0              = cfg_mx.getParameter<double>("epsilon0");
+    const double T0                    = cfg_mx.getParameter<double>("T0");
+    const double nu                    = cfg_mx.getParameter<double>("nu");
+    mem_tt_HandZ.setMarkovChainParams(
+      mxMode, nofBatches, nofChains, maxCallsStartingPos, epsilon0, T0, nu
+    );
   }
   if(higgsWidth > 0.)
     mem_tt_HandZ.setHiggsWidth(higgsWidth);
@@ -190,10 +174,10 @@ main(int argc,
   TTree * newTree = new TTree("tree", Form("Tree created by %s", argv[0]));
 
   MeasuredEvent_3l1tau measuredEvent;
-  measuredEvent.rle.read(rleSelectionFileName);
+  measuredEvent.rle.read             (rleSelectionFileName);
   measuredEvent.includeGeneratorLevel(includeGeneratorLevel);
-  measuredEvent.setBranches(inputTree);
-  measuredEvent.initNewBranches(newTree);
+  measuredEvent.setBranches          (inputTree);
+  measuredEvent.initNewBranches      (newTree);
   if(debugPlots)
     measuredEvent.debugPlotter = new DebugPlotter_ttHorZ_3l1tau(newFile, debugPlots);
 
@@ -253,19 +237,18 @@ main(int argc,
 
 //--- start looping over the events
   const Long64_t nof_tree_entries = inputTree -> GetEntries();
-  const Long64_t nof_max_entries = maxEvents < 0 ? nof_tree_entries : (startingFromEntry + maxEvents);
+  const Long64_t nof_max_entries  = maxEvents < 0 ? nof_tree_entries : (startingFromEntry + maxEvents);
   if(nof_max_entries > nof_tree_entries)
   {
-    LOGERR << "The requested number of entries to be processed (= "
-           << maxEvents << ") starting from entry = "
-           << startingFromEntry << " is greater than the total number entries (= "
-           << nof_tree_entries << " in the input file(s). Aborting";
+    LOGERR << "The requested number of entries to be processed (= " << maxEvents << ") "
+              "starting from entry = " << startingFromEntry << " is greater than "
+              "the total number entries (= " << nof_tree_entries << " in the input file(s). "
+              "Aborting";
     return EXIT_FAILURE;
   }
   LOGINFO << "Processing " << (nof_max_entries - startingFromEntry) << " entries "
-          << "(out of " << nof_tree_entries << "), starting from "
-          << startingFromEntry << " (event range: [" << startingFromEntry << "; "
-          << nof_max_entries << ") )";
+          << "(out of " << nof_tree_entries << "), starting from " << startingFromEntry
+          << " (event range: [" << startingFromEntry << "; " << nof_max_entries << ") )";
 
   for(Long64_t i = startingFromEntry; i < nof_max_entries; ++i)
   {
@@ -323,7 +306,7 @@ main(int argc,
   }
   LOGINFO << "Average time spent on tth & ttz MEM per event: "
           << "Real time: " << mem_tt_HandZ.getAverageComputingTime_real() << " s;  "
-          << "CPU time: " << mem_tt_HandZ.getAverageComputingTime_cpu() << " s";
+          << "CPU time: "  << mem_tt_HandZ.getAverageComputingTime_cpu()  << " s";
 
   if(debugPlots)
     delete measuredEvent.debugPlotter;
