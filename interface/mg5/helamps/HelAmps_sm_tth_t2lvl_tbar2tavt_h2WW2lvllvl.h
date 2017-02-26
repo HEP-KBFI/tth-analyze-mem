@@ -5,13 +5,13 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#ifndef HelAmps_sm_tth_t2lvl_tbar2lvl_h2tata_H
-#define HelAmps_sm_tth_t2lvl_tbar2lvl_h2tata_H
+#ifndef HelAmps_sm_tth_t2lvl_tbar2tavt_h2WW2lvllvl_H
+#define HelAmps_sm_tth_t2lvl_tbar2tavt_h2WW2lvllvl_H
 
 #include <cmath> 
 #include <complex> 
 
-namespace MG5_sm_tth_t2lvl_tbar2lvl_h2tata
+namespace MG5_sm_tth_t2lvl_tbar2tavt_h2WW2lvllvl
 {
 void oxxxxx(double p[4], double fmass, int nhel, int nsf, std::complex<double>
     fo[6]);
@@ -53,18 +53,18 @@ void FFV1_0(std::complex<double> F1[], std::complex<double> F2[], std::complex<d
 void FFS4_1(std::complex<double> F2[], std::complex<double> S3[], std::complex<double> COUP,
     double M1, double W1, std::complex<double> F1[]);
 
+void VVS1_3(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> COUP,
+    double M3, double W3, std::complex<double> S3[]);
+
 void FFV1_1(std::complex<double> F2[], std::complex<double> V3[], std::complex<double> COUP,
     double M1, double W1, std::complex<double> F1[]);
 
 void FFS4_2(std::complex<double> F1[], std::complex<double> S3[], std::complex<double> COUP,
     double M2, double W2, std::complex<double> F2[]);
 
-void FFS4_3(std::complex<double> F1[], std::complex<double> F2[], std::complex<double> COUP,
-    double M3, double W3, std::complex<double> S3[]);
-
 void VVV1P0_1(std::complex<double> V2[], std::complex<double> V3[], std::complex<double> COUP,
     double M1, double W1, std::complex<double> V1[]);
 
-}  // end namespace MG5_sm_tth_t2lvl_tbar2lvl_h2tata
+}  // end namespace MG5_sm_tth_t2lvl_tbar2tavt_h2WW2lvllvl
 
-#endif  // HelAmps_sm_tth_t2lvl_tbar2lvl_h2tata_H
+#endif  // HelAmps_sm_tth_t2lvl_tbar2tavt_h2WW2lvllvl_H

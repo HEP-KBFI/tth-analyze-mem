@@ -12,8 +12,6 @@
 
 #include <complex>
 
-using namespace std; 
-
 class Parameters_sm_ttz_t2lvl_tbar2lvl_z2tata
 {
   public:
