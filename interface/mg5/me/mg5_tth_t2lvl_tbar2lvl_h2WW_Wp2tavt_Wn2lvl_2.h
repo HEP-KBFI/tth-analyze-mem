@@ -10,8 +10,6 @@
 
 #include "tthAnalysis/tthMEM/interface/mg5/parameters/Parameters_sm_tth_t2lvl_tbar2lvl_h2WW_Wp2tavt_Wn2lvl.h"
 
-using namespace std; 
-
 //==========================================================================
 // A class for calculating the matrix elements for
 // Process: g g > t t~ h WEIGHTED<=4 @1

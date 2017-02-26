@@ -11,7 +11,7 @@
 #include <iomanip>
 
 // Initialize static instance
-Parameters_sm_tth_t2tavt_tbar2lvl_h2tata * Parameters_sm_tth_t2tavt_tbar2lvl_h2tata::instance = 0;
+Parameters_sm_tth_t2tavt_tbar2lvl_h2tata * Parameters_sm_tth_t2tavt_tbar2lvl_h2tata::instance = nullptr;
 
 // Function to get static instance - only one instance per program
 Parameters_sm_tth_t2tavt_tbar2lvl_h2tata * Parameters_sm_tth_t2tavt_tbar2lvl_h2tata::getInstance()

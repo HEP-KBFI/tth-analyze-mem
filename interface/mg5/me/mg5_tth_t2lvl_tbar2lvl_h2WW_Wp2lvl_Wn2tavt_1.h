@@ -88,7 +88,8 @@ class mg5_tth_t2lvl_tbar2lvl_h2WW_Wp2lvl_Wn2tavt_1
     }
 
     const std::vector<double> &
-    getMasses() const {
+    getMasses() const
+    {
       return mME;
     }
 

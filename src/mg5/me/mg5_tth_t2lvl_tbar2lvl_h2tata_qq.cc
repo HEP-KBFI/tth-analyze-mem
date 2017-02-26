@@ -129,7 +129,6 @@ void mg5_tth_t2lvl_tbar2lvl_h2tata_qq::sigmaKin()
   static int ntry = 0, sum_hel = 0, ngood = 0; 
   static int igood[ncomb]; 
   static int jhel; 
-  //std::complex<double> * * wfs;
   double t[nprocesses]; 
   // Helicities for the process
   static const int helicities[ncomb][nexternal] = {{-1, -1, -1, -1, -1, -1, -1,
@@ -815,7 +814,6 @@ void mg5_tth_t2lvl_tbar2lvl_h2tata_qq::setHiggsWidth(double higgsWidth)
 void mg5_tth_t2lvl_tbar2lvl_h2tata_qq::calculate_wavefunctions(const int perm[], const int hel[])
 {
   // Calculate wavefunctions for all processes
-  //int i, j;
 
   // Calculate all wavefunctions
   ixxxxx(p[perm[0]], mME[0], hel[0], +1, w[0]); 
