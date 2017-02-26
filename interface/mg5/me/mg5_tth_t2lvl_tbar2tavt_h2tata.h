@@ -5,60 +5,40 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#ifndef mg5_tth_t2lvl_tbar2tavt_h2WW2lvllvl_2_h
-#define mg5_tth_t2lvl_tbar2tavt_h2WW2lvllvl_2_h
+#ifndef MG5_tth_t2lvl_tbar2tavt_h2tata_H
+#define MG5_tth_t2lvl_tbar2tavt_h2tata_H
 
-#include "tthAnalysis/tthMEM/interface/mg5/parameters/Parameters_sm_tth_t2lvl_tbar2tavt_h2WW2lvllvl.h"
+#include "tthAnalysis/tthMEM/interface/mg5/parameters/Parameters_sm_tth_t2lvl_tbar2tavt_h2tata.h"
 
 //==========================================================================
 // A class for calculating the matrix elements for
 // Process: g g > t t~ h WEIGHTED<=4 @1
 // *   Decay: t > w+ b WEIGHTED<=2
-// *     Decay: w+ > mu+ vm WEIGHTED<=2
+// *     Decay: w+ > e+ ve WEIGHTED<=2
 // *   Decay: t~ > w- b~ WEIGHTED<=2
 // *     Decay: w- > ta- vt~ WEIGHTED<=2
-// *   Decay: h > w+ w- WEIGHTED<=2
-// *     Decay: w+ > e+ ve WEIGHTED<=2
-// *     Decay: w- > e- ve~ WEIGHTED<=2
+// *   Decay: h > ta+ ta- WEIGHTED<=2
 // Process: g g > t t~ h WEIGHTED<=4 @1
 // *   Decay: t > w+ b WEIGHTED<=2
 // *     Decay: w+ > mu+ vm WEIGHTED<=2
 // *   Decay: t~ > w- b~ WEIGHTED<=2
 // *     Decay: w- > ta- vt~ WEIGHTED<=2
-// *   Decay: h > w+ w- WEIGHTED<=2
-// *     Decay: w+ > e+ ve WEIGHTED<=2
-// *     Decay: w- > mu- vm~ WEIGHTED<=2
-// Process: g g > t t~ h WEIGHTED<=4 @1
-// *   Decay: t > w+ b WEIGHTED<=2
-// *     Decay: w+ > e+ ve WEIGHTED<=2
-// *   Decay: t~ > w- b~ WEIGHTED<=2
-// *     Decay: w- > ta- vt~ WEIGHTED<=2
-// *   Decay: h > w+ w- WEIGHTED<=2
-// *     Decay: w+ > mu+ vm WEIGHTED<=2
-// *     Decay: w- > e- ve~ WEIGHTED<=2
-// Process: g g > t t~ h WEIGHTED<=4 @1
-// *   Decay: t > w+ b WEIGHTED<=2
-// *     Decay: w+ > e+ ve WEIGHTED<=2
-// *   Decay: t~ > w- b~ WEIGHTED<=2
-// *     Decay: w- > ta- vt~ WEIGHTED<=2
-// *   Decay: h > w+ w- WEIGHTED<=2
-// *     Decay: w+ > mu+ vm WEIGHTED<=2
-// *     Decay: w- > mu- vm~ WEIGHTED<=2
+// *   Decay: h > ta+ ta- WEIGHTED<=2
 //--------------------------------------------------------------------------
 
-class mg5_tth_t2lvl_tbar2tavt_h2WW2lvllvl_2
+class mg5_tth_t2lvl_tbar2tavt_h2tata
 {
   public:
 
     // Constructor.
-    mg5_tth_t2lvl_tbar2tavt_h2WW2lvllvl_2()
+    mg5_tth_t2lvl_tbar2tavt_h2tata()
     {
       for(std::size_t i = 0; i < nprocesses; ++i)
         jamp2[i] = nullptr;
     }
 
     // Destructor.
-    ~mg5_tth_t2lvl_tbar2tavt_h2WW2lvllvl_2()
+    ~mg5_tth_t2lvl_tbar2tavt_h2tata()
     {
       for(std::size_t i = 0; i < nprocesses; ++i)
         if(jamp2[i])
@@ -81,16 +61,13 @@ class mg5_tth_t2lvl_tbar2tavt_h2WW2lvllvl_2
     sigmaHat();
 
     // Info on the subprocess.
-    virtual std::string name() const
+    virtual std::string
+    name() const
     {
-      return "g g > mu+ vm b ta- vt~ b~ e+ ve e- ve~ (sm)";
+      return "g g > e+ ve b ta- vt~ b~ ta+ ta- (sm)";
     }
 
-    const std::vector<double> &
-    getMasses() const
-    {
-      return mME;
-    }
+    const std::vector<double> & getMasses() const {return mME;}
 
     // Get and set momenta for matrix element evaluation
     std::vector<double *>
@@ -114,14 +91,15 @@ class mg5_tth_t2lvl_tbar2tavt_h2WW2lvllvl_2
     }
 
     // Get matrix element vector
-    const double * getMatrixElements() const
+    const double *
+    getMatrixElements() const
     {
       return matrix_element;
     }
 
     // Constants for array limits
     static const int ninitial = 2; 
-    static const int nexternal = 12; 
+    static const int nexternal = 10; 
     static const int nprocesses = 1; 
 
   private:
@@ -132,13 +110,13 @@ class mg5_tth_t2lvl_tbar2tavt_h2WW2lvllvl_2
     calculate_wavefunctions(const int perm[],
                             const int hel[]);
 
-    static const int nwavefuncs = 26; 
+    static const int nwavefuncs = 22; 
     std::complex<double> w[nwavefuncs][18]; 
     static const int namplitudes = 8; 
-    std::complex<double> amp[namplitudes];
+    std::complex<double> amp[namplitudes]; 
 
     double
-    matrix_1_gg_ttxh_t_wpb_wp_mupvm_tx_wmbx_wm_tamvtx_h_wpwm_wp_epve_wm_emv_1();
+    matrix_1_gg_ttxh_t_wpb_wp_epve_tx_wmbx_wm_tamvtx_h_taptam();
 
     // Store the matrix element value from sigmaKin
     double matrix_element[nprocesses]; 
@@ -147,7 +125,7 @@ class mg5_tth_t2lvl_tbar2tavt_h2WW2lvllvl_2
     double * jamp2[nprocesses]; 
 
     // Pointer to the model parameters
-    Parameters_sm_tth_t2lvl_tbar2tavt_h2WW2lvllvl * pars;
+    Parameters_sm_tth_t2lvl_tbar2tavt_h2tata * pars;
 
     // vector with external particle masses
     std::vector<double> mME;
@@ -160,4 +138,4 @@ class mg5_tth_t2lvl_tbar2tavt_h2WW2lvllvl_2
 }; 
 
 
-#endif  // mg5_tth_t2lvl_tbar2tavt_h2WW2lvllvl_2_h
+#endif  // MG5_tth_t2lvl_tbar2tavt_h2tata_H
