@@ -58,17 +58,17 @@ main(int argc,
   Logger::setFloatPrecision(5);
 
   const PSet cfg_tthMEM = cfg.getParameter<PSet>("tthMEM");
-  const bool isMC                        = cfg_tthMEM.getParameter<bool>("isMC");
+  const bool isMC                        = cfg_tthMEM.getParameter<bool>       ("isMC");
   const std::string treeName             = cfg_tthMEM.getParameter<std::string>("treeName");
   const std::string rleSelectionFileName = cfg_tthMEM.getParameter<std::string>("rleSelectionFile");
   const std::string pdfName              = cfg_tthMEM.getParameter<std::string>("pdfName");
   const std::string madgraphFileName     = cfg_tthMEM.getParameter<std::string>("madgraphFileName");
   const std::string integrationMode      = cfg_tthMEM.getParameter<std::string>("integrationMode");
-  const unsigned maxObjFunctionCalls     = cfg_tthMEM.getParameter<unsigned>("maxObjFunctionCalls");
-  const Long64_t startingFromEntry       = cfg_tthMEM.getParameter<Long64_t>("startingFromEntry");
-  const unsigned debugPlots              = cfg_tthMEM.getParameter<unsigned>("debugPlots");
-  const double higgsWidth                = cfg_tthMEM.getParameter<double>("higgsWidth");
-  const bool is2016                      = cfg_tthMEM.getParameter<bool>("is2016");
+  const unsigned maxObjFunctionCalls     = cfg_tthMEM.getParameter<unsigned>   ("maxObjFunctionCalls");
+  const Long64_t startingFromEntry       = cfg_tthMEM.getParameter<Long64_t>   ("startingFromEntry");
+  const unsigned debugPlots              = cfg_tthMEM.getParameter<unsigned>   ("debugPlots");
+  const double higgsWidth                = cfg_tthMEM.getParameter<double>     ("higgsWidth");
+  const bool is2016                      = cfg_tthMEM.getParameter<bool>       ("is2016");
   bool includeGeneratorLevel = [&]() -> bool
   {
     return cfg_tthMEM.getParameter<bool>("forceGenLevel") && is2016 && isMC;
@@ -85,9 +85,9 @@ main(int argc,
   for(const auto & cfg_clamp: clampVariables)
   {
     const std::string clampStr = cfg_clamp.getParameter<std::string>("var");
-    const bool useGen          = cfg_clamp.getParameter<bool>("useGen");
-    const bool useCfg          = cfg_clamp.getParameter<bool>("useCfg");
-    const double clampValue    = cfg_clamp.getParameter<double>("val");
+    const bool useGen          = cfg_clamp.getParameter<bool>       ("useGen");
+    const bool useCfg          = cfg_clamp.getParameter<bool>       ("useCfg");
+    const double clampValue    = cfg_clamp.getParameter<double>     ("val");
 
     if(useGen && ! isMC)
     {
@@ -136,12 +136,12 @@ main(int argc,
 //--- retrieve the parameters for Markov Chain integrator
     const PSet cfg_mx = cfg_tthMEM.getParameter<PSet>("markovChainParams");
     const std::string mxMode           = cfg_mx.getParameter<std::string>("mode");
-    const unsigned nofBatches          = cfg_mx.getParameter<unsigned>("nofBatches");
-    const unsigned nofChains           = cfg_mx.getParameter<unsigned>("nofChains");
-    const unsigned maxCallsStartingPos = cfg_mx.getParameter<unsigned>("maxCallsStartingPos");
-    const double epsilon0              = cfg_mx.getParameter<double>("epsilon0");
-    const double T0                    = cfg_mx.getParameter<double>("T0");
-    const double nu                    = cfg_mx.getParameter<double>("nu");
+    const unsigned nofBatches          = cfg_mx.getParameter<unsigned>   ("nofBatches");
+    const unsigned nofChains           = cfg_mx.getParameter<unsigned>   ("nofChains");
+    const unsigned maxCallsStartingPos = cfg_mx.getParameter<unsigned>   ("maxCallsStartingPos");
+    const double epsilon0              = cfg_mx.getParameter<double>     ("epsilon0");
+    const double T0                    = cfg_mx.getParameter<double>     ("T0");
+    const double nu                    = cfg_mx.getParameter<double>     ("nu");
     mem_tt_HandZ.setMarkovChainParams(
       mxMode, nofBatches, nofChains, maxCallsStartingPos, epsilon0, T0, nu
     );

@@ -98,6 +98,12 @@ MeasuredObject::energy() const
 }
 
 double
+MeasuredObject::absEta() const
+{
+  return absEta_;
+}
+
+double
 MeasuredObject::px() const
 {
   return px_;
@@ -189,6 +195,8 @@ MeasuredObject::initNewBranches(TTree * t,
 void
 MeasuredObject::initialize()
 {
+  absEta_ = std::fabs(eta_);
+
   p_ = pt_ * std::cosh(eta_);
   px_ = pt_ * std::cos(phi_);
   py_ = pt_ * std::sin(phi_);

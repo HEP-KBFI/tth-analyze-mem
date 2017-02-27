@@ -64,6 +64,7 @@ namespace tthMEM
     double eta() const;
     double phi() const;
     double mass() const;
+    double absEta() const;
 
     double energy() const;
     double px() const;
@@ -104,6 +105,7 @@ namespace tthMEM
     double eta_;    ///< pseudo-rapidity of measured momentum in the lab frame
     double phi_;    ///< azimuthal angle of measured momentum in the lab frame
     double mass_;   ///< measured (visible) mass in the lab frame
+    double absEta_; ///< absolute value of pseudo-rapidity of measured momentum in the lab frame
 
     double energy_; ///< (visible) energy in the lab frame
     double px_;     ///< x-component of measured momentum in the lab frame

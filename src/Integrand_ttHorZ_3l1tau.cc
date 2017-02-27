@@ -256,9 +256,9 @@ Integrand_ttHorZ_3l1tau::renewInputs()
     {
       return functions::bQuarkEnergy(W_i, bJetP3unit_i, bJetEnergy_i);
     };
-    bJetTFBound_[i] = [bJetEnergy_i, bJetEta_i](double bEnergy_i) -> double
+    bJetTFBound_[i] = [this, bJetEnergy_i, bJetEta_i](double bEnergy_i) -> double
     {
-      return functions::bJetTF(bEnergy_i, bJetEnergy_i, bJetEta_i);
+      return bJetTF_(bEnergy_i, bJetEnergy_i, bJetEta_i);
     };
     tDecayJacobiFactor_[i] = [leptEnergy_i, bJetP3unit_i]
                              (const LorentzVector & W_i, double bQuarkEnergy_i,
