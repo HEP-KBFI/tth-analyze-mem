@@ -6,8 +6,8 @@ class JobCreator:
   def __init__(self, samples, channel, year, version, memBaseDir, central_or_shifts, charge_selections,
                lepton_selections, execName, treeName, rleSelectionFile, integrationMode,
                maxObjFunctionCalls, nofIntegrationsPerJob, lhRatioBranchName, debugPlots, forceGenLevel,
-               higgsWidth, clampVariables, markovChainParams, comment, priority = 'main', limit = 1000,
-               maxRetries = 3):
+               higgsWidth, clampVariables, markovChainParams, analysisCuts, comment, priority = 'main',
+               limit = 1000, maxRetries = 3):
     self.samples               = samples
     self.channel               = channel
     self.year                  = year
@@ -28,6 +28,7 @@ class JobCreator:
     self.higgsWidth            = higgsWidth
     self.clampVariables        = clampVariables
     self.markovChainParams     = markovChainParams
+    self.analysisCuts          = analysisCuts
     self.comment               = comment
     self.priority              = priority
     self.limit                 = limit
@@ -155,7 +156,8 @@ class JobCreator:
                 pythonCfg = createPythonCfg(
                   isMC, is2016, fileNameScratch_i, nofEventsToProcess, outFileNameScratch_i, self.treeName,
                   self.integrationMode, self.maxObjFunctionCalls, startingPoint, self.debugPlots,
-                  self.forceGenLevel, self.higgsWidth, self.clampVariables, self.markovChainParams, self.rleSelectionFile
+                  self.forceGenLevel, self.higgsWidth, self.clampVariables, self.markovChainParams,
+                  self.analysisCuts, self.rleSelectionFile
                 )
                 bashCfg = createBashCfg(
                   fileNameLocal, outFileNameLocal_i, fileNameScratch_i, outFileNameScratch_i,

@@ -30,7 +30,7 @@ def getNofEntries(fileName, treeName, usePyROOT = True):
 def createPythonCfg(isMC, is2016, inFileName, maxEvents, outFileName, treeName,
                     integrationMode, maxObjFunctionCalls, startingFromEntry,
                     debugPlots, forceGenLevel, higgsWidth, clampVariables,
-                    markovChainParams, rleSelectionFile):
+                    markovChainParams, analysisCuts, rleSelectionFile):
   return jinja2.Template(pythonCfgTemplate).render(
     isMC                = isMC,
     is2016              = is2016,
@@ -47,6 +47,7 @@ def createPythonCfg(isMC, is2016, inFileName, maxEvents, outFileName, treeName,
     higgsWidth          = higgsWidth,
     clampVariables      = clampVariables,
     markovChainParams   = markovChainParams,
+    analysisCuts        = analysisCuts,
   )
 
 def createPythonROCcfg(fileList, classList, memBaseFolder, outFolderCSV,

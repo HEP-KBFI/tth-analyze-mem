@@ -38,15 +38,6 @@ MEM_ttHorZ_3l1tau::MEM_ttHorZ_3l1tau(const std::string & pdfName,
   initialize(pdfName, madgraphFileName);
 }
 
-MEM_ttHorZ_3l1tau::MEM_ttHorZ_3l1tau(const std::string & pdfName,
-                                     const std::string & madgraphFileName,
-                                     VariableManager_3l1tau && vm)
-  : vm_(std::move(vm))
-{
-  LOGTRC;
-  initialize(pdfName, madgraphFileName);
-}
-
 void
 MEM_ttHorZ_3l1tau::initialize(const std::string & pdfName,
                               const std::string madgraphFileName)

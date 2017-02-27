@@ -42,6 +42,13 @@ process.tthMEM = cms.PSet(
     epsilon0            = cms.double({{ markovChainParams["epsilon0"] }}),
     T0                  = cms.double({{ markovChainParams["T0"] }}),
     nu                  = cms.double({{ markovChainParams["nu"] }})
-  )
+  ),
+  analysisCuts = cms.PSet(
+    jetAlgoRadius      = cms.double({{ analysisCuts["jetAlgoRadius"] }}),
+    jetEta             = cms.double({{ analysisCuts["jetEta"] }}),
+    jetPt              = cms.double({{ analysisCuts["jetPt"] }}),
+    jetToLepton_dR     = cms.double({{ analysisCuts["jetToLepton_dR"] }}),
+    jetToLepton_relIso = cms.double({{ analysisCuts["jetToLepton_relIso"] }}),
+  ),
 )
 

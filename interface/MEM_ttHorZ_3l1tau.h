@@ -34,9 +34,6 @@ namespace tthMEM
     MEM_ttHorZ_3l1tau(const std::string & pdfName,
                       const std::string & madgraphFileName,
                       const VariableManager_3l1tau & vm);
-    MEM_ttHorZ_3l1tau(const std::string & pdfName,
-                      const std::string & madgraphFileName,
-                      VariableManager_3l1tau && vm);
     ~MEM_ttHorZ_3l1tau();
 
     MEM_ttHorZ_3l1tau &

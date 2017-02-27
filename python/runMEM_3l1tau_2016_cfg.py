@@ -36,7 +36,7 @@ process.tthMEM = cms.PSet(
   integrationMode     = cms.string("VEGAS"),
   maxObjFunctionCalls = cms.uint32(150), # just for testing; proper figure: 100k+
   startingFromEntry   = cms.int64(0),
-  debugPlots          = cms.uint32(16),  # use 0 if no debug plots needed
+  debugPlots          = cms.uint32(1),   # use 0 if no debug plots needed
   forceGenLevel       = cms.bool(True),  # True = dumps gen lvl info regardless of clamping
   higgsWidth          = cms.double(-1.), # use negative number in case of default H width
   clampVariables      = cms.VPSet(
@@ -57,7 +57,14 @@ process.tthMEM = cms.PSet(
     epsilon0            = cms.double(1.e-2),
     T0                  = cms.double(15.),
     nu                  = cms.double(0.71)
-  )
+  ),
+  analysisCuts = cms.PSet(
+    jetAlgoRadius      = cms.double(25.),
+    jetEta             = cms.double(2.4),
+    jetPt              = cms.double(0.5),
+    jetToLepton_dR     = cms.double(0.3),
+    jetToLepton_relIso = cms.double(0.1),
+  ),
 )
 
 """

@@ -1,6 +1,7 @@
-#include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h" // MEM_ttHorZ_3l1tau
+#include "tthAnalysis/tthMEM/interface/MEM_ttHorZ_3l1tau.h" // MEM_ttHorZ_3l1tau, VariableManager_3l1tau
 #include "tthAnalysis/tthMEM/interface/DebugPlotter_ttHorZ_3l1tau.h" // DebugPlotter_ttHorZ_3l1tau
 #include "tthAnalysis/tthMEM/interface/LikelihoodRatio_3l1tau.h" // LikelihoodRatio_3l1tau, MEMOutput_3l1tau
+#include "tthAnalysis/tthMEM/interface/AnalysisCuts.h" // AnalysisCuts
 
 #include <TChain.h> // TChain
 
@@ -78,6 +79,15 @@ main(int argc,
     LOGERR << "File '" << rleSelectionFileName << "' does not exists";
     return EXIT_FAILURE;
   }
+
+//--- read the analysis cuts (never used at the moment)
+  AnalysisCuts analysisCuts;
+  const PSet analysisCuts_cfg = cfg_tthMEM.getParameter<PSet>("analysisCuts");
+  analysisCuts.jetAlgoRadius      = analysisCuts_cfg.getParameter<double>("jetAlgoRadius");
+  analysisCuts.jetEta             = analysisCuts_cfg.getParameter<double>("jetEta");
+  analysisCuts.jetPt              = analysisCuts_cfg.getParameter<double>("jetPt");
+  analysisCuts.jetToLepton_dR     = analysisCuts_cfg.getParameter<double>("jetToLepton_dR");
+  analysisCuts.jetToLepton_relIso = analysisCuts_cfg.getParameter<double>("jetToLepton_relIso");
 
 //--- clamp the variables if needed
   VariableManager_3l1tau vm;

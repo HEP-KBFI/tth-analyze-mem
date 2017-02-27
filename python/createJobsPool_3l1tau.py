@@ -76,6 +76,13 @@ if __name__ == '__main__':
     "T0"                  : 15.,
     "nu"                  : 0.71,
   }
+  analysisCuts = {
+    "jetAlgoRadius"      : 25.,
+    "jetEta"             : 2.4,
+    "jetPt"              : 0.5,
+    "jetToLepton_dR"     : 0.3,
+    "jetToLepton_relIso" : 0.1,
+  }
   defaultArguments = {
     'samples'               : samples,
     'channel'               : '3l_1tau',
@@ -97,6 +104,7 @@ if __name__ == '__main__':
     'higgsWidth'            : -1.,
     'clampVariables'        : clampVariables,
     'markovChainParams'     : markovChainParams,
+    'analysisCuts'          : analysisCuts,
     'comment'               : '',
     'priority'              : 'main',
     'limit'                 : 1000,
