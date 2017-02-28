@@ -61,5 +61,5 @@ class Parameters_sm_tth_t2tavt_tbar2lvl_h2WW_Wp2lvl_Wn2tavt
     static Parameters_sm_tth_t2tavt_tbar2lvl_h2WW_Wp2lvl_Wn2tavt * instance;
 }; 
 
-#endif  // Parameters_sm_H
+#endif  // Parameters_sm_tth_t2tavt_tbar2lvl_h2WW_Wp2lvl_Wn2tavt_H
 

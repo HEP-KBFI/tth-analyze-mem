@@ -5,8 +5,8 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#ifndef MG5_Sigma_sm_tth_t2tavt_tbar2lvl_h2WW2lvllvl_1_H
-#define MG5_Sigma_sm_tth_t2tavt_tbar2lvl_h2WW2lvllvl_1_H
+#ifndef MG5_tth_t2tavt_tbar2lvl_h2WW2lvllvl_1_H
+#define MG5_tth_t2tavt_tbar2lvl_h2WW2lvllvl_1_H
 
 #include "tthAnalysis/tthMEM/interface/mg5/parameters/Parameters_sm_tth_t2tavt_tbar2lvl_h2WW2lvllvl.h"
 
@@ -162,4 +162,4 @@ class mg5_tth_t2tavt_tbar2lvl_h2WW2lvllvl_1
 }; 
 
 
-#endif  // MG5_Sigma_sm_gg_tapvtbemvexbxepveemvex_H
+#endif  // MG5_tth_t2tavt_tbar2lvl_h2WW2lvllvl_1_H

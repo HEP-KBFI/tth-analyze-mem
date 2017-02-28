@@ -16,7 +16,7 @@ namespace tthMEM
   roundToNdigits(double x,
                  int n)
   {
-    if(x == 0.) return 0.;
+    if(std::fpclassify(x) == FP_ZERO) return 0.;
     const double p = std::pow(10., n - std::ceil(std::log10(std::fabs(x))));
     return std::round(p * x) / p;
   }
