@@ -6,8 +6,6 @@
 #include "tthAnalysis/tthMEM/interface/AnalysisCuts.h" // AnalysisCuts
 #include "tthAnalysis/tthMEM/interface/general/auxFunctions.h" // pi()
 
-#include <vector> // std::vector<>
-
 namespace tthMEM
 {
   namespace structs

@@ -1,7 +1,5 @@
 #include "tthAnalysis/tthMEM/interface/JetTransferFunction.h"
 
-#include <algorithm> // std::any_of()
-
 namespace tthMEM
 {
   namespace structs

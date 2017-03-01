@@ -18,6 +18,7 @@
 #include <fstream> // std::ifstream
 #include <regex> // std::regex, std::regex_search(), std::smatch
 #include <type_traits> // std::enable_if<>, std::
+#include <system_error> // std::system_error
 
 namespace std
 {
@@ -170,8 +171,7 @@ namespace tthMEM
               if(! rle_[run].count(lumi))
                 rle_[run][lumi] = EvtMap();
               rle_[run][lumi][evt] = false;
-            }
-            catch(const boost::bad_lexical_cast & err)
+            } catch(const boost::bad_lexical_cast & err)
             {
               throw_line_ext("RLE", TTHEXCEPTION_ERR_CODE_RLE_INVALID_TYPE)
                 << "Could not convert line '" << line
@@ -179,8 +179,10 @@ namespace tthMEM
             }
           }
           else
+          {
             throw_line_ext("RLE", TTHEXCEPTION_ERR_CODE_RLE_INVALID_LINE)
               << "Failed to parse line '" << line << "' since it didn't match the RLE regex";
+          }
         }
       } catch(const std::system_error & err)
       {

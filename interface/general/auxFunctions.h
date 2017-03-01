@@ -3,6 +3,10 @@
 
 #include "tthAnalysis/tthMEM/interface/general/lvFunctions.h" // LorentzVector, Vector*
 
+#include <algorithm> // std::next_permutation()
+#include <vector> // std::vector<>
+#include <array> // std::array<,>
+
 namespace tthMEM
 {
   /**
