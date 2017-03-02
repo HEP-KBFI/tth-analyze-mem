@@ -5,7 +5,7 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#include "tthAnalysis/tthMEM/interface/mg5/me/mg5_ttz_t2lvl_tbar2lvl_z2ll_1.h"
+#include "tthAnalysis/tthMEM/interface/mg5/me/mg5_ttz_t2lvl_tbar2lvl_z2ll_3.h"
 #include "tthAnalysis/tthMEM/interface/mg5/helamps/HelAmps_sm_ttz_t2lvl_tbar2lvl_z2ll.h"
 
 using namespace MG5_sm_ttz_t2lvl_tbar2lvl_z2ll;
@@ -14,13 +14,13 @@ using namespace MG5_sm_ttz_t2lvl_tbar2lvl_z2ll;
 // Class member functions for calculating the matrix elements for
 // Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > w+ b WEIGHTED<=2
-// *     Decay: w+ > mu+ vm WEIGHTED<=2
+// *     Decay: w+ > e+ ve WEIGHTED<=2
 // *   Decay: t~ > w- b~ WEIGHTED<=2
 // *     Decay: w- > e- ve~ WEIGHTED<=2
 // *   Decay: z > mu+ mu- WEIGHTED<=2
 // Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > w+ b WEIGHTED<=2
-// *     Decay: w+ > e+ ve WEIGHTED<=2
+// *     Decay: w+ > mu+ vm WEIGHTED<=2
 // *   Decay: t~ > w- b~ WEIGHTED<=2
 // *     Decay: w- > mu- vm~ WEIGHTED<=2
 // *   Decay: z > e+ e- WEIGHTED<=2
@@ -28,7 +28,7 @@ using namespace MG5_sm_ttz_t2lvl_tbar2lvl_z2ll;
 //--------------------------------------------------------------------------
 // Initialize process.
 
-void mg5_ttz_t2lvl_tbar2lvl_z2ll_1::initProc(string param_card_name)
+void mg5_ttz_t2lvl_tbar2lvl_z2ll_3::initProc(string param_card_name)
 {
   // Instantiate the model class and set parameters that stay fixed during run
   pars = Parameters_sm_ttz_t2lvl_tbar2lvl_z2ll::getInstance();
@@ -54,7 +54,7 @@ void mg5_ttz_t2lvl_tbar2lvl_z2ll_1::initProc(string param_card_name)
 //--------------------------------------------------------------------------
 // Evaluate |M|^2, part independent of incoming flavour.
 
-void mg5_ttz_t2lvl_tbar2lvl_z2ll_1::sigmaKin()
+void mg5_ttz_t2lvl_tbar2lvl_z2ll_3::sigmaKin()
 {
   // Set the parameters which change event by event
   pars->setDependentParameters(); 
@@ -628,7 +628,7 @@ void mg5_ttz_t2lvl_tbar2lvl_z2ll_1::sigmaKin()
       if (goodhel[ihel] || ntry < 2)
       {
         calculate_wavefunctions(perm, helicities[ihel]); 
-        t[0] = matrix_1_gg_ttxz_t_wpb_wp_mupvm_tx_wmbx_wm_emvex_z_mupmum(); 
+        t[0] = matrix_1_gg_ttxz_t_wpb_wp_epve_tx_wmbx_wm_emvex_z_mupmum(); 
 
         double tsum = 0; 
         for(int iproc = 0; iproc < nprocesses; iproc++ )
@@ -659,7 +659,7 @@ void mg5_ttz_t2lvl_tbar2lvl_z2ll_1::sigmaKin()
       double hwgt = double(ngood)/double(sum_hel); 
       int ihel = igood[jhel]; 
       calculate_wavefunctions(perm, helicities[ihel]); 
-      t[0] = matrix_1_gg_ttxz_t_wpb_wp_mupvm_tx_wmbx_wm_emvex_z_mupmum(); 
+      t[0] = matrix_1_gg_ttxz_t_wpb_wp_epve_tx_wmbx_wm_emvex_z_mupmum(); 
 
       for(int iproc = 0; iproc < nprocesses; iproc++ )
       {
@@ -678,7 +678,7 @@ void mg5_ttz_t2lvl_tbar2lvl_z2ll_1::sigmaKin()
 //--------------------------------------------------------------------------
 // Evaluate |M|^2, including incoming flavour dependence.
 
-double mg5_ttz_t2lvl_tbar2lvl_z2ll_1::sigmaHat()
+double mg5_ttz_t2lvl_tbar2lvl_z2ll_3::sigmaHat()
 {
   // Select between the different processes
   if(id1 == 21 && id2 == 21)
@@ -699,7 +699,7 @@ double mg5_ttz_t2lvl_tbar2lvl_z2ll_1::sigmaHat()
 //--------------------------------------------------------------------------
 // Evaluate |M|^2 for each subprocess
 
-void mg5_ttz_t2lvl_tbar2lvl_z2ll_1::calculate_wavefunctions(const int perm[], const int hel[])
+void mg5_ttz_t2lvl_tbar2lvl_z2ll_3::calculate_wavefunctions(const int perm[], const int hel[])
 {
   // Calculate wavefunctions for all processes
 
@@ -742,7 +742,7 @@ void mg5_ttz_t2lvl_tbar2lvl_z2ll_1::calculate_wavefunctions(const int perm[], co
   FFV1_0(w[19], w[16], w[0], pars->GC_11, amp[7]); 
 
 }
-double mg5_ttz_t2lvl_tbar2lvl_z2ll_1::matrix_1_gg_ttxz_t_wpb_wp_mupvm_tx_wmbx_wm_emvex_z_mupmum()
+double mg5_ttz_t2lvl_tbar2lvl_z2ll_3::matrix_1_gg_ttxz_t_wpb_wp_epve_tx_wmbx_wm_emvex_z_mupmum()
 {
   int i, j; 
   // Local variables

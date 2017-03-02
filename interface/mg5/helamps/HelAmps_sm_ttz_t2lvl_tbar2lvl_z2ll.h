@@ -8,8 +8,8 @@
 #ifndef HelAmps_sm_ttz_t2lvl_tbar2lvl_z2ll_H
 #define HelAmps_sm_ttz_t2lvl_tbar2lvl_z2ll_H
 
-#include <cmath> 
-#include <complex> 
+#include <cmath>
+#include <complex>
 
 namespace MG5_sm_ttz_t2lvl_tbar2lvl_z2ll
 {

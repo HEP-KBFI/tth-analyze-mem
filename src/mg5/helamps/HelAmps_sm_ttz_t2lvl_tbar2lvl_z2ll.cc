@@ -8,7 +8,7 @@
 #include "tthAnalysis/tthMEM/interface/mg5/helamps/HelAmps_sm_ttz_t2lvl_tbar2lvl_z2ll.h"
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
-using namespace std; 
+using namespace std;
 
 namespace MG5_sm_ttz_t2lvl_tbar2lvl_z2ll
 {

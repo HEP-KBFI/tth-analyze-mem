@@ -5,8 +5,8 @@
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
 //==========================================================================
 
-#ifndef MG5_ttz_t2lvl_tbar2lvl_z2ll_1_H
-#define MG5_ttz_t2lvl_tbar2lvl_z2ll_1_H
+#ifndef MG5_ttz_t2lvl_tbar2lvl_z2ll_4_H
+#define MG5_ttz_t2lvl_tbar2lvl_z2ll_4_H
 
 #include "tthAnalysis/tthMEM/interface/mg5/parameters/Parameters_sm_ttz_t2lvl_tbar2lvl_z2ll.h"
 
@@ -14,31 +14,31 @@
 // A class for calculating the matrix elements for
 // Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > w+ b WEIGHTED<=2
-// *     Decay: w+ > mu+ vm WEIGHTED<=2
-// *   Decay: t~ > w- b~ WEIGHTED<=2
-// *     Decay: w- > e- ve~ WEIGHTED<=2
-// *   Decay: z > mu+ mu- WEIGHTED<=2
-// Process: g g > t t~ z WEIGHTED<=4 @1
-// *   Decay: t > w+ b WEIGHTED<=2
 // *     Decay: w+ > e+ ve WEIGHTED<=2
 // *   Decay: t~ > w- b~ WEIGHTED<=2
-// *     Decay: w- > mu- vm~ WEIGHTED<=2
+// *     Decay: w- > e- ve~ WEIGHTED<=2
 // *   Decay: z > e+ e- WEIGHTED<=2
+// Process: g g > t t~ z WEIGHTED<=4 @1
+// *   Decay: t > w+ b WEIGHTED<=2
+// *     Decay: w+ > mu+ vm WEIGHTED<=2
+// *   Decay: t~ > w- b~ WEIGHTED<=2
+// *     Decay: w- > mu- vm~ WEIGHTED<=2
+// *   Decay: z > mu+ mu- WEIGHTED<=2
 //--------------------------------------------------------------------------
 
-class mg5_ttz_t2lvl_tbar2lvl_z2ll_1
+class mg5_ttz_t2lvl_tbar2lvl_z2ll_4
 {
   public:
 
     // Constructor.
-    mg5_ttz_t2lvl_tbar2lvl_z2ll_1()
+    mg5_ttz_t2lvl_tbar2lvl_z2ll_4()
     {
       for(std::size_t i = 0; i < nprocesses; ++i)
         jamp2[i] = nullptr;
     }
 
     // Destructor.
-    ~mg5_ttz_t2lvl_tbar2lvl_z2ll_1()
+    ~mg5_ttz_t2lvl_tbar2lvl_z2ll_4()
     {
       for(std::size_t i = 0; i < nprocesses; ++i)
         if(jamp2[i])
@@ -64,7 +64,7 @@ class mg5_ttz_t2lvl_tbar2lvl_z2ll_1
     virtual std::string
     name() const
     {
-      return "g g > mu+ vm b e- ve~ b~ mu+ mu- (sm)";
+      return "g g > e+ ve b e- ve~ b~ e+ e- (sm)";
     }
 
     const std::vector<double> &
@@ -120,7 +120,7 @@ class mg5_ttz_t2lvl_tbar2lvl_z2ll_1
     std::complex<double> amp[namplitudes]; 
 
     double
-    matrix_1_gg_ttxz_t_wpb_wp_mupvm_tx_wmbx_wm_emvex_z_mupmum();
+    matrix_1_gg_ttxz_t_wpb_wp_epve_tx_wmbx_wm_emvex_z_epem();
 
     // Store the matrix element value from sigmaKin
     double matrix_element[nprocesses]; 
@@ -142,4 +142,4 @@ class mg5_ttz_t2lvl_tbar2lvl_z2ll_1
 }; 
 
 
-#endif  // MG5_ttz_t2lvl_tbar2lvl_z2ll_1_H
+#endif  // MG5_ttz_t2lvl_tbar2lvl_z2ll_4_H

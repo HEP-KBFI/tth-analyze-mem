@@ -14,16 +14,16 @@ using namespace MG5_sm_ttz_t2lvl_tbar2lvl_z2ll;
 // Class member functions for calculating the matrix elements for
 // Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > w+ b WEIGHTED<=2
-// *     Decay: w+ > ta+ vt WEIGHTED<=2
+// *     Decay: w+ > mu+ vm WEIGHTED<=2
 // *   Decay: t~ > w- b~ WEIGHTED<=2
 // *     Decay: w- > e- ve~ WEIGHTED<=2
-// *   Decay: z > mu+ mu- WEIGHTED<=2
+// *   Decay: z > e+ e- WEIGHTED<=2
 // Process: g g > t t~ z WEIGHTED<=4 @1
 // *   Decay: t > w+ b WEIGHTED<=2
-// *     Decay: w+ > ta+ vt WEIGHTED<=2
+// *     Decay: w+ > e+ ve WEIGHTED<=2
 // *   Decay: t~ > w- b~ WEIGHTED<=2
 // *     Decay: w- > mu- vm~ WEIGHTED<=2
-// *   Decay: z > e+ e- WEIGHTED<=2
+// *   Decay: z > mu+ mu- WEIGHTED<=2
 
 //--------------------------------------------------------------------------
 // Initialize process.
@@ -40,7 +40,7 @@ void mg5_ttz_t2lvl_tbar2lvl_z2ll_2::initProc(string param_card_name)
   // Set external particle masses for this matrix element
   mME.push_back(pars->ZERO); 
   mME.push_back(pars->ZERO); 
-  mME.push_back(pars->mdl_MTA); 
+  mME.push_back(pars->ZERO); 
   mME.push_back(pars->ZERO); 
   mME.push_back(pars->mdl_MB); 
   mME.push_back(pars->ZERO); 
@@ -628,7 +628,7 @@ void mg5_ttz_t2lvl_tbar2lvl_z2ll_2::sigmaKin()
       if (goodhel[ihel] || ntry < 2)
       {
         calculate_wavefunctions(perm, helicities[ihel]); 
-        t[0] = matrix_1_gg_ttxz_t_wpb_wp_tapvt_tx_wmbx_wm_emvex_z_mupmum(); 
+        t[0] = matrix_1_gg_ttxz_t_wpb_wp_mupvm_tx_wmbx_wm_emvex_z_epem(); 
 
         double tsum = 0; 
         for(int iproc = 0; iproc < nprocesses; iproc++ )
@@ -659,7 +659,7 @@ void mg5_ttz_t2lvl_tbar2lvl_z2ll_2::sigmaKin()
       double hwgt = double(ngood)/double(sum_hel); 
       int ihel = igood[jhel]; 
       calculate_wavefunctions(perm, helicities[ihel]); 
-      t[0] = matrix_1_gg_ttxz_t_wpb_wp_tapvt_tx_wmbx_wm_emvex_z_mupmum(); 
+      t[0] = matrix_1_gg_ttxz_t_wpb_wp_mupvm_tx_wmbx_wm_emvex_z_epem(); 
 
       for(int iproc = 0; iproc < nprocesses; iproc++ )
       {
@@ -742,7 +742,7 @@ void mg5_ttz_t2lvl_tbar2lvl_z2ll_2::calculate_wavefunctions(const int perm[], co
   FFV1_0(w[19], w[16], w[0], pars->GC_11, amp[7]); 
 
 }
-double mg5_ttz_t2lvl_tbar2lvl_z2ll_2::matrix_1_gg_ttxz_t_wpb_wp_tapvt_tx_wmbx_wm_emvex_z_mupmum()
+double mg5_ttz_t2lvl_tbar2lvl_z2ll_2::matrix_1_gg_ttxz_t_wpb_wp_mupvm_tx_wmbx_wm_emvex_z_epem()
 {
   int i, j; 
   // Local variables
