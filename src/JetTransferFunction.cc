@@ -145,7 +145,7 @@ namespace tthMEM
       // otherwise use probabilistic value for the quark acceptance
       using namespace tthMEM::structs;
       const qJetParams q(testQuark.energy(), testQuark.eta());
-      const double denom = 1. / q.sigma * std::sqrt(2.);
+      const double denom = 1. / (q.sigma * std::sqrt(2.));
       const double alpha = q.mu * denom;
       const double x     = std::exp(-testQuark.eta());
       return (std::erf(alpha) - std::erf(alpha - cuts.jetPt * std::sqrt(pow2(x) + 1.) * denom / x)) / 2.;
