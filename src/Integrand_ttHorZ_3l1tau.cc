@@ -10,18 +10,18 @@
 #include <TMath.h> // TMath::IsNaN() ...
  // ... (why not use std here: http://stackoverflow.com/a/570694)
 
-// ignore "-Wmaybe-uninitialized" gcc error if compiled with -Og -g3 -ggdb3
-#if defined(__OPTIMIZE__)
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wignored-qualifiers"
+// ignore "-Wmaybe-uninitialized" and "-Wshadow" gcc errors if compiled with -Og -g3 -ggdb3
+#if defined(__OPTIMIZE__)
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #pragma GCC diagnostic ignored "-Wshadow"
 #endif
 
 #include <LHAPDF/LHAPDF.h> // LHAPDF::PDF
 
-#if defined(__OPTIMIZE__)
 #pragma GCC diagnostic pop
-#endif
 
 using namespace tthMEM;
 

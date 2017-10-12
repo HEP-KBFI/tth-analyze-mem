@@ -2,6 +2,8 @@
 
 #include "tthAnalysis/tthMEM/interface/general/vecFunctions.h" // tthMEM::vec::, tthMEMexception
 
+#include <cmath> // std::sqrt()
+
 // enable operator overloading for std::vector<>'s that we unit-test here
 using namespace tthMEM;
 

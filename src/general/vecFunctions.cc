@@ -1,5 +1,8 @@
 #include "tthAnalysis/tthMEM/interface/general/vecFunctions.h"
 
+#include <cmath> // std::sqrt()
+#include <numeric> // std::accumulate()
+
 namespace tthMEM
 {
   namespace vec
