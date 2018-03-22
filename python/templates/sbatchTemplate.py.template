@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
       if entry['status'] == STATUS_NOT_SUBMITTED:
         # submit the job
-        submitJobProcess = 'sbatch --partition={priority} --output={logFile}.{ver} {exclude} --comment="{comment}" {bashScript}'.format(
+        submitJobProcess = 'sbatch --mem=1800M --partition={priority} --output={logFile}.{ver} {exclude} --comment="{comment}" {bashScript}'.format(
             priority   = priority,
             logFile    = entry['logFile'],
             ver        = entry['retries'],
