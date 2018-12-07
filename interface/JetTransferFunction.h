@@ -149,7 +149,7 @@ namespace tthMEM
      * @param sigma Standard deviation of the PDF
      * @return Value of the PDF at x
      */
-    inline double
+    double
     gaussianPDF(double x,
                 double mu,
                 double sigma);
