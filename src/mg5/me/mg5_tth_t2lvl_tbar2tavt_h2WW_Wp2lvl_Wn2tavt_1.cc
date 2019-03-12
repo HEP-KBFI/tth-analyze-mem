@@ -79,7 +79,7 @@ void mg5_tth_t2lvl_tbar2tavt_h2WW_Wp2lvl_Wn2tavt_1::sigmaKin()
 
   // Local variables and constants
   const int ncomb = 4096; 
-  static bool goodhel[ncomb] = {ncomb * false}; 
+  static bool goodhel[ncomb] = {ncomb && false}; 
   static int ntry = 0, sum_hel = 0, ngood = 0; 
   static int igood[ncomb]; 
   static int jhel; 

@@ -1,7 +1,15 @@
 #include "tthAnalysis/tthMEM/interface/Logger.h"
 #include "tthAnalysis/tthMEM/interface/Exception.h" // throw_line_ext()
 
+#if defined (__GNUC__) && (__GNUC__ >= 7)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+#endif
 #include <boost/format.hpp> // boost::format()
+#if defined (__GNUC__) && (__GNUC__ >= 7)
+#pragma GCC diagnostic pop
+#endif
+
 #include <boost/algorithm/string/predicate.hpp> // boost::iequals()
 
 #include <chrono> // std::chrono::

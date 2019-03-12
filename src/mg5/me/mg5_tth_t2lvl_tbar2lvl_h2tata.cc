@@ -77,7 +77,7 @@ void mg5_tth_t2lvl_tbar2lvl_h2tata::sigmaKin()
 
   // Local variables and constants
   const int ncomb = 1024; 
-  static bool goodhel[ncomb] = {ncomb * false}; 
+  static bool goodhel[ncomb] = {ncomb && false}; 
   static int ntry = 0, sum_hel = 0, ngood = 0; 
   static int igood[ncomb]; 
   static int jhel; 

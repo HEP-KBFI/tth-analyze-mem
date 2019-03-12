@@ -53,7 +53,7 @@ namespace tthMEM
     MeasuredObject &
     operator=(const MeasuredObject & other);
 
-    ~MeasuredObject();
+    virtual ~MeasuredObject();
 
     friend MeasuredObject
     operator+(const MeasuredObject & lhs,

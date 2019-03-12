@@ -31,7 +31,7 @@ namespace tthMEM
     MeasuredLepton &
     operator=(const MeasuredLepton & other);
 
-    ~MeasuredLepton();
+    virtual ~MeasuredLepton() override;
 
     friend MeasuredLepton
     operator+(const MeasuredLepton & lhs,

@@ -90,7 +90,7 @@ class mg5_tth_t2lvl_tbar2lvl_h2WW_Wp2lvl_Wn2jj_1
     }
 
     // Destructor.
-    ~mg5_tth_t2lvl_tbar2lvl_h2WW_Wp2lvl_Wn2jj_1()
+    virtual ~mg5_tth_t2lvl_tbar2lvl_h2WW_Wp2lvl_Wn2jj_1()
     {
       for(std::size_t i = 0; i < nprocesses; ++i)
         if(jamp2[i])

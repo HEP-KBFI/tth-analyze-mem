@@ -24,7 +24,7 @@ namespace tthMEM
     MeasuredJet(const LorentzVector & lv);
     MeasuredJet(const MeasuredJet & other);
     MeasuredJet & operator=(const MeasuredJet & other);
-    ~MeasuredJet();
+    virtual ~MeasuredJet();
   };
 }
 

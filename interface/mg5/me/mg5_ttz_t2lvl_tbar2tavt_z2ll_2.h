@@ -38,7 +38,7 @@ class mg5_ttz_t2lvl_tbar2tavt_z2ll_2
     }
 
     // Destructor.
-    ~mg5_ttz_t2lvl_tbar2tavt_z2ll_2()
+    virtual ~mg5_ttz_t2lvl_tbar2tavt_z2ll_2()
     {
       for(std::size_t i = 0; i < nprocesses; ++i)
         if(jamp2[i])

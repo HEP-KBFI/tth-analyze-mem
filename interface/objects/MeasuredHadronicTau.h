@@ -29,7 +29,7 @@ namespace tthMEM
                         int decayMode);
     MeasuredHadronicTau(const MeasuredHadronicTau & other);
     MeasuredHadronicTau & operator=(const MeasuredHadronicTau & other);
-    ~MeasuredHadronicTau();
+    virtual ~MeasuredHadronicTau() override;
 
     int decayMode() const;
 
