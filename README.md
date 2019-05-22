@@ -4,9 +4,13 @@ Matrix element method for ttH, H->tautau channel
 
 ## Building instructions
 
-### Dependencies
+Clone the library into `$CMSSW_BASE/src/tthAnalysis/tthMEM`:
 
-In order to build the whole project, you first need to install numerical integration library VAMP by following these steps:
+```bash
+git clone https://github.com/HEP-KBFI/tth-analyze-mem.git $CMSSW_BASE/src/tthAnalysis/tthMEM
+```
+
+In order to build the whole project, you also need to install numerical integration library VAMP by following these steps:
 
 ```bash
 mkdir $CMSSW_BASE/VAMP
@@ -18,22 +22,9 @@ cd $CMSSW_BASE/VAMP/vamp-2.3.0
 make -j4
 make install
 cp $CMSSW_BASE/VAMP/vamp-2.3.0/prefix/lib/* $CMSSW_BASE/lib/$SCRAM_ARCH
+cp $CMSSW_BASE/src/tthAnalysis/tthMEM/test/vamp.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected/vamp.xml
 ```
-
-Create a new file with the following contents
-
-```xml
-<tool name="vamp" version="2.3.0">
-  <lib name="vamp"/>
-  <client>
-    <environment name="LIBDIR"  default="$CMSSW_BASE/VAMP/vamp-2.3.0/prefix/lib"         />
-    <environment name="INCLUDE" default="$CMSSW_BASE/VAMP/vamp-2.3.0/prefix/include/vamp"/>
-  </client>
-  <use name="f77compiler"/>
-</tool>
-```
-
-Save it to `$CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected/vamp.xml`. Next up try to set up with `scram setup vamp` and verify the installation with `scram tool info vamp`. You should see output along the lines of
+Next up try to set up with `scram setup vamp` and verify the installation with `scram tool info vamp`. You should see output along the lines of
 
 ```bash
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -49,15 +40,7 @@ USE=f77compiler
 ```
 You can check other versions of VAMP [here](http://whizard.hepforge.org/vamp.html).
 
-### The library itself
-
-Clone the library into `$CMSSW_BASE/src/tthAnalysis/tthMEM`:
-
-```bash
-git clone https://github.com/HEP-KBFI/tth-analyze-mem.git $CMSSW_BASE/src/tthAnalysis/tthMEM
-```
-
-and build it with `scram b -j8` as usual.
+Finally, build it with `scram b -j8` as usual.
 
 ## Running an example
 
