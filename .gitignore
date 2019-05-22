@@ -1,6 +1,8 @@
 *.config
 *.creator
 *.creator.user*
+*.cxxflags
+*.cflags
 *.files
 *.includes
 *.user
