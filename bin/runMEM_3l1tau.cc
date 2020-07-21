@@ -6,9 +6,14 @@
 #include <TChain.h> // TChain
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
-#include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
 #include <DataFormats/FWLite/interface/InputSource.h> // fwlite::InputSource
 #include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles
+
+#if __has_include (<FWCore/ParameterSetReader/interface/ParameterSetReader.h>)
+#  include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
+#else
+#  include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
+#endif
 
 #include <boost/filesystem/operations.hpp> // boost::filesystem::exists()
 
