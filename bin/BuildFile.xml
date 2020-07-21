@@ -1,5 +1,6 @@
 <bin file="runMEM_3l1tau.cc" name="runMEM_3l1tau">
   <use name="FWCore/ParameterSet" />
+  <use name="FWCore/ParameterSetReader" />
   <use name="FWCore/PythonParameterSet" />
   <use name="FWCore/Utilities" />
   <use name="root" />
@@ -17,6 +18,7 @@
 </bin>
 <bin file="evalMGME_3l1tau.cc" name="evalMGME_3l1tau">
   <use name="FWCore/ParameterSet" />
+  <use name="FWCore/ParameterSetReader" />
   <use name="FWCore/PythonParameterSet" />
   <use name="FWCore/Utilities" />
   <use name="tthAnalysis/tthMEM" />

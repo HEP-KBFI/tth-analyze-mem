@@ -6,7 +6,7 @@
 #include "tthAnalysis/tthMEM/interface/RLESelector.h" // RLESelector<>, boost::algorithm::join()
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
-#include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
+#include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
 
 #include <boost/filesystem/operations.hpp> // boost::filesystem::
 
